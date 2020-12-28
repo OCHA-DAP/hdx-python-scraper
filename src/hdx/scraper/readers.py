@@ -90,7 +90,8 @@ def read_hdx(downloader, datasetinfo, today=None):
 def read(downloader, name, datasetinfo, today=None, **kwargs):
     format = datasetinfo['format']
     if format == 'json':
-        iterator = read_json(downloader, datasetinfo, **kwargs)
+        lst = read_json(downloader, datasetinfo, **kwargs)
+        iterator = iter(lst)
         headers = None
     elif format == 'ole':
         headers, iterator = read_ole(downloader, datasetinfo, **kwargs)
