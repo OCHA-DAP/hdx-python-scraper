@@ -56,8 +56,10 @@ def read_json(downloader, datasetinfo, **kwargs):
     expression = datasetinfo.get('jsonpath')
     if expression:
         expression = parse(expression)
-        return expression.find(json)
-    return json
+        json = expression.find(json)
+    if isinstance(json, list):
+        return iter(json)
+    return None
 
 
 def read_hdx_metadata(datasetinfo, today=None):
@@ -90,8 +92,7 @@ def read_hdx(downloader, datasetinfo, today=None):
 def read(downloader, name, datasetinfo, today=None, **kwargs):
     format = datasetinfo['format']
     if format == 'json':
-        lst = read_json(downloader, datasetinfo, **kwargs)
-        iterator = iter(lst)
+        iterator = read_json(downloader, datasetinfo, **kwargs)
         headers = None
     elif format == 'ole':
         headers, iterator = read_ole(downloader, datasetinfo, **kwargs)

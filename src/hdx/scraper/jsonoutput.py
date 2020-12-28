@@ -76,8 +76,12 @@ class jsonoutput:
             name = datasetinfo['name']
             headers, iterator = read(downloader, name, datasetinfo, today=today)
             hxlrow = next(iterator)
+            if not isinstance(hxlrow, dict):
+                hxlrow = hxlrow.value
             for row in iterator:
                 newrow = dict()
+                if not isinstance(row, dict):
+                    row = row.value
                 for key in row:
                     hxltag = hxlrow[key]
                     if hxltag != '':

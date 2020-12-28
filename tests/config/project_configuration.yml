@@ -11,6 +11,7 @@ json:
       source_url: "https://data.humdata.org/organization/world-bank-group"
       format: "json"
       url: "https://raw.githubusercontent.com/mcarans/hdx-python-scraper/master/tests/fixtures/additional_json.json"
+      jsonpath: "[*]"
   filepath: "test_tabular_all.json"
   additional:
     - filepath: "test_tabular_population.json"
