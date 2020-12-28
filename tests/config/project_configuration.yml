@@ -25,6 +25,17 @@ json:
             - "#country+name"
             - "#population"
     - filepath: "test_tabular_population_2.json"
+      tabs:
+        - tab: "national"
+          key: "cumulative"
+          filters:
+            "#country+code":
+              - "AFG"
+          hxltags:
+            - "#country+code"
+            - "#country+name"
+            - "#population"
+    - filepath: "test_tabular_other.json"
       remove:
         - "national"
 
