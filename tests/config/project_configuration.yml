@@ -1,0 +1,135 @@
+tabs:
+  national: "NationalData"
+
+googlesheets:
+  test: "https://docs.google.com/spreadsheets/d/1JOJUE853J3TFNYtBQgB8TOFNJdtfTzgqDVhaPK99q7A/edit"
+
+json:
+  additional_json:
+    - name: "Other"
+      source: "Some org"
+      source_url: "https://data.humdata.org/organization/world-bank-group"
+      format: "json"
+      url: "tests/fixtures/test_tabular_all.json"
+  filepath: "test_tabular_all.json"
+  additional:
+    - filepath: "test_tabular_population.json"
+      tabs:
+        - tab: "national"
+          key: "cumulative"
+          filters:
+            "#country+code": "{{countries_to_save}}"
+          hxltags:
+            - "#country+code"
+            - "#country+name"
+            - "#population"
+    - filepath: "test_tabular_population_2.json"
+      remove:
+        - "national"
+
+# national
+tabular_national:
+  population:
+    source: "World Bank"
+    source_url: "https://data.humdata.org/organization/world-bank-group"
+    format: "xls"
+    url: "tests/fixtures/API_SP.POP.TOTL_DS2_en_excel_v2_1302508_LIST.xls"
+    sheet: "Data"
+    headers: 3
+    adm_cols:
+      - "Country Code"
+    adm_exact: True
+    date_col: "Year"
+    date_type: "int"
+    input_cols:
+      - "Value"
+    output_cols:
+      - "Population"
+    output_hxltags:
+      - "#population"
+# only for testing dividing by population
+  who_national:
+    format: "csv"
+    dataset: "coronavirus-covid-19-cases-and-deaths"
+    url: "tests/fixtures/WHO-COVID-19-global-data.csv"
+    headers: 1
+    adm_cols:
+      - "Country_code"
+    date_col: "Date_reported"
+    date_type: "date"
+    use_date_from_date_col: True
+    input_cols:
+      - "Cumulative_cases"
+      - "Cumulative_deaths"
+    process_cols:
+      - "number_format(Cumulative_cases / #population * 100000, format='%.2f')"
+      - "number_format(Cumulative_deaths / #population * 100000, format='%.2f')"
+    output_cols:
+      - "CasesPer100000"
+      - "DeathsPer100000"
+    output_hxltags:
+      - "#affected+infected+per100000"
+      - "#affected+killed+per100000"
+# A fake one where we sum all values in cumulative column across dates which in practice makes no sense
+  who_national2:
+    format: "csv"
+    dataset: "coronavirus-covid-19-cases-and-deaths"
+    url: "tests/fixtures/WHO-COVID-19-global-data.csv"
+    headers: 1
+    adm_cols:
+      - "Country_code"
+    date_col: "Date_reported"
+    date_type: "date"
+    use_date_from_date_col: True
+    subsets:
+      - filter: "Date_reported=2020-08-06"
+        input_cols:
+          - "Cumulative_cases"
+          - "Cumulative_deaths"
+        sum_cols:
+          - formula: "number_format(Cumulative_cases / #population * 100000, format='%.2f')"
+            mustbepopulated: True
+          - formula: "number_format(Cumulative_deaths / #population * 100000, format='%.2f')"
+            mustbepopulated: True
+        output_cols:
+          - "Cases2Per100000"
+          - "Deaths2Per100000"
+        output_hxltags:
+          - "#affected+infected+2+per100000"
+          - "#affected+killed+2+per100000"
+
+admin1_info:
+  - {pcode: AF01, name: Kabul, iso2: AF, iso3: AFG, country: Afghanistan}
+  - {pcode: AF02, name: Kapisa, iso2: AF, iso3: AFG, country: Afghanistan}
+  - {pcode: AF03, name: Parwan, iso2: AF, iso3: AFG, country: Afghanistan}
+  - {pcode: AF04, name: Maidan Wardak, iso2: AF, iso3: AFG, country: Afghanistan}
+  - {pcode: AF05, name: Logar, iso2: AF, iso3: AFG, country: Afghanistan}
+  - {pcode: AF06, name: Nangarhar, iso2: AF, iso3: AFG, country: Afghanistan}
+  - {pcode: AF07, name: Laghman, iso2: AF, iso3: AFG, country: Afghanistan}
+  - {pcode: AF08, name: Panjsher, iso2: AF, iso3: AFG, country: Afghanistan}
+  - {pcode: AF09, name: Baghlan, iso2: AF, iso3: AFG, country: Afghanistan}
+  - {pcode: AF10, name: Bamyan, iso2: AF, iso3: AFG, country: Afghanistan}
+  - {pcode: AF11, name: Ghazni, iso2: AF, iso3: AFG, country: Afghanistan}
+  - {pcode: AF12, name: Paktika, iso2: AF, iso3: AFG, country: Afghanistan}
+  - {pcode: AF13, name: Paktya, iso2: AF, iso3: AFG, country: Afghanistan}
+  - {pcode: AF14, name: Khost, iso2: AF, iso3: AFG, country: Afghanistan}
+  - {pcode: AF15, name: Kunar, iso2: AF, iso3: AFG, country: Afghanistan}
+  - {pcode: AF16, name: Nuristan, iso2: AF, iso3: AFG, country: Afghanistan}
+  - {pcode: AF17, name: Badakhshan, iso2: AF, iso3: AFG, country: Afghanistan}
+  - {pcode: AF18, name: Takhar, iso2: AF, iso3: AFG, country: Afghanistan}
+  - {pcode: AF19, name: Kunduz, iso2: AF, iso3: AFG, country: Afghanistan}
+  - {pcode: AF20, name: Samangan, iso2: AF, iso3: AFG, country: Afghanistan}
+  - {pcode: AF21, name: Balkh, iso2: AF, iso3: AFG, country: Afghanistan}
+  - {pcode: AF22, name: Sar E Pul, iso2: AF, iso3: AFG, country: Afghanistan}
+  - {pcode: AF23, name: Ghor, iso2: AF, iso3: AFG, country: Afghanistan}
+  - {pcode: AF24, name: Daykundi, iso2: AF, iso3: AFG, country: Afghanistan}
+  - {pcode: AF25, name: Uruzgan, iso2: AF, iso3: AFG, country: Afghanistan}
+  - {pcode: AF26, name: Zabul, iso2: AF, iso3: AFG, country: Afghanistan}
+  - {pcode: AF27, name: Kandahar, iso2: AF, iso3: AFG, country: Afghanistan}
+  - {pcode: AF28, name: Jawzjan, iso2: AF, iso3: AFG, country: Afghanistan}
+  - {pcode: AF29, name: Faryab, iso2: AF, iso3: AFG, country: Afghanistan}
+  - {pcode: AF30, name: Hilmand, iso2: AF, iso3: AFG, country: Afghanistan}
+  - {pcode: AF31, name: Badghis, iso2: AF, iso3: AFG, country: Afghanistan}
+  - {pcode: AF32, name: Hirat, iso2: AF, iso3: AFG, country: Afghanistan}
+  - {pcode: AF33, name: Farah, iso2: AF, iso3: AFG, country: Afghanistan}
+  - {pcode: AF34, name: Nimroz, iso2: AF, iso3: AFG, country: Afghanistan}
