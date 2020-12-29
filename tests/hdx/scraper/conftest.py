@@ -15,3 +15,8 @@ def configuration():
     Locations.set_validlocations(
         [{'name': 'afg', 'title': 'Afghanistan'}, {'name': 'pse', 'title': 'State of Palestine'}])
     return Configuration.read()
+
+
+@pytest.fixture(scope='session')
+def fixtures():
+    return join('tests', 'fixtures')

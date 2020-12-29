@@ -1,0 +1,4 @@
+ISO Code,Country,% of visas pending or denied,% of travel authorizations or movements denied,Number of incidents reported in previous year,Number of incidents reported since start of year,Number of incidents reported since start of previous year,% of CERF projects affected by insecurity and inaccessibility,% of CBPF projects affected by insecurity and inaccessibility,Campaign Vaccine,Campaign Vaccine Status,Number of learners enrolled from pre-primary to tertiary education
+#country+code,#country+name,#access+visas+pct,#access+travel+pct,#event+year+previous+num,#event+year+todate+num,#event+year+previous+todate+num,#activity+cerf+project+insecurity+pct,#activity+cbpf+project+insecurity+pct,#service+name,#status+name,#population+education
+AFG,Afghanistan,20.00%,N/A,20,2,22,57.1%,4.0%,bivalent Oral Poliovirus,Postponed,"9,979,405"
+PSE,oPt,,,7,,7,0.0%,20.5%,,N/A,

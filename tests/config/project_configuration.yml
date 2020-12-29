@@ -1,5 +1,6 @@
 tabs:
   national: "NationalData"
+  subnational: "SubNationalData"
 
 googlesheets:
   test: "https://docs.google.com/spreadsheets/d/1JOJUE853J3TFNYtBQgB8TOFNJdtfTzgqDVhaPK99q7A/edit"
@@ -46,6 +47,9 @@ tabular_national:
     source_url: "https://data.humdata.org/organization/world-bank-group"
     format: "xls"
     url: "tests/fixtures/API_SP.POP.TOTL_DS2_en_excel_v2_1302508_LIST.xls"
+    sort:
+      keys:
+        - "Year"
     sheet: "Data"
     headers: 3
     adm_cols:
@@ -61,8 +65,8 @@ tabular_national:
       - "#population"
 # only for testing dividing by population
   who_national:
+    source: "WHO"
     format: "csv"
-    dataset: "coronavirus-covid-19-cases-and-deaths"
     url: "tests/fixtures/WHO-COVID-19-global-data.csv"
     headers: 1
     adm_cols:
@@ -84,8 +88,8 @@ tabular_national:
       - "#affected+killed+per100000"
 # A fake one where we sum all values in cumulative column across dates which in practice makes no sense
   who_national2:
+    source: "WHO"
     format: "csv"
-    dataset: "coronavirus-covid-19-cases-and-deaths"
     url: "tests/fixtures/WHO-COVID-19-global-data.csv"
     headers: 1
     adm_cols:
@@ -109,6 +113,96 @@ tabular_national:
         output_hxltags:
           - "#affected+infected+2+per100000"
           - "#affected+killed+2+per100000"
+  access:
+    source:
+      "#access+visas+pct": "OCHA"
+      "#access+travel+pct": "OCHA"
+      "#event+year+previous+num": "Aid Workers Database"
+      "#event+year+todate+num": "Aid Workers Database"
+      "#event+year+previous+todate+num": "Aid Workers Database"
+      "#activity+cerf+project+insecurity+pct": "UNCERF"
+      "#activity+cbpf+project+insecurity+pct": "UNCERF"
+      "#population+education": "UNESCO"
+      "default_source": "Multiple sources"
+    source_url:
+      "#event+year+previous+num": "https://data.humdata.org/dataset/security-incidents-on-aid-workers"
+      "#event+year+todate+num": "https://data.humdata.org/dataset/security-incidents-on-aid-workers"
+      "#event+year+previous+todate+num": "https://data.humdata.org/dataset/security-incidents-on-aid-workers"
+      "default_url": "https://docs.google.com/spreadsheets/d/e/2PACX-1vRSzJzuyVt9i_mkRQ2HbxrUl2Lx2VIhkTHQM-laE8NyhQTy70zQTCuFS3PXbhZGAt1l2bkoA4_dAoAP/pub?gid=1565063847&single=true&output=csv"
+    format: "csv"
+    url: "tests/fixtures/Access Indicators  - Data for Dashboard.csv"
+    headers: 1
+    use_hxl: True
+    input_transforms:
+      "#access+visas+pct": "get_numeric_if_possible(#access+visas+pct)"
+      "#access+travel+pct": "get_numeric_if_possible(#access+travel+pct)"
+      "#activity+cerf+project+insecurity+pct": "get_numeric_if_possible(#activity+cerf+project+insecurity+pct)"
+      "#activity+cbpf+project+insecurity+pct": "get_numeric_if_possible(#activity+cbpf+project+insecurity+pct)"
+      "#population+education": "get_numeric_if_possible(#population+education)"
+  sadd:
+    source: "SADD"
+    format: "csv"
+    date: "2020-08-07"
+    url: "tests/fixtures/covid-19-sex-disaggregated-data.csv"
+    headers: 1
+    external_filter:
+      url: "https://github.com/mcarans/hdx-python-scraper/raw/master/tests/fixtures/sadd-countries-to-include.csv"
+      hxltags:
+        - "#country+code+v_iso2"
+    adm_cols:
+      - "Country code"
+    input_cols:
+      - "Cases (% male)"
+      - "Cases (% female)"
+      - "Deaths (% male)"
+      - "Deaths (% female)"
+    input_transforms:
+      "Cases (% male)": "get_numeric_if_possible(Cases (% male))"
+      "Cases (% female)": "get_numeric_if_possible(Cases (% female))"
+      "Deaths (% male)": "get_numeric_if_possible(Deaths (% male))"
+      "Deaths (% female)": "get_numeric_if_possible(Deaths (% female))"
+    process_cols:
+      - "number_format(Cases (% male))"
+      - "number_format(Cases (% female))"
+      - "number_format(Deaths (% male))"
+      - "number_format(Deaths (% female))"
+    output_cols:
+      - "Cases (% male)"
+      - "Cases (% female)"
+      - "Deaths (% male)"
+      - "Deaths (% female)"
+    output_hxltags:
+      - "#affected+infected+m+pct"
+      - "#affected+f+infected+pct"
+      - "#affected+killed+m+pct"
+      - "#affected+f+killed+pct"
+
+tabular_subnational:
+  gam:
+    source: "UNICEF"
+    format: "xlsx"
+    url: "tests/fixtures/unicef_who_wb_global_expanded_databases_severe_wasting.xlsx"
+    sheet: "Trend"
+    headers:
+      - 3
+      - 4
+    flatten:
+      - original: "Region {{1}} Region Name"
+        new: "Region Name"
+      - original: "Region {{1}} Point Estimate"
+        new: "Region Point Estimate"
+    adm_cols:
+      - "ISO"
+      - "Region Name"
+    date_col: "Year*"
+    date_type: "int"
+    input_cols:
+      - "Region Point Estimate"
+    output_cols:
+      - "Malnutrition Estimate"
+    output_hxltags:
+      - "#severity+malnutrition+num+subnational"
+
 
 admin1_info:
   - {pcode: AF01, name: Kabul, iso2: AF, iso3: AFG, country: Afghanistan}

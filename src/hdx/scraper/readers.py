@@ -25,7 +25,10 @@ def get_url(url, **kwargs):
 def read_tabular(downloader, datasetinfo, **kwargs):
     url = get_url(datasetinfo['url'], **kwargs)
     sheet = datasetinfo.get('sheet')
-    headers = datasetinfo['headers']
+    headers = datasetinfo.get('headers')
+    if headers is None:
+        headers = 1
+        datasetinfo['headers'] = 1
     if isinstance(headers, list):
         kwargs['fill_merged_cells'] = True
     format = datasetinfo['format']
@@ -73,8 +76,7 @@ def read_hdx_metadata(datasetinfo, today=None):
                 url = resource['url']
                 break
         if not url:
-            logger.error('Cannot find %s resource in %s!' % (format, dataset_name))
-            return None, None
+            raise ValueError('Cannot find %s resource in %s!' % (format, dataset_name))
         datasetinfo['url'] = url
     if 'date' not in datasetinfo:
         datasetinfo['date'] = get_date_from_dataset_date(dataset, today=today)
@@ -92,6 +94,8 @@ def read_hdx(downloader, datasetinfo, today=None):
 def read(downloader, name, datasetinfo, today=None, **kwargs):
     format = datasetinfo['format']
     if format == 'json':
+        if 'dataset' in datasetinfo:
+            read_hdx_metadata(datasetinfo, today=today)
         iterator = read_json(downloader, datasetinfo, **kwargs)
         headers = None
     elif format == 'ole':

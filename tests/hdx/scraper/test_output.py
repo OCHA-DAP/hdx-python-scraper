@@ -4,8 +4,6 @@ from os.path import join
 
 import pandas
 import pytest
-from hdx.hdx_configuration import Configuration
-from hdx.hdx_locations import Locations
 from hdx.utilities.dateparse import parse_date
 from hdx.utilities.downloader import Download
 from hdx.utilities.path import temp_dir
@@ -18,14 +16,10 @@ from hdx.scraper.nooutput import nooutput
 
 class TestOutput:
     @pytest.fixture(scope='class')
-    def folder(self):
-        return join('tests', 'fixtures')
-
-    @pytest.fixture(scope='class')
     def hxltags(self):
         return {'Country Code': '#country+code', 'Country Name': '#country+name', 'Population': '#population'}
 
-    def test_save(self, configuration, folder, hxltags):
+    def test_save(self, configuration, fixtures, hxltags):
         with temp_dir('TestScraperSave', delete_on_success=True, delete_on_failure=False) as tempdir:
             with Download(user_agent='test') as downloader:
                 tabs = configuration['tabs']
@@ -68,10 +62,10 @@ class TestOutput:
                 result = googletab.get_values(start=(1, 1), end=(3, 3), returnas='matrix')
                 result[2][2] = int(result[2][2])
                 assert result == output
-                assert filecmp.cmp(filepaths[0], join(folder, 'test_tabular_all.json'))
-                assert filecmp.cmp(filepaths[1], join(folder, 'test_tabular_population.json'))
-                assert filecmp.cmp(filepaths[2], join(folder, 'test_tabular_population.json'))
-                assert filecmp.cmp(filepaths[3], join(folder, 'test_tabular_other.json'))
+                assert filecmp.cmp(filepaths[0], join(fixtures, 'test_tabular_all.json'))
+                assert filecmp.cmp(filepaths[1], join(fixtures, 'test_tabular_population.json'))
+                assert filecmp.cmp(filepaths[2], join(fixtures, 'test_tabular_population.json'))
+                assert filecmp.cmp(filepaths[3], join(fixtures, 'test_tabular_other.json'))
 
                 jsonout.json = dict()
                 df = pandas.DataFrame(output[2:], columns=output[0])
@@ -85,17 +79,17 @@ class TestOutput:
                 result = googletab.get_values(start=(1, 1), end=(3, 3), returnas='matrix')
                 result[2][2] = int(result[2][2])
                 assert result == output
-                assert filecmp.cmp(filepaths[0], join(folder, 'test_tabular_all.json'))
-                assert filecmp.cmp(filepaths[1], join(folder, 'test_tabular_population.json'))
-                assert filecmp.cmp(filepaths[2], join(folder, 'test_tabular_population.json'))
-                assert filecmp.cmp(filepaths[3], join(folder, 'test_tabular_other.json'))
+                assert filecmp.cmp(filepaths[0], join(fixtures, 'test_tabular_all.json'))
+                assert filecmp.cmp(filepaths[1], join(fixtures, 'test_tabular_population.json'))
+                assert filecmp.cmp(filepaths[2], join(fixtures, 'test_tabular_population.json'))
+                assert filecmp.cmp(filepaths[3], join(fixtures, 'test_tabular_other.json'))
 
                 df = pandas.DataFrame(output[1:], columns=output[0])
                 googleout.update_tab('national', df, limit=2)
                 result = googletab.get_values(start=(1, 1), end=(3, 3), returnas='matrix')
                 result[2][2] = int(result[2][2])
 
-    def test_jsonoutput(self, configuration, folder, hxltags):
+    def test_jsonoutput(self, configuration, fixtures, hxltags):
         with temp_dir('TestScraperJson', delete_on_success=True, delete_on_failure=False) as tempdir:
             with Download(user_agent='test') as downloader:
                 tabs = configuration['tabs']
@@ -112,3 +106,5 @@ class TestOutput:
                 noout.add_dataframe_rows('test', df, rows[0])
                 jsonout.add_dataframe_rows('test', df, rows[0])
                 assert jsonout.json == {'test_data': [{'#country+code': 'AFG', '#country+name': 'Afghanistan', '#population': 38041754}]}
+
+                noout.add_data_row('test', rows[1])  # doesn't do anything
