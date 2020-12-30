@@ -12,7 +12,7 @@ from hdx.scraper.readers import read
 logger = logging.getLogger(__name__)
 
 
-class jsonoutput:
+class JsonOutput:
     def __init__(self, configuration, updatetabs):
         self.json_configuration = configuration['json']
         self.updatetabs = updatetabs

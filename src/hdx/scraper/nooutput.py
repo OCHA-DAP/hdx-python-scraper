@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-class nooutput:
+class NoOutput:
     def __init__(self, updatetabs):
         self.updatetabs = updatetabs
 

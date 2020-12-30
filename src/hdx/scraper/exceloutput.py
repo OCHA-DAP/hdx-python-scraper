@@ -1,20 +1,42 @@
 # -*- coding: utf-8 -*-
 import logging
+from typing import Dict, List, Union, Optional
 
 from openpyxl import Workbook
 from openpyxl.utils.dataframe import dataframe_to_rows
+from pandas import DataFrame
 
 logger = logging.getLogger()
 
 
-class exceloutput:
+class ExcelOutput:
+    """ExcelOutput class enabling writing to Excel spreadsheets.
+
+    Args:
+        excel_path (str): Path to output spreadsheet
+        tabs (Dict[str, str]): Dictionary of mappings from internal name to spreadsheet tab name
+        updatetabs (List[str]): Tabs to update
+    """
+
     def __init__(self, excel_path, tabs, updatetabs):
+        # type: (str, Dict[str, str], List[str]) -> None
         self.workbook = Workbook()
         self.excel_path = excel_path
         self.tabs = tabs
         self.updatetabs = updatetabs
 
     def update_tab(self, tabname, values, hxltags=None):
+        # type: (str, Union[List, DataFrame], Optional[Dict]) -> None
+        """Update tab with values
+
+        Args:
+            tabname (str): Tab to update
+            values (Union[List, DataFrame]): Either values in a list of dicts or a DataFrame
+            hxltags (Optional[Dict]): HXL tag mapping. Defaults to None.
+
+        Returns:
+            None
+        """
         if tabname not in self.updatetabs:
             return
         sheetname = self.tabs[tabname]
@@ -36,4 +58,10 @@ class exceloutput:
                 tab.append(r)
 
     def save(self):
+        # type: () -> None
+        """Save spreadsheet
+
+        Returns:
+            None
+        """
         self.workbook.save(self.excel_path)

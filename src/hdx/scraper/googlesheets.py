@@ -8,7 +8,7 @@ from google.oauth2 import service_account
 logger = logging.getLogger()
 
 
-class googlesheets:
+class GoogleSheets:
     def __init__(self, configuration, gsheet_auth, updatesheets, tabs, updatetabs):
         info = json.loads(gsheet_auth)
         scopes = ['https://www.googleapis.com/auth/spreadsheets']

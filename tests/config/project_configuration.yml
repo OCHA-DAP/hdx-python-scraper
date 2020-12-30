@@ -13,9 +13,9 @@ json:
       format: "json"
       url: "https://raw.githubusercontent.com/mcarans/hdx-python-scraper/master/tests/fixtures/additional_json.json"
       jsonpath: "[*]"
-  filepath: "test_tabular_all.json"
+  filepath: "test_scraper_all.json"
   additional:
-    - filepath: "test_tabular_population.json"
+    - filepath: "test_scraper_population.json"
       tabs:
         - tab: "national"
           key: "cumulative"
@@ -25,7 +25,7 @@ json:
             - "#country+code"
             - "#country+name"
             - "#population"
-    - filepath: "test_tabular_population_2.json"
+    - filepath: "test_scraper_population_2.json"
       tabs:
         - tab: "national"
           key: "cumulative"
@@ -36,12 +36,12 @@ json:
             - "#country+code"
             - "#country+name"
             - "#population"
-    - filepath: "test_tabular_other.json"
+    - filepath: "test_scraper_other.json"
       remove:
         - "national"
 
 # national
-tabular_national:
+scraper_national:
   population:
     source: "World Bank"
     source_url: "https://data.humdata.org/organization/world-bank-group"
@@ -177,7 +177,7 @@ tabular_national:
       - "#affected+killed+m+pct"
       - "#affected+f+killed+pct"
 
-tabular_subnational:
+scraper_subnational:
   gam:
     source: "UNICEF"
     format: "xlsx"

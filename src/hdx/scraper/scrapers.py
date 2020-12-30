@@ -28,7 +28,7 @@ brackets = r'''
 )'''
 
 
-def _get_tabular(countryiso3s, adminone, level, name, datasetinfo, headers, iterator, population_lookup, retheaders=[list(), list()], retval=list(), sources=list()):
+def _run_scraper(countryiso3s, adminone, level, name, datasetinfo, headers, iterator, population_lookup, retheaders=[list(), list()], retval=list(), sources=list()):
     subsets = datasetinfo.get('subsets')
     if not subsets:
         subsets = [{'filter': datasetinfo.get('filter'), 'input_cols': datasetinfo.get('input_cols', list()),
@@ -259,8 +259,8 @@ def _get_tabular(countryiso3s, adminone, level, name, datasetinfo, headers, iter
     return retheaders, retval, sources
 
 
-def get_tabular(configuration, countryiso3s, adminone, level, maindownloader, basic_auths=dict(), today=None, scrapers=None, population_lookup=None, **kwargs):
-    datasets = configuration['tabular_%s' % level]
+def run_scrapers(configuration, countryiso3s, adminone, level, maindownloader, basic_auths=dict(), today=None, scrapers=None, population_lookup=None, **kwargs):
+    datasets = configuration['scraper_%s' % level]
     retheaders = [list(), list()]
     retval = list()
     sources = list()
@@ -295,7 +295,7 @@ def get_tabular(configuration, countryiso3s, adminone, level, maindownloader, ba
             keys = sort['keys']
             reverse = sort.get('reverse', False)
             iterator = sorted(list(iterator), key=itemgetter(*keys), reverse=reverse)
-        _get_tabular(countryiso3s, adminone, level, name, datasetinfo, headers, iterator, population_lookup, retheaders, retval, sources)
+        _run_scraper(countryiso3s, adminone, level, name, datasetinfo, headers, iterator, population_lookup, retheaders, retval, sources)
         if downloader != maindownloader:
             downloader.close()
         if population_lookup is not None:

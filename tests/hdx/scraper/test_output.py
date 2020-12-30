@@ -8,10 +8,10 @@ from hdx.utilities.dateparse import parse_date
 from hdx.utilities.downloader import Download
 from hdx.utilities.path import temp_dir
 
-from hdx.scraper.exceloutput import exceloutput
-from hdx.scraper.googlesheets import googlesheets
-from hdx.scraper.jsonoutput import jsonoutput
-from hdx.scraper.nooutput import nooutput
+from hdx.scraper.exceloutput import ExcelOutput
+from hdx.scraper.googlesheets import GoogleSheets
+from hdx.scraper.jsonoutput import JsonOutput
+from hdx.scraper.nooutput import NoOutput
 
 
 class TestOutput:
@@ -24,13 +24,13 @@ class TestOutput:
             with Download(user_agent='test') as downloader:
                 tabs = configuration['tabs']
                 sheetname = list(tabs.values())[0]
-                noout = nooutput(tabs)
-                excelout = exceloutput(join(tempdir, 'test_output.xlsx'), tabs, tabs)
+                noout = NoOutput(tabs)
+                excelout = ExcelOutput(join(tempdir, 'test_output.xlsx'), tabs, tabs)
                 gsheet_auth = getenv('GSHEET_AUTH')
                 if not gsheet_auth:
                     raise ValueError('No gsheet authorisation supplied!')
-                googleout = googlesheets(configuration, gsheet_auth, None, tabs, tabs)
-                jsonout = jsonoutput(configuration, tabs)
+                googleout = GoogleSheets(configuration, gsheet_auth, None, tabs, tabs)
+                jsonout = JsonOutput(configuration, tabs)
                 output = [list(hxltags.keys()), list(hxltags.values()), ['AFG', 'Afghanistan', 38041754]]
 
                 # won't do anything as wrong tab name
@@ -62,10 +62,10 @@ class TestOutput:
                 result = googletab.get_values(start=(1, 1), end=(3, 3), returnas='matrix')
                 result[2][2] = int(result[2][2])
                 assert result == output
-                assert filecmp.cmp(filepaths[0], join(fixtures, 'test_tabular_all.json'))
-                assert filecmp.cmp(filepaths[1], join(fixtures, 'test_tabular_population.json'))
-                assert filecmp.cmp(filepaths[2], join(fixtures, 'test_tabular_population.json'))
-                assert filecmp.cmp(filepaths[3], join(fixtures, 'test_tabular_other.json'))
+                assert filecmp.cmp(filepaths[0], join(fixtures, 'test_scraper_all.json'))
+                assert filecmp.cmp(filepaths[1], join(fixtures, 'test_scraper_population.json'))
+                assert filecmp.cmp(filepaths[2], join(fixtures, 'test_scraper_population.json'))
+                assert filecmp.cmp(filepaths[3], join(fixtures, 'test_scraper_other.json'))
 
                 jsonout.json = dict()
                 df = pandas.DataFrame(output[2:], columns=output[0])
@@ -79,10 +79,10 @@ class TestOutput:
                 result = googletab.get_values(start=(1, 1), end=(3, 3), returnas='matrix')
                 result[2][2] = int(result[2][2])
                 assert result == output
-                assert filecmp.cmp(filepaths[0], join(fixtures, 'test_tabular_all.json'))
-                assert filecmp.cmp(filepaths[1], join(fixtures, 'test_tabular_population.json'))
-                assert filecmp.cmp(filepaths[2], join(fixtures, 'test_tabular_population.json'))
-                assert filecmp.cmp(filepaths[3], join(fixtures, 'test_tabular_other.json'))
+                assert filecmp.cmp(filepaths[0], join(fixtures, 'test_scraper_all.json'))
+                assert filecmp.cmp(filepaths[1], join(fixtures, 'test_scraper_population.json'))
+                assert filecmp.cmp(filepaths[2], join(fixtures, 'test_scraper_population.json'))
+                assert filecmp.cmp(filepaths[3], join(fixtures, 'test_scraper_other.json'))
 
                 df = pandas.DataFrame(output[1:], columns=output[0])
                 googleout.update_tab('national', df, limit=2)
@@ -93,8 +93,8 @@ class TestOutput:
         with temp_dir('TestScraperJson', delete_on_success=True, delete_on_failure=False) as tempdir:
             with Download(user_agent='test') as downloader:
                 tabs = configuration['tabs']
-                noout = nooutput(tabs)
-                jsonout = jsonoutput(configuration, tabs)
+                noout = NoOutput(tabs)
+                jsonout = JsonOutput(configuration, tabs)
                 rows = [{'Country Code': '#country+code', 'Country Name': '#country+name', 'Population': '#population'}, 
                         {'Country Code': 'AFG', 'Country Name': 'Afghanistan', 'Population': 38041754}]
                 noout.add_data_rows_by_key('test', 'AFG', rows, hxltags)

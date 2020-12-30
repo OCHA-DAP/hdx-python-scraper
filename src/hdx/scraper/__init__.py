@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 import re
+from datetime import datetime
+from typing import Tuple, Optional, Any, Dict, Union, List
 
 from hdx.data.dataset import Dataset
 
@@ -7,6 +9,15 @@ template = re.compile('{{.*?}}')
 
 
 def match_template(input):
+    # type: (str) -> Tuple[Optional[str], Optional[str]]
+    """Try to match {{XXX}} in input string
+
+    Args:
+        input (str): String in which to look for template
+
+    Returns:
+        Tuple[Optional[str], Optional[str]]: (Matched string with brackets, matched string without brackets)
+    """
     match = template.search(input)
     if match:
         template_string = match.group()
@@ -15,6 +26,16 @@ def match_template(input):
 
 
 def get_rowval(row, valcol):
+    # type: (Dict, str) -> Any
+    """Get the value of a particular column in a row expanding any template it contains
+
+    Args:
+        row (Dict): Dictionary
+        valcol (str): Column which may be a string in which to look for template
+
+    Returns:
+        Any: Value of column or template
+    """
     if '{{' in valcol:
         repvalcol = valcol
         for match in template.finditer(valcol):
@@ -30,6 +51,16 @@ def get_rowval(row, valcol):
 
 
 def get_date_from_dataset_date(dataset, today=None):
+    # type: (Union[Dataset, str], datetime) -> Optional[str]
+    """Return the date or end date of a dataset
+
+    Args:
+        dataset (Union[Dataset, str]): Dataset object or name or id of dataset
+        today (datetime): Date to use for today. Defaults to None (datetime.now())
+
+    Returns:
+        Any: Value of column or template
+    """
     if isinstance(dataset, str):
         dataset = Dataset.read_from_hdx(dataset)
     if today is None:
@@ -43,6 +74,17 @@ def get_date_from_dataset_date(dataset, today=None):
 
 
 def add_population(population_lookup, headers, columns):
+    # type: (Dict, List[str], List[Dict]) -> None
+    """Add population data to dictionary
+
+    Args:
+        population_lookup (Dict): Population dictionary
+        headers (List[str]): List of headers
+        columns (List[Dict]): List of columns
+
+    Returns:
+        None
+    """
     if population_lookup is None:
         return
     try:
