@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
 import logging
+from datetime import datetime
 from os.path import join
+from typing import Any, Dict, Tuple, List, Iterator, Union, Optional
 
 from hdx.data.dataset import Dataset
+from hdx.utilities.downloader import Download
 from hdx.utilities.path import temp_dir
 from jsonpath_ng import parse
 from olefile import olefile
@@ -13,6 +16,16 @@ logger = logging.getLogger(__name__)
 
 
 def get_url(url, **kwargs):
+    # type: (str, Any) -> str
+    """Get url from a string replacing any template arguments
+
+    Args:
+        url (str): Url to read
+        **kwargs: Variables to use when evaluating template arguments
+
+    Returns:
+        str: Url with any template arguments replaced
+    """
     for kwarg in kwargs:
         exec('%s="%s"' % (kwarg, kwargs[kwarg]))
     template_string, match_string = match_template(url)
@@ -23,6 +36,17 @@ def get_url(url, **kwargs):
 
 
 def read_tabular(downloader, datasetinfo, **kwargs):
+    # type: (Download, Dict, Any) -> Tuple[List[str],Iterator[Union[List,Dict]]]
+    """Read data from tabular source eg. csv, xls, xlsx
+
+    Args:
+        downloader (Download): Download object for downloading files
+        datasetinfo (Dict): Dictionary of information about dataset
+        **kwargs: Variables to use when evaluating template arguments
+
+    Returns:
+        Tuple[List[str],Iterator[Union[List,Dict]]]: Tuple (headers, iterator where each row is a list or dictionary)
+    """
     url = get_url(datasetinfo['url'], **kwargs)
     sheet = datasetinfo.get('sheet')
     headers = datasetinfo.get('headers')
@@ -39,6 +63,17 @@ def read_tabular(downloader, datasetinfo, **kwargs):
 
 
 def read_ole(downloader, datasetinfo, **kwargs):
+    # type: (Download, Dict, Any) -> Tuple[List[str],Iterator[Union[List,Dict]]]
+    """Read data from OLE Excel source
+
+    Args:
+        downloader (Download): Download object for downloading files
+        datasetinfo (Dict): Dictionary of information about dataset
+        **kwargs: Variables to use when evaluating template arguments
+
+    Returns:
+        Tuple[List[str],Iterator[Union[List,Dict]]]: Tuple (headers, iterator where each row is a list or dictionary)
+    """
     url = get_url(datasetinfo['url'], **kwargs)
     with temp_dir('ole') as folder:
         path = downloader.download_file(url, folder, 'olefile')
@@ -53,6 +88,17 @@ def read_ole(downloader, datasetinfo, **kwargs):
 
 
 def read_json(downloader, datasetinfo, **kwargs):
+    # type: (Download, Dict, Any) -> Optional[Iterator[Union[List,Dict]]]
+    """Read data from json source allowing for JSONPath expressions
+
+    Args:
+        downloader (Download): Download object for downloading JSON
+        datasetinfo (Dict): Dictionary of information about dataset
+        **kwargs: Variables to use when evaluating template arguments
+
+    Returns:
+        Optional[Iterator[Union[List,Dict]]]: Iterator or None
+    """
     url = get_url(datasetinfo['url'], **kwargs)
     response = downloader.download(url)
     json = response.json()
@@ -66,6 +112,16 @@ def read_json(downloader, datasetinfo, **kwargs):
 
 
 def read_hdx_metadata(datasetinfo, today=None):
+    # type: (Dict, Optional[datetime]) -> None
+    """Read metadata from HDX dataset and add to input dictionary
+
+    Args:
+        datasetinfo (Dict): Dictionary of information about dataset
+        today (Optional[datetime]): Value to use for today. Defaults to None (datetime.now()).
+
+    Returns:
+        None
+    """
     dataset_name = datasetinfo['dataset']
     dataset = Dataset.read_from_hdx(dataset_name)
     format = datasetinfo['format']
@@ -87,11 +143,34 @@ def read_hdx_metadata(datasetinfo, today=None):
 
 
 def read_hdx(downloader, datasetinfo, today=None):
+    # type: (Download, Dict, Optional[datetime]) -> Tuple[List[str],Iterator[Union[List,Dict]]]
+    """Read data and metadata from HDX dataset
+
+    Args:
+        downloader (Download): Download object for downloading files
+        datasetinfo (Dict): Dictionary of information about dataset
+        **kwargs: Variables to use when evaluating template arguments
+
+    Returns:
+        Tuple[List[str],Iterator[Union[List,Dict]]]: Tuple (headers, iterator where each row is a list or dictionary)
+    """
     read_hdx_metadata(datasetinfo, today=today)
     return read_tabular(downloader, datasetinfo)
 
 
-def read(downloader, name, datasetinfo, today=None, **kwargs):
+def read(downloader, datasetinfo, today=None, **kwargs):
+    # type: (Download, Dict, Optional[datetime], Any) -> Tuple[List[str],Iterator[Union[List,Dict]]]
+    """Read data and metadata from HDX dataset
+
+    Args:
+        downloader (Download): Download object for downloading files
+        datasetinfo (Dict): Dictionary of information about dataset
+        today (Optional[datetime]): Value to use for today. Defaults to None (datetime.now()).
+        **kwargs: Variables to use when evaluating template arguments in urls
+
+    Returns:
+        Tuple[List[str],Iterator[Union[List,Dict]]]: Tuple (headers, iterator where each row is a list or dictionary)
+    """
     format = datasetinfo['format']
     if format == 'json':
         if 'dataset' in datasetinfo:
@@ -106,5 +185,5 @@ def read(downloader, name, datasetinfo, today=None, **kwargs):
         else:
             headers, iterator = read_tabular(downloader, datasetinfo, **kwargs)
     else:
-        raise ValueError('Invalid format %s for %s!' % (format, name))
+        raise ValueError('Invalid format %s for %s!' % (format, datasetinfo['name']))
     return headers, iterator

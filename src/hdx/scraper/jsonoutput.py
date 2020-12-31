@@ -1,10 +1,14 @@
 # -*- coding: utf-8 -*-
 import logging
+from datetime import datetime
 from os.path import join
+from typing import Union, List, Dict, Optional, Any
 
 from hdx.utilities.dictandlist import dict_of_lists_add
+from hdx.utilities.downloader import Download
 from hdx.utilities.saver import save_json
 from hdx.utilities.text import get_numeric_if_possible
+from pandas import DataFrame
 
 from hdx.scraper import match_template
 from hdx.scraper.readers import read
@@ -13,21 +17,61 @@ logger = logging.getLogger(__name__)
 
 
 class JsonOutput:
+    """JsonOutput class enabling writing to JSON files.
+
+    Args:
+        configuration (Dict): Configuration for Google Sheets
+        updatetabs (List[str]): Tabs to update
+    """
+
     def __init__(self, configuration, updatetabs):
         self.json_configuration = configuration['json']
         self.updatetabs = updatetabs
         self.json = dict()
 
-    def add_data_row(self, name, row):
-        dict_of_lists_add(self.json, '%s_data' % name, row)
+    def add_data_row(self, key, row):
+        # type: (str, Dict) -> None
+        """Add row to JSON under a key
 
-    def add_dataframe_rows(self, name, df, hxltags=None):
+        Args:
+            key (str): Key in JSON to update
+            rows (List[Dict]): List of dictionaries
+
+        Returns:
+            None
+        """
+        dict_of_lists_add(self.json, '%s_data' % key, row)
+
+    def add_dataframe_rows(self, key, df, hxltags=None):
+        # type: (str, DataFrame, Optional[Dict]) -> None
+        """Add rows from dataframe under a key
+
+        Args:
+            key (str): Key in JSON to update
+            df (DataFrame): Dataframe containing rows
+            hxltags (Optional[Dict]): HXL tag mapping. Defaults to None.
+
+        Returns:
+            None
+        """
         if hxltags:
             df = df.rename(columns=hxltags)
-        self.json['%s_data' % name] = df.to_dict(orient='records')
+        self.json['%s_data' % key] = df.to_dict(orient='records')
 
-    def add_data_rows_by_key(self, name, countryiso, rows, hxltags=None):
-        fullname = '%s_data' % name
+    def add_data_rows_by_key(self, key, countryiso, rows, hxltags=None):
+        # type: (str, str, List[Dict], Optional[Dict]) -> None
+        """Add rows under both a key and an ISO 3 country code subkey
+
+        Args:
+            key (str): Key in JSON to update
+            countryiso (str): Country to use as subkey
+            rows (List[Dict]): List of dictionaries
+            hxltags (Optional[Dict]): HXL tag mapping. Defaults to None.
+
+        Returns:
+            None
+        """
+        fullname = '%s_data' % key
         jsondict = self.json.get(fullname, dict())
         jsondict[countryiso] = list()
         for row in rows:
@@ -41,6 +85,16 @@ class JsonOutput:
         self.json[fullname] = jsondict
 
     def generate_json_from_list(self, key, rows):
+        # type: (str, List[Dict]) -> None
+        """Generate JSON from key and rows list
+
+        Args:
+            key (str): Key in JSON to update
+            rows (List[Dict]): List of dictionaries
+
+        Returns:
+            None
+        """
         hxltags = rows[1]
         for row in rows[2:]:
             newrow = dict()
@@ -51,8 +105,19 @@ class JsonOutput:
                 newrow[hxltag] = str(value)
             self.add_data_row(key, newrow)
 
-    def generate_json_from_df(self, key, rows, hxltags):
-        for i,row in rows.iterrows():
+    def generate_json_from_df(self, key, df, hxltags):
+        # type: (str, DataFrame, Optional[Dict]) -> None
+        """Generate JSON from key and dataframe
+
+        Args:
+            key (str): Key in JSON to update
+            df (DataFrame): Dataframe containing rows
+            hxltags (Optional[Dict]): HXL tag mapping. Defaults to None.
+
+        Returns:
+            None
+        """
+        for i, row in df.iterrows():
             newrow = dict()
             row = row.to_dict()
             for i, hxltag in enumerate(hxltags):
@@ -63,6 +128,17 @@ class JsonOutput:
             self.add_data_row(key, newrow)
 
     def update_tab(self, tabname, values, hxltags=None):
+        # type: (str, Union[List, DataFrame], Optional[Dict]) -> None
+        """Update tab with values
+
+        Args:
+            tabname (str): Tab to update
+            values (Union[List, DataFrame]): Either values in a list of dicts or a DataFrame
+            hxltags (Optional[Dict]): HXL tag mapping. Defaults to None.
+
+        Returns:
+            None
+        """
         if tabname not in self.updatetabs:
             return
         if isinstance(values, list):
@@ -72,12 +148,22 @@ class JsonOutput:
             self.generate_json_from_df(tabname, values, hxltags)
 
     def add_additional_json(self, downloader, today=None):
+        # type: (Download, Optional[datetime]) -> None
+        """Download JSON files and add them under keys defined in the configuration
+
+        Args:
+            downloader (Download): Download object for downloading JSON
+            today (Optional[datetime]): Value to use for today. Defaults to None (datetime.now()).
+
+        Returns:
+            None
+        """
         for datasetinfo in self.json_configuration.get('additional_json', list()):
-            name = datasetinfo['name']
-            headers, iterator = read(downloader, name, datasetinfo, today=today)
+            headers, iterator = read(downloader, datasetinfo, today=today)
             hxlrow = next(iterator)
             if not isinstance(hxlrow, dict):
                 hxlrow = hxlrow.value
+            name = datasetinfo['name']
             for row in iterator:
                 newrow = dict()
                 if not isinstance(row, dict):
@@ -89,6 +175,16 @@ class JsonOutput:
                 self.add_data_row(name, newrow)
 
     def save(self, folder=None, **kwargs):
+        # type: (str, Any) -> List[str]
+        """Save JSON file and any addition subsets of that JSON defined in the additional configuration
+
+        Args:
+            folder (Optional[str]): Key in JSON to update
+            **kwargs: Variables to use when evaluating template arguments
+
+        Returns:
+            List[str]: List of file paths
+        """
         filepaths = list()
         filepath = self.json_configuration['filepath']
         if folder:

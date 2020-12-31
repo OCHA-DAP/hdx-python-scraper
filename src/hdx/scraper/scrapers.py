@@ -2,8 +2,10 @@
 import logging
 from datetime import datetime
 from operator import itemgetter
+from typing import Dict, Any, Optional, List, Tuple
 
 import regex
+from hdx.location.adminone import AdminOne
 
 from hdx.utilities.dateparse import parse_date, get_datetime_from_timestamp
 from hdx.utilities.dictandlist import dict_of_lists_add
@@ -20,7 +22,7 @@ brackets = r'''
 (?<rec> #capturing group rec
  \( #open parenthesis
  (?: #non-capturing group
-  [^()]++ #anyting but parenthesis one or more times without backtracking
+  [^()]++ #anything but parenthesis one or more times without backtracking
   | #or
    (?&rec) #recursive substitute of group rec
  )*
@@ -28,7 +30,26 @@ brackets = r'''
 )'''
 
 
-def _run_scraper(countryiso3s, adminone, level, name, datasetinfo, headers, iterator, population_lookup, retheaders=[list(), list()], retval=list(), sources=list()):
+def _run_scraper(countryiso3s, adminone, level, name, datasetinfo, headers, iterator, population_lookup, retheaders=[list(), list()], retvalues=list(), sources=list()):
+    # type: (List[str], AdminOne, str, str, Dict, List[str], Iterator[Union[List,Dict]], Dict[str,int], List, List, List) -> None
+    """Run one mini scraper.
+
+    Args:
+        countryiso3s (List[str]): List of ISO3 country codes to process
+        adminone (AdminOne): AdminOne object from HDX Python Country library that handles processing of admin level 1
+        level (str): Can be global, national or subnational
+        name (str): Name of mini scraper
+        datasetinfo (Dict): Dictionary of information about dataset
+        headers (List[str]): Row headers
+        iterator (Iterator[Union[List,Dict]]): Rows
+        population_lookup (Dict[str,int]): Dictionary from admin code to population
+        retheaders (List): Headers to output. Defaults to [list(), list()].
+        retvalues (List): Values to output. Defaults to list().
+        sources (List): Sources to output. Defaults to list().
+
+    Returns:
+        Tuple[Optional[str], Optional[List[bool]]]: (admin name, should process subset list) or (None, None)
+    """
     subsets = datasetinfo.get('subsets')
     if not subsets:
         subsets = [{'filter': datasetinfo.get('filter'), 'input_cols': datasetinfo.get('input_cols', list()),
@@ -91,11 +112,11 @@ def _run_scraper(countryiso3s, adminone, level, name, datasetinfo, headers, iter
             dict_of_lists_add(valuedicts, subset['filter'], dict())
 
     def add_row(row):
-        adm, indicators_process = rowparser.do_set_value(row, name)
+        adm, should_process_subset = rowparser.parse(row, name)
         if not adm:
             return
         for i, subset in enumerate(subsets):
-            if not indicators_process[i]:
+            if not should_process_subset[i]:
                 continue
             filter = subset['filter']
             input_ignore_vals = subset.get('input_ignore_vals', list())
@@ -212,7 +233,7 @@ def _run_scraper(countryiso3s, adminone, level, name, datasetinfo, headers, iter
                             newvaldicts[i][adm] = ''
                     else:
                         newvaldicts[i][adm] = ''
-            retval.extend(newvaldicts)
+            retvalues.extend(newvaldicts)
         elif sum_cols:
             for sum_col in sum_cols:
                 formula = sum_col['formula']
@@ -245,9 +266,9 @@ def _run_scraper(countryiso3s, adminone, level, name, datasetinfo, headers, iter
                     except (ValueError, TypeError, KeyError):
                         val = ''
                     newvaldict[adm] = val
-                retval.append(newvaldict)
+                retvalues.append(newvaldict)
         else:
-            retval.extend(valdicts)
+            retvalues.extend(valdicts)
         source = datasetinfo['source']
         if isinstance(source, str):
             source = {'default_source': source}
@@ -256,13 +277,30 @@ def _run_scraper(countryiso3s, adminone, level, name, datasetinfo, headers, iter
             source_url = {'default_url': source_url}
         sources.extend([(hxltag, date, source.get(hxltag, source['default_source']), source_url.get(hxltag, source_url['default_url'])) for hxltag in output_hxltags])
     logger.info('Processed %s' % name)
-    return retheaders, retval, sources
 
 
 def run_scrapers(configuration, countryiso3s, adminone, level, maindownloader, basic_auths=dict(), today=None, scrapers=None, population_lookup=None, **kwargs):
+    # type: (Dict, List[str], AdminOne, str, Download, Dict[str,str], Optional[datetime], Optional[List[str]], Dict[str,int], Any) -> Tuple[List,List,List]
+    """Runs all mini scrapers given in configuration and returns headers, values and sources.
+
+    Args:
+        configuration (Dict): Configuration for mini scrapers
+        countryiso3s (List[str]): List of ISO3 country codes to process
+        adminone (AdminOne): AdminOne object from HDX Python Country library that handles processing of admin level 1
+        level (str): Can be global, national or subnational
+        maindownloader (Download): Download object for downloading files
+        basic_auths (Dict[str,str]): Dictionary of basic authentication information
+        today (Optional[datetime]): Value to use for today. Defaults to None (datetime.now()).
+        scrapers (Optional[List[str]])): List of mini scraper names to process
+        population_lookup (Dict[str,int]): Dictionary from admin code to population
+        **kwargs: Variables to use when evaluating template arguments in urls
+
+    Returns:
+        Tuple[List,List,List]: Output headers, values and sources
+    """
     datasets = configuration['scraper_%s' % level]
     retheaders = [list(), list()]
-    retval = list()
+    retvalues = list()
     sources = list()
     now = datetime.now()
     for name in datasets:
@@ -279,7 +317,8 @@ def run_scrapers(configuration, countryiso3s, adminone, level, maindownloader, b
         else:
             downloader = Download(basic_auth=basic_auth, rate_limit={'calls': 1, 'period': 0.1})
         datasetinfo = datasets[name]
-        headers, iterator = read(downloader, name, datasetinfo, today=today, **kwargs)
+        datasetinfo['name'] = name
+        headers, iterator = read(downloader, datasetinfo, today=today, **kwargs)
         if 'source_url' not in datasetinfo:
             datasetinfo['source_url'] = datasetinfo['url']
         if 'date' not in datasetinfo or datasetinfo.get('force_date_today', False):
@@ -295,9 +334,9 @@ def run_scrapers(configuration, countryiso3s, adminone, level, maindownloader, b
             keys = sort['keys']
             reverse = sort.get('reverse', False)
             iterator = sorted(list(iterator), key=itemgetter(*keys), reverse=reverse)
-        _run_scraper(countryiso3s, adminone, level, name, datasetinfo, headers, iterator, population_lookup, retheaders, retval, sources)
+        _run_scraper(countryiso3s, adminone, level, name, datasetinfo, headers, iterator, population_lookup, retheaders, retvalues, sources)
         if downloader != maindownloader:
             downloader.close()
         if population_lookup is not None:
-            add_population(population_lookup, retheaders, retval)
-    return retheaders, retval, sources
+            add_population(population_lookup, retheaders, retvalues)
+    return retheaders, retvalues, sources

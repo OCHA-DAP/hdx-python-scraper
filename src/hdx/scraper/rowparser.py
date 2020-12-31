@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 import copy
 from datetime import datetime
+from typing import List, Dict, Tuple, Iterator, Union, Generator, Optional
 
 import hxl
+from hdx.location.adminone import AdminOne
 from hdx.location.country import Country
 from hdx.utilities.dateparse import parse_date
 from hdx.utilities.dictandlist import dict_of_lists_add
@@ -11,7 +13,20 @@ from hdx.scraper import match_template
 
 
 class RowParser(object):
+    """RowParser class for parsing each row.
+
+    Args:
+        countryiso3s (List[str]): List of ISO3 country codes to process
+        adminone (AdminOne): AdminOne object from HDX Python Country library that handles processing of admin level 1
+        level (str): Can be global, national or subnational
+        datasetinfo (Dict): Dictionary of information about dataset
+        headers (List[str]): Row headers
+        subsets (List[Dict]): List of subset definitions
+        maxdateonly (bool): Whether to only take the most recent date. Defaults to True.
+    """
+
     def __init__(self, countryiso3s, adminone, level, datasetinfo, headers, subsets, maxdateonly=True):
+        # type: (List[str], AdminOne, str, Dict, List[str], List[Dict], bool) -> None
         if isinstance(level, str):
             if level == 'global':
                 level = None
@@ -51,9 +66,18 @@ class RowParser(object):
         self.flatteninfo = datasetinfo.get('flatten')
         self.headers = headers
         self.filters = dict()
-        self.get_external_filter(datasetinfo)
+        self.read_external_filter(datasetinfo)
 
-    def get_external_filter(self, datasetinfo):
+    def read_external_filter(self, datasetinfo):
+        # type: (Dict) -> Tuple[List[str],Iterator[Union[List,Dict]]]
+        """Read filter list from external url poitning to a HXLated file
+
+        Args:
+            datasetinfo (Dict): Dictionary of information about dataset
+
+        Returns:
+            None
+        """
         external_filter = datasetinfo.get('external_filter')
         if not external_filter:
             return
@@ -65,6 +89,15 @@ class RowParser(object):
                     dict_of_lists_add(self.filters, hxltag.header, row.get('#country+code'))
 
     def flatten(self, row):
+        # type: (Dict) -> Generator[Dict]
+        """Flatten a wide spreadsheet format into a long one
+
+        Args:
+            row (Dict): Row to flatten
+
+        Returns:
+            Generator[Dict]: Flattened row(s)
+        """
         if not self.flatteninfo:
             yield row
             return
@@ -91,9 +124,24 @@ class RowParser(object):
             yield newrow
 
     def get_maxdate(self):
+        # type: () -> datetime
+        """Get the most recent date of the rows so far
+
+        Returns:
+            datetime: Most recent date in processed rows
+        """
         return self.maxdate
 
     def filtered(self, row):
+        # type: (Dict) -> bool
+        """Check if the row should be filtered out
+
+        Args:
+            row (Dict): Row to check for filters
+
+        Returns:
+            bool: Whether row is filtered out or not
+        """
         for header in self.filters:
             if header not in row:
                 continue
@@ -101,7 +149,17 @@ class RowParser(object):
                 return True
         return False
 
-    def do_set_value(self, row, scrapername=None):
+    def parse(self, row, scrapername=None):
+        # type: (Dict, str) -> Tuple[Optional[str], Optional[List[bool]]]
+        """Parse row checking for valid admin information and if the row should be filtered out in each subset given
+        its definition.
+
+        Args:
+            row (Dict): Row to parse
+
+        Returns:
+            Tuple[Optional[str], Optional[List[bool]]]: (admin name, should process subset list) or (None, None)
+        """
         if self.filtered(row):
             return None, None
 
@@ -142,7 +200,7 @@ class RowParser(object):
             if not adms[i]:
                 return None, None
 
-        indicators_process = list()
+        should_process_subset = list()
         for subset in self.subsets:
             filter = subset['filter']
             process = True
@@ -155,7 +213,7 @@ class RowParser(object):
                         match = False
                         break
                 process = match
-            indicators_process.append(process)
+            should_process_subset.append(process)
 
         if self.datecol:
             if isinstance(self.datecol, list):
@@ -172,7 +230,7 @@ class RowParser(object):
             if self.date_condition:
                 if eval(self.date_condition) is False:
                     return None, None
-            for i, process in enumerate(indicators_process):
+            for i, process in enumerate(should_process_subset):
                 if not process:
                     continue
                 if date > self.maxdate:
@@ -180,7 +238,7 @@ class RowParser(object):
                 if self.level is None:
                     if self.maxdateonly:
                         if date < self.maxdates[i]:
-                            indicators_process[i] = False
+                            should_process_subset[i] = False
                         else:
                             self.maxdates[i] = date
                     else:
@@ -188,11 +246,11 @@ class RowParser(object):
                 else:
                     if self.maxdateonly:
                         if date < self.maxdates[i][adms[self.level]]:
-                            indicators_process[i] = False
+                            should_process_subset[i] = False
                         else:
                             self.maxdates[i][adms[self.level]] = date
                     else:
                         self.maxdates[i][adms[self.level]] = date
         if self.level is None:
-            return 'global', indicators_process
-        return adms[self.level], indicators_process
+            return 'global', should_process_subset
+        return adms[self.level], should_process_subset
