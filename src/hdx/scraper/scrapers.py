@@ -2,7 +2,7 @@
 import logging
 from datetime import datetime
 from operator import itemgetter
-from typing import Dict, Any, Optional, List, Tuple
+from typing import Dict, Any, Optional, List, Tuple, Iterator, Union
 
 import regex
 from hdx.location.adminone import AdminOne

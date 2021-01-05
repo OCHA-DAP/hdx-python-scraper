@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
-from typing import List, Union, Optional, Dict
+from typing import List, Union, Optional, Dict, Any
 
 from hdx.utilities.downloader import Download
 from pandas import DataFrame
