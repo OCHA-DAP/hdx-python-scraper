@@ -5,6 +5,12 @@ sources.
 
 If you have humanitarian-related data, please upload your datasets to HDX.
 
+## Usage
+
+The library has detailed API documentation which can be found
+here: <http://ocha-dap.github.io/hdx-python-scraper/>. The code for the
+library is here: <https://github.com/ocha-dap/hdx-python-scraper>.
+
 ## Scraper Framework Configuration
 
 The following is an example of how the framework is set up:
