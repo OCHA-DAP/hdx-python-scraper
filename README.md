@@ -1,7 +1,7 @@
 [![Build Status](https://github.com/OCHA-DAP/hdx-python-scraper/workflows/build/badge.svg)](https://github.com/OCHA-DAP/hdx-python-scraper/actions?query=workflow%3Abuild) [![Coverage Status](https://coveralls.io/repos/github/OCHA-DAP/hdx-python-scraper/badge.svg?branch=master&ts=1)](https://coveralls.io/github/OCHA-DAP/hdx-python-scraper?branch=master)
 
 The HDX Python Scraper Library is designed to enable you to easily develop code that assembles data from one or more 
-sources.
+sources. 
 
 If you have humanitarian-related data, please upload your datasets to HDX.
 
@@ -10,6 +10,10 @@ If you have humanitarian-related data, please upload your datasets to HDX.
 The library has detailed API documentation which can be found
 here: <http://ocha-dap.github.io/hdx-python-scraper/>. The code for the
 library is here: <https://github.com/ocha-dap/hdx-python-scraper>.
+
+To use the optional functions for outputting data from Pandas to JSON, Excel etc., install with:
+
+    pip install hdx-python-scraper[pandas]
 
 ## Scraper Framework Configuration
 

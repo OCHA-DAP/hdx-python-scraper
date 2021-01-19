@@ -10,6 +10,8 @@ requirements = ['hdx-python-api>=4.8.5',
                 'pygsheets',
                 'regex']
 
+extras_requirements = {'pandas': 'pandas'}
+
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Developers",
@@ -43,5 +45,6 @@ setup(
     zip_safe=True,
     classifiers=classifiers,
     install_requires=requirements,
+    extras_requires=extras_requirements,
     cmdclass={'clean': CleanCommand, 'package': PackageCommand, 'publish': PublishCommand},
 )
