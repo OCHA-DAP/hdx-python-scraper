@@ -45,6 +45,6 @@ setup(
     zip_safe=True,
     classifiers=classifiers,
     install_requires=requirements,
-    extras_requires=extras_requirements,
+    extras_require=extras_requirements,
     cmdclass={'clean': CleanCommand, 'package': PackageCommand, 'publish': PublishCommand},
 )
