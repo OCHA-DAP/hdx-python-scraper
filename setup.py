@@ -10,7 +10,7 @@ requirements = ['hdx-python-api>=4.8.5',
                 'pygsheets',
                 'regex']
 
-extras_requirements = {'pandas': 'pandas'}
+extras_requirements = {'pandas': ['pandas']}
 
 classifiers = [
     "Development Status :: 5 - Production/Stable",
