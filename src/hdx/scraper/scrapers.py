@@ -105,6 +105,15 @@ def _run_scraper(countryiso3s, adminone, level, name, datasetinfo, headers, iter
     else:
         hxlrow = None
 
+    sort = datasetinfo.get('sort')
+    if sort:
+        keys = sort['keys']
+        reverse = sort.get('reverse', False)
+        if hxlrow:
+            headerrow = {v: k for k, v in hxlrow.items()}
+            keys = [headerrow[key] for key in keys]
+        iterator = sorted(list(iterator), key=itemgetter(*keys), reverse=reverse)
+
     rowparser = RowParser(countryiso3s, adminone, level, datasetinfo, headers, subsets)
     valuedicts = dict()
     for subset in subsets:
@@ -329,11 +338,6 @@ def run_scrapers(configuration, countryiso3s, adminone, level, maindownloader, b
                 else:
                     today_str = now.strftime('%Y-%m-%d')
             datasetinfo['date'] = today_str
-        sort = datasetinfo.get('sort')
-        if sort:
-            keys = sort['keys']
-            reverse = sort.get('reverse', False)
-            iterator = sorted(list(iterator), key=itemgetter(*keys), reverse=reverse)
         _run_scraper(countryiso3s, adminone, level, name, datasetinfo, headers, iterator, population_lookup, retheaders, retvalues, sources)
         if downloader != maindownloader:
             downloader.close()

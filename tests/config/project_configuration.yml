@@ -133,6 +133,9 @@ scraper_national:
     url: "tests/fixtures/Access Indicators  - Data for Dashboard.csv"
     headers: 1
     use_hxl: True
+    sort:
+      keys:
+        - "#country+code"
     input_transforms:
       "#access+visas+pct": "get_numeric_if_possible(#access+visas+pct)"
       "#access+travel+pct": "get_numeric_if_possible(#access+travel+pct)"
