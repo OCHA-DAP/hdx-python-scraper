@@ -1,6 +1,6 @@
-hdx-python-api==4.8.8
+hdx-python-api==4.9.0
 olefile==0.47.dev4
-pandas==1.2.1
-pygsheets==2.0.4
+pandas==1.2.2
+pygsheets==2.0.5
 regex==2020.11.13
 
