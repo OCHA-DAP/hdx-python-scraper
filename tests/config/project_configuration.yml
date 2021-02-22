@@ -180,6 +180,66 @@ scraper_national:
       - "#affected+killed+m+pct"
       - "#affected+f+killed+pct"
 
+scraper_global:
+  covax:
+    source: "covax"
+    format: "csv"
+    date: "2020-08-07"
+    url: "tests/fixtures/COVID-19 Vaccine Doses in HRP Countries - Data HXL.csv"
+    headers: 1
+    use_hxl: True
+    adm_cols:
+      - "#country+code"
+    input_cols:
+      - "#capacity+covax+total"
+      - "#capacity+covax+delivered+doses"
+      - "#capacity+others+delivered+doses"
+      - "#capacity+delivered+total"
+      - "#capacity+covax+pfizerbiontech+doses"
+      - "#capacity+covax+azsii+doses"
+      - "#capacity+covax+azskbio+doses"
+    input_ignore_vals:
+      - "N/A"
+    input_transforms:
+      "#capacity+covax+total": "get_numeric_if_possible(#capacity+covax+total) if #capacity+covax+total else 0"
+      "#capacity+covax+delivered+doses": "get_numeric_if_possible(#capacity+covax+delivered+doses) if #capacity+covax+delivered+doses else 0"
+      "#capacity+others+delivered+doses": "get_numeric_if_possible(#capacity+others+delivered+doses) if #capacity+others+delivered+doses else 0"
+      "#capacity+delivered+total": "get_numeric_if_possible(#capacity+delivered+total) if #capacity+delivered+total else 0"
+      "#capacity+covax+pfizerbiontech+doses": "get_numeric_if_possible(#capacity+covax+pfizerbiontech+doses) if #capacity+covax+pfizerbiontech+doses else 0"
+      "#capacity+covax+azsii+doses": "get_numeric_if_possible(#capacity+covax+azsii+doses) if #capacity+covax+azsii+doses else 0"
+      "#capacity+covax+azskbio+doses": "get_numeric_if_possible(#capacity+covax+azskbio+doses) if #capacity+covax+azskbio+doses else 0"
+    sum_cols:
+      - formula: "number_format(#capacity+covax+total, format='%.0f')"
+        mustbepopulated: False
+      - formula: "number_format(#capacity+covax+delivered+doses, format='%.0f')"
+        mustbepopulated: False
+      - formula: "number_format(#capacity+others+delivered+doses, format='%.0f')"
+        mustbepopulated: False
+      - formula: "number_format(#capacity+delivered+total, format='%.0f')"
+        mustbepopulated: False
+      - formula: "number_format(#capacity+covax+pfizerbiontech+doses, format='%.0f')"
+        mustbepopulated: False
+      - formula: "number_format(#capacity+covax+azsii+doses, format='%.0f')"
+        mustbepopulated: False
+      - formula: "number_format(#capacity+covax+azskbio+doses, format='%.0f')"
+        mustbepopulated: False
+    output_cols:
+      - "Covax Interim Forecast Doses"
+      - "Covax Delivered Doses"
+      - "Other Delivered Doses"
+      - "Total Delivered Doses"
+      - "Covax Pfizer-BioNTech Doses"
+      - "Covax Astrazeneca-SII Doses"
+      - "Covax Astrazeneca-SKBio Doses"
+    output_hxltags:
+      - "#capacity+doses+forecast+covax"
+      - "#capacity+doses+delivered+covax"
+      - "#capacity+doses+delivered+others"
+      - "#capacity+doses+delivered+total"
+      - "#capacity+doses+covax+pfizerbiontech"
+      - "#capacity+doses+covax+astrazenecasii"
+      - "#capacity+doses+covax+astrazenecaskbio"
+
 scraper_subnational:
   gam:
     source: "UNICEF"
@@ -206,6 +266,34 @@ scraper_subnational:
     output_hxltags:
       - "#severity+malnutrition+num+subnational"
 
+HRPs:
+  - AFG
+  - BDI
+  - BFA
+  - CAF
+  - CMR
+  - COD
+  - COL
+  - ETH
+  - HTI
+  - IRQ
+  - LBY
+  - MLI
+  - MMR
+  - MOZ
+  - NER
+  - NGA
+  - PAK
+  - PSE
+  - SDN
+  - SOM
+  - SSD
+  - SYR
+  - TCD
+  - UKR
+  - VEN
+  - YEM
+  - ZWE
 
 admin1_info:
   - {pcode: AF01, name: Kabul, iso2: AF, iso3: AFG, country: Afghanistan}

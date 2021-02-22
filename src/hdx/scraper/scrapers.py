@@ -263,6 +263,9 @@ def _run_scraper(countryiso3s, adminone, level, name, datasetinfo, headers, iter
                         if mustbepopulated and not exists:
                             continue
                         for j, valdict in enumerate(valdicts):
+                            val = valdict[adm][i]
+                            if val is None or val == '' or val in input_ignore_vals:
+                                continue
                             newvaldicts[j][adm] = eval(f'newvaldicts[j].get(adm, 0.0) + {str(valdict[adm][i])}')
                 formula = formula.replace('#population', '#pzbgvjh')
                 for i in sorted_len_indices:

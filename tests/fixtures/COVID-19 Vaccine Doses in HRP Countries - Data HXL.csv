@@ -1,0 +1,29 @@
+Country,ISO3,SFP/AMC,Population (UNDESA),COVAX Forecast Total,COVAX AstraZeneca/SII,COVAX AstraZeneca/SKBio,COVAX Pfizer/BioNTech,COVAX Delivered,Other Delivered,Total Delivered,Population Covered (One Dose),Population Covered (Two Doses),Total COVAX plus Delievered,% of pop.,2 doses,Other Delivered Source Country,Other Delivered Source URLs
+#country+name,#country+code,#meta+participant_status,#population+total,#capacity+covax+total,#capacity+covax+azsii+doses,#capacity+covax+azskbio+doses,#capacity+covax+pfizerbiontech+doses,#capacity+covax+delivered+doses,#capacity+others+delivered+doses,#capacity+delivered+total,#capacity+coverage+one_dose,#capacity+coverage+two_dose,,,,#meta+source_country,#meta+source_url
+Afghanistan,AFG,AMC,38928341,"3,024,000",3024000,,,,"500,000","500,000",1.28%,0.64%,3524000,9.052530649,4.526265324,India,https://www.livemint.com/news/india/first-batch-of-covid-19-vaccine-from-india-arrives-in-afghanistan-11612755483065.html
+Burkina Faso,BFA,AMC,20903278,"1,620,000",1620000,,,,,0,0.00%,0.00%,1620000,7.749980649,3.874990324,,
+Burundi,BDI,,11890781,N/A,,,,,,0,0.00%,0.00%,0,0,0,,
+Cameroon,CMR,AMC,26545864,"2,052,000",2052000,,,,,0,0.00%,0.00%,2052000,7.730017753,3.865008877,,
+CAR,CAF,AMC,4829764,"372,000",372000,,,,,0,0.00%,0.00%,372000,7.702239695,3.851119848,,
+Chad,TCD,AMC,16425859,"1,272,000",1272000,,,,,0,0.00%,0.00%,1272000,7.743887245,3.871943623,,
+Colombia,COL,SFP,50882884,2670600,,2553600,117000,,,0,0.00%,0.00%,2670600,5.248523256,2.624261628,,
+DRC,COD,AMC,89561404,"6,948,000",6948000,,,,,0,0.00%,0.00%,6948000,7.75780603,3.878903015,,
+Ethiopia,ETH,AMC,114963583,"8,928,000",8928000,,,,,0,0.00%,0.00%,8929000,7.766807338,3.883403669,,
+Haiti,HTI,AMC,11402533,"876,000",876000,,,,,0,0.00%,0.00%,876000,7.682503528,3.841251764,,
+Iraq,IRQ,SFP,40222503,"2,018,400",,2018400,,,,0,0.00%,0.00%,2018400,5.018086517,2.509043259,,
+Libya,LBY,SFP,6871287,"343,200",,343200,,,,0,0.00%,0.00%,343200,4.9946975,2.49734875,,
+Mali,MLI,AMC,20250834,"1,572,000",1572000,,,,,0,0.00%,0.00%,1572000,7.762643257,3.881321629,,
+Mozambique,MOZ,AMC,31255435,"2,424,000",2424000,,,,,0,0.00%,0.00%,2424000,7.755451172,3.877725586,,
+Myanmar,MMR,AMC,54409794,"4,224,000",4224000,,,,2000000,2000000,3.68%,1.84%,4224000,7.763308201,3.881654101,India,https://www.hindustantimes.com/india-news/india-sends-22-9-mn-doses-of-covid-19-vaccines-to-20-countries-more-in-pipeline-101613142400644.html
+Niger,NER,AMC,24206636,"1,872,000",1872000,,,,,0,0.00%,0.00%,1872000,7.733416572,3.866708286,,
+Nigeria,NGA,AMC,206139587,"16,008,000",16008000,,,,,0,0.00%,0.00%,16008000,7.765611755,3.882805878,,
+oPt,PSE,,5101416,"34,000",,,,,"2,000","2,000",0.04%,0.02%,136000,2.66592648,1.33296324,Russia,"https://twitter.com/aboxerman1/status/1361353131234312196?s=11, https://www.washingtonpost.com/world/middle_east/israel-gaza-vaccine-blocked/2021/02/17/5a29112a-70f7-11eb-8651-6d3091eac63f_story.html"
+Pakistan,PAK,AMC,220892331,"17,160,000",17160000,,,,"52,768","52,768",0.02%,0.01%,17212768,7.792379175,3.896189587,Pakistan (procured),
+Somalia,SOM,AMC,15893219,"1,224,000",1224000,,,,,0,0.00%,0.00%,1224000,7.701397684,3.850698842,,
+South Sudan,SSD,AMC,11193729,"864,000",864000,,,,,0,0.00%,0.00%,864000,7.718607445,3.859303723,,
+Sudan,SDN,AMC,43849269,"3,396,000",3396000,,,,,0,0.00%,0.00%,3396000,7.744712916,3.872356458,,
+Syria,SYR,AMC,17500657,"1,020,000",1020000,,,,,0,0.00%,0.00%,1020000,5.828352616,2.914176308,,
+Ukraine,UKR,AMC,43733759,2332200,,2215200,117000,,,0,0.00%,0.00%,2332200,5.332722486,2.666361243,,
+Venezuela,VEN,SFP,28435943,"1,425,600",,1425600,,,"100,000","100,000",0.35%,0.18%,1525600,5.365040998,2.682520499,Russia,
+Yemen,YEM,AMC,29825968,"2,316,000",2316000,,,,,0,0.00%,0.00%,2316000,7.765045547,3.882522773,,
+Zimbabwe,ZWE,AMC,14862927,"1,152,000",1152000,,,,"200,000","200,000",1.35%,0.67%,1952000,13.1333485,6.566674249,China,"https://www.aa.com.tr/en/africa/zimbabwe-to-receive-800-000-doses-of-vaccine-from-china/2140907, https://www.scmp.com/news/china/diplomacy/article/3121787/chinese-vaccines-reach-zimbabwe-it-receives-its-first"
