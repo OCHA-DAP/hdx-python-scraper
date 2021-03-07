@@ -27,14 +27,18 @@ class RowParser(object):
 
     def __init__(self, countryiso3s, adminone, level, datasetinfo, headers, subsets, maxdateonly=True):
         # type: (List[str], AdminOne, str, Dict, List[str], List[Dict], bool) -> None
-        if isinstance(level, str):
-            if level == 'global':
-                level = None
-            elif level == 'national':
-                level = 0
-            else:
-                level = 1
-        self.level = level
+
+        def get_level(lvl):
+            if isinstance(lvl, str):
+                if lvl == 'global':
+                    return None
+                elif lvl == 'national':
+                    return 0
+                else:
+                    return 1
+            return lvl
+
+        self.level = get_level(level)
         self.datecol = datasetinfo.get('date_col')
         self.datetype = datasetinfo.get('date_type')
         if self.datetype:
@@ -45,6 +49,11 @@ class RowParser(object):
         else:
             date = 0
         self.maxdate = date
+        datelevel = datasetinfo.get('date_level')
+        if datelevel is None:
+            self.datelevel = self.level
+        else:
+            self.datelevel = get_level(datelevel)
         date_condition = datasetinfo.get('date_condition')
         if date_condition is not None:
             for col in datasetinfo['input_cols']:
@@ -55,12 +64,12 @@ class RowParser(object):
         self.admexact = datasetinfo.get('adm_exact', False)
         self.subsets = subsets
         self.adms = [countryiso3s, self.adminone.pcodes]
-        if self.level is None:
+        if self.datelevel is None:
             self.maxdates = {i: date for i, _ in enumerate(subsets)}
         else:
-            if self.level > len(self.admcols):
+            if self.datelevel > len(self.admcols):
                 raise ValueError('No admin columns specified for required level!')
-            self.maxdates = {i: {adm: date for adm in self.adms[self.level]} for i, _ in enumerate(subsets)}
+            self.maxdates = {i: {adm: date for adm in self.adms[self.datelevel]} for i, _ in enumerate(subsets)}
 
         self.maxdateonly = maxdateonly
         self.flatteninfo = datasetinfo.get('flatten')
@@ -235,7 +244,7 @@ class RowParser(object):
                     continue
                 if date > self.maxdate:
                     self.maxdate = date
-                if self.level is None:
+                if self.datelevel is None:
                     if self.maxdateonly:
                         if date < self.maxdates[i]:
                             should_process_subset[i] = False
@@ -245,12 +254,12 @@ class RowParser(object):
                         self.maxdates[i] = date
                 else:
                     if self.maxdateonly:
-                        if date < self.maxdates[i][adms[self.level]]:
+                        if date < self.maxdates[i][adms[self.datelevel]]:
                             should_process_subset[i] = False
                         else:
-                            self.maxdates[i][adms[self.level]] = date
+                            self.maxdates[i][adms[self.datelevel]] = date
                     else:
-                        self.maxdates[i][adms[self.level]] = date
+                        self.maxdates[i][adms[self.datelevel]] = date
         if self.level is None:
             return 'global', should_process_subset
         return adms[self.level], should_process_subset

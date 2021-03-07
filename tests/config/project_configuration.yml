@@ -239,6 +239,26 @@ scraper_global:
       - "#capacity+doses+covax+pfizerbiontech"
       - "#capacity+doses+covax+astrazenecasii"
       - "#capacity+doses+covax+astrazenecaskbio"
+  ourworldindata:
+    source: "Our World in Data"
+    format: "csv"
+    url: "tests/fixtures/ourworldindata_vaccinedoses.csv"
+    headers: 1
+    use_hxl: True
+    adm_cols:
+      - "#country+code"
+    date_col: "#date"
+    date_type: "date"
+    date_level: "national"
+    input_cols:
+      - "#total+vaccinations"
+    sum_cols:
+      - formula: "number_format(#total+vaccinations, format='%.0f')"
+        mustbepopulated: False
+    output_cols:
+      - "TotalDosesAdministered"
+    output_hxltags:
+      - "#capacity+doses+administered+total"
 
 scraper_subnational:
   gam:
