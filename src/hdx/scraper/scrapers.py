@@ -30,8 +30,8 @@ brackets = r'''
 )'''
 
 
-def _run_scraper(countryiso3s, adminone, level, name, datasetinfo, headers, iterator, population_lookup, retheaders=[list(), list()], retvalues=list(), sources=list()):
-    # type: (List[str], AdminOne, str, str, Dict, List[str], Iterator[Union[List,Dict]], Dict[str,int], List, List, List) -> None
+def _run_scraper(countryiso3s, adminone, level, name, datasetinfo, headers, iterator, population_lookup, results):
+    # type: (List[str], AdminOne, str, str, Dict, List[str], Iterator[Union[List,Dict]], Dict[str,int], Dict) -> None
     """Run one mini scraper.
 
     Args:
@@ -43,9 +43,7 @@ def _run_scraper(countryiso3s, adminone, level, name, datasetinfo, headers, iter
         headers (List[str]): Row headers
         iterator (Iterator[Union[List,Dict]]): Rows
         population_lookup (Dict[str,int]): Dictionary from admin code to population
-        retheaders (List): Headers to output. Defaults to [list(), list()].
-        retvalues (List): Values to output. Defaults to list().
-        sources (List): Sources to output. Defaults to list().
+        results (Dict): Dictionary of output containing output headers, values and sources
 
     Returns:
         Tuple[Optional[str], Optional[List[bool]]]: (admin name, should process subset list) or (None, None)
@@ -184,6 +182,9 @@ def _run_scraper(countryiso3s, adminone, level, name, datasetinfo, headers, iter
             raise ValueError('No date type specified!')
     date = date.strftime('%Y-%m-%d')
 
+    retheaders = results['headers']
+    retvalues = results['values']
+    sources = results['sources']
     for subset in subsets:
         output_cols = subset['output_cols']
         retheaders[0].extend(output_cols)
@@ -291,12 +292,12 @@ def _run_scraper(countryiso3s, adminone, level, name, datasetinfo, headers, iter
     logger.info('Processed %s' % name)
 
 
-def run_scrapers(configuration, countryiso3s, adminone, level, maindownloader, basic_auths=dict(), today=None, scrapers=None, population_lookup=None, **kwargs):
-    # type: (Dict, List[str], AdminOne, str, Download, Dict[str,str], Optional[datetime], Optional[List[str]], Dict[str,int], Any) -> Tuple[List,List,List]
+def run_scrapers(datasets, countryiso3s, adminone, level, maindownloader, basic_auths=dict(), today=None, scrapers=None, population_lookup=None, **kwargs):
+    # type: (Dict, List[str], AdminOne, str, Download, Dict[str,str], Optional[datetime], Optional[List[str]], Dict[str,int], Any) -> Dict
     """Runs all mini scrapers given in configuration and returns headers, values and sources.
 
     Args:
-        configuration (Dict): Configuration for mini scrapers
+        datasets (Dict): Configuration for mini scrapers
         countryiso3s (List[str]): List of ISO3 country codes to process
         adminone (AdminOne): AdminOne object from HDX Python Country library that handles processing of admin level 1
         level (str): Can be global, national or subnational
@@ -308,12 +309,9 @@ def run_scrapers(configuration, countryiso3s, adminone, level, maindownloader, b
         **kwargs: Variables to use when evaluating template arguments in urls
 
     Returns:
-        Tuple[List,List,List]: Output headers, values and sources
+        Dict: Dictionary of output containing output headers, values and sources
     """
-    datasets = configuration['scraper_%s' % level]
-    retheaders = [list(), list()]
-    retvalues = list()
-    sources = list()
+    results = {'headers': [list(), list()], 'values': list(), 'sources': list()}
     now = datetime.now()
     for name in datasets:
         if scrapers:
@@ -341,9 +339,9 @@ def run_scrapers(configuration, countryiso3s, adminone, level, maindownloader, b
                 else:
                     today_str = now.strftime('%Y-%m-%d')
             datasetinfo['date'] = today_str
-        _run_scraper(countryiso3s, adminone, level, name, datasetinfo, headers, iterator, population_lookup, retheaders, retvalues, sources)
+        _run_scraper(countryiso3s, adminone, level, name, datasetinfo, headers, iterator, population_lookup, results)
         if downloader != maindownloader:
             downloader.close()
         if population_lookup is not None:
-            add_population(population_lookup, retheaders, retvalues)
-    return retheaders, retvalues, sources
+            add_population(population_lookup, results['headers'], results['values'])
+    return results
