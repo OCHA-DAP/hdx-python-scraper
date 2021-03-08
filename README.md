@@ -26,10 +26,10 @@ The following is an example of how the framework is set up:
     assert headers == [['Population'], ['#population']]
     assert columns == [{'AFG': 38041754}]
     assert sources == [('#population', '2020-10-01', 'World Bank', 'https://data.humdata.org/organization/world-bank-group')]
-    headers, columns, sources = get_tabular(configuration, ['AFG'], adminone, 'national', downloader, today=today, scrapers=['who'], population_lookup=population_lookup)
-    assert headers == [['CasesPer100000', 'DeathsPer100000', 'Cases2Per100000', 'Deaths2Per100000'], ['#affected+infected+per100000', '#affected+killed+per100000', '#affected+infected+2+per100000', '#affected+killed+2+per100000']]
-    assert columns == [{'AFG': '96.99'}, {'AFG': '3.41'}, {'AFG': '96.99'}, {'AFG': '3.41'}]
-    assert sources == [('#affected+infected+per100000', '2020-08-06', 'WHO', 'tests/fixtures/WHO-COVID-19-global-data.csv'), ('#affected+killed+per100000', '2020-08-06', 'WHO', 'tests/fixtures/WHO-COVID-19-global-data.csv'), ('#affected+infected+2+per100000', '2020-08-06', 'WHO', 'tests/fixtures/WHO-COVID-19-global-data.csv'), ('#affected+killed+2+per100000', '2020-08-06', 'WHO', 'tests/fixtures/WHO-COVID-19-global-data.csv')]
+    results = get_tabular(configuration, ['AFG'], adminone, 'national', downloader, today=today, scrapers=['who'], population_lookup=population_lookup)
+    assert results['headers'] == [['CasesPer100000', 'DeathsPer100000', 'Cases2Per100000', 'Deaths2Per100000'], ['#affected+infected+per100000', '#affected+killed+per100000', '#affected+infected+2+per100000', '#affected+killed+2+per100000']]
+    assert results['values']  == [{'AFG': '96.99'}, {'AFG': '3.41'}, {'AFG': '96.99'}, {'AFG': '3.41'}]
+    assert results['sources'] == [('#affected+infected+per100000', '2020-08-06', 'WHO', 'tests/fixtures/WHO-COVID-19-global-data.csv'), ('#affected+killed+per100000', '2020-08-06', 'WHO', 'tests/fixtures/WHO-COVID-19-global-data.csv'), ('#affected+infected+2+per100000', '2020-08-06', 'WHO', 'tests/fixtures/WHO-COVID-19-global-data.csv'), ('#affected+killed+2+per100000', '2020-08-06', 'WHO', 'tests/fixtures/WHO-COVID-19-global-data.csv')]
 
 The first parameter is a configuration. More on this later.
 
