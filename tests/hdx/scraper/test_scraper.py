@@ -11,7 +11,7 @@ class TestScraper:
             adminone = AdminOne(configuration)
             population_lookup = dict()
             level = 'national'
-            scraper_configuration = configuration['scraper_%s' % level]
+            scraper_configuration = configuration[f'scraper_{level}']
             results = run_scrapers(scraper_configuration, ['AFG'], adminone, level, downloader, today=today, scrapers=['population'], population_lookup=population_lookup)
             assert results['headers'] == [['Population'], ['#population']]
             assert results['values'] == [{'AFG': 38041754}]
@@ -29,7 +29,7 @@ class TestScraper:
             assert results['values'] == [{'AFG': '0.7044'}, {'AFG': '0.2956'}, {'AFG': '0.7498'}, {'AFG': '0.2502'}]
             assert results['sources'] == [('#affected+infected+m+pct', '2020-08-07', 'SADD', 'tests/fixtures/covid-19-sex-disaggregated-data.csv'), ('#affected+f+infected+pct', '2020-08-07', 'SADD', 'tests/fixtures/covid-19-sex-disaggregated-data.csv'), ('#affected+killed+m+pct', '2020-08-07', 'SADD', 'tests/fixtures/covid-19-sex-disaggregated-data.csv'), ('#affected+f+killed+pct', '2020-08-07', 'SADD', 'tests/fixtures/covid-19-sex-disaggregated-data.csv')]
             level = 'subnational'
-            scraper_configuration = configuration['scraper_%s' % level]
+            scraper_configuration = configuration[f'scraper_{level}']
             results = run_scrapers(scraper_configuration, ['AFG'], adminone, level, downloader, today=today, scrapers=['gam'], population_lookup=population_lookup)
             assert results['headers'] == [['Malnutrition Estimate'], ['#severity+malnutrition+num+subnational']]
             assert results['values'] == [{'AF17': 3.371688, 'AF31': 3.519166, 'AF09': 1.524646, 'AF21': 1.319626, 'AF10': 1.40426, 'AF24': 1.043487, 'AF33': 2.745447, 'AF29': 2.478977, 'AF11': 1.022871, 'AF23': 1.340286, 'AF30': 1.677612, 'AF32': 1.687488, 'AF28': 0.6210205, 'AF01': 1.282291, 'AF27': 1.378641, 'AF02': 3.552082, 'AF14': 0.7653555, 'AF15': 0.953823, 'AF19': 1.684882, 'AF07': 2.090165, 'AF05': 0.9474334, 'AF06': 2.162038, 'AF34': 1.6455, 'AF16': 1.927783, 'AF12': 4.028857, 'AF13': 9.150105, 'AF08': 1.64338, 'AF03': 2.742952, 'AF20': 1.382376, 'AF22': 1.523334, 'AF18': 0.9578965, 'AF25': 0.580423, 'AF04': 0.501081, 'AF26': 4.572629}]
@@ -40,7 +40,7 @@ class TestScraper:
             assert results['values'] == [{'AF09': 1.524646, 'AF24': 1.043487}]
             assert results['sources'] == [('#severity+malnutrition+num+subnational', '2020-10-01', 'UNICEF', 'tests/fixtures/unicef_who_wb_global_expanded_databases_severe_wasting.xlsx')]
             level = 'global'
-            scraper_configuration = configuration['scraper_%s' % level]
+            scraper_configuration = configuration[f'scraper_{level}']
             results = run_scrapers(scraper_configuration, configuration['HRPs'], adminone, level, downloader, today=today, scrapers=['covax'], population_lookup=population_lookup)
             assert results['headers'] == [['Covax Interim Forecast Doses', 'Covax Delivered Doses', 'Other Delivered Doses', 'Total Delivered Doses', 'Covax Pfizer-BioNTech Doses', 'Covax Astrazeneca-SII Doses', 'Covax Astrazeneca-SKBio Doses'], ['#capacity+doses+forecast+covax', '#capacity+doses+delivered+covax', '#capacity+doses+delivered+others', '#capacity+doses+delivered+total', '#capacity+doses+covax+pfizerbiontech', '#capacity+doses+covax+astrazenecasii', '#capacity+doses+covax+astrazenecaskbio']]
             assert results['values'] == [{'global': '87148000'}, {'global': '0'}, {'global': '2854768'}, {'global': '2854768'}, {'global': '234000'}, {'global': '78324000'}, {'global': '8556000'}]
