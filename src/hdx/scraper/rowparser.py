@@ -63,7 +63,14 @@ class RowParser(object):
         self.admcols = datasetinfo.get('adm_cols', list())
         self.admexact = datasetinfo.get('adm_exact', False)
         self.subsets = subsets
-        self.adms = [countryiso3s, self.adminone.pcodes]
+        adms = datasetinfo.get('adm_vals')
+        if adms is None:
+            self.adms = [countryiso3s, self.adminone.pcodes]
+        else:
+            if datelevel == 'subnational':
+                self.adms = adms
+            else:
+                self.adms = [adms, self.adminone.pcodes]
         if self.datelevel is None:
             self.maxdates = {i: date for i, _ in enumerate(subsets)}
         else:

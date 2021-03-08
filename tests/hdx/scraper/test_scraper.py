@@ -44,3 +44,8 @@ class TestScraper:
             assert results['headers'] == [['TotalDosesAdministered'], ['#capacity+doses+administered+total']]
             assert results['values'] == [{'global': '1583219'}]
             assert results['sources'] == [('#capacity+doses+administered+total', '2020-10-01', 'Our World in Data', 'tests/fixtures/ourworldindata_vaccinedoses.csv')]
+            scraper_configuration = configuration['other']
+            results = run_scrapers(scraper_configuration, configuration['HRPs'], adminone, level, downloader, today=today, scrapers=['ourworldindata'], population_lookup=population_lookup)
+            assert results['headers'] == [['TotalDosesAdministered'], ['#capacity+doses+administered+total']]
+            assert results['values'] == [{'global': '275838140'}]
+            assert results['sources'] == [('#capacity+doses+administered+total', '2020-10-01', 'Our World in Data', 'tests/fixtures/ourworldindata_vaccinedoses.csv')]

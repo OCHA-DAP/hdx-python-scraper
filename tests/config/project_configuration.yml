@@ -260,6 +260,27 @@ scraper_global:
     output_hxltags:
       - "#capacity+doses+administered+total"
 
+other:
+  ourworldindata:
+      source: "Our World in Data"
+      format: "csv"
+      url: "tests/fixtures/ourworldindata_vaccinedoses.csv"
+      headers: 1
+      use_hxl: True
+      adm_cols:
+        - "#country+code"
+      adm_vals:
+        - "OWID_WRL"
+      date_col: "#date"
+      date_type: "date"
+      date_level: "national"
+      input_cols:
+        - "#total+vaccinations"
+      output_cols:
+        - "TotalDosesAdministered"
+      output_hxltags:
+        - "#capacity+doses+administered+total"
+
 scraper_subnational:
   gam:
     source: "UNICEF"
