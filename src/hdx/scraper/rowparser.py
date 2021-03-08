@@ -67,7 +67,7 @@ class RowParser(object):
         if adms is None:
             self.adms = [countryiso3s, self.adminone.pcodes]
         else:
-            if datelevel == 'subnational':
+            if self.datelevel == 1:
                 self.adms = adms
             else:
                 self.adms = [adms, self.adminone.pcodes]

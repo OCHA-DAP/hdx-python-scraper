@@ -261,25 +261,52 @@ scraper_global:
       - "#capacity+doses+administered+total"
 
 other:
+  gam:
+    source: "UNICEF"
+    format: "xlsx"
+    url: "tests/fixtures/unicef_who_wb_global_expanded_databases_severe_wasting.xlsx"
+    sheet: "Trend"
+    headers:
+      - 3
+      - 4
+    flatten:
+      - original: "Region {{1}} Region Name"
+        new: "Region Name"
+      - original: "Region {{1}} Point Estimate"
+        new: "Region Point Estimate"
+    adm_cols:
+      - "ISO"
+      - "Region Name"
+    adm_vals:
+      - ["AFG"]
+      - ["AF09", "AF24"]
+    date_col: "Year*"
+    date_type: "int"
+    input_cols:
+      - "Region Point Estimate"
+    output_cols:
+      - "Malnutrition Estimate"
+    output_hxltags:
+      - "#severity+malnutrition+num+subnational"
   ourworldindata:
-      source: "Our World in Data"
-      format: "csv"
-      url: "tests/fixtures/ourworldindata_vaccinedoses.csv"
-      headers: 1
-      use_hxl: True
-      adm_cols:
-        - "#country+code"
-      adm_vals:
-        - "OWID_WRL"
-      date_col: "#date"
-      date_type: "date"
-      date_level: "national"
-      input_cols:
-        - "#total+vaccinations"
-      output_cols:
-        - "TotalDosesAdministered"
-      output_hxltags:
-        - "#capacity+doses+administered+total"
+    source: "Our World in Data"
+    format: "csv"
+    url: "tests/fixtures/ourworldindata_vaccinedoses.csv"
+    headers: 1
+    use_hxl: True
+    adm_cols:
+      - "#country+code"
+    adm_vals:
+      - "OWID_WRL"
+    date_col: "#date"
+    date_type: "date"
+    date_level: "national"
+    input_cols:
+      - "#total+vaccinations"
+    output_cols:
+      - "TotalDosesAdministered"
+    output_hxltags:
+      - "#capacity+doses+administered+total"
 
 scraper_subnational:
   gam:
