@@ -5,7 +5,7 @@ from hdx.utilities import CleanCommand, PackageCommand, PublishCommand
 from hdx.utilities.loader import load_file_to_str
 from setuptools import setup, find_packages
 
-requirements = ['hdx-python-api>=4.9.5',
+requirements = ['hdx-python-api>=5.0.0',
                 'olefile',
                 'pygsheets',
                 'regex']
