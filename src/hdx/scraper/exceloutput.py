@@ -6,7 +6,7 @@ from openpyxl import Workbook
 from openpyxl.utils.dataframe import dataframe_to_rows
 from pandas import DataFrame
 
-logger = logging.getLogger()
+logger = logging.getLogger(__name__)
 
 
 class ExcelOutput:

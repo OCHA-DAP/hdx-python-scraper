@@ -541,79 +541,108 @@ in source and source_url. It maps specific HXL tags by key to sources or falls b
 
 The field adm_vals allows overriding the country iso 3 codes and admin 1 pcodes for teh specific mini scraper:
 
-  gam:
-    source: "UNICEF"
-    format: "xlsx"
-    url: "tests/fixtures/unicef_who_wb_global_expanded_databases_severe_wasting.xlsx"
-    sheet: "Trend"
-    headers:
-      - 3
-      - 4
-    flatten:
-      - original: "Region {{1}} Region Name"
-        new: "Region Name"
-      - original: "Region {{1}} Point Estimate"
-        new: "Region Point Estimate"
-    adm_cols:
-      - "ISO"
-      - "Region Name"
-    adm_vals:
-      - ["AFG"]
-      - ["AF09", "AF24"]
-    date_col: "Year*"
-    date_type: "int"
-    input_cols:
-      - "Region Point Estimate"
-    output_cols:
-      - "Malnutrition Estimate"
-    output_hxltags:
-      - "#severity+malnutrition+num+subnational"
+      gam:
+        source: "UNICEF"
+        format: "xlsx"
+        url: "tests/fixtures/unicef_who_wb_global_expanded_databases_severe_wasting.xlsx"
+        sheet: "Trend"
+        headers:
+          - 3
+          - 4
+        flatten:
+          - original: "Region {{1}} Region Name"
+            new: "Region Name"
+          - original: "Region {{1}} Point Estimate"
+            new: "Region Point Estimate"
+        adm_cols:
+          - "ISO"
+          - "Region Name"
+        adm_vals:
+          - ["AFG"]
+          - ["AF09", "AF24"]
+        date_col: "Year*"
+        date_type: "int"
+        input_cols:
+          - "Region Point Estimate"
+        output_cols:
+          - "Malnutrition Estimate"
+        output_hxltags:
+          - "#severity+malnutrition+num+subnational"
 
 The date_level field enables reading of data containing dates where the latest date must be used at a particular level
 such as per country or per admin 1. For example, we might want to produce a global value by summing the latest 
-available value per country as shown below:
+available value per country as shown below. We have specified a date_col and sum_cols. The library will apply 
+a sort by date (since we have not specified one) to ensure correct results. This would also happen if we had
+used process_cols or append_cols. 
 
-  ourworldindata:
-    source: "Our World in Data"
-    format: "csv"
-    url: "tests/fixtures/ourworldindata_vaccinedoses.csv"
-    headers: 1
-    use_hxl: True
-    adm_cols:
-      - "#country+code"
-    date_col: "#date"
-    date_type: "date"
-    date_level: "national"
-    input_cols:
-      - "#total+vaccinations"
-    sum_cols:
-      - formula: "number_format(#total+vaccinations, format='%.0f')"
-        mustbepopulated: False
-    output_cols:
-      - "TotalDosesAdministered"
-    output_hxltags:
-      - "#capacity+doses+administered+total"
+      ourworldindata:
+        source: "Our World in Data"
+        format: "csv"
+        url: "tests/fixtures/ourworldindata_vaccinedoses.csv"
+        headers: 1
+        use_hxl: True
+        adm_cols:
+          - "#country+code"
+        date_col: "#date"
+        date_type: "date"
+        date_level: "national"
+        input_cols:
+          - "#total+vaccinations"
+        sum_cols:
+          - formula: "number_format(#total+vaccinations, format='%.0f')"
+            mustbepopulated: False
+        output_cols:
+          - "TotalDosesAdministered"
+        output_hxltags:
+          - "#capacity+doses+administered+total"
 
 An example of combining adm_vals, date_col and date_level is getting the latest global value in which global data has
 been treated as a special case of national data by using OWID_WRL in the #country+code field:
 
-  ourworldindata:
-    source: "Our World in Data"
-    format: "csv"
-    url: "tests/fixtures/ourworldindata_vaccinedoses.csv"
-    headers: 1
-    use_hxl: True
-    adm_cols:
-      - "#country+code"
-    adm_vals:
-      - "OWID_WRL"
-    date_col: "#date"
-    date_type: "date"
-    date_level: "national"
-    input_cols:
-      - "#total+vaccinations"
-    output_cols:
-      - "TotalDosesAdministered"
-    output_hxltags:
-      - "#capacity+doses+administered+total"
+      ourworldindata:
+        source: "Our World in Data"
+        format: "csv"
+        url: "tests/fixtures/ourworldindata_vaccinedoses.csv"
+        headers: 1
+        use_hxl: True
+        adm_cols:
+          - "#country+code"
+        adm_vals:
+          - "OWID_WRL"
+        date_col: "#date"
+        date_type: "date"
+        date_level: "national"
+        input_cols:
+          - "#total+vaccinations"
+        output_cols:
+          - "TotalDosesAdministered"
+        output_hxltags:
+          - "#capacity+doses+administered+total"
 
+If columns need to be summed and the latest date chosen overall not per admin unit, then we can specify 
+single_maxdate as shown below:
+
+      cerf_global:
+        format: "csv"
+        url: "tests/fixtures/full_pfmb_allocations.csv"
+        dataset: "cerf-covid-19-allocations"
+        force_date_today: True
+        headers: 1
+        date_col: "AllocationYear"
+        date_type: "int"
+        single_maxdate: True
+        subsets:
+          ...
+          - filter: "FundType=CBPF|GenderMarker=0"
+            input_cols:
+              - "Budget"
+            input_transforms:
+              Budget: "float(Budget)"
+            sum_cols:
+              - formula: "Budget"
+                mustbepopulated: False
+            output_cols:
+              - "CBPFFundingGM0"
+            output_hxltags:
+              - "#value+cbpf+funding+gm0+total+usd"
+           ...

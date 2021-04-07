@@ -103,16 +103,8 @@ def _run_scraper(countryiso3s, adminone, level, name, datasetinfo, headers, iter
     else:
         hxlrow = None
 
-    sort = datasetinfo.get('sort')
-    if sort:
-        keys = sort['keys']
-        reverse = sort.get('reverse', False)
-        if hxlrow:
-            headerrow = {v: k for k, v in hxlrow.items()}
-            keys = [headerrow[key] for key in keys]
-        iterator = sorted(list(iterator), key=itemgetter(*keys), reverse=reverse)
-
     rowparser = RowParser(countryiso3s, adminone, level, datasetinfo, headers, subsets)
+    iterator = rowparser.sort_rows(iterator, hxlrow)
     valuedicts = dict()
     for subset in subsets:
         for _ in subset['input_cols']:

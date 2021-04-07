@@ -7,7 +7,7 @@ import pygsheets
 from google.oauth2 import service_account
 from pandas import DataFrame
 
-logger = logging.getLogger()
+logger = logging.getLogger(__name__)
 
 
 class GoogleSheets:

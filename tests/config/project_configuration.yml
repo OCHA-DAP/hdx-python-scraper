@@ -259,6 +259,185 @@ scraper_global:
       - "TotalDosesAdministered"
     output_hxltags:
       - "#capacity+doses+administered+total"
+  cerf_global:
+    format: "csv"
+    url: "tests/fixtures/full_pfmb_allocations.csv"
+    dataset: "cerf-covid-19-allocations"
+    force_date_today: True
+    headers: 1
+    date_col: "AllocationYear"
+    date_type: "int"
+    single_maxdate: True
+    subsets:
+      - filter: "FundType=CBPF"
+        input_cols:
+          - "Budget"
+        input_transforms:
+          Budget: "float(Budget)"
+        sum_cols:
+          - formula: "Budget"
+            mustbepopulated: False
+        output_cols:
+          - "CBPFFunding"
+        output_hxltags:
+          - "#value+cbpf+funding+total+usd"
+      - filter: "FundType=CBPF|GenderMarker="
+        input_cols:
+          - "Budget"
+        input_transforms:
+          Budget: "float(Budget)"
+        sum_cols:
+          - formula: "Budget"
+            mustbepopulated: False
+        output_cols:
+          - "CBPFFundingGMEmpty"
+        output_hxltags:
+          - "#value+cbpf+funding+gmempty+total+usd"
+      - filter: "FundType=CBPF|GenderMarker=0"
+        input_cols:
+          - "Budget"
+        input_transforms:
+          Budget: "float(Budget)"
+        sum_cols:
+          - formula: "Budget"
+            mustbepopulated: False
+        output_cols:
+          - "CBPFFundingGM0"
+        output_hxltags:
+          - "#value+cbpf+funding+gm0+total+usd"
+      - filter: "FundType=CBPF|GenderMarker=1"
+        input_cols:
+          - "Budget"
+        input_transforms:
+          Budget: "float(Budget)"
+        sum_cols:
+          - formula: "Budget"
+            mustbepopulated: False
+        output_cols:
+          - "CBPFFundingGM1"
+        output_hxltags:
+          - "#value+cbpf+funding+gm1+total+usd"
+      - filter: "FundType=CBPF|GenderMarker=2"
+        input_cols:
+          - "Budget"
+        input_transforms:
+          Budget: "float(Budget)"
+        sum_cols:
+          - formula: "Budget"
+            mustbepopulated: False
+        output_cols:
+          - "CBPFFundingGM2"
+        output_hxltags:
+          - "#value+cbpf+funding+gm2+total+usd"
+      - filter: "FundType=CBPF|GenderMarker=3"
+        input_cols:
+          - "Budget"
+        input_transforms:
+          Budget: "float(Budget)"
+        sum_cols:
+          - formula: "Budget"
+            mustbepopulated: False
+        output_cols:
+          - "CBPFFundingGM3"
+        output_hxltags:
+          - "#value+cbpf+funding+gm3+total+usd"
+      - filter: "FundType=CBPF|GenderMarker=4"
+        input_cols:
+          - "Budget"
+        input_transforms:
+          Budget: "float(Budget)"
+        sum_cols:
+          - formula: "Budget"
+            mustbepopulated: False
+        output_cols:
+          - "CBPFFundingGM4"
+        output_hxltags:
+          - "#value+cbpf+funding+gm4+total+usd"
+      - filter: "FundType=CERF"
+        input_cols:
+          - "Budget"
+        input_transforms:
+          Budget: "float(Budget)"
+        sum_cols:
+          - formula: "Budget"
+            mustbepopulated: False
+        output_cols:
+          - "CERFFunding"
+        output_hxltags:
+          - "#value+cerf+funding+total+usd"
+      - filter: "FundType=CERF|GenderMarker="
+        input_cols:
+          - "Budget"
+        input_transforms:
+          Budget: "float(Budget)"
+        sum_cols:
+          - formula: "Budget"
+            mustbepopulated: False
+        output_cols:
+          - "CERFFundingGMEmpty"
+        output_hxltags:
+          - "#value+cerf+funding+gmempty+total+usd"
+      - filter: "FundType=CERF|GenderMarker=0"
+        input_cols:
+          - "Budget"
+        input_transforms:
+          Budget: "float(Budget)"
+        sum_cols:
+          - formula: "Budget"
+            mustbepopulated: False
+        output_cols:
+          - "CERFFundingGM0"
+        output_hxltags:
+          - "#value+cerf+funding+gm0+total+usd"
+      - filter: "FundType=CERF|GenderMarker=1"
+        input_cols:
+          - "Budget"
+        input_transforms:
+          Budget: "float(Budget)"
+        sum_cols:
+          - formula: "Budget"
+            mustbepopulated: False
+        output_cols:
+          - "CERFFundingGM1"
+        output_hxltags:
+          - "#value+cerf+funding+gm1+total+usd"
+      - filter: "FundType=CERF|GenderMarker=2"
+        input_cols:
+          - "Budget"
+        input_transforms:
+          Budget: "float(Budget)"
+        sum_cols:
+          - formula: "Budget"
+            mustbepopulated: False
+        output_cols:
+          - "CERFFundingGM2"
+        output_hxltags:
+          - "#value+cerf+funding+gm2+total+usd"
+      - filter: "FundType=CERF|GenderMarker=3"
+        input_cols:
+          - "Budget"
+        input_transforms:
+          Budget: "float(Budget)"
+        sum_cols:
+          - formula: "Budget"
+            mustbepopulated: False
+        output_cols:
+          - "CERFFundingGM3"
+        output_hxltags:
+          - "#value+cerf+funding+gm3+total+usd"
+      - filter: "FundType=CERF|GenderMarker=4"
+        input_cols:
+          - "Budget"
+        input_transforms:
+          Budget: "float(Budget)"
+        sum_cols:
+          - formula: "Budget"
+            mustbepopulated: False
+        output_cols:
+          - "CERFFundingGM4"
+        output_hxltags:
+          - "#value+cerf+funding+gm4+total+usd"
+
 
 other:
   gam:

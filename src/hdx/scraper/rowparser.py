@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 import copy
+import logging
 from datetime import datetime
+from operator import itemgetter
 from typing import List, Dict, Tuple, Iterator, Union, Generator, Optional
 
 import hxl
@@ -10,6 +12,8 @@ from hdx.utilities.dateparse import parse_date
 from hdx.utilities.dictandlist import dict_of_lists_add
 
 from hdx.scraper import match_template
+
+logger = logging.getLogger(__name__)
 
 
 class RowParser(object):
@@ -39,6 +43,7 @@ class RowParser(object):
             return lvl
 
         self.level = get_level(level)
+        self.sort = datasetinfo.get('sort')
         self.datecol = datasetinfo.get('date_col')
         self.datetype = datasetinfo.get('date_type')
         if self.datetype:
@@ -59,6 +64,7 @@ class RowParser(object):
             for col in datasetinfo['input_cols']:
                 date_condition = date_condition.replace(col, f"row['{col}']")
         self.date_condition = date_condition
+        self.single_maxdate = datasetinfo.get('single_maxdate', False)
         self.adminone = adminone
         self.admcols = datasetinfo.get('adm_cols', list())
         self.admexact = datasetinfo.get('adm_exact', False)
@@ -83,6 +89,35 @@ class RowParser(object):
         self.headers = headers
         self.filters = dict()
         self.read_external_filter(datasetinfo)
+
+    def sort_rows(self, iterator, hxlrow):
+        # type: (Iterator[Dict], Dict) -> Iterator[Dict]
+        """Sort the input data before processing. If date_col is specified along with any of sum_cols, process_cols or
+        append_cols, and sorting is not specified, then apply a sort by date to ensure correct results.
+
+        Args:
+            hxlrow (Dict): Mapping from column header to HXL hashtag
+            iterator (Iterator[Dict]): Input data
+        Returns:
+            Iterator[Dict]: Input data sorted if specified or deemed necessary
+        """
+        if not self.sort:
+            if self.datecol:
+                for subset in self.subsets:
+                    apply_sort = subset.get('sum_cols', subset.get('process_cols', subset.get('input_append')))
+                    if apply_sort:
+                        logger.warning('sum_cols, process_cols or input_append used without sorting. Applying sort by date to ensure correct results!')
+                        self.sort = {'keys': [self.datecol], 'reverse': True}
+                        break
+        if self.sort:
+            keys = self.sort['keys']
+            reverse = self.sort.get('reverse', False)
+            if hxlrow:
+                headerrow = {v: k for k, v in hxlrow.items()}
+                keys = [headerrow[key] for key in keys]
+            iterator = sorted(list(iterator), key=itemgetter(*keys), reverse=reverse)
+        return iterator
+
 
     def read_external_filter(self, datasetinfo):
         # type: (Dict) -> Tuple[List[str],Iterator[Union[List,Dict]]]
@@ -222,13 +257,11 @@ class RowParser(object):
             process = True
             if filter:
                 filters = filter.split('|')
-                match = True
                 for filterstr in filters:
                     filter = filterstr.split('=')
                     if row[filter[0]] != filter[1]:
-                        match = False
+                        process = False
                         break
-                process = match
             should_process_subset.append(process)
 
         if self.datecol:
@@ -249,7 +282,10 @@ class RowParser(object):
             for i, process in enumerate(should_process_subset):
                 if not process:
                     continue
-                if date > self.maxdate:
+                if date < self.maxdate:
+                    if self.single_maxdate:
+                        should_process_subset[i] = False
+                else:
                     self.maxdate = date
                 if self.datelevel is None:
                     if self.maxdateonly:

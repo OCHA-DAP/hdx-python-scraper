@@ -2,5 +2,5 @@ hdx-python-api==5.0.1
 olefile==0.46
 pandas==1.2.3
 pygsheets==2.0.5
-regex==2021.3.17
+regex==2021.4.4
 
