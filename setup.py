@@ -5,12 +5,12 @@ from hdx.utilities import CleanCommand, PackageCommand, PublishCommand
 from hdx.utilities.loader import load_file_to_str
 from setuptools import setup, find_packages
 
-requirements = ['hdx-python-api>=5.0.1',
+requirements = ['hdx-python-api>=5.0.8',
                 'olefile',
                 'pygsheets',
                 'regex']
 
-extras_requirements = {'pandas': ['pandas>=1.2.3']}
+extras_requirements = {'pandas': ['pandas>=1.2.4']}
 
 classifiers = [
     "Development Status :: 5 - Production/Stable",
