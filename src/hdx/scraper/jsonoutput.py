@@ -8,7 +8,10 @@ from hdx.utilities.dictandlist import dict_of_lists_add
 from hdx.utilities.downloader import Download
 from hdx.utilities.saver import save_json
 from hdx.utilities.text import get_numeric_if_possible
-from pandas import DataFrame
+try:
+    from pandas import DataFrame
+except ImportError:
+    pass
 
 from hdx.scraper import match_template
 from hdx.scraper.readers import read

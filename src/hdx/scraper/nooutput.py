@@ -3,7 +3,10 @@ from datetime import datetime
 from typing import List, Union, Optional, Dict, Any
 
 from hdx.utilities.downloader import Download
-from pandas import DataFrame
+try:
+    from pandas import DataFrame
+except ImportError:
+    pass
 
 
 class NoOutput:

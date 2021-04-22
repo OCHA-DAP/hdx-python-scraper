@@ -4,7 +4,10 @@ from typing import Dict, List, Union, Optional
 
 from openpyxl import Workbook
 from openpyxl.utils.dataframe import dataframe_to_rows
-from pandas import DataFrame
+try:
+    from pandas import DataFrame
+except ImportError:
+    pass
 
 logger = logging.getLogger(__name__)
 

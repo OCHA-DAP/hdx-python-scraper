@@ -5,7 +5,11 @@ from typing import Dict, List, Union, Optional
 
 import pygsheets
 from google.oauth2 import service_account
-from pandas import DataFrame
+try:
+    from pandas import DataFrame
+except ImportError:
+    pass
+
 
 logger = logging.getLogger(__name__)
 
