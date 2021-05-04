@@ -179,6 +179,26 @@ scraper_national:
       - "#affected+f+infected+pct"
       - "#affected+killed+m+pct"
       - "#affected+f+killed+pct"
+  ourworldindata:
+    source: "Our World in Data"
+    format: "csv"
+    url: "tests/fixtures/ourworldindata_vaccinedoses.csv"
+    headers: 1
+    use_hxl: True
+    external_filter:
+      url: "https://github.com/OCHA-DAP/hdx-python-scraper/raw/master/tests/fixtures/COVID-19%20Vaccine%20Doses%20in%20HRP%20Countries%20-%20Data%20HXL.csv"
+      hxltags:
+       - "#country+code"
+    adm_cols:
+      - "#country+code"
+    date_col: "#date"
+    date_type: "date"
+    input_cols:
+      - "#total+vaccinations"
+    output_cols:
+      - "TotalDosesAdministered"
+    output_hxltags:
+      - "#capacity+doses+administered+total"
 
 scraper_global:
   covax:
@@ -245,6 +265,10 @@ scraper_global:
     url: "tests/fixtures/ourworldindata_vaccinedoses.csv"
     headers: 1
     use_hxl: True
+    external_filter:
+      url: "https://github.com/OCHA-DAP/hdx-python-scraper/raw/master/tests/fixtures/COVID-19%20Vaccine%20Doses%20in%20HRP%20Countries%20-%20Data%20HXL.csv"
+      hxltags:
+       - "#country+code"
     adm_cols:
       - "#country+code"
     date_col: "#date"

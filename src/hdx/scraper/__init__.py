@@ -74,12 +74,12 @@ def get_date_from_dataset_date(dataset, today=None):
 
 
 def add_population(population_lookup, headers, columns):
-    # type: (Dict, List[str], List[Dict]) -> None
+    # type: (Dict, List[List], List[Dict]) -> None
     """Add population data to dictionary
 
     Args:
         population_lookup (Dict): Population dictionary
-        headers (List[str]): List of headers
+        headers (List[List]): List of headers
         columns (List[Dict]): List of columns
 
     Returns:

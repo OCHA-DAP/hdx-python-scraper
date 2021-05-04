@@ -28,6 +28,10 @@ class TestScraper:
             assert results['headers'] == [['Cases (% male)', 'Cases (% female)', 'Deaths (% male)', 'Deaths (% female)'], ['#affected+infected+m+pct', '#affected+f+infected+pct', '#affected+killed+m+pct', '#affected+f+killed+pct']]
             assert results['values'] == [{'AFG': '0.7044'}, {'AFG': '0.2956'}, {'AFG': '0.7498'}, {'AFG': '0.2502'}]
             assert results['sources'] == [('#affected+infected+m+pct', '2020-08-07', 'SADD', 'tests/fixtures/covid-19-sex-disaggregated-data.csv'), ('#affected+f+infected+pct', '2020-08-07', 'SADD', 'tests/fixtures/covid-19-sex-disaggregated-data.csv'), ('#affected+killed+m+pct', '2020-08-07', 'SADD', 'tests/fixtures/covid-19-sex-disaggregated-data.csv'), ('#affected+f+killed+pct', '2020-08-07', 'SADD', 'tests/fixtures/covid-19-sex-disaggregated-data.csv')]
+            results = run_scrapers(scraper_configuration, ['AFG', 'PHL'], adminone, level, downloader, today=today, scrapers=['ourworldindata'], population_lookup=population_lookup)
+            assert results['headers'] == [['TotalDosesAdministered'], ['#capacity+doses+administered+total']]
+            assert results['values'] == [{'AFG': '240000'}]
+            assert results['sources'] == [('#capacity+doses+administered+total', '2020-10-01', 'Our World in Data', 'tests/fixtures/ourworldindata_vaccinedoses.csv')]
             level = 'subnational'
             scraper_configuration = configuration[f'scraper_{level}']
             results = run_scrapers(scraper_configuration, ['AFG'], adminone, level, downloader, today=today, scrapers=['gam'], population_lookup=population_lookup)
@@ -43,11 +47,11 @@ class TestScraper:
             scraper_configuration = configuration[f'scraper_{level}']
             results = run_scrapers(scraper_configuration, configuration['HRPs'], adminone, level, downloader, today=today, scrapers=['covax'], population_lookup=population_lookup)
             assert results['headers'] == [['Covax Interim Forecast Doses', 'Covax Delivered Doses', 'Other Delivered Doses', 'Total Delivered Doses', 'Covax Pfizer-BioNTech Doses', 'Covax Astrazeneca-SII Doses', 'Covax Astrazeneca-SKBio Doses'], ['#capacity+doses+forecast+covax', '#capacity+doses+delivered+covax', '#capacity+doses+delivered+others', '#capacity+doses+delivered+total', '#capacity+doses+covax+pfizerbiontech', '#capacity+doses+covax+astrazenecasii', '#capacity+doses+covax+astrazenecaskbio']]
-            assert results['values'] == [{'global': '87148000'}, {'global': '0'}, {'global': '2854768'}, {'global': '2854768'}, {'global': '234000'}, {'global': '78324000'}, {'global': '8556000'}]
+            assert results['values'] == [{'global': '73248240'}, {'global': '12608040'}, {'global': '23728358'}, {'global': '36336398'}, {'global': '271440'}, {'global': '67116000'}, {'global': '5860800'}]
             assert results['sources'] == [('#capacity+doses+forecast+covax', '2020-08-07', 'covax', 'tests/fixtures/COVID-19 Vaccine Doses in HRP Countries - Data HXL.csv'), ('#capacity+doses+delivered+covax', '2020-08-07', 'covax', 'tests/fixtures/COVID-19 Vaccine Doses in HRP Countries - Data HXL.csv'), ('#capacity+doses+delivered+others', '2020-08-07', 'covax', 'tests/fixtures/COVID-19 Vaccine Doses in HRP Countries - Data HXL.csv'), ('#capacity+doses+delivered+total', '2020-08-07', 'covax', 'tests/fixtures/COVID-19 Vaccine Doses in HRP Countries - Data HXL.csv'), ('#capacity+doses+covax+pfizerbiontech', '2020-08-07', 'covax', 'tests/fixtures/COVID-19 Vaccine Doses in HRP Countries - Data HXL.csv'), ('#capacity+doses+covax+astrazenecasii', '2020-08-07', 'covax', 'tests/fixtures/COVID-19 Vaccine Doses in HRP Countries - Data HXL.csv'), ('#capacity+doses+covax+astrazenecaskbio', '2020-08-07', 'covax', 'tests/fixtures/COVID-19 Vaccine Doses in HRP Countries - Data HXL.csv')]
             results = run_scrapers(scraper_configuration, configuration['HRPs'], adminone, level, downloader, today=today, scrapers=['ourworldindata'], population_lookup=population_lookup)
             assert results['headers'] == [['TotalDosesAdministered'], ['#capacity+doses+administered+total']]
-            assert results['values'] == [{'global': '405199'}]
+            assert results['values'] == [{'global': '13413871'}]
             assert results['sources'] == [('#capacity+doses+administered+total', '2020-10-01', 'Our World in Data', 'tests/fixtures/ourworldindata_vaccinedoses.csv')]
             results = run_scrapers(scraper_configuration, configuration['HRPs'], adminone, level, downloader, today=today, scrapers=['cerf_global'], population_lookup=population_lookup)
             assert results['headers'] == [['CBPFFunding', 'CBPFFundingGMEmpty', 'CBPFFundingGM0', 'CBPFFundingGM1', 'CBPFFundingGM2', 'CBPFFundingGM3', 'CBPFFundingGM4', 'CERFFunding', 'CERFFundingGMEmpty', 'CERFFundingGM0', 'CERFFundingGM1', 'CERFFundingGM2', 'CERFFundingGM3', 'CERFFundingGM4'], ['#value+cbpf+funding+total+usd', '#value+cbpf+funding+gmempty+total+usd', '#value+cbpf+funding+gm0+total+usd', '#value+cbpf+funding+gm1+total+usd', '#value+cbpf+funding+gm2+total+usd', '#value+cbpf+funding+gm3+total+usd', '#value+cbpf+funding+gm4+total+usd', '#value+cerf+funding+total+usd', '#value+cerf+funding+gmempty+total+usd', '#value+cerf+funding+gm0+total+usd', '#value+cerf+funding+gm1+total+usd', '#value+cerf+funding+gm2+total+usd', '#value+cerf+funding+gm3+total+usd', '#value+cerf+funding+gm4+total+usd']]
@@ -56,5 +60,5 @@ class TestScraper:
             scraper_configuration = configuration['other']
             results = run_scrapers(scraper_configuration, configuration['HRPs'], adminone, level, downloader, today=today, scrapers=['ourworldindata'], population_lookup=population_lookup)
             assert results['headers'] == [['TotalDosesAdministered'], ['#capacity+doses+administered+total']]
-            assert results['values'] == [{'global': '275838140'}]
+            assert results['values'] == [{'global': '1175451507'}]
             assert results['sources'] == [('#capacity+doses+administered+total', '2020-10-01', 'Our World in Data', 'tests/fixtures/ourworldindata_vaccinedoses.csv')]

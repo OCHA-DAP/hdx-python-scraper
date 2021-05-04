@@ -1,4 +1,4 @@
-hdx-python-api==5.0.9
+hdx-python-api==5.1.0
 olefile==0.46
 pandas==1.2.4
 pygsheets==2.0.5

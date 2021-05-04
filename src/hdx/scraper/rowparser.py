@@ -118,7 +118,6 @@ class RowParser(object):
             iterator = sorted(list(iterator), key=itemgetter(*keys), reverse=reverse)
         return iterator
 
-
     def read_external_filter(self, datasetinfo):
         # type: (Dict) -> Tuple[List[str],Iterator[Union[List,Dict]]]
         """Read filter list from external url poitning to a HXLated file
@@ -134,10 +133,15 @@ class RowParser(object):
             return
         hxltags = external_filter['hxltags']
         data = hxl.data(external_filter['url'])
+        use_hxl = datasetinfo.get('use_hxl', False)
         for row in data:
             for hxltag in data.columns:
                 if hxltag.display_tag in hxltags:
-                    dict_of_lists_add(self.filters, hxltag.header, row.get('#country+code'))
+                    if use_hxl:
+                        header = hxltag.display_tag
+                    else:
+                        header = hxltag.header
+                    dict_of_lists_add(self.filters, header, row.get('#country+code'))
 
     def flatten(self, row):
         # type: (Dict) -> Generator[Dict]
