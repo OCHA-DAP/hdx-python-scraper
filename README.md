@@ -164,7 +164,8 @@ It is helpful to look at a few example mini scrapers to see how they are configu
 The economicindex mini scraper reads the dataset “covid-19-economic-exposure-index” on HDX, taking from it dataset 
 source, date of dataset and using the url of the dataset in HDX as the source url (used by the DATA link in the 
 visual). The scraper framework finds the first resource that is of format “xlsx”, reads the “economic exposure” 
-sheet and looks for the headers in row 1. 
+sheet and looks for the headers in row 1. Note that it is possible to specify a specific resource name using the 
+key "resource" instead of searching for the first resource of a particular format.
 
 adm_cols defines the column or columns in which to look for admin information. As this is a national level 
 scraper, it uses the “Country” column. input_cols specifies the column(s) to use for values, in this case 
