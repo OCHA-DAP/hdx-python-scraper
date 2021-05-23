@@ -30,14 +30,15 @@ brackets = r'''
 )'''
 
 
-def _run_scraper(countryiso3s, adminone, level, name, datasetinfo, headers, iterator, population_lookup, results):
-    # type: (List[str], AdminOne, str, str, Dict, List[str], Iterator[Union[List,Dict]], Dict[str,int], Dict) -> None
+def _run_scraper(countryiso3s, adminone, level, today, name, datasetinfo, headers, iterator, population_lookup, results):
+    # type: (List[str], AdminOne, str, datetime, str, Dict, List[str], Iterator[Union[List,Dict]], Dict[str,int], Dict) -> None
     """Run one mini scraper.
 
     Args:
         countryiso3s (List[str]): List of ISO3 country codes to process
         adminone (AdminOne): AdminOne object from HDX Python Country library that handles processing of admin level 1
         level (str): Can be global, national or subnational
+        today (datetime): Value to use for today. Defaults to None (datetime.now()).
         name (str): Name of mini scraper
         datasetinfo (Dict): Dictionary of information about dataset
         headers (List[str]): Row headers
@@ -103,7 +104,7 @@ def _run_scraper(countryiso3s, adminone, level, name, datasetinfo, headers, iter
     else:
         hxlrow = None
 
-    rowparser = RowParser(countryiso3s, adminone, level, datasetinfo, headers, subsets)
+    rowparser = RowParser(countryiso3s, adminone, level, today, datasetinfo, headers, subsets)
     iterator = rowparser.sort_rows(iterator, hxlrow)
     valuedicts = dict()
     for subset in subsets:
@@ -325,13 +326,14 @@ def run_scrapers(datasets, countryiso3s, adminone, level, maindownloader, basic_
             datasetinfo['source_url'] = datasetinfo['url']
         if 'date' not in datasetinfo or datasetinfo.get('force_date_today', False):
             today_str = kwargs.get('today_str')
-            if not today_str:
-                if today:
-                    today_str = today.strftime('%Y-%m-%d')
-                else:
-                    today_str = now.strftime('%Y-%m-%d')
+            if today_str:
+                today = parse_date(today_str)
+            else:
+                if not today:
+                    today = now
+                today_str = today.strftime('%Y-%m-%d')
             datasetinfo['date'] = today_str
-        _run_scraper(countryiso3s, adminone, level, name, datasetinfo, headers, iterator, population_lookup, results)
+        _run_scraper(countryiso3s, adminone, level, today, name, datasetinfo, headers, iterator, population_lookup, results)
         if downloader != maindownloader:
             downloader.close()
         if population_lookup is not None:

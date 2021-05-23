@@ -23,14 +23,15 @@ class RowParser(object):
         countryiso3s (List[str]): List of ISO3 country codes to process
         adminone (AdminOne): AdminOne object from HDX Python Country library that handles processing of admin level 1
         level (str): Can be global, national or subnational
+        today (datetime): Value to use for today. Defaults to None (datetime.now()).
         datasetinfo (Dict): Dictionary of information about dataset
         headers (List[str]): Row headers
         subsets (List[Dict]): List of subset definitions
         maxdateonly (bool): Whether to only take the most recent date. Defaults to True.
     """
 
-    def __init__(self, countryiso3s, adminone, level, datasetinfo, headers, subsets, maxdateonly=True):
-        # type: (List[str], AdminOne, str, Dict, List[str], List[Dict], bool) -> None
+    def __init__(self, countryiso3s, adminone, level, today, datasetinfo, headers, subsets, maxdateonly=True):
+        # type: (List[str], AdminOne, str, datetime, Dict, List[str], List[Dict], bool) -> None
 
         def get_level(lvl):
             if isinstance(lvl, str):
@@ -43,6 +44,7 @@ class RowParser(object):
             return lvl
 
         self.level = get_level(level)
+        self.today = today
         self.sort = datasetinfo.get('sort')
         self.datecol = datasetinfo.get('date_col')
         self.datetype = datasetinfo.get('date_type')
@@ -65,6 +67,7 @@ class RowParser(object):
                 date_condition = date_condition.replace(col, f"row['{col}']")
         self.date_condition = date_condition
         self.single_maxdate = datasetinfo.get('single_maxdate', False)
+        self.ignore_future_date = datasetinfo.get('ignore_future_date', True)
         self.adminone = adminone
         self.admcols = datasetinfo.get('adm_cols', list())
         self.admexact = datasetinfo.get('adm_exact', False)
@@ -278,6 +281,12 @@ class RowParser(object):
                 if not isinstance(date, datetime):
                     date = parse_date(date)
                 date = date.replace(tzinfo=None)
+                if date > self.today and self.ignore_future_date:
+                   return None, None
+            elif self.datetype == 'year':
+                date = int(date)
+                if date > self.today.year and self.ignore_future_date:
+                   return None, None
             else:
                 date = int(date)
             if self.date_condition:

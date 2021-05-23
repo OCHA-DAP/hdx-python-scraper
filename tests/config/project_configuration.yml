@@ -56,7 +56,7 @@ scraper_national:
       - "Country Code"
     adm_exact: True
     date_col: "Year"
-    date_type: "int"
+    date_type: "year"
     input_cols:
       - "Value"
     output_cols:
@@ -290,7 +290,7 @@ scraper_global:
     force_date_today: True
     headers: 1
     date_col: "AllocationYear"
-    date_type: "int"
+    date_type: "year"
     single_maxdate: True
     subsets:
       - filter: "FundType=CBPF"
@@ -484,7 +484,7 @@ other:
       - ["AFG"]
       - ["AF09", "AF24"]
     date_col: "Year*"
-    date_type: "int"
+    date_type: "year"
     input_cols:
       - "Region Point Estimate"
     output_cols:
@@ -529,7 +529,7 @@ scraper_subnational:
       - "ISO"
       - "Region Name"
     date_col: "Year*"
-    date_type: "int"
+    date_type: "year"
     input_cols:
       - "Region Point Estimate"
     output_cols:
