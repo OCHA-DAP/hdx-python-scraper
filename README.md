@@ -240,8 +240,9 @@ rather than replaced.
 The gam mini scraper reads from a spreadsheet that has a multiline header (headers defined as rows 3 and 4). 
 Experimentation is often needed with row numbers since in my experience, they are sometimes offset from the real 
 row numbers seen when opening the spreadsheet. date_col defines a column that contains date information and 
-date_type specifies in what form the date information is held eg. as an integer (int) or a date. The scraper will 
-for each admin, obtain the data (in this case the “National Point Estimate”) for the latest date.
+date_type specifies in what form the date information is held eg. as a date, a year or an int. The scraper will 
+for each admin, obtain the data (in this case the “National Point Estimate”) for the latest date up to the current
+date (unless ignore_future_date is set to False then future dates will be allowed).
 
      gam:
         format: "xlsx"
@@ -253,7 +254,7 @@ for each admin, obtain the data (in this case the “National Point Estimate”)
         adm_cols:
           - "ISO"
         date_col: "Year*"
-        date_type: "int"
+        date_type: "year"
         input_cols:
           - "National Point Estimate"
         output_columns:
@@ -294,7 +295,7 @@ inferred and the rest taken as values except if defined as a date_col.
         headers: 1
         use_hxl: True
         date_col: "#date"
-        date_type: "int"
+        date_type: "date"
 
 In the imperial mini scraper, output_columns and output_hxltags are defined which specify which columns and HXL 
 tags in the HXLated file should be used rather than using all HXLated columns.
@@ -318,7 +319,7 @@ tags in the HXLated file should be used rather than using all HXLated columns.
 
 The idmc mini scraper reads 2 HXLated columns defined in input_cols. In input_transforms, a cast to int is 
 performed if the value is not None or it is set to 0. einput_cols defines new column(s) that can be combinations 
-of the other columns in input_cols. In this case, einput_cols specifies a new column which sums the 2 columns in 
+of the other columns in input_cols. In this case, input_cols specifies a new column which sums the 2 columns in 
 input_cols. That new column is given a header and a HXL tag (in output_columns and output_hxltags).
 
      idmc:
@@ -327,7 +328,7 @@ input_cols. That new column is given a header and a HXL tag (in output_columns a
         headers: 1
         use_hxl: True
         date_col: "#date+year"
-        date_type: "int"
+        date_type: "year"
         input_cols:
           - "#affected+idps+ind+stock+conflict"
           - "#affected+idps+ind+stock+disaster"
@@ -354,7 +355,7 @@ contains one or more filters of the form column=value. The pipe (|) is used as a
         adm_cols:
           - "Country Code"
         date_col: "Year"
-        date_type: "int"
+        date_type: "year"
         subsets:
           - filter: "Metric=People in need|PiN Value for Dataviz=yes"
             input_cols:
@@ -380,7 +381,7 @@ fuzzy match if the input has more than 3 characters.
           - "Country Code"
         adm_exact: True
         date_col: "Year"
-        date_type: "int"
+        date_type: "year"
         date_condition: "Value != ''"
         input_cols:
           - "Value"
@@ -489,7 +490,7 @@ either “-2222” or “-4444” is the value included in the sum of any column
           - "iso"
           - "Admin1"
         date_col: "Year"
-        date_type: "int"
+        date_type: "year"
         subsets:
           - filter: "Vaccine=HepB1"
             input_cols:
@@ -562,7 +563,7 @@ The field adm_vals allows overriding the country iso 3 codes and admin 1 pcodes 
           - ["AFG"]
           - ["AF09", "AF24"]
         date_col: "Year*"
-        date_type: "int"
+        date_type: "year"
         input_cols:
           - "Region Point Estimate"
         output_cols:
@@ -630,7 +631,7 @@ single_maxdate as shown below:
         force_date_today: True
         headers: 1
         date_col: "AllocationYear"
-        date_type: "int"
+        date_type: "year"
         single_maxdate: True
         subsets:
           ...
