@@ -4,6 +4,7 @@ from os.path import join
 
 import pandas
 import pytest
+from hdx.utilities.compare import assert_files_same
 from hdx.utilities.dateparse import parse_date
 from hdx.utilities.downloader import Download
 from hdx.utilities.path import temp_dir
@@ -47,7 +48,7 @@ class TestOutput:
                 noout.save()
                 excelout.save()
                 filepaths = jsonout.save(tempdir, countries_to_save=['AFG'])
-                excelsheet = excelout.workbook.get_sheet_by_name(sheetname)
+                excelsheet = excelout.workbook[sheetname]
 
                 def get_list_from_cells(cells):
                     result = [list(), list(), list()]
@@ -58,8 +59,8 @@ class TestOutput:
 
                 assert get_list_from_cells('A1:C3') == output
                 spreadsheet = googleout.gc.open_by_url(configuration['googlesheets']['test'])
-                googletab = spreadsheet.worksheet_by_title(sheetname)
-                result = googletab.get_values(start=(1, 1), end=(3, 3), returnas='matrix')
+                googletab = spreadsheet.worksheet(sheetname)
+                result = googletab.get('A1:C3')
                 result[2][2] = int(result[2][2])
                 assert result == output
                 assert filecmp.cmp(filepaths[0], join(fixtures, 'test_scraper_all.json'))
@@ -76,7 +77,7 @@ class TestOutput:
                 jsonout.add_additional_json(downloader, today=parse_date('2020-10-01'))
                 filepaths = jsonout.save(tempdir, countries_to_save=['AFG'])
                 assert get_list_from_cells('A1:C3') == output
-                result = googletab.get_values(start=(1, 1), end=(3, 3), returnas='matrix')
+                result = googletab.get('A1:C3')
                 result[2][2] = int(result[2][2])
                 assert result == output
                 assert filecmp.cmp(filepaths[0], join(fixtures, 'test_scraper_all.json'))
@@ -86,8 +87,13 @@ class TestOutput:
 
                 df = pandas.DataFrame(output[1:], columns=output[0])
                 googleout.update_tab('national', df, limit=2)
-                result = googletab.get_values(start=(1, 1), end=(3, 3), returnas='matrix')
+                result = googletab.get('A1:C3')
                 result[2][2] = int(result[2][2])
+                assert result == output
+                assert filecmp.cmp(filepaths[0], join(fixtures, 'test_scraper_all.json'))
+                assert filecmp.cmp(filepaths[1], join(fixtures, 'test_scraper_population.json'))
+                assert filecmp.cmp(filepaths[2], join(fixtures, 'test_scraper_population.json'))
+                assert filecmp.cmp(filepaths[3], join(fixtures, 'test_scraper_other.json'))
 
     def test_jsonoutput(self, configuration, fixtures, hxltags):
         with temp_dir('TestScraperJson', delete_on_success=True, delete_on_failure=False) as tempdir:
