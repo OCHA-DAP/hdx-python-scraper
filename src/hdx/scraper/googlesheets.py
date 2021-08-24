@@ -3,8 +3,7 @@ import json
 import logging
 from typing import Dict, List, Union, Optional
 
-import pygsheets
-from google.oauth2 import service_account
+import gspread
 try:
     from pandas import DataFrame
 except ImportError:
@@ -29,8 +28,7 @@ class GoogleSheets:
         # type: (Dict, str, List[str], Dict[str, str], List[str]) -> None
         info = json.loads(gsheet_auth)
         scopes = ['https://www.googleapis.com/auth/spreadsheets']
-        credentials = service_account.Credentials.from_service_account_info(info, scopes=scopes)
-        self.gc = pygsheets.authorize(custom_credentials=credentials)
+        self.gc = gspread.service_account_from_dict(info, scopes=scopes)
         self.googlesheets = configuration['googlesheets']
         if updatesheets is None:
             updatesheets = self.googlesheets.keys()
@@ -62,18 +60,15 @@ class GoogleSheets:
             url = self.googlesheets[sheet]
             spreadsheet = self.gc.open_by_url(url)
 
-            tab = spreadsheet.worksheet_by_title(self.tabs[tabname])
-            tab.clear(fields='*')
-            if isinstance(values, list):
-                tab.update_values('A1', values)
-            else:
+            tab = spreadsheet.worksheet(self.tabs[tabname])
+            tab.clear()
+            if not isinstance(values, list):
                 headers = list(values.columns.values)
-                tab.update_row(1, headers)
+                rows = [headers]
                 if hxltags:
-                    tab.update_row(2, [hxltags.get(header, '') for header in headers])
-                    start = 3
-                else:
-                    start = 2
+                    rows.append([hxltags.get(header, '') for header in headers])
                 if limit is not None:
                     values = values.head(limit)
-                tab.set_dataframe(values, (start, 1), copy_head=False)
+                rows.extend(values.values.tolist())
+                values = rows
+            tab.update('A1', values)

@@ -127,7 +127,7 @@ class JsonOutput:
                 value = row.get(hxltag)
                 if value in [None, '']:
                     value = None
-                newrow[hxltags.get(hxltag)] = value
+                newrow[hxltags.get(hxltag)] = str(value)
             self.add_data_row(key, newrow)
 
     def update_tab(self, tabname, values, hxltags=None):
