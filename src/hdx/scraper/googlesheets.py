@@ -4,7 +4,9 @@ import logging
 from typing import Dict, List, Union, Optional
 
 import gspread
+
 try:
+    import numpy
     from pandas import DataFrame
 except ImportError:
     pass
@@ -69,6 +71,10 @@ class GoogleSheets:
                     rows.append([hxltags.get(header, '') for header in headers])
                 if limit is not None:
                     values = values.head(limit)
-                rows.extend(values.values.tolist())
+                df = values.copy(deep=True)
+                df.replace(numpy.inf, 'inf', inplace=True)
+                df.replace(-numpy.inf, '-inf', inplace=True)
+                df.fillna('NaN', inplace=True)
+                rows.extend(df.values.tolist())
                 values = rows
             tab.update('A1', values)

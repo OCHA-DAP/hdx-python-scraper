@@ -2,9 +2,9 @@ import filecmp
 from os import getenv
 from os.path import join
 
+import numpy as np
 import pandas
 import pytest
-from hdx.utilities.compare import assert_files_same
 from hdx.utilities.dateparse import parse_date
 from hdx.utilities.downloader import Download
 from hdx.utilities.path import temp_dir
@@ -90,10 +90,18 @@ class TestOutput:
                 result = googletab.get('A1:C3')
                 result[2][2] = int(result[2][2])
                 assert result == output
-                assert filecmp.cmp(filepaths[0], join(fixtures, 'test_scraper_all.json'))
-                assert filecmp.cmp(filepaths[1], join(fixtures, 'test_scraper_population.json'))
-                assert filecmp.cmp(filepaths[2], join(fixtures, 'test_scraper_population.json'))
-                assert filecmp.cmp(filepaths[3], join(fixtures, 'test_scraper_other.json'))
+
+                output = [list(hxltags.keys()), list(hxltags.values()), ['AFG', 'Afghanistan', 38041754],
+                          ['BDI', 'Burundi', np.NaN], ['PAK', 'Pakistan', -np.inf]]
+                df = pandas.DataFrame(output[1:], columns=output[0])
+                googleout.update_tab('national', df)
+                result = googletab.get('A1:C5')
+                result[2][2] = int(result[2][2])
+                assert result[3][2] == 'NaN'
+                result[3][2] = np.NaN
+                assert result[4][2] == '-inf'
+                result[4][2] = -np.inf
+                assert result == output
 
     def test_jsonoutput(self, configuration, fixtures, hxltags):
         with temp_dir('TestScraperJson', delete_on_success=True, delete_on_failure=False) as tempdir:
