@@ -11,7 +11,7 @@ json:
       source: "Some org"
       source_url: "https://data.humdata.org/organization/world-bank-group"
       format: "json"
-      url: "https://raw.githubusercontent.com/OCHA-DAP/hdx-python-scraper/master/tests/fixtures/additional_json.json"
+      url: "https://raw.githubusercontent.com/OCHA-DAP/hdx-python-scraper/main/tests/fixtures/additional_json.json"
       jsonpath: "[*]"
   filepath: "test_scraper_all.json"
   additional:
@@ -149,7 +149,7 @@ scraper_national:
     url: "tests/fixtures/covid-19-sex-disaggregated-data.csv"
     headers: 1
     external_filter:
-      url: "https://github.com/mcarans/hdx-python-scraper/raw/master/tests/fixtures/sadd-countries-to-include.csv"
+      url: "https://github.com/mcarans/hdx-python-scraper/raw/main/tests/fixtures/sadd-countries-to-include.csv"
       hxltags:
         - "#country+code+v_iso2"
     adm_cols:
@@ -186,7 +186,7 @@ scraper_national:
     headers: 1
     use_hxl: True
     external_filter:
-      url: "https://github.com/OCHA-DAP/hdx-python-scraper/raw/master/tests/fixtures/COVID-19%20Vaccine%20Doses%20in%20HRP%20Countries%20-%20Data%20HXL.csv"
+      url: "https://github.com/OCHA-DAP/hdx-python-scraper/raw/main/tests/fixtures/COVID-19%20Vaccine%20Doses%20in%20HRP%20Countries%20-%20Data%20HXL.csv"
       hxltags:
        - "#country+code"
     adm_cols:
@@ -266,7 +266,7 @@ scraper_global:
     headers: 1
     use_hxl: True
     external_filter:
-      url: "https://github.com/OCHA-DAP/hdx-python-scraper/raw/master/tests/fixtures/COVID-19%20Vaccine%20Doses%20in%20HRP%20Countries%20-%20Data%20HXL.csv"
+      url: "https://github.com/OCHA-DAP/hdx-python-scraper/raw/main/tests/fixtures/COVID-19%20Vaccine%20Doses%20in%20HRP%20Countries%20-%20Data%20HXL.csv"
       hxltags:
        - "#country+code"
     adm_cols:
