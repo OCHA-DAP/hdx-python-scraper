@@ -105,7 +105,7 @@ def _run_scraper(countryiso3s, adminone, level, today, name, datasetinfo, header
         hxlrow = None
 
     rowparser = RowParser(countryiso3s, adminone, level, today, datasetinfo, headers, subsets)
-    iterator = rowparser.sort_rows(iterator, hxlrow)
+    iterator = rowparser.filter_sort_rows(iterator, hxlrow)
     valuedicts = dict()
     for subset in subsets:
         for _ in subset['input_cols']:

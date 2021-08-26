@@ -46,6 +46,12 @@ class RowParser(object):
         self.level = get_level(level)
         self.today = today
         self.sort = datasetinfo.get('sort')
+        prefilter = datasetinfo.get('prefilter')
+        if prefilter is not None:
+            for subset in subsets:
+                for col in subset['input_cols']:
+                    prefilter = prefilter.replace(col, f"row['{col}']")
+        self.prefilter = prefilter
         self.datecol = datasetinfo.get('date_col')
         self.datetype = datasetinfo.get('date_type')
         if self.datetype:
@@ -61,11 +67,6 @@ class RowParser(object):
             self.datelevel = self.level
         else:
             self.datelevel = get_level(datelevel)
-        date_condition = datasetinfo.get('date_condition')
-        if date_condition is not None:
-            for col in datasetinfo['input_cols']:
-                date_condition = date_condition.replace(col, f"row['{col}']")
-        self.date_condition = date_condition
         self.single_maxdate = datasetinfo.get('single_maxdate', False)
         self.ignore_future_date = datasetinfo.get('ignore_future_date', True)
         self.adminone = adminone
@@ -93,16 +94,17 @@ class RowParser(object):
         self.filters = dict()
         self.read_external_filter(datasetinfo)
 
-    def sort_rows(self, iterator, hxlrow):
+    def filter_sort_rows(self, iterator, hxlrow):
         # type: (Iterator[Dict], Dict) -> Iterator[Dict]
-        """Sort the input data before processing. If date_col is specified along with any of sum_cols, process_cols or
-        append_cols, and sorting is not specified, then apply a sort by date to ensure correct results.
+        """Apply prefilter and sort the input data before processing. If date_col is specified along with any of
+        sum_cols, process_cols or append_cols, and sorting is not specified, then apply a sort by date to ensure
+        correct results.
 
         Args:
             hxlrow (Dict): Mapping from column header to HXL hashtag
             iterator (Iterator[Dict]): Input data
         Returns:
-            Iterator[Dict]: Input data sorted if specified or deemed necessary
+            Iterator[Dict]: Input data with prefilter applied if specified and sorted if specified or deemed necessary
         """
         if not self.sort:
             if self.datecol:
@@ -112,6 +114,8 @@ class RowParser(object):
                         logger.warning('sum_cols, process_cols or input_append used without sorting. Applying sort by date to ensure correct results!')
                         self.sort = {'keys': [self.datecol], 'reverse': True}
                         break
+        if self.prefilter:
+            iterator = [row for row in iterator if eval(self.prefilter)]
         if self.sort:
             keys = self.sort['keys']
             reverse = self.sort.get('reverse', False)
@@ -123,7 +127,7 @@ class RowParser(object):
 
     def read_external_filter(self, datasetinfo):
         # type: (Dict) -> Tuple[List[str],Iterator[Union[List,Dict]]]
-        """Read filter list from external url poitning to a HXLated file
+        """Read filter list from external url pointing to a HXLated file
 
         Args:
             datasetinfo (Dict): Dictionary of information about dataset
@@ -289,9 +293,6 @@ class RowParser(object):
                    return None, None
             else:
                 date = int(date)
-            if self.date_condition:
-                if eval(self.date_condition) is False:
-                    return None, None
             for i, process in enumerate(should_process_subset):
                 if not process:
                     continue

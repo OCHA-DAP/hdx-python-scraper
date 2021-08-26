@@ -390,6 +390,19 @@ fuzzy match if the input has more than 3 characters.
         output_hxltags:
           - "#population"
 
+The covid tests mini scraper applies a prefilter to the data that only processes rows where the value in the column
+"new_tests" is not None and is greater than zero.
+
+    covidtests:
+        source: "Our World in Data"
+        format: "xlsx"
+        dataset: "total-covid-19-tests-performed-by-country"
+        url: "tests/fixtures/owid-covid-data.xlsx"
+        headers: 1
+        sheet: 1
+        prefilter: "new_tests is not None and new_tests > 0"
+     ...
+
 The sadd mini scraper reads data from the dataset “covid-19-sex-disaggregated-data-tracker”. It filters that data 
 using data from another file, the url of which is defined in external_filter. Specifically, it cuts down the sadd 
 data to only include countries listed in the  “#country+code+v_iso2” column of the external_filter file.

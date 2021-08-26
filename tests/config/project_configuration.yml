@@ -47,11 +47,11 @@ scraper_national:
     source_url: "https://data.humdata.org/organization/world-bank-group"
     format: "xls"
     url: "tests/fixtures/API_SP.POP.TOTL_DS2_en_excel_v2_1302508_LIST.xls"
+    sheet: "Data"
+    headers: 3
     sort:
       keys:
         - "Year"
-    sheet: "Data"
-    headers: 3
     adm_cols:
       - "Country Code"
     adm_exact: True
@@ -206,9 +206,9 @@ scraper_national:
     url: "tests/fixtures/owid-covid-data.xlsx"
     headers: 1
     sheet: 1
+    prefilter: "new_tests is not None and new_tests > 0"
     date_col: "date"
     date_type: "date"
-    date_condition: "new_tests is not None and new_tests > 0"
     adm_cols:
       - "iso_code"
     input_cols:
