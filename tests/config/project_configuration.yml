@@ -199,6 +199,33 @@ scraper_national:
       - "TotalDosesAdministered"
     output_hxltags:
       - "#capacity+doses+administered+total"
+  covidtests:
+    source: "Our World in Data"
+    format: "xlsx"
+    dataset: "total-covid-19-tests-performed-by-country"
+    url: "tests/fixtures/owid-covid-data.xlsx"
+    headers: 1
+    sheet: 1
+    date_col: "date"
+    date_type: "date"
+    date_condition: "new_tests is not None and new_tests > 0"
+    adm_cols:
+      - "iso_code"
+    input_cols:
+      - "new_tests"
+      - "new_tests_per_thousand"
+      - "new_tests_smoothed_per_thousand"
+      - "positive_rate"
+    output_cols:
+      - "New Tests"
+      - "New Tests Per Thousand"
+      - "New Tests Per Thousand (7-day)"
+      - "Positive Test Rate"
+    output_hxltags:
+      - "#affected+tested"
+      - "#affected+tested+per1000"
+      - "#affected+tested+avg+per1000"
+      - "#affected+tested+positive+pct"
 
 scraper_global:
   covax:
