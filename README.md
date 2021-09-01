@@ -344,8 +344,8 @@ input_cols. That new column is given a header and a HXL tag (in output_columns a
 
 The needs mini scraper takes data for the latest available date for each country. subsets allows the definition of 
 multiple indicators by way of filters. A filter is defined for each indicator (in this case there is one) which 
-contains one or more filters of the form column=value. The pipe (|) is used as a separator - it means “and” not 
-“or”.
+contains one or more filters in Python syntax. Column names can be used directly and if not already specified in
+input_cols or date_col, should be included in filter_cols.
 
      needs:
         format: "xlsx"
@@ -356,8 +356,11 @@ contains one or more filters of the form column=value. The pipe (|) is used as a
           - "Country Code"
         date_col: "Year"
         date_type: "year"
+        filter_cols:
+          - "Metric"
+          - "PiN Value for Dataviz"
         subsets:
-          - filter: "Metric=People in need|PiN Value for Dataviz=yes"
+          - filter: "Metric == 'People in need' and PiN Value for Dataviz == 'yes'"
             input_cols:
               - "Value"
             output_columns:
@@ -391,7 +394,8 @@ fuzzy match if the input has more than 3 characters.
           - "#population"
 
 The covid tests mini scraper applies a prefilter to the data that only processes rows where the value in the column
-"new_tests" is not None and is greater than zero.
+"new_tests" is not None and is greater than zero. If "new_tests" was not specified in input_cols or date_col, then
+it would need to be under a key filter_cols.
 
     covidtests:
         source: "Our World in Data"
@@ -452,8 +456,10 @@ mini scraper).
           - "reference_year"
           - "reference_code"
         date_type: "int"
+        filter_cols:
+          - "chtype"
         subsets:
-          - filter: "chtype=current"
+          - filter: "chtype == 'current'"
             input_cols:
               - "phase3"
               - "phase4"
@@ -504,8 +510,10 @@ either “-2222” or “-4444” is the value included in the sum of any column
           - "Admin1"
         date_col: "Year"
         date_type: "year"
+        filter_cols:
+          - "Vaccine"
         subsets:
-          - filter: "Vaccine=HepB1"
+          - filter: "Vaccine == 'HepB1'"
             input_cols:
               - "Numerator"
               - "Denominator"
@@ -646,9 +654,12 @@ single_maxdate as shown below:
         date_col: "AllocationYear"
         date_type: "year"
         single_maxdate: True
+        filter_cols:
+          - "FundType"
+          - "GenderMarker"
         subsets:
           ...
-          - filter: "FundType=CBPF|GenderMarker=0"
+          - filter: "FundType == 'CBPF' and GenderMarker == '0'"
             input_cols:
               - "Budget"
             input_transforms:
