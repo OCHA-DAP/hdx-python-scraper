@@ -320,8 +320,11 @@ scraper_global:
     date_col: "AllocationYear"
     date_type: "year"
     single_maxdate: True
+    filter_cols:
+      - "FundType"
+      - "GenderMarker"
     subsets:
-      - filter: "FundType == CBPF"
+      - filter: "FundType == 'CBPF'"
         input_cols:
           - "Budget"
         input_transforms:
@@ -333,7 +336,7 @@ scraper_global:
           - "CBPFFunding"
         output_hxltags:
           - "#value+cbpf+funding+total+usd"
-      - filter: "FundType == CBPF and GenderMarker == "
+      - filter: "FundType == 'CBPF' and GenderMarker == ''"
         input_cols:
           - "Budget"
         input_transforms:
@@ -345,7 +348,7 @@ scraper_global:
           - "CBPFFundingGMEmpty"
         output_hxltags:
           - "#value+cbpf+funding+gmempty+total+usd"
-      - filter: "FundType == CBPF and GenderMarker == 0"
+      - filter: "FundType == 'CBPF' and GenderMarker == '0'"
         input_cols:
           - "Budget"
         input_transforms:
@@ -357,7 +360,7 @@ scraper_global:
           - "CBPFFundingGM0"
         output_hxltags:
           - "#value+cbpf+funding+gm0+total+usd"
-      - filter: "FundType == CBPF and GenderMarker == 1"
+      - filter: "FundType == 'CBPF' and GenderMarker == '1'"
         input_cols:
           - "Budget"
         input_transforms:
@@ -369,7 +372,7 @@ scraper_global:
           - "CBPFFundingGM1"
         output_hxltags:
           - "#value+cbpf+funding+gm1+total+usd"
-      - filter: "FundType == CBPF and GenderMarker == 2"
+      - filter: "FundType == 'CBPF' and GenderMarker == '2'"
         input_cols:
           - "Budget"
         input_transforms:
@@ -381,7 +384,7 @@ scraper_global:
           - "CBPFFundingGM2"
         output_hxltags:
           - "#value+cbpf+funding+gm2+total+usd"
-      - filter: "FundType == CBPF and GenderMarker == 3"
+      - filter: "FundType == 'CBPF' and GenderMarker == '3'"
         input_cols:
           - "Budget"
         input_transforms:
@@ -393,7 +396,7 @@ scraper_global:
           - "CBPFFundingGM3"
         output_hxltags:
           - "#value+cbpf+funding+gm3+total+usd"
-      - filter: "FundType == CBPF and GenderMarker == 4"
+      - filter: "FundType == 'CBPF' and GenderMarker == '4'"
         input_cols:
           - "Budget"
         input_transforms:
@@ -417,7 +420,7 @@ scraper_global:
           - "CERFFunding"
         output_hxltags:
           - "#value+cerf+funding+total+usd"
-      - filter: "FundType == 'CERF' and GenderMarker == "
+      - filter: "FundType == 'CERF' and GenderMarker == ''"
         input_cols:
           - "Budget"
         input_transforms:
@@ -429,7 +432,7 @@ scraper_global:
           - "CERFFundingGMEmpty"
         output_hxltags:
           - "#value+cerf+funding+gmempty+total+usd"
-      - filter: "FundType == 'CERF' and GenderMarker == 0"
+      - filter: "FundType == 'CERF' and GenderMarker == '0'"
         input_cols:
           - "Budget"
         input_transforms:
@@ -441,7 +444,7 @@ scraper_global:
           - "CERFFundingGM0"
         output_hxltags:
           - "#value+cerf+funding+gm0+total+usd"
-      - filter: "FundType == 'CERF' and GenderMarker == 1"
+      - filter: "FundType == 'CERF' and GenderMarker == '1'"
         input_cols:
           - "Budget"
         input_transforms:
@@ -453,7 +456,7 @@ scraper_global:
           - "CERFFundingGM1"
         output_hxltags:
           - "#value+cerf+funding+gm1+total+usd"
-      - filter: "FundType == 'CERF' and GenderMarker == 2"
+      - filter: "FundType == 'CERF' and GenderMarker == '2'"
         input_cols:
           - "Budget"
         input_transforms:
@@ -465,7 +468,7 @@ scraper_global:
           - "CERFFundingGM2"
         output_hxltags:
           - "#value+cerf+funding+gm2+total+usd"
-      - filter: "FundType == 'CERF' and GenderMarker == 3"
+      - filter: "FundType == 'CERF' and GenderMarker == '3'"
         input_cols:
           - "Budget"
         input_transforms:
@@ -477,7 +480,7 @@ scraper_global:
           - "CERFFundingGM3"
         output_hxltags:
           - "#value+cerf+funding+gm3+total+usd"
-      - filter: "FundType == 'CERF' and GenderMarker == 4"
+      - filter: "FundType == 'CERF' and GenderMarker == '4'"
         input_cols:
           - "Budget"
         input_transforms:
