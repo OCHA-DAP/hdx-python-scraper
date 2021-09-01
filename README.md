@@ -344,8 +344,8 @@ input_cols. That new column is given a header and a HXL tag (in output_columns a
 
 The needs mini scraper takes data for the latest available date for each country. subsets allows the definition of 
 multiple indicators by way of filters. A filter is defined for each indicator (in this case there is one) which 
-contains one or more filters in Python syntax. Column names can be used directly and if not already specified in
-input_cols or date_col, should be included in filter_cols.
+contains one or more filters in Python syntax. Column names can be used directly and if all are not already specified 
+in input_cols and date_col, then all should be put as a list under the key filter_cols.
 
      needs:
         format: "xlsx"

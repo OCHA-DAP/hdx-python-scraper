@@ -94,13 +94,15 @@ class RowParser(object):
         self.read_external_filter(datasetinfo)
 
     def get_filter_str_for_eval(self, filter):
-        for col in self.filter_cols:
-            filter = filter.replace(col, f"row['{col}']")
-        if self.datecol:
-            filter = filter.replace(self.datecol, f"row['{self.datecol}']")
-        for subset in self.subsets:
-            for col in subset['input_cols']:
+        if self.filter_cols:
+            for col in self.filter_cols:
                 filter = filter.replace(col, f"row['{col}']")
+        else:
+            if self.datecol:
+                filter = filter.replace(self.datecol, f"row['{self.datecol}']")
+            for subset in self.subsets:
+                for col in subset['input_cols']:
+                    filter = filter.replace(col, f"row['{col}']")
         return filter
 
     def filter_sort_rows(self, iterator, hxlrow):
