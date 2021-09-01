@@ -46,12 +46,6 @@ class RowParser(object):
         self.level = get_level(level)
         self.today = today
         self.sort = datasetinfo.get('sort')
-        prefilter = datasetinfo.get('prefilter')
-        if prefilter is not None:
-            for subset in subsets:
-                for col in subset['input_cols']:
-                    prefilter = prefilter.replace(col, f"row['{col}']")
-        self.prefilter = prefilter
         self.datecol = datasetinfo.get('date_col')
         self.datetype = datasetinfo.get('date_type')
         if self.datetype:
@@ -73,6 +67,11 @@ class RowParser(object):
         self.admcols = datasetinfo.get('adm_cols', list())
         self.admexact = datasetinfo.get('adm_exact', False)
         self.subsets = subsets
+        self.filter_cols = datasetinfo.get('filter_cols', list())
+        prefilter = datasetinfo.get('prefilter')
+        if prefilter is not None:
+            prefilter = self.get_filter_str_for_eval(prefilter)
+        self.prefilter = prefilter
         adms = datasetinfo.get('adm_vals')
         if adms is None:
             self.adms = [countryiso3s, self.adminone.pcodes]
@@ -93,6 +92,16 @@ class RowParser(object):
         self.headers = headers
         self.filters = dict()
         self.read_external_filter(datasetinfo)
+
+    def get_filter_str_for_eval(self, filter):
+        for col in self.filter_cols:
+            filter = filter.replace(col, f"row['{col}']")
+        if self.datecol:
+            filter = filter.replace(self.datecol, f"row['{self.datecol}']")
+        for subset in self.subsets:
+            for col in subset['input_cols']:
+                filter = filter.replace(col, f"row['{col}']")
+        return filter
 
     def filter_sort_rows(self, iterator, hxlrow):
         # type: (Iterator[Dict], Dict) -> Iterator[Dict]
@@ -267,12 +276,9 @@ class RowParser(object):
             filter = subset['filter']
             process = True
             if filter:
-                filters = filter.split('|')
-                for filterstr in filters:
-                    filter = filterstr.split('=')
-                    if row[filter[0]] != filter[1]:
-                        process = False
-                        break
+                filter = self.get_filter_str_for_eval(filter)
+                if not eval(filter):
+                    process = False
             should_process_subset.append(process)
 
         if self.datecol:
