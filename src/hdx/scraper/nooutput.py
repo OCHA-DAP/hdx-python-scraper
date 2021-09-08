@@ -1,8 +1,8 @@
-# -*- coding: utf-8 -*-
 from datetime import datetime
-from typing import List, Union, Optional, Dict, Any
+from typing import Any, Dict, List, Optional, Union
 
 from hdx.utilities.downloader import Download
+
 try:
     from pandas import DataFrame
 except ImportError:
@@ -16,12 +16,16 @@ class NoOutput:
         updatetabs (List[str]): Tabs to update
     """
 
-    def __init__(self, updatetabs):
-        # type: (List[str]) -> None
+    def __init__(self, updatetabs: List[str]) -> None:
         self.updatetabs = updatetabs
 
-    def update_tab(self, tabname, values, hxltags=None, limit=None):
-        # type: (str, Union[List, DataFrame], Optional[Dict], Optional[int]) -> None
+    def update_tab(
+        self,
+        tabname: str,
+        values: Union[List, DataFrame],
+        hxltags: Optional[Dict] = None,
+        limit: Optional[int] = None,
+    ) -> None:
         """Update tab with values
 
         Args:
@@ -35,8 +39,7 @@ class NoOutput:
         """
         return
 
-    def add_data_row(self, key, row):
-        # type: (str, Dict) -> None
+    def add_data_row(self, key: str, row: Dict) -> None:
         """Add row
 
         Args:
@@ -48,8 +51,9 @@ class NoOutput:
         """
         return
 
-    def add_dataframe_rows(self, key, df, hxltags=None):
-        # type: (str, DataFrame, Optional[Dict]) -> None
+    def add_dataframe_rows(
+        self, key: str, df: DataFrame, hxltags: Optional[Dict] = None
+    ) -> None:
         """Add rows from dataframe under a key
 
         Args:
@@ -62,8 +66,13 @@ class NoOutput:
         """
         return
 
-    def add_data_rows_by_key(self, name, countryiso, rows, hxltags=None):
-        # type: (str, str, List[Dict], Optional[Dict]) -> None
+    def add_data_rows_by_key(
+        self,
+        name: str,
+        countryiso: str,
+        rows: List[Dict],
+        hxltags: Optional[Dict] = None,
+    ) -> None:
         """Add rows under both a key and an ISO 3 country code subkey
 
         Args:
@@ -77,8 +86,9 @@ class NoOutput:
         """
         return
 
-    def add_additional_json(self, downloader, today=None):
-        # type: (Download, Optional[datetime]) -> None
+    def add_additional_json(
+        self, downloader: Download, today: Optional[datetime] = None
+    ) -> None:
         """Download files and add them under keys defined in the configuration
 
         Args:
@@ -90,8 +100,7 @@ class NoOutput:
         """
         return
 
-    def save(self, **kwargs):
-        # type: (Any) -> None
+    def save(self, **kwargs: Any) -> None:
         """Save file
 
         Args:

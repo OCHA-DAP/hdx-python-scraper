@@ -1,8 +1,7 @@
-# -*- coding: utf-8 -*-
 import logging
 from datetime import datetime
 from os.path import join
-from typing import Any, Dict, Tuple, List, Iterator, Union, Optional
+from typing import Any, Dict, Iterator, List, Optional, Tuple, Union
 
 from hdx.data.dataset import Dataset
 from hdx.utilities.downloader import Download
@@ -15,8 +14,7 @@ from hdx.scraper import get_date_from_dataset_date, match_template
 logger = logging.getLogger(__name__)
 
 
-def get_url(url, **kwargs):
-    # type: (str, Any) -> str
+def get_url(url: str, **kwargs: Any) -> str:
     """Get url from a string replacing any template arguments
 
     Args:
@@ -35,8 +33,9 @@ def get_url(url, **kwargs):
     return url
 
 
-def read_tabular(downloader, datasetinfo, **kwargs):
-    # type: (Download, Dict, Any) -> Tuple[List[str],Iterator[Union[List,Dict]]]
+def read_tabular(
+    downloader: Download, datasetinfo: Dict, **kwargs: Any
+) -> Tuple[List[str], Iterator[Union[List, Dict]]]:
     """Read data from tabular source eg. csv, xls, xlsx
 
     Args:
@@ -47,23 +46,26 @@ def read_tabular(downloader, datasetinfo, **kwargs):
     Returns:
         Tuple[List[str],Iterator[Union[List,Dict]]]: Tuple (headers, iterator where each row is a list or dictionary)
     """
-    url = get_url(datasetinfo['url'], **kwargs)
-    sheet = datasetinfo.get('sheet')
-    headers = datasetinfo.get('headers')
+    url = get_url(datasetinfo["url"], **kwargs)
+    sheet = datasetinfo.get("sheet")
+    headers = datasetinfo.get("headers")
     if headers is None:
         headers = 1
-        datasetinfo['headers'] = 1
+        datasetinfo["headers"] = 1
     if isinstance(headers, list):
-        kwargs['fill_merged_cells'] = True
-    format = datasetinfo['format']
-    compression = datasetinfo.get('compression')
+        kwargs["fill_merged_cells"] = True
+    format = datasetinfo["format"]
+    compression = datasetinfo.get("compression")
     if compression:
-        kwargs['compression'] = compression
-    return downloader.get_tabular_rows(url, sheet=sheet, headers=headers, dict_form=True, format=format, **kwargs)
+        kwargs["compression"] = compression
+    return downloader.get_tabular_rows(
+        url, sheet=sheet, headers=headers, dict_form=True, format=format, **kwargs
+    )
 
 
-def read_ole(downloader, datasetinfo, **kwargs):
-    # type: (Download, Dict, Any) -> Tuple[List[str],Iterator[Union[List,Dict]]]
+def read_ole(
+    downloader: Download, datasetinfo: Dict, **kwargs: Any
+) -> Tuple[List[str], Iterator[Union[List, Dict]]]:
     """Read data from OLE Excel source
 
     Args:
@@ -74,21 +76,22 @@ def read_ole(downloader, datasetinfo, **kwargs):
     Returns:
         Tuple[List[str],Iterator[Union[List,Dict]]]: Tuple (headers, iterator where each row is a list or dictionary)
     """
-    url = get_url(datasetinfo['url'], **kwargs)
-    with temp_dir('ole') as folder:
-        path = downloader.download_file(url, folder, 'olefile')
+    url = get_url(datasetinfo["url"], **kwargs)
+    with temp_dir("ole") as folder:
+        path = downloader.download_file(url, folder, "olefile")
         ole = olefile.OleFileIO(path)
-        data = ole.openstream('Workbook').getvalue()
-        outputfile = join(folder, 'excel_file.xls')
-        with open(outputfile, 'wb') as f:
+        data = ole.openstream("Workbook").getvalue()
+        outputfile = join(folder, "excel_file.xls")
+        with open(outputfile, "wb") as f:
             f.write(data)
-        datasetinfo['url'] = outputfile
-        datasetinfo['format'] = 'xls'
+        datasetinfo["url"] = outputfile
+        datasetinfo["format"] = "xls"
         return read_tabular(downloader, datasetinfo, **kwargs)
 
 
-def read_json(downloader, datasetinfo, **kwargs):
-    # type: (Download, Dict, Any) -> Optional[Iterator[Union[List,Dict]]]
+def read_json(
+    downloader: Download, datasetinfo: Dict, **kwargs: Any
+) -> Optional[Iterator[Union[List, Dict]]]:
     """Read data from json source allowing for JSONPath expressions
 
     Args:
@@ -99,10 +102,10 @@ def read_json(downloader, datasetinfo, **kwargs):
     Returns:
         Optional[Iterator[Union[List,Dict]]]: Iterator or None
     """
-    url = get_url(datasetinfo['url'], **kwargs)
+    url = get_url(datasetinfo["url"], **kwargs)
     response = downloader.download(url)
     json = response.json()
-    expression = datasetinfo.get('jsonpath')
+    expression = datasetinfo.get("jsonpath")
     if expression:
         expression = parse(expression)
         json = expression.find(json)
@@ -111,8 +114,7 @@ def read_json(downloader, datasetinfo, **kwargs):
     return None
 
 
-def read_hdx_metadata(datasetinfo, today=None):
-    # type: (Dict, Optional[datetime]) -> None
+def read_hdx_metadata(datasetinfo: Dict, today: Optional[datetime] = None) -> None:
     """Read metadata from HDX dataset and add to input dictionary
 
     Args:
@@ -122,31 +124,32 @@ def read_hdx_metadata(datasetinfo, today=None):
     Returns:
         None
     """
-    dataset_name = datasetinfo['dataset']
+    dataset_name = datasetinfo["dataset"]
     dataset = Dataset.read_from_hdx(dataset_name)
-    url = datasetinfo.get('url')
+    url = datasetinfo.get("url")
     if not url:
-        resource_name = datasetinfo.get('resource')
-        format = datasetinfo['format']
+        resource_name = datasetinfo.get("resource")
+        format = datasetinfo["format"]
         for resource in dataset.get_resources():
-            if resource['format'] == format.upper():
-                if resource_name and resource['name'] != resource_name:
+            if resource["format"] == format.upper():
+                if resource_name and resource["name"] != resource_name:
                     continue
-                url = resource['url']
+                url = resource["url"]
                 break
         if not url:
-            raise ValueError(f'Cannot find {format} resource in {dataset_name}!')
-        datasetinfo['url'] = url
-    if 'date' not in datasetinfo:
-        datasetinfo['date'] = get_date_from_dataset_date(dataset, today=today)
-    if 'source' not in datasetinfo:
-        datasetinfo['source'] = dataset['dataset_source']
-    if 'source_url' not in datasetinfo:
-        datasetinfo['source_url'] = dataset.get_hdx_url()
+            raise ValueError(f"Cannot find {format} resource in {dataset_name}!")
+        datasetinfo["url"] = url
+    if "date" not in datasetinfo:
+        datasetinfo["date"] = get_date_from_dataset_date(dataset, today=today)
+    if "source" not in datasetinfo:
+        datasetinfo["source"] = dataset["dataset_source"]
+    if "source_url" not in datasetinfo:
+        datasetinfo["source_url"] = dataset.get_hdx_url()
 
 
-def read_hdx(downloader, datasetinfo, today=None):
-    # type: (Download, Dict, Optional[datetime]) -> Tuple[List[str],Iterator[Union[List,Dict]]]
+def read_hdx(
+    downloader: Download, datasetinfo: Dict, today: Optional[datetime] = None
+) -> Tuple[List[str], Iterator[Union[List, Dict]]]:
     """Read data and metadata from HDX dataset
 
     Args:
@@ -161,8 +164,12 @@ def read_hdx(downloader, datasetinfo, today=None):
     return read_tabular(downloader, datasetinfo)
 
 
-def read(downloader, datasetinfo, today=None, **kwargs):
-    # type: (Download, Dict, Optional[datetime], Any) -> Tuple[List[str],Iterator[Union[List,Dict]]]
+def read(
+    downloader: Download,
+    datasetinfo: Dict,
+    today: Optional[datetime] = None,
+    **kwargs: Any,
+) -> Tuple[List[str], Iterator[Union[List, Dict]]]:
     """Read data and metadata from HDX dataset
 
     Args:
@@ -174,16 +181,16 @@ def read(downloader, datasetinfo, today=None, **kwargs):
     Returns:
         Tuple[List[str],Iterator[Union[List,Dict]]]: Tuple (headers, iterator where each row is a list or dictionary)
     """
-    format = datasetinfo['format']
-    if format == 'json':
-        if 'dataset' in datasetinfo:
+    format = datasetinfo["format"]
+    if format == "json":
+        if "dataset" in datasetinfo:
             read_hdx_metadata(datasetinfo, today=today)
         iterator = read_json(downloader, datasetinfo, **kwargs)
         headers = None
-    elif format == 'ole':
+    elif format == "ole":
         headers, iterator = read_ole(downloader, datasetinfo, **kwargs)
-    elif format in ['csv', 'xls', 'xlsx']:
-        if 'dataset' in datasetinfo:
+    elif format in ["csv", "xls", "xlsx"]:
+        if "dataset" in datasetinfo:
             headers, iterator = read_hdx(downloader, datasetinfo, today=today)
         else:
             headers, iterator = read_tabular(downloader, datasetinfo, **kwargs)

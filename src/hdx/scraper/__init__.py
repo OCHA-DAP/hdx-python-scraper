@@ -1,15 +1,13 @@
-# -*- coding: utf-8 -*-
 import re
 from datetime import datetime
-from typing import Tuple, Optional, Any, Dict, Union, List
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 from hdx.data.dataset import Dataset
 
-template = re.compile('{{.*?}}')
+template = re.compile("{{.*?}}")
 
 
-def match_template(input):
-    # type: (str) -> Tuple[Optional[str], Optional[str]]
+def match_template(input: str) -> Tuple[Optional[str], Optional[str]]:
     """Try to match {{XXX}} in input string
 
     Args:
@@ -25,8 +23,7 @@ def match_template(input):
     return None, None
 
 
-def get_rowval(row, valcol):
-    # type: (Dict, str) -> Any
+def get_rowval(row: Dict, valcol: str) -> Any:
     """Get the value of a particular column in a row expanding any template it contains
 
     Args:
@@ -36,7 +33,7 @@ def get_rowval(row, valcol):
     Returns:
         Any: Value of column or template
     """
-    if '{{' in valcol:
+    if "{{" in valcol:
         repvalcol = valcol
         for match in template.finditer(valcol):
             template_string = match.group()
@@ -50,8 +47,9 @@ def get_rowval(row, valcol):
         return result
 
 
-def get_date_from_dataset_date(dataset, today=None):
-    # type: (Union[Dataset, str], datetime) -> Optional[str]
+def get_date_from_dataset_date(
+    dataset: Union[Dataset, str], today: datetime = None
+) -> Optional[str]:
     """Return the date or end date of a dataset
 
     Args:
@@ -67,14 +65,15 @@ def get_date_from_dataset_date(dataset, today=None):
         date_info = dataset.get_date_of_dataset()
     else:
         date_info = dataset.get_date_of_dataset(today=today)
-    enddate = date_info.get('enddate_str')
+    enddate = date_info.get("enddate_str")
     if not enddate:
         return None
     return enddate[:10]
 
 
-def add_population(population_lookup, headers, columns):
-    # type: (Dict, List[List], List[Dict]) -> None
+def add_population(
+    population_lookup: Dict, headers: List[List], columns: List[Dict]
+) -> None:
     """Add population data to dictionary
 
     Args:
@@ -88,7 +87,7 @@ def add_population(population_lookup, headers, columns):
     if population_lookup is None:
         return
     try:
-        population_index = headers[1].index('#population')
+        population_index = headers[1].index("#population")
     except ValueError:
         population_index = None
     if population_index is not None:

@@ -1,9 +1,8 @@
-# -*- coding: utf-8 -*-
 import copy
 import logging
 from datetime import datetime
 from operator import itemgetter
-from typing import List, Dict, Tuple, Iterator, Union, Generator, Optional
+from typing import Dict, Generator, Iterator, List, Optional, Tuple, Union
 
 import hxl
 from hdx.location.adminone import AdminOne
@@ -16,7 +15,7 @@ from hdx.scraper import match_template
 logger = logging.getLogger(__name__)
 
 
-class RowParser(object):
+class RowParser:
     """RowParser class for parsing each row.
 
     Args:
@@ -30,14 +29,22 @@ class RowParser(object):
         maxdateonly (bool): Whether to only take the most recent date. Defaults to True.
     """
 
-    def __init__(self, countryiso3s, adminone, level, today, datasetinfo, headers, subsets, maxdateonly=True):
-        # type: (List[str], AdminOne, str, datetime, Dict, List[str], List[Dict], bool) -> None
-
+    def __init__(
+        self,
+        countryiso3s: List[str],
+        adminone: AdminOne,
+        level: str,
+        today: datetime,
+        datasetinfo: Dict,
+        headers: List[str],
+        subsets: List[Dict],
+        maxdateonly: bool = True,
+    ) -> None:
         def get_level(lvl):
             if isinstance(lvl, str):
-                if lvl == 'global':
+                if lvl == "global":
                     return None
-                elif lvl == 'national':
+                elif lvl == "national":
                     return 0
                 else:
                     return 1
@@ -45,34 +52,34 @@ class RowParser(object):
 
         self.level = get_level(level)
         self.today = today
-        self.sort = datasetinfo.get('sort')
-        self.datecol = datasetinfo.get('date_col')
-        self.datetype = datasetinfo.get('date_type')
+        self.sort = datasetinfo.get("sort")
+        self.datecol = datasetinfo.get("date_col")
+        self.datetype = datasetinfo.get("date_type")
         if self.datetype:
-            if self.datetype == 'date':
-                date = parse_date('1900-01-01')
+            if self.datetype == "date":
+                date = parse_date("1900-01-01")
             else:
                 date = 0
         else:
             date = 0
         self.maxdate = date
-        datelevel = datasetinfo.get('date_level')
+        datelevel = datasetinfo.get("date_level")
         if datelevel is None:
             self.datelevel = self.level
         else:
             self.datelevel = get_level(datelevel)
-        self.single_maxdate = datasetinfo.get('single_maxdate', False)
-        self.ignore_future_date = datasetinfo.get('ignore_future_date', True)
+        self.single_maxdate = datasetinfo.get("single_maxdate", False)
+        self.ignore_future_date = datasetinfo.get("ignore_future_date", True)
         self.adminone = adminone
-        self.admcols = datasetinfo.get('adm_cols', list())
-        self.admexact = datasetinfo.get('adm_exact', False)
+        self.admcols = datasetinfo.get("adm_cols", list())
+        self.admexact = datasetinfo.get("adm_exact", False)
         self.subsets = subsets
-        self.filter_cols = datasetinfo.get('filter_cols', list())
-        prefilter = datasetinfo.get('prefilter')
+        self.filter_cols = datasetinfo.get("filter_cols", list())
+        prefilter = datasetinfo.get("prefilter")
         if prefilter is not None:
             prefilter = self.get_filter_str_for_eval(prefilter)
         self.prefilter = prefilter
-        adms = datasetinfo.get('adm_vals')
+        adms = datasetinfo.get("adm_vals")
         if adms is None:
             self.adms = [countryiso3s, self.adminone.pcodes]
         else:
@@ -84,11 +91,14 @@ class RowParser(object):
             self.maxdates = {i: date for i, _ in enumerate(subsets)}
         else:
             if self.datelevel > len(self.admcols):
-                raise ValueError('No admin columns specified for required level!')
-            self.maxdates = {i: {adm: date for adm in self.adms[self.datelevel]} for i, _ in enumerate(subsets)}
+                raise ValueError("No admin columns specified for required level!")
+            self.maxdates = {
+                i: {adm: date for adm in self.adms[self.datelevel]}
+                for i, _ in enumerate(subsets)
+            }
 
         self.maxdateonly = maxdateonly
-        self.flatteninfo = datasetinfo.get('flatten')
+        self.flatteninfo = datasetinfo.get("flatten")
         self.headers = headers
         self.filters = dict()
         self.read_external_filter(datasetinfo)
@@ -101,12 +111,13 @@ class RowParser(object):
             if self.datecol:
                 filter = filter.replace(self.datecol, f"row['{self.datecol}']")
             for subset in self.subsets:
-                for col in subset['input_cols']:
+                for col in subset["input_cols"]:
                     filter = filter.replace(col, f"row['{col}']")
         return filter
 
-    def filter_sort_rows(self, iterator, hxlrow):
-        # type: (Iterator[Dict], Dict) -> Iterator[Dict]
+    def filter_sort_rows(
+        self, iterator: Iterator[Dict], hxlrow: Dict
+    ) -> Iterator[Dict]:
         """Apply prefilter and sort the input data before processing. If date_col is specified along with any of
         sum_cols, process_cols or append_cols, and sorting is not specified, then apply a sort by date to ensure
         correct results.
@@ -120,24 +131,28 @@ class RowParser(object):
         if not self.sort:
             if self.datecol:
                 for subset in self.subsets:
-                    apply_sort = subset.get('sum_cols', subset.get('process_cols', subset.get('input_append')))
+                    apply_sort = subset.get(
+                        "sum_cols",
+                        subset.get("process_cols", subset.get("input_append")),
+                    )
                     if apply_sort:
-                        logger.warning('sum_cols, process_cols or input_append used without sorting. Applying sort by date to ensure correct results!')
-                        self.sort = {'keys': [self.datecol], 'reverse': True}
+                        logger.warning(
+                            "sum_cols, process_cols or input_append used without sorting. Applying sort by date to ensure correct results!"
+                        )
+                        self.sort = {"keys": [self.datecol], "reverse": True}
                         break
         if self.prefilter:
             iterator = [row for row in iterator if eval(self.prefilter)]
         if self.sort:
-            keys = self.sort['keys']
-            reverse = self.sort.get('reverse', False)
+            keys = self.sort["keys"]
+            reverse = self.sort.get("reverse", False)
             if hxlrow:
                 headerrow = {v: k for k, v in hxlrow.items()}
                 keys = [headerrow[key] for key in keys]
             iterator = sorted(list(iterator), key=itemgetter(*keys), reverse=reverse)
         return iterator
 
-    def read_external_filter(self, datasetinfo):
-        # type: (Dict) -> Tuple[List[str],Iterator[Union[List,Dict]]]
+    def read_external_filter(self, datasetinfo: Dict) -> None:
         """Read filter list from external url pointing to a HXLated file
 
         Args:
@@ -146,12 +161,12 @@ class RowParser(object):
         Returns:
             None
         """
-        external_filter = datasetinfo.get('external_filter')
+        external_filter = datasetinfo.get("external_filter")
         if not external_filter:
             return
-        hxltags = external_filter['hxltags']
-        data = hxl.data(external_filter['url'])
-        use_hxl = datasetinfo.get('use_hxl', False)
+        hxltags = external_filter["hxltags"]
+        data = hxl.data(external_filter["url"])
+        use_hxl = datasetinfo.get("use_hxl", False)
         for row in data:
             for hxltag in data.columns:
                 if hxltag.display_tag in hxltags:
@@ -159,10 +174,9 @@ class RowParser(object):
                         header = hxltag.display_tag
                     else:
                         header = hxltag.header
-                    dict_of_lists_add(self.filters, header, row.get('#country+code'))
+                    dict_of_lists_add(self.filters, header, row.get("#country+code"))
 
-    def flatten(self, row):
-        # type: (Dict) -> Generator[Dict]
+    def flatten(self, row: Dict) -> Generator[Dict, None, None]:
         """Flatten a wide spreadsheet format into a long one
 
         Args:
@@ -178,26 +192,27 @@ class RowParser(object):
         while True:
             newrow = copy.deepcopy(row)
             for i, flatten in enumerate(self.flatteninfo):
-                colname = flatten['original']
+                colname = flatten["original"]
                 template_string, replace_string = match_template(colname)
                 if not template_string:
-                    raise ValueError('Column name for flattening lacks an incrementing number!')
+                    raise ValueError(
+                        "Column name for flattening lacks an incrementing number!"
+                    )
                 if counters[i] == -1:
                     counters[i] = int(replace_string)
                 else:
-                    replace_string = f'{counters[i]}'
+                    replace_string = f"{counters[i]}"
                 colname = colname.replace(template_string, replace_string)
                 if colname not in row:
                     return
-                newrow[flatten['new']] = row[colname]
-                extracol = flatten.get('extracol')
+                newrow[flatten["new"]] = row[colname]
+                extracol = flatten.get("extracol")
                 if extracol:
                     newrow[extracol] = colname
                 counters[i] += 1
             yield newrow
 
-    def get_maxdate(self):
-        # type: () -> datetime
+    def get_maxdate(self) -> datetime:
         """Get the most recent date of the rows so far
 
         Returns:
@@ -205,8 +220,7 @@ class RowParser(object):
         """
         return self.maxdate
 
-    def filtered(self, row):
-        # type: (Dict) -> bool
+    def filtered(self, row: Dict) -> bool:
         """Check if the row should be filtered out
 
         Args:
@@ -222,8 +236,9 @@ class RowParser(object):
                 return True
         return False
 
-    def parse(self, row, scrapername=None):
-        # type: (Dict, str) -> Tuple[Optional[str], Optional[List[bool]]]
+    def parse(
+        self, row: Dict, scrapername: str = None
+    ) -> Tuple[Optional[str], Optional[List[bool]]]:
         """Parse row checking for valid admin information and if the row should be filtered out in each subset given
         its definition.
 
@@ -275,7 +290,7 @@ class RowParser(object):
 
         should_process_subset = list()
         for subset in self.subsets:
-            filter = subset['filter']
+            filter = subset["filter"]
             process = True
             if filter:
                 filter = self.get_filter_str_for_eval(filter)
@@ -286,19 +301,19 @@ class RowParser(object):
         if self.datecol:
             if isinstance(self.datecol, list):
                 dates = [str(row[x]) for x in self.datecol]
-                date = ''.join(dates)
+                date = "".join(dates)
             else:
                 date = row[self.datecol]
-            if self.datetype == 'date':
+            if self.datetype == "date":
                 if not isinstance(date, datetime):
                     date = parse_date(date)
                 date = date.replace(tzinfo=None)
                 if date > self.today and self.ignore_future_date:
-                   return None, None
-            elif self.datetype == 'year':
+                    return None, None
+            elif self.datetype == "year":
                 date = int(date)
                 if date > self.today.year and self.ignore_future_date:
-                   return None, None
+                    return None, None
             else:
                 date = int(date)
             for i, process in enumerate(should_process_subset):
@@ -326,5 +341,5 @@ class RowParser(object):
                     else:
                         self.maxdates[i][adms[self.datelevel]] = date
         if self.level is None:
-            return 'global', should_process_subset
+            return "global", should_process_subset
         return adms[self.level], should_process_subset

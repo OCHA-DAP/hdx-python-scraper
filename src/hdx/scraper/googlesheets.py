@@ -1,7 +1,6 @@
-# -*- coding: utf-8 -*-
 import json
 import logging
-from typing import Dict, List, Union, Optional
+from typing import Dict, List, Optional, Union
 
 import gspread
 
@@ -26,23 +25,34 @@ class GoogleSheets:
         updatetabs (List[str]): Tabs to update
     """
 
-    def __init__(self, configuration, gsheet_auth, updatesheets, tabs, updatetabs):
-        # type: (Dict, str, List[str], Dict[str, str], List[str]) -> None
+    def __init__(
+        self,
+        configuration: Dict,
+        gsheet_auth: str,
+        updatesheets: List[str],
+        tabs: Dict[str, str],
+        updatetabs: List[str],
+    ) -> None:
         info = json.loads(gsheet_auth)
-        scopes = ['https://www.googleapis.com/auth/spreadsheets']
+        scopes = ["https://www.googleapis.com/auth/spreadsheets"]
         self.gc = gspread.service_account_from_dict(info, scopes=scopes)
-        self.googlesheets = configuration['googlesheets']
+        self.googlesheets = configuration["googlesheets"]
         if updatesheets is None:
             updatesheets = self.googlesheets.keys()
-            logger.info('Updating all spreadsheets')
+            logger.info("Updating all spreadsheets")
         else:
-            logger.info(f'Updating only these spreadsheets: {updatesheets}')
+            logger.info(f"Updating only these spreadsheets: {updatesheets}")
         self.updatesheets = updatesheets
         self.tabs = tabs
         self.updatetabs = updatetabs
 
-    def update_tab(self, tabname, values, hxltags=None, limit=None):
-        # type: (str, Union[List, DataFrame], Optional[Dict], Optional[int]) -> None
+    def update_tab(
+        self,
+        tabname: str,
+        values: Union[List, DataFrame],
+        hxltags: Optional[Dict] = None,
+        limit: Optional[int] = None,
+    ) -> None:
         """Update tab with values
 
         Args:
@@ -68,13 +78,13 @@ class GoogleSheets:
                 headers = list(values.columns.values)
                 rows = [headers]
                 if hxltags:
-                    rows.append([hxltags.get(header, '') for header in headers])
+                    rows.append([hxltags.get(header, "") for header in headers])
                 if limit is not None:
                     values = values.head(limit)
                 df = values.copy(deep=True)
-                df.replace(numpy.inf, 'inf', inplace=True)
-                df.replace(-numpy.inf, '-inf', inplace=True)
-                df.fillna('NaN', inplace=True)
+                df.replace(numpy.inf, "inf", inplace=True)
+                df.replace(-numpy.inf, "-inf", inplace=True)
+                df.fillna("NaN", inplace=True)
                 rows.extend(df.values.tolist())
                 values = rows
-            tab.update('A1', values)
+            tab.update("A1", values)
