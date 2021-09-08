@@ -7,7 +7,7 @@ from hdx.location.adminone import AdminOne
 from hdx.utilities.dateparse import get_datetime_from_timestamp, parse_date
 from hdx.utilities.dictandlist import dict_of_lists_add
 from hdx.utilities.downloader import Download
-from hdx.utilities.text import number_format, get_fraction_str, get_numeric_if_possible
+from hdx.utilities.text import get_fraction_str, get_numeric_if_possible, number_format
 
 from hdx.scraper import add_population, get_rowval
 from hdx.scraper.readers import read
