@@ -43,7 +43,7 @@ class JsonOutput:
         Returns:
             None
         """
-        dict_of_lists_add(self.json, '%s_data' % key, row)
+        dict_of_lists_add(self.json, f'{key}_data', row)
 
     def add_dataframe_rows(self, key, df, hxltags=None):
         # type: (str, DataFrame, Optional[Dict]) -> None
@@ -59,7 +59,7 @@ class JsonOutput:
         """
         if hxltags:
             df = df.rename(columns=hxltags)
-        self.json['%s_data' % key] = df.to_dict(orient='records')
+        self.json[f'{key}_data'] = df.to_dict(orient='records')
 
     def add_data_rows_by_key(self, key, countryiso, rows, hxltags=None):
         # type: (str, str, List[Dict], Optional[Dict]) -> None
@@ -74,7 +74,7 @@ class JsonOutput:
         Returns:
             None
         """
-        fullname = '%s_data' % key
+        fullname = f'{key}_data'
         jsondict = self.json.get(fullname, dict())
         jsondict[countryiso] = list()
         for row in rows:
@@ -192,11 +192,11 @@ class JsonOutput:
         filepath = self.json_configuration['filepath']
         if folder:
             filepath = join(folder, filepath)
-        logger.info('Writing JSON to %s' % filepath)
+        logger.info(f'Writing JSON to {filepath}')
         save_json(self.json, filepath)
         filepaths.append(filepath)
         for kwarg in kwargs:
-            exec('%s=%s' % (kwarg, kwargs[kwarg]))
+            exec(f'{kwarg}={kwargs[kwarg]}')
         additional = self.json_configuration.get('additional', list())
         for filedetails in additional:
             json = dict()
@@ -250,7 +250,7 @@ class JsonOutput:
             filedetailspath = filedetails['filepath']
             if folder:
                 filedetailspath = join(folder, filedetailspath)
-            logger.info('Writing JSON to %s' % filedetailspath)
+            logger.info(f'Writing JSON to {filedetailspath}')
             save_json(json, filedetailspath)
             filepaths.append(filedetailspath)
         return filepaths

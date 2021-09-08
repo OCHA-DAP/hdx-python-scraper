@@ -185,7 +185,7 @@ class RowParser(object):
                 if counters[i] == -1:
                     counters[i] = int(replace_string)
                 else:
-                    replace_string = '%d' % counters[i]
+                    replace_string = f'{counters[i]}'
                 colname = colname.replace(template_string, replace_string)
                 if colname not in row:
                     return

@@ -40,7 +40,7 @@ def get_rowval(row, valcol):
         repvalcol = valcol
         for match in template.finditer(valcol):
             template_string = match.group()
-            replace_string = 'row["%s"]' % template_string[2:-2]
+            replace_string = f'row["{template_string[2:-2]}"]'
             repvalcol = repvalcol.replace(template_string, replace_string)
         return eval(repvalcol)
     else:

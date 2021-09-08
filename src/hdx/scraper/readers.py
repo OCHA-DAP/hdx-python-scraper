@@ -27,7 +27,7 @@ def get_url(url, **kwargs):
         str: Url with any template arguments replaced
     """
     for kwarg in kwargs:
-        exec('%s="%s"' % (kwarg, kwargs[kwarg]))
+        exec(f'{kwarg}="{kwargs[kwarg]}"')
     template_string, match_string = match_template(url)
     if template_string:
         replace_string = eval(match_string)
@@ -135,7 +135,7 @@ def read_hdx_metadata(datasetinfo, today=None):
                 url = resource['url']
                 break
         if not url:
-            raise ValueError('Cannot find %s resource in %s!' % (format, dataset_name))
+            raise ValueError(f'Cannot find {format} resource in {dataset_name}!')
         datasetinfo['url'] = url
     if 'date' not in datasetinfo:
         datasetinfo['date'] = get_date_from_dataset_date(dataset, today=today)
@@ -188,5 +188,5 @@ def read(downloader, datasetinfo, today=None, **kwargs):
         else:
             headers, iterator = read_tabular(downloader, datasetinfo, **kwargs)
     else:
-        raise ValueError('Invalid format %s for %s!' % (format, datasetinfo['name']))
+        raise ValueError(f"Invalid format {format} for {datasetinfo['name']}!")
     return headers, iterator

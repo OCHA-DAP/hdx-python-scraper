@@ -263,7 +263,7 @@ def _run_scraper(countryiso3s, adminone, level, today, name, datasetinfo, header
                             newvaldicts[j][adm] = eval(f'newvaldicts[j].get(adm, 0.0) + {str(valdict[adm][i])}')
                 formula = formula.replace('#population', '#pzbgvjh')
                 for i in sorted_len_indices:
-                    formula = formula.replace(valcols[i], 'newvaldicts[%d][adm]' % i)
+                    formula = formula.replace(valcols[i], f'newvaldicts[{i}][adm]')
                 formula = formula.replace('#pzbgvjh', 'population_lookup[adm]')
                 newvaldict = dict()
                 for adm in valdicts[0].keys():
@@ -282,7 +282,7 @@ def _run_scraper(countryiso3s, adminone, level, today, name, datasetinfo, header
         if isinstance(source_url, str):
             source_url = {'default_url': source_url}
         sources.extend([(hxltag, date, source.get(hxltag, source['default_source']), source_url.get(hxltag, source_url['default_url'])) for hxltag in output_hxltags])
-    logger.info('Processed %s' % name)
+    logger.info(f'Processed {name}')
 
 
 def run_scrapers(datasets, countryiso3s, adminone, level, maindownloader, basic_auths=dict(), today=None, scrapers=None, population_lookup=None, **kwargs):
@@ -313,7 +313,7 @@ def run_scrapers(datasets, countryiso3s, adminone, level, maindownloader, basic_
         else:
             if name == 'population':
                 continue
-        logger.info('Processing %s' % name)
+        logger.info(f'Processing {name}')
         basic_auth = basic_auths.get(name)
         if basic_auth is None:
             downloader = maindownloader

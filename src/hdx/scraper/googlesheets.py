@@ -36,7 +36,7 @@ class GoogleSheets:
             updatesheets = self.googlesheets.keys()
             logger.info('Updating all spreadsheets')
         else:
-            logger.info('Updating only these spreadsheets: %s' % updatesheets)
+            logger.info(f'Updating only these spreadsheets: {updatesheets}')
         self.updatesheets = updatesheets
         self.tabs = tabs
         self.updatetabs = updatetabs
