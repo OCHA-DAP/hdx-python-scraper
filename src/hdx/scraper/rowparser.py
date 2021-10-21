@@ -116,18 +116,33 @@ class RowParser:
         return filter
 
     def filter_sort_rows(
-        self, iterator: Iterator[Dict], hxlrow: Dict
+        self, iterator: Iterator[Dict], hxl_row: Dict, stop_row: Dict
     ) -> Iterator[Dict]:
         """Apply prefilter and sort the input data before processing. If date_col is specified along with any of
         sum_cols, process_cols or append_cols, and sorting is not specified, then apply a sort by date to ensure
         correct results.
 
         Args:
-            hxlrow (Dict): Mapping from column header to HXL hashtag
+            hxl_row (Dict): Mapping from column header to HXL hashtag
+            stop_row (Dict): Keys and values of row at which to stop processing
             iterator (Iterator[Dict]): Input data
         Returns:
             Iterator[Dict]: Input data with prefilter applied if specified and sorted if specified or deemed necessary
         """
+        rows = list()
+        for row in iterator:
+            if not isinstance(row, dict):
+                row = row.value
+            if hxl_row:
+                newrow = dict()
+                for header in row:
+                    newrow[hxl_row[header]] = row[header]
+                row = newrow
+            if stop_row:
+                if all(row[key] == value for key, value in stop_row.items()):
+                    break
+            for newrow in self.flatten(row):
+                rows.append(newrow)
         if not self.sort:
             if self.datecol:
                 for subset in self.subsets:
@@ -142,15 +157,12 @@ class RowParser:
                         self.sort = {"keys": [self.datecol], "reverse": True}
                         break
         if self.prefilter:
-            iterator = [row for row in iterator if eval(self.prefilter)]
+            rows = [row for row in rows if eval(self.prefilter)]
         if self.sort:
             keys = self.sort["keys"]
             reverse = self.sort.get("reverse", False)
-            if hxlrow:
-                headerrow = {v: k for k, v in hxlrow.items()}
-                keys = [headerrow[key] for key in keys]
-            iterator = sorted(list(iterator), key=itemgetter(*keys), reverse=reverse)
-        return iterator
+            rows = sorted(list(rows), key=itemgetter(*keys), reverse=reverse)
+        return rows
 
     def read_external_filter(self, datasetinfo: Dict) -> None:
         """Read filter list from external url pointing to a HXLated file

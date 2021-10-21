@@ -74,15 +74,15 @@ def _run_scraper(
         ]
     use_hxl = datasetinfo.get("use_hxl", False)
     if use_hxl:
-        hxlrow = next(iterator)
-        while not hxlrow:
-            hxlrow = next(iterator)
+        hxl_row = next(iterator)
+        while not hxl_row:
+            hxl_row = next(iterator)
         exclude_tags = datasetinfo.get("exclude_tags", list())
         adm_cols = list()
         input_cols = list()
         columns = list()
         for header in headers:
-            hxltag = hxlrow[header]
+            hxltag = hxl_row[header]
             if not hxltag or hxltag in exclude_tags:
                 continue
             if "#country" in hxltag:
@@ -121,12 +121,11 @@ def _run_scraper(
                 orig_hxltags.extend(input_cols)
             subset["output_hxltags"] = orig_hxltags
     else:
-        hxlrow = None
+        hxl_row = None
 
     rowparser = RowParser(
         countryiso3s, adminone, level, today, datasetinfo, headers, subsets
     )
-    iterator = rowparser.filter_sort_rows(iterator, hxlrow)
     valuedicts = dict()
     for subset in subsets:
         for _ in subset["input_cols"]:
@@ -165,20 +164,8 @@ def _run_scraper(
                     valuedict[adm] = val
 
     stop_row = datasetinfo.get("stop_row")
-    for row in iterator:
-        if not isinstance(row, dict):
-            row = row.value
-        if hxlrow:
-            newrow = dict()
-            for header in row:
-                newrow[hxlrow[header]] = row[header]
-            row = newrow
-        if stop_row:
-            if all(row[key] == value for key, value in stop_row.items()):
-                break
-        for newrow in rowparser.flatten(row):
-            add_row(newrow)
-
+    for row in rowparser.filter_sort_rows(iterator, hxl_row, stop_row):
+        add_row(row)
     date = datasetinfo.get("date")
     use_date_from_date_col = datasetinfo.get("use_date_from_date_col", False)
     if date and not use_date_from_date_col:

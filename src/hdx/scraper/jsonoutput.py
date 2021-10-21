@@ -172,18 +172,18 @@ class JsonOutput:
         """
         for datasetinfo in self.json_configuration.get("additional_json", list()):
             headers, iterator = read(downloader, datasetinfo, today=today)
-            hxlrow = next(iterator)
-            if not isinstance(hxlrow, dict):
-                hxlrow = hxlrow.value
+            hxl_row = next(iterator)
+            if not isinstance(hxl_row, dict):
+                hxl_row = hxl_row.value
             name = datasetinfo["name"]
             for row in iterator:
                 newrow = dict()
                 if not isinstance(row, dict):
                     row = row.value
                 for key in row:
-                    hxltag = hxlrow[key]
+                    hxltag = hxl_row[key]
                     if hxltag != "":
-                        newrow[hxlrow[key]] = row[key]
+                        newrow[hxl_row[key]] = row[key]
                 self.add_data_row(name, newrow)
 
     def save(self, folder: str = None, **kwargs: Any) -> List[str]:
