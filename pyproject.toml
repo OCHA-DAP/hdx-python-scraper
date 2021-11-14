@@ -84,7 +84,7 @@ output_directory = "docs/build"
 
         [[tool.pydoc-markdown.renderer.pages.children]]
         title = "Run Scrapers"
-        contents = ["hdx.scraper.scapers.*"]
+        contents = ["hdx.scraper.scrapers.*"]
 
         [[tool.pydoc-markdown.renderer.pages.children]]
         title = "Outputs"

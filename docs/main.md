@@ -13,7 +13,7 @@ humanitarian related data, please upload your datasets to HDX.
 
 The code for the library is [here](https://github.com/OCHA-DAP/hdx-python-scraper).
 The library has detailed API documentation which can be found in the menu on the left and starts 
-[here](https://hdx-python-scraper.readthedocs.io/en/latest/api-documentation/run_scraper). 
+[here](https://hdx-python-scraper.readthedocs.io/en/latest/api-documentation/source-readers). 
 
 To use the optional functions for outputting data from Pandas to JSON, Excel etc., install with:
 
