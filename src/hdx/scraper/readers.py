@@ -9,7 +9,7 @@ from hdx.utilities.path import temp_dir
 from jsonpath_ng import parse
 from olefile import olefile
 
-from hdx.scraper import get_date_from_dataset_date, match_template
+from hdx.scraper.utils import get_date_from_dataset_date, match_template
 
 logger = logging.getLogger(__name__)
 
@@ -59,7 +59,12 @@ def read_tabular(
     if compression:
         kwargs["compression"] = compression
     return downloader.get_tabular_rows(
-        url, sheet=sheet, headers=headers, dict_form=True, format=format, **kwargs
+        url,
+        sheet=sheet,
+        headers=headers,
+        dict_form=True,
+        format=format,
+        **kwargs,
     )
 
 
@@ -114,7 +119,9 @@ def read_json(
     return None
 
 
-def read_hdx_metadata(datasetinfo: Dict, today: Optional[datetime] = None) -> None:
+def read_hdx_metadata(
+    datasetinfo: Dict, today: Optional[datetime] = None
+) -> None:
     """Read metadata from HDX dataset and add to input dictionary
 
     Args:
@@ -137,7 +144,9 @@ def read_hdx_metadata(datasetinfo: Dict, today: Optional[datetime] = None) -> No
                 url = resource["url"]
                 break
         if not url:
-            raise ValueError(f"Cannot find {format} resource in {dataset_name}!")
+            raise ValueError(
+                f"Cannot find {format} resource in {dataset_name}!"
+            )
         datasetinfo["url"] = url
     if "date" not in datasetinfo:
         datasetinfo["date"] = get_date_from_dataset_date(dataset, today=today)

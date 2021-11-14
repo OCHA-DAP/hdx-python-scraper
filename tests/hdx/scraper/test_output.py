@@ -32,11 +32,15 @@ class TestOutput:
                 tabs = configuration["tabs"]
                 sheetname = list(tabs.values())[0]
                 noout = NoOutput(tabs)
-                excelout = ExcelOutput(join(tempdir, "test_output.xlsx"), tabs, tabs)
+                excelout = ExcelOutput(
+                    join(tempdir, "test_output.xlsx"), tabs, tabs
+                )
                 gsheet_auth = getenv("GSHEET_AUTH")
                 if not gsheet_auth:
                     raise ValueError("No gsheet authorisation supplied!")
-                googleout = GoogleSheets(configuration, gsheet_auth, None, tabs, tabs)
+                googleout = GoogleSheets(
+                    configuration, gsheet_auth, None, tabs, tabs
+                )
                 jsonout = JsonOutput(configuration, tabs)
                 output = [
                     list(hxltags.keys()),
@@ -53,8 +57,12 @@ class TestOutput:
                 excelout.update_tab("national", output, hxltags=hxltags)
                 googleout.update_tab("national", output, hxltags=hxltags)
                 jsonout.update_tab("national", output, hxltags=hxltags)
-                noout.add_additional_json(downloader, today=parse_date("2020-10-01"))
-                jsonout.add_additional_json(downloader, today=parse_date("2020-10-01"))
+                noout.add_additional_json(
+                    downloader, today=parse_date("2020-10-01")
+                )
+                jsonout.add_additional_json(
+                    downloader, today=parse_date("2020-10-01")
+                )
                 noout.save()
                 excelout.save()
                 filepaths = jsonout.save(tempdir, countries_to_save=["AFG"])
@@ -79,10 +87,12 @@ class TestOutput:
                     filepaths[0], join(fixtures, "test_scraper_all.json")
                 )
                 assert filecmp.cmp(
-                    filepaths[1], join(fixtures, "test_scraper_population.json")
+                    filepaths[1],
+                    join(fixtures, "test_scraper_population.json"),
                 )
                 assert filecmp.cmp(
-                    filepaths[2], join(fixtures, "test_scraper_population.json")
+                    filepaths[2],
+                    join(fixtures, "test_scraper_population.json"),
                 )
                 assert filecmp.cmp(
                     filepaths[3], join(fixtures, "test_scraper_other.json")
@@ -94,7 +104,9 @@ class TestOutput:
                 excelout.update_tab("national", df, hxltags=hxltags)
                 googleout.update_tab("national", df, hxltags=hxltags)
                 jsonout.update_tab("national", df, hxltags=hxltags)
-                jsonout.add_additional_json(downloader, today=parse_date("2020-10-01"))
+                jsonout.add_additional_json(
+                    downloader, today=parse_date("2020-10-01")
+                )
                 filepaths = jsonout.save(tempdir, countries_to_save=["AFG"])
                 assert get_list_from_cells("A1:C3") == output
                 result = googletab.get("A1:C3")
@@ -104,10 +116,12 @@ class TestOutput:
                     filepaths[0], join(fixtures, "test_scraper_all.json")
                 )
                 assert filecmp.cmp(
-                    filepaths[1], join(fixtures, "test_scraper_population.json")
+                    filepaths[1],
+                    join(fixtures, "test_scraper_population.json"),
                 )
                 assert filecmp.cmp(
-                    filepaths[2], join(fixtures, "test_scraper_population.json")
+                    filepaths[2],
+                    join(fixtures, "test_scraper_population.json"),
                 )
                 assert filecmp.cmp(
                     filepaths[3], join(fixtures, "test_scraper_other.json")
@@ -137,55 +151,51 @@ class TestOutput:
                 assert result == output
 
     def test_jsonoutput(self, configuration, fixtures, hxltags):
-        with temp_dir(
-            "TestScraperJson", delete_on_success=True, delete_on_failure=False
-        ) as tempdir:
-            with Download(user_agent="test") as downloader:
-                tabs = configuration["tabs"]
-                noout = NoOutput(tabs)
-                jsonout = JsonOutput(configuration, tabs)
-                rows = [
+        tabs = configuration["tabs"]
+        noout = NoOutput(tabs)
+        jsonout = JsonOutput(configuration, tabs)
+        rows = [
+            {
+                "Country Code": "#country+code",
+                "Country Name": "#country+name",
+                "Population": "#population",
+            },
+            {
+                "Country Code": "AFG",
+                "Country Name": "Afghanistan",
+                "Population": 38041754,
+            },
+        ]
+        noout.add_data_rows_by_key("test", "AFG", rows, hxltags)
+        jsonout.add_data_rows_by_key("test", "AFG", rows, hxltags)
+        assert jsonout.json == {
+            "test_data": {
+                "AFG": [
                     {
-                        "Country Code": "#country+code",
-                        "Country Name": "#country+name",
-                        "Population": "#population",
+                        "#country+code": "#country+code",
+                        "#country+name": "#country+name",
+                        "#population": "#population",
                     },
                     {
-                        "Country Code": "AFG",
-                        "Country Name": "Afghanistan",
-                        "Population": 38041754,
+                        "#country+code": "AFG",
+                        "#country+name": "Afghanistan",
+                        "#population": 38041754,
                     },
                 ]
-                noout.add_data_rows_by_key("test", "AFG", rows, hxltags)
-                jsonout.add_data_rows_by_key("test", "AFG", rows, hxltags)
-                assert jsonout.json == {
-                    "test_data": {
-                        "AFG": [
-                            {
-                                "#country+code": "#country+code",
-                                "#country+name": "#country+name",
-                                "#population": "#population",
-                            },
-                            {
-                                "#country+code": "AFG",
-                                "#country+name": "Afghanistan",
-                                "#population": 38041754,
-                            },
-                        ]
-                    }
+            }
+        }
+        df = pandas.DataFrame.from_records([rows[1]])
+        jsonout.json = dict()
+        noout.add_dataframe_rows("test", df, rows[0])
+        jsonout.add_dataframe_rows("test", df, rows[0])
+        assert jsonout.json == {
+            "test_data": [
+                {
+                    "#country+code": "AFG",
+                    "#country+name": "Afghanistan",
+                    "#population": 38041754,
                 }
-                df = pandas.DataFrame.from_records([rows[1]])
-                jsonout.json = dict()
-                noout.add_dataframe_rows("test", df, rows[0])
-                jsonout.add_dataframe_rows("test", df, rows[0])
-                assert jsonout.json == {
-                    "test_data": [
-                        {
-                            "#country+code": "AFG",
-                            "#country+name": "Afghanistan",
-                            "#population": 38041754,
-                        }
-                    ]
-                }
+            ]
+        }
 
-                noout.add_data_row("test", rows[1])  # doesn't do anything
+        noout.add_data_row("test", rows[1])  # doesn't do anything

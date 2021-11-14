@@ -2,8 +2,8 @@
 from os.path import join
 
 import pytest
-from hdx.hdx_configuration import Configuration
-from hdx.hdx_locations import Locations
+from hdx.api.configuration import Configuration
+from hdx.api.locations import Locations
 from hdx.location.country import Country
 
 
@@ -13,7 +13,9 @@ def configuration():
         hdx_read_only=True,
         hdx_site="prod",
         user_agent="test",
-        project_config_yaml=join("tests", "config", "project_configuration.yml"),
+        project_config_yaml=join(
+            "tests", "config", "project_configuration.yml"
+        ),
     )
     Locations.set_validlocations(
         [
