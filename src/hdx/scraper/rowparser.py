@@ -2,7 +2,7 @@ import copy
 import logging
 from datetime import datetime
 from operator import itemgetter
-from typing import Dict, Generator, Iterator, List, Optional, Tuple, Union
+from typing import Dict, Generator, Iterator, List, Optional, Tuple
 
 import hxl
 from hdx.location.adminone import AdminOne
@@ -10,7 +10,7 @@ from hdx.location.country import Country
 from hdx.utilities.dateparse import parse_date
 from hdx.utilities.dictandlist import dict_of_lists_add
 
-from hdx.scraper import match_template
+from hdx.scraper.utils import match_template
 
 logger = logging.getLogger(__name__)
 
@@ -91,7 +91,9 @@ class RowParser:
             self.maxdates = {i: date for i, _ in enumerate(subsets)}
         else:
             if self.datelevel > len(self.admcols):
-                raise ValueError("No admin columns specified for required level!")
+                raise ValueError(
+                    "No admin columns specified for required level!"
+                )
             self.maxdates = {
                 i: {adm: date for adm in self.adms[self.datelevel]}
                 for i, _ in enumerate(subsets)
@@ -186,7 +188,9 @@ class RowParser:
                         header = hxltag.display_tag
                     else:
                         header = hxltag.header
-                    dict_of_lists_add(self.filters, header, row.get("#country+code"))
+                    dict_of_lists_add(
+                        self.filters, header, row.get("#country+code")
+                    )
 
     def flatten(self, row: Dict) -> Generator[Dict, None, None]:
         """Flatten a wide spreadsheet format into a long one
@@ -283,7 +287,9 @@ class RowParser:
                 if i == 0:
                     adms[i], exact = Country.get_iso3_country_code_fuzzy(adm)
                 elif i == 1:
-                    adms[i], exact = self.adminone.get_pcode(adms[0], adm, scrapername)
+                    adms[i], exact = self.adminone.get_pcode(
+                        adms[0], adm, scrapername
+                    )
                 if adms[i] not in self.adms[i]:
                     adms[i] = None
             return exact

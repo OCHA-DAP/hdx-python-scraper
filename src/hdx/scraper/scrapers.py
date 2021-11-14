@@ -7,11 +7,15 @@ from hdx.location.adminone import AdminOne
 from hdx.utilities.dateparse import get_datetime_from_timestamp, parse_date
 from hdx.utilities.dictandlist import dict_of_lists_add
 from hdx.utilities.downloader import Download
-from hdx.utilities.text import get_fraction_str, get_numeric_if_possible, number_format
+from hdx.utilities.text import (  # noqa: F401
+    get_fraction_str,
+    get_numeric_if_possible,
+    number_format,
+)
 
-from hdx.scraper import add_population, get_rowval
 from hdx.scraper.readers import read
 from hdx.scraper.rowparser import RowParser
+from hdx.scraper.utils import add_population, get_rowval
 
 logger = logging.getLogger(__name__)
 
@@ -62,12 +66,16 @@ def _run_scraper(
             {
                 "filter": datasetinfo.get("filter"),
                 "input_cols": datasetinfo.get("input_cols", list()),
-                "input_transforms": datasetinfo.get("input_transforms", dict()),
+                "input_transforms": datasetinfo.get(
+                    "input_transforms", dict()
+                ),
                 "process_cols": datasetinfo.get("process_cols", list()),
                 "input_keep": datasetinfo.get("input_keep", list()),
                 "input_append": datasetinfo.get("input_append", list()),
                 "sum_cols": datasetinfo.get("sum_cols"),
-                "input_ignore_vals": datasetinfo.get("input_ignore_vals", list()),
+                "input_ignore_vals": datasetinfo.get(
+                    "input_ignore_vals", list()
+                ),
                 "output_cols": datasetinfo.get("output_cols", list()),
                 "output_hxltags": datasetinfo.get("output_hxltags", list()),
             }
@@ -228,17 +236,23 @@ def _run_scraper(
                 valdict0 = valdicts[0]
                 for adm in valdict0:
                     hasvalues = True
-                    matches = regex.search(brackets, process_col, flags=regex.VERBOSE)
+                    matches = regex.search(
+                        brackets, process_col, flags=regex.VERBOSE
+                    )
                     if matches:
                         for bracketed_str in matches.captures("rec"):
                             if any(bracketed_str in x for x in valcols):
                                 continue
-                            _, hasvalues_t = text_replacement(bracketed_str, adm)
+                            _, hasvalues_t = text_replacement(
+                                bracketed_str, adm
+                            )
                             if not hasvalues_t:
                                 hasvalues = False
                                 break
                     if hasvalues:
-                        formula, hasvalues_t = text_replacement(process_col, adm)
+                        formula, hasvalues_t = text_replacement(
+                            process_col, adm
+                        )
                         if hasvalues_t:
                             formula = formula.replace(
                                 "#population", "population_lookup[adm]"
@@ -263,21 +277,31 @@ def _run_scraper(
                             exists = True
                             for valdict in valdicts[1:]:
                                 val = valdict[adm][i]
-                                if val is None or val == "" or val in input_ignore_vals:
+                                if (
+                                    val is None
+                                    or val == ""
+                                    or val in input_ignore_vals
+                                ):
                                     exists = False
                                     break
                         if mustbepopulated and not exists:
                             continue
                         for j, valdict in enumerate(valdicts):
                             val = valdict[adm][i]
-                            if val is None or val == "" or val in input_ignore_vals:
+                            if (
+                                val is None
+                                or val == ""
+                                or val in input_ignore_vals
+                            ):
                                 continue
                             newvaldicts[j][adm] = eval(
                                 f"newvaldicts[j].get(adm, 0.0) + {str(valdict[adm][i])}"
                             )
                 formula = formula.replace("#population", "#pzbgvjh")
                 for i in sorted_len_indices:
-                    formula = formula.replace(valcols[i], f"newvaldicts[{i}][adm]")
+                    formula = formula.replace(
+                        valcols[i], f"newvaldicts[{i}][adm]"
+                    )
                 formula = formula.replace("#pzbgvjh", "population_lookup[adm]")
                 newvaldict = dict()
                 for adm in valdicts[0].keys():
@@ -338,7 +362,11 @@ def run_scrapers(
     Returns:
         Dict: Dictionary of output containing output headers, values and sources
     """
-    results = {"headers": [list(), list()], "values": list(), "sources": list()}
+    results = {
+        "headers": [list(), list()],
+        "values": list(),
+        "sources": list(),
+    }
     now = datetime.now()
     for name in datasets:
         if scrapers:
@@ -357,10 +385,14 @@ def run_scrapers(
             )
         datasetinfo = datasets[name]
         datasetinfo["name"] = name
-        headers, iterator = read(downloader, datasetinfo, today=today, **kwargs)
+        headers, iterator = read(
+            downloader, datasetinfo, today=today, **kwargs
+        )
         if "source_url" not in datasetinfo:
             datasetinfo["source_url"] = datasetinfo["url"]
-        if "date" not in datasetinfo or datasetinfo.get("force_date_today", False):
+        if "date" not in datasetinfo or datasetinfo.get(
+            "force_date_today", False
+        ):
             today_str = kwargs.get("today_str")
             if today_str:
                 today = parse_date(today_str)
@@ -384,5 +416,7 @@ def run_scrapers(
         if downloader != maindownloader:
             downloader.close()
         if population_lookup is not None:
-            add_population(population_lookup, results["headers"], results["values"])
+            add_population(
+                population_lookup, results["headers"], results["values"]
+            )
     return results

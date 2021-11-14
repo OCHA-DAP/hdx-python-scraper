@@ -12,8 +12,8 @@ try:
 except ImportError:
     pass
 
-from hdx.scraper import match_template
 from hdx.scraper.readers import read
+from hdx.scraper.utils import match_template
 
 logger = logging.getLogger(__name__)
 
@@ -170,7 +170,9 @@ class JsonOutput:
         Returns:
             None
         """
-        for datasetinfo in self.json_configuration.get("additional_json", list()):
+        for datasetinfo in self.json_configuration.get(
+            "additional_json", list()
+        ):
             headers, iterator = read(downloader, datasetinfo, today=today)
             hxl_row = next(iterator)
             if not isinstance(hxl_row, dict):
@@ -222,7 +224,9 @@ class JsonOutput:
                 newjson = self.json.get(key)
                 filters = tabdetails.get("filters", dict())
                 hxltags = tabdetails.get("hxltags")
-                if (filters or hxltags or remove) and isinstance(newjson, list):
+                if (filters or hxltags or remove) and isinstance(
+                    newjson, list
+                ):
                     rows = list()
                     for row in newjson:
                         ignore_row = False
@@ -230,9 +234,10 @@ class JsonOutput:
                             value = row.get(filter)
                             if value:
                                 if isinstance(allowed_values, str):
-                                    template_string, match_string = match_template(
-                                        allowed_values
-                                    )
+                                    (
+                                        template_string,
+                                        match_string,
+                                    ) = match_template(allowed_values)
                                     if template_string:
                                         allowed_values = eval(
                                             allowed_values.replace(
