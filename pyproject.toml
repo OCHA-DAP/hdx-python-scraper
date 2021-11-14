@@ -104,6 +104,7 @@ python =
 [testenv]
 recreate = true
 wheel = true
+passenv = GSHEET_AUTH
 deps =
     -r test-requirements.txt
 commands =
