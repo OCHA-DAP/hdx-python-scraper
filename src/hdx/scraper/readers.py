@@ -1,4 +1,5 @@
 import logging
+from collections.abc import MutableMapping
 from datetime import datetime
 from os.path import join
 from typing import Any, Dict, Iterator, List, Optional, Tuple, Union
@@ -10,6 +11,7 @@ from jsonpath_ng import parse
 from olefile import olefile
 
 from hdx.scraper.utils import get_date_from_dataset_date, match_template
+
 
 logger = logging.getLogger(__name__)
 
@@ -34,13 +36,13 @@ def get_url(url: str, **kwargs: Any) -> str:
 
 
 def read_tabular(
-    downloader: Download, datasetinfo: Dict, **kwargs: Any
+    downloader: Download, datasetinfo: MutableMapping, **kwargs: Any
 ) -> Tuple[List[str], Iterator[Union[List, Dict]]]:
     """Read data from tabular source eg. csv, xls, xlsx
 
     Args:
         downloader (Download): Download object for downloading files
-        datasetinfo (Dict): Dictionary of information about dataset
+        datasetinfo (MutableMapping): Dictionary of information about dataset
         **kwargs: Variables to use when evaluating template arguments
 
     Returns:
@@ -69,13 +71,13 @@ def read_tabular(
 
 
 def read_ole(
-    downloader: Download, datasetinfo: Dict, **kwargs: Any
+    downloader: Download, datasetinfo: MutableMapping, **kwargs: Any
 ) -> Tuple[List[str], Iterator[Union[List, Dict]]]:
     """Read data from OLE Excel source
 
     Args:
         downloader (Download): Download object for downloading files
-        datasetinfo (Dict): Dictionary of information about dataset
+        datasetinfo (MutableMapping): Dictionary of information about dataset
         **kwargs: Variables to use when evaluating template arguments
 
     Returns:
@@ -95,13 +97,13 @@ def read_ole(
 
 
 def read_json(
-    downloader: Download, datasetinfo: Dict, **kwargs: Any
+    downloader: Download, datasetinfo: MutableMapping, **kwargs: Any
 ) -> Optional[Iterator[Union[List, Dict]]]:
     """Read data from json source allowing for JSONPath expressions
 
     Args:
         downloader (Download): Download object for downloading JSON
-        datasetinfo (Dict): Dictionary of information about dataset
+        datasetinfo (MutableMapping): Dictionary of information about dataset
         **kwargs: Variables to use when evaluating template arguments
 
     Returns:
@@ -120,12 +122,12 @@ def read_json(
 
 
 def read_hdx_metadata(
-    datasetinfo: Dict, today: Optional[datetime] = None
+    datasetinfo: MutableMapping, today: Optional[datetime] = None
 ) -> None:
     """Read metadata from HDX dataset and add to input dictionary
 
     Args:
-        datasetinfo (Dict): Dictionary of information about dataset
+        datasetinfo (MutableMapping): Dictionary of information about dataset
         today (Optional[datetime]): Value to use for today. Defaults to None (datetime.now()).
 
     Returns:
@@ -157,13 +159,15 @@ def read_hdx_metadata(
 
 
 def read_hdx(
-    downloader: Download, datasetinfo: Dict, today: Optional[datetime] = None
+    downloader: Download,
+    datasetinfo: MutableMapping,
+    today: Optional[datetime] = None,
 ) -> Tuple[List[str], Iterator[Union[List, Dict]]]:
     """Read data and metadata from HDX dataset
 
     Args:
         downloader (Download): Download object for downloading files
-        datasetinfo (Dict): Dictionary of information about dataset
+        datasetinfo (MutableMapping): Dictionary of information about dataset
         **kwargs: Variables to use when evaluating template arguments
 
     Returns:
@@ -175,7 +179,7 @@ def read_hdx(
 
 def read(
     downloader: Download,
-    datasetinfo: Dict,
+    datasetinfo: MutableMapping,
     today: Optional[datetime] = None,
     **kwargs: Any,
 ) -> Tuple[List[str], Iterator[Union[List, Dict]]]:
@@ -183,7 +187,7 @@ def read(
 
     Args:
         downloader (Download): Download object for downloading files
-        datasetinfo (Dict): Dictionary of information about dataset
+        datasetinfo (MutableMapping): Dictionary of information about dataset
         today (Optional[datetime]): Value to use for today. Defaults to None (datetime.now()).
         **kwargs: Variables to use when evaluating template arguments in urls
 
