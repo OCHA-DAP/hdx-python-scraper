@@ -12,7 +12,6 @@ from olefile import olefile
 
 from hdx.scraper.utils import get_date_from_dataset_date, match_template
 
-
 logger = logging.getLogger(__name__)
 
 
