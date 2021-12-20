@@ -407,7 +407,9 @@ def use_fallbacks(
         elif fb_adm_hxltag:
             adm_key = row[fb_adm_hxltag]
         else:
-            raise ValueError("Either admin name or admin hxltag must be specified!")
+            raise ValueError(
+                "Either admin name or admin hxltag must be specified!"
+            )
         for i, hxltag in enumerate(hxltags):
             valdicts[i][adm_key] = row[hxltag]
     retvalues.extend(valdicts)
@@ -415,12 +417,14 @@ def use_fallbacks(
     for row in fallbacks["sources"]:
         hxltag = row[fb_sources_hxltags[0]]
         if hxltag in hxltags:
-            results["sources"].append((
-                hxltag,
-                row[fb_sources_hxltags[1]],
-                row[fb_sources_hxltags[2]],
-                row[fb_sources_hxltags[3]],
-            ))
+            results["sources"].append(
+                (
+                    hxltag,
+                    row[fb_sources_hxltags[1]],
+                    row[fb_sources_hxltags[2]],
+                    row[fb_sources_hxltags[3]],
+                )
+            )
     logger.error(f"Used fallback data for {name}!")
     dict_of_lists_add(results, "fallbacks", name)
 
@@ -486,7 +490,7 @@ def run_scrapers(
             if "source_url" not in datasetinfo:
                 datasetinfo["source_url"] = datasetinfo["url"]
             if "date" not in datasetinfo or datasetinfo.get(
-                    "force_date_today", False
+                "force_date_today", False
             ):
                 today_str = kwargs.get("today_str")
                 if today_str:
@@ -519,7 +523,9 @@ def run_scrapers(
             output_hxltags = datasetinfo.get("output_hxltags")
             if not output_hxltags:
                 raise
-            use_fallbacks(name, fallbacks, output_cols, output_hxltags, results)
+            use_fallbacks(
+                name, fallbacks, output_cols, output_hxltags, results
+            )
         if population_lookup is not None:
             add_population(
                 population_lookup, results["headers"], results["values"]

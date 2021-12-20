@@ -371,9 +371,17 @@ class TestScraper:
             fallback_data = load_json(fallback_path)
             data = fallback_data["national_data"]
             sources = fallback_data["sources"]
-            fallbacks = {"data": data, "admin hxltag": "#country+code",
-                         "sources": sources,
-                         "sources hxltags": ["#indicator+name", "#date", "#meta+source", "#meta+url"]}
+            fallbacks = {
+                "data": data,
+                "admin hxltag": "#country+code",
+                "sources": sources,
+                "sources hxltags": [
+                    "#indicator+name",
+                    "#date",
+                    "#meta+source",
+                    "#meta+url",
+                ],
+            }
             results = run_scrapers(
                 scraper_configuration,
                 ["AFG", "PHL"],
