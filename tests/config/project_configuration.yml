@@ -63,7 +63,7 @@ scraper_national:
       - "Population"
     output_hxltags:
       - "#population"
-# only for testing dividing by population
+  # only for testing dividing by population
   who_national:
     source: "WHO"
     format: "csv"
@@ -86,7 +86,7 @@ scraper_national:
     output_hxltags:
       - "#affected+infected+per100000"
       - "#affected+killed+per100000"
-# A fake one where we sum all values in cumulative column across dates which in practice makes no sense
+  # A fake one where we sum all values in cumulative column across dates which in practice makes no sense
   who_national2:
     source: "WHO"
     format: "csv"
@@ -183,6 +183,27 @@ scraper_national:
     source: "Our World in Data"
     format: "csv"
     url: "tests/fixtures/ourworldindata_vaccinedoses.csv"
+    headers: 1
+    use_hxl: True
+    external_filter:
+      url: "https://github.com/OCHA-DAP/hdx-python-scraper/raw/main/tests/fixtures/COVID-19%20Vaccine%20Doses%20in%20HRP%20Countries%20-%20Data%20HXL.csv"
+      hxltags:
+       - "#country+code"
+    adm_cols:
+      - "#country+code"
+    date_col: "#date"
+    date_type: "date"
+    input_cols:
+      - "#total+vaccinations"
+    output_cols:
+      - "TotalDosesAdministered"
+    output_hxltags:
+      - "#capacity+doses+administered+total"
+  # for testing broken url
+  testbrokenurl:
+    source: "Our World in Data"
+    format: "csv"
+    url: "NOTEXIST.csv"
     headers: 1
     use_hxl: True
     external_filter:

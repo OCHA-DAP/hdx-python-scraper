@@ -1,12 +1,20 @@
+from os.path import join
+
+import pytest
 from hdx.location.adminone import AdminOne
 from hdx.utilities.dateparse import parse_date
 from hdx.utilities.downloader import Download
+from hdx.utilities.loader import load_json
 
 from hdx.scraper.scrapers import run_scrapers
 
 
 class TestScraper:
-    def test_get_tabular(self, configuration):
+    @pytest.fixture(scope="class")
+    def fallback_path(self):
+        return join("tests", "fixtures", "fallbacks.json")
+
+    def test_get_tabular(self, configuration, fallback_path):
         with Download(user_agent="test") as downloader:
             today = parse_date("2020-10-01")
             adminone = AdminOne(configuration)
@@ -358,6 +366,44 @@ class TestScraper:
                     "2020-10-01",
                     "Our World in Data",
                     "tests/fixtures/ourworldindata_vaccinedoses.csv",
+                )
+            ]
+            fallback_data = load_json(fallback_path)
+            data = fallback_data["national_data"]
+            sources = fallback_data["sources"]
+            fallbacks = {
+                "data": data,
+                "admin hxltag": "#country+code",
+                "sources": sources,
+                "sources hxltags": [
+                    "#indicator+name",
+                    "#date",
+                    "#meta+source",
+                    "#meta+url",
+                ],
+            }
+            results = run_scrapers(
+                scraper_configuration,
+                ["AFG", "PHL"],
+                adminone,
+                level,
+                downloader,
+                today=today,
+                scrapers=["testbrokenurl"],
+                population_lookup=population_lookup,
+                fallbacks=fallbacks,
+            )
+            assert results["headers"] == [
+                ["TotalDosesAdministered"],
+                ["#capacity+doses+administered+total"],
+            ]
+            assert results["values"] == [{"AFG": "230000"}]
+            assert results["sources"] == [
+                (
+                    "#capacity+doses+administered+total",
+                    "2020-09-01",
+                    "Our World in Data",
+                    "tests/fixtures/fallbacks.json",
                 )
             ]
             today = parse_date("2020-10-01")

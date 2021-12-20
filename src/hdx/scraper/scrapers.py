@@ -6,7 +6,7 @@ import regex
 from hdx.location.adminone import AdminOne
 from hdx.utilities.dateparse import get_datetime_from_timestamp, parse_date
 from hdx.utilities.dictandlist import dict_of_lists_add
-from hdx.utilities.downloader import Download
+from hdx.utilities.downloader import Download, DownloadError
 from hdx.utilities.text import (  # noqa: F401
     get_fraction_str,
     get_numeric_if_possible,
@@ -29,6 +29,40 @@ brackets = r"""
  )*
  \) #close parenthesis
 )"""
+
+
+def _add_source(
+    date: str, datasetinfo: Dict, output_hxltags: List[str], results: Dict
+) -> None:
+    """Add source to results dictionary
+
+    Args:
+        date (str): Date of source as a string
+        datasetinfo (Dict): Dictionary of information about dataset
+        output_hxltags (List[str]): HXL hashtags of output columns
+        results (Dict): Dictionary of output containing output headers, values and sources
+
+    Returns:
+        None
+    """
+    sources = results["sources"]
+    source = datasetinfo["source"]
+    if isinstance(source, str):
+        source = {"default_source": source}
+    source_url = datasetinfo["source_url"]
+    if isinstance(source_url, str):
+        source_url = {"default_url": source_url}
+    sources.extend(
+        [
+            (
+                hxltag,
+                date,
+                source.get(hxltag, source["default_source"]),
+                source_url.get(hxltag, source_url["default_url"]),
+            )
+            for hxltag in output_hxltags
+        ]
+    )
 
 
 def _run_scraper(
@@ -193,7 +227,6 @@ def _run_scraper(
 
     retheaders = results["headers"]
     retvalues = results["values"]
-    sources = results["sources"]
     for subset in subsets:
         output_cols = subset["output_cols"]
         retheaders[0].extend(output_cols)
@@ -213,7 +246,10 @@ def _run_scraper(
             newvaldicts = [dict() for _ in process_cols]
 
             def text_replacement(string, adm):
-                string = string.replace("#population", "#pzbgvjh")
+                # pzbgvjh is arbitrary! It is simply to prevent accidental replacement
+                # of all or parts of #population (if it is in the string).
+                arbitrary_string = "#pzbgvjh"
+                string = string.replace("#population", arbitrary_string)
                 hasvalues = False
                 for j in sorted_len_indices:
                     valcol = valcols[j]
@@ -229,7 +265,7 @@ def _run_scraper(
                     else:
                         hasvalues = True
                     string = string.replace(valcol, str(val))
-                string = string.replace("#pzbgvjh", "#population")
+                string = string.replace(arbitrary_string, "#population")
                 return string, hasvalues
 
             for i, process_col in enumerate(process_cols):
@@ -313,24 +349,84 @@ def _run_scraper(
                 retvalues.append(newvaldict)
         else:
             retvalues.extend(valdicts)
-        source = datasetinfo["source"]
-        if isinstance(source, str):
-            source = {"default_source": source}
-        source_url = datasetinfo["source_url"]
-        if isinstance(source_url, str):
-            source_url = {"default_url": source_url}
-        sources.extend(
-            [
+        _add_source(date, datasetinfo, output_hxltags, results)
+    logger.info(f"Processed {name}")
+
+
+def use_fallbacks(
+    name: str,
+    fallbacks: Dict,
+    output_cols: List[str],
+    output_hxltags: List[str],
+    results: Dict,
+) -> None:
+    """Use provided fallbacks when there is a problem obtaining the latest data. The
+    fallbacks dictionary should have the following keys: "data" containing a list of
+    dictionaries from HXL hashtag to value, "admin name" to specify a particular admin
+    name to use or "admin hxltag" specifying the HXL hashtag of the admin unit,
+    "sources" containing a list of dictionaries with source information and
+    "sources hxltags" containing a list of HXL hashtags with the name one first. eg.
+
+    {"data": [{"#country+code": "AFG", "": "#value+wb+total": "572000000", ...}, ...],
+    "admin hxltag": "#country+code",
+    "sources": [{"#date": "2020-07-29", "#indicator+name": "#value+wb+total",
+    "#meta+source": "OCHA, Center for Disaster Protection",
+    "#meta+url": "https://data.humdata.org/dataset/compilation..."}, ...],
+    "sources hxltags": ["#indicator+name", "#date", "#meta+source", "#meta+url"]}
+
+    Args:
+        name (str): Name of mini scraper
+        fallbacks (Dict): Fallbacks dictionary
+        output_cols (List[str]): Names of output columns
+        output_hxltags (List[str]): HXL hashtags of output columns
+        results (Dict): Dictionary of output containing output headers, values and sources
+
+    Returns:
+        None
+    """
+    retheaders = results["headers"]
+    retvalues = results["values"]
+
+    lookup = dict(zip(output_hxltags, output_cols))
+    fb_data = fallbacks["data"]
+    fb_adm_name = fallbacks.get("admin name", None)
+    fb_adm_hxltag = fallbacks.get("admin hxltag", None)
+
+    hxltags = list()
+    for key in fb_data[0]:
+        if key not in output_hxltags:
+            continue
+        hxltags.append(key)
+        retheaders[0].append(lookup[key])
+    retheaders[1].extend(hxltags)
+
+    valdicts = [dict() for _ in retheaders[0]]
+    for row in fb_data:
+        if fb_adm_name:
+            adm_key = fb_adm_name
+        elif fb_adm_hxltag:
+            adm_key = row[fb_adm_hxltag]
+        else:
+            raise ValueError(
+                "Either admin name or admin hxltag must be specified!"
+            )
+        for i, hxltag in enumerate(hxltags):
+            valdicts[i][adm_key] = row[hxltag]
+    retvalues.extend(valdicts)
+    fb_sources_hxltags = fallbacks["sources hxltags"]
+    for row in fallbacks["sources"]:
+        hxltag = row[fb_sources_hxltags[0]]
+        if hxltag in hxltags:
+            results["sources"].append(
                 (
                     hxltag,
-                    date,
-                    source.get(hxltag, source["default_source"]),
-                    source_url.get(hxltag, source_url["default_url"]),
+                    row[fb_sources_hxltags[1]],
+                    row[fb_sources_hxltags[2]],
+                    row[fb_sources_hxltags[3]],
                 )
-                for hxltag in output_hxltags
-            ]
-        )
-    logger.info(f"Processed {name}")
+            )
+    logger.error(f"Used fallback data for {name}!")
+    dict_of_lists_add(results, "fallbacks", name)
 
 
 def run_scrapers(
@@ -343,6 +439,7 @@ def run_scrapers(
     today: Optional[datetime] = None,
     scrapers: Optional[List[str]] = None,
     population_lookup: Dict[str, int] = None,
+    fallbacks: Optional[Dict] = None,
     **kwargs: Any,
 ) -> Dict:
     """Runs all mini scrapers given in configuration and returns headers, values and sources.
@@ -357,6 +454,7 @@ def run_scrapers(
         today (Optional[datetime]): Value to use for today. Defaults to None (datetime.now()).
         scrapers (Optional[List[str]])): List of mini scraper names to process
         population_lookup (Dict[str,int]): Dictionary from admin code to population
+        fallbacks (Optional[Dict]): Fallback data to use. Defaults to None.
         **kwargs: Variables to use when evaluating template arguments in urls
 
     Returns:
@@ -385,36 +483,49 @@ def run_scrapers(
             )
         datasetinfo = datasets[name]
         datasetinfo["name"] = name
-        headers, iterator = read(
-            downloader, datasetinfo, today=today, **kwargs
-        )
-        if "source_url" not in datasetinfo:
-            datasetinfo["source_url"] = datasetinfo["url"]
-        if "date" not in datasetinfo or datasetinfo.get(
-            "force_date_today", False
-        ):
-            today_str = kwargs.get("today_str")
-            if today_str:
-                today = parse_date(today_str)
-            else:
-                if not today:
-                    today = now
-                today_str = today.strftime("%Y-%m-%d")
-            datasetinfo["date"] = today_str
-        _run_scraper(
-            countryiso3s,
-            adminone,
-            level,
-            today,
-            name,
-            datasetinfo,
-            headers,
-            iterator,
-            population_lookup,
-            results,
-        )
-        if downloader != maindownloader:
-            downloader.close()
+        try:
+            headers, iterator = read(
+                downloader, datasetinfo, today=today, **kwargs
+            )
+            if "source_url" not in datasetinfo:
+                datasetinfo["source_url"] = datasetinfo["url"]
+            if "date" not in datasetinfo or datasetinfo.get(
+                "force_date_today", False
+            ):
+                today_str = kwargs.get("today_str")
+                if today_str:
+                    today = parse_date(today_str)
+                else:
+                    if not today:
+                        today = now
+                    today_str = today.strftime("%Y-%m-%d")
+                datasetinfo["date"] = today_str
+            _run_scraper(
+                countryiso3s,
+                adminone,
+                level,
+                today,
+                name,
+                datasetinfo,
+                headers,
+                iterator,
+                population_lookup,
+                results,
+            )
+            if downloader != maindownloader:
+                downloader.close()
+        except DownloadError:
+            if not fallbacks:
+                raise
+            output_cols = datasetinfo.get("output_cols")
+            if not output_cols:
+                raise
+            output_hxltags = datasetinfo.get("output_hxltags")
+            if not output_hxltags:
+                raise
+            use_fallbacks(
+                name, fallbacks, output_cols, output_hxltags, results
+            )
         if population_lookup is not None:
             add_population(
                 population_lookup, results["headers"], results["values"]
