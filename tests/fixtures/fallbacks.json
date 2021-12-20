@@ -1,0 +1,1 @@
+{"national_data":[{"#country+code": "AFG","#capacity+doses+administered+total": "230000"}],"sources": [{"#indicator+name": "#capacity+doses+administered+total","#date":  "2020-09-01", "#meta+source":  "Our World in Data", "#meta+url":  "tests/fixtures/fallbacks.json"}]}
