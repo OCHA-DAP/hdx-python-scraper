@@ -387,20 +387,14 @@ def use_fallbacks(
     retheaders = results["headers"]
     retvalues = results["values"]
 
-    lookup = dict(zip(output_hxltags, output_cols))
     fb_data = fallbacks["data"]
     fb_adm_name = fallbacks.get("admin name", None)
     fb_adm_hxltag = fallbacks.get("admin hxltag", None)
 
-    hxltags = list()
-    for key in fb_data[0]:
-        if key not in output_hxltags:
-            continue
-        hxltags.append(key)
-        retheaders[0].append(lookup[key])
-    retheaders[1].extend(hxltags)
+    retheaders[0].extend(output_cols)
+    retheaders[1].extend(output_hxltags)
 
-    valdicts = [dict() for _ in retheaders[0]]
+    valdicts = [dict() for _ in output_hxltags]
     for row in fb_data:
         if fb_adm_name:
             adm_key = fb_adm_name
@@ -410,13 +404,15 @@ def use_fallbacks(
             raise ValueError(
                 "Either admin name or admin hxltag must be specified!"
             )
-        for i, hxltag in enumerate(hxltags):
-            valdicts[i][adm_key] = row[hxltag]
+        for i, hxltag in enumerate(output_hxltags):
+            val = row.get(hxltag)
+            if val is not None:
+                valdicts[i][adm_key] = val
     retvalues.extend(valdicts)
     fb_sources_hxltags = fallbacks["sources hxltags"]
     for row in fallbacks["sources"]:
         hxltag = row[fb_sources_hxltags[0]]
-        if hxltag in hxltags:
+        if hxltag in output_hxltags:
             results["sources"].append(
                 (
                     hxltag,
