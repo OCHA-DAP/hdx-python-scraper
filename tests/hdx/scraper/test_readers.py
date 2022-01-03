@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import pytest
 from hdx.utilities.downloader import Download
 
@@ -39,12 +41,13 @@ class TestReaders:
                 "Targeted 2017": "             _",
                 "% targeted": "0",
             }
+            date = datetime(2016, 9, 1, 23, 59, 59)
             assert datasetinfo == {
                 "name": "test",
                 "dataset": "sahel-humanitarian-needs-overview",
                 "format": "csv",
                 "headers": 1,
-                "date": "2016-09-01",
+                "date": date,
                 "source": "Multiple organisations",
                 "source_url": "https://data.humdata.org/dataset/sahel-humanitarian-needs-overview",
                 "url": "https://data.humdata.org/dataset/47f6ef46-500f-421a-9fa2-fefd93facf95/resource/2527ac5b-66fe-46f0-8b9b-7086d2c4ddd3/download/hno-2017-sahel-nutrition.csv",
@@ -82,7 +85,7 @@ class TestReaders:
                 "format": "xlsx",
                 "sheet": 1,
                 "headers": 1,
-                "date": "2016-09-01",
+                "date": date,
                 "source": "Multiple organisations",
                 "source_url": "https://data.humdata.org/dataset/sahel-humanitarian-needs-overview",
                 "url": "https://data.humdata.org/dataset/47f6ef46-500f-421a-9fa2-fefd93facf95/resource/d9248be4-7bfb-4a81-a7aa-c035dcb737a2/download/hno-2017-sahel-people-in-need.xlsx",

@@ -22,7 +22,6 @@ class RowParser:
         countryiso3s (List[str]): List of ISO3 country codes to process
         adminone (AdminOne): AdminOne object from HDX Python Country library that handles processing of admin level 1
         level (str): Can be global, national or subnational
-        today (datetime): Value to use for today. Defaults to None (datetime.now()).
         datasetinfo (Dict): Dictionary of information about dataset
         headers (List[str]): Row headers
         subsets (List[Dict]): List of subset definitions
@@ -34,7 +33,6 @@ class RowParser:
         countryiso3s: List[str],
         adminone: AdminOne,
         level: str,
-        today: datetime,
         datasetinfo: Dict,
         headers: List[str],
         subsets: List[Dict],
@@ -51,7 +49,7 @@ class RowParser:
             return lvl
 
         self.level = get_level(level)
-        self.today = today
+        self.today = datasetinfo["date"]
         self.sort = datasetinfo.get("sort")
         self.datecol = datasetinfo.get("date_col")
         self.datetype = datasetinfo.get("date_type")

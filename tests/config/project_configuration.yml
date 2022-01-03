@@ -225,9 +225,10 @@ scraper_national:
     format: "xlsx"
     dataset: "total-covid-19-tests-performed-by-country"
     url: "tests/fixtures/owid-covid-data.xlsx"
-    headers: 1
     sheet: 1
+    headers: 1
     prefilter: "new_tests is not None and new_tests > 0"
+    force_date_today: True
     date_col: "date"
     date_type: "date"
     use_date_from_date_col: True
@@ -336,8 +337,8 @@ scraper_global:
     format: "csv"
     url: "tests/fixtures/full_pfmb_allocations.csv"
     dataset: "cerf-covid-19-allocations"
-    force_date_today: True
     headers: 1
+    force_date_today: True
     date_col: "AllocationYear"
     date_type: "year"
     single_maxdate: True

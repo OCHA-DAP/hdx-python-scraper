@@ -6,10 +6,10 @@ from hdx.utilities.dateparse import parse_date
 from hdx.utilities.downloader import Download
 from hdx.utilities.loader import load_json
 
-from hdx.scraper.scrapers import run_scrapers
+from hdx.scraper.scrapers import Scrapers
 
 
-class TestScraper:
+class TestScrapers:
     @pytest.fixture(scope="class")
     def fallback_path(self):
         return join("tests", "fixtures", "fallbacks.json")
@@ -21,15 +21,17 @@ class TestScraper:
             population_lookup = dict()
             level = "national"
             scraper_configuration = configuration[f"scraper_{level}"]
-            results = run_scrapers(
+            scrapers_afg = Scrapers(
                 scraper_configuration,
+                level,
                 ["AFG"],
                 adminone,
-                level,
                 downloader,
                 today=today,
-                scrapers=["population"],
                 population_lookup=population_lookup,
+            )
+            results = scrapers_afg.run(
+                scrapers=["population"],
             )
             assert results["headers"] == [["Population"], ["#population"]]
             assert results["values"] == [{"AFG": 38041754}]
@@ -41,15 +43,8 @@ class TestScraper:
                     "https://data.humdata.org/organization/world-bank-group",
                 )
             ]
-            results = run_scrapers(
-                scraper_configuration,
-                ["AFG"],
-                adminone,
-                level,
-                downloader,
-                today=today,
+            results = scrapers_afg.run(
                 scrapers=["who"],
-                population_lookup=population_lookup,
             )
             assert results["headers"] == [
                 [
@@ -97,15 +92,8 @@ class TestScraper:
                     "tests/fixtures/WHO-COVID-19-global-data.csv",
                 ),
             ]
-            results = run_scrapers(
-                scraper_configuration,
-                ["AFG"],
-                adminone,
-                level,
-                downloader,
-                today=today,
+            results = scrapers_afg.run(
                 scrapers=["access"],
-                population_lookup=population_lookup,
             )
             assert results["headers"] == [
                 [
@@ -207,15 +195,8 @@ class TestScraper:
                     "https://docs.google.com/spreadsheets/d/e/2PACX-1vRSzJzuyVt9i_mkRQ2HbxrUl2Lx2VIhkTHQM-laE8NyhQTy70zQTCuFS3PXbhZGAt1l2bkoA4_dAoAP/pub?gid=1565063847&single=true&output=csv",
                 ),
             ]
-            results = run_scrapers(
-                scraper_configuration,
-                ["AFG"],
-                adminone,
-                level,
-                downloader,
-                today=today,
+            results = scrapers_afg.run(
                 scrapers=["sadd"],
-                population_lookup=population_lookup,
             )
             assert results["headers"] == [
                 [
@@ -263,15 +244,18 @@ class TestScraper:
                     "tests/fixtures/covid-19-sex-disaggregated-data.csv",
                 ),
             ]
-            results = run_scrapers(
+
+            scrapers_afg_phl = Scrapers(
                 scraper_configuration,
+                level,
                 ["AFG", "PHL"],
                 adminone,
-                level,
                 downloader,
                 today=today,
-                scrapers=["ourworldindata"],
                 population_lookup=population_lookup,
+            )
+            results = scrapers_afg_phl.run(
+                scrapers=["ourworldindata"],
             )
             assert results["headers"] == [
                 ["TotalDosesAdministered"],
@@ -286,15 +270,8 @@ class TestScraper:
                     "tests/fixtures/ourworldindata_vaccinedoses.csv",
                 )
             ]
-            results = run_scrapers(
-                scraper_configuration,
-                ["AFG", "PHL"],
-                adminone,
-                level,
-                downloader,
-                today=today,
+            results = scrapers_afg_phl.run(
                 scrapers=["covidtests"],
-                population_lookup=population_lookup,
             )
             assert results["headers"] == [
                 [
@@ -343,27 +320,27 @@ class TestScraper:
                 ),
             ]
             today = parse_date("2021-05-03")
-            results = run_scrapers(
+            scrapers_afg_phl = Scrapers(
                 scraper_configuration,
+                level,
                 ["AFG", "PHL"],
                 adminone,
-                level,
                 downloader,
                 today=today,
-                scrapers=["ourworldindata"],
                 population_lookup=population_lookup,
+            )
+            results = scrapers_afg_phl.run(
+                scrapers=["ourworldindata"],
             )
             assert results["headers"] == [
                 ["TotalDosesAdministered"],
                 ["#capacity+doses+administered+total"],
             ]
             assert results["values"] == [{"AFG": "240000"}]
-            # NB: Source data will have been written into the in-memory config by the immediately previous run of the
-            # ourworldindata scraper and is hence 2020-10-01 instead of 2021-05-03
             assert results["sources"] == [
                 (
                     "#capacity+doses+administered+total",
-                    "2020-10-01",
+                    "2021-05-03",
                     "Our World in Data",
                     "tests/fixtures/ourworldindata_vaccinedoses.csv",
                 )
@@ -382,16 +359,18 @@ class TestScraper:
                     "#meta+url",
                 ],
             }
-            results = run_scrapers(
+            scrapers_afg_phl = Scrapers(
                 scraper_configuration,
+                level,
                 ["AFG", "PHL"],
                 adminone,
-                level,
                 downloader,
                 today=today,
-                scrapers=["testbrokenurl"],
                 population_lookup=population_lookup,
                 fallbacks=fallbacks,
+            )
+            results = scrapers_afg_phl.run(
+                scrapers=["testbrokenurl"],
             )
             assert results["headers"] == [
                 ["TotalDosesAdministered"],
@@ -406,18 +385,21 @@ class TestScraper:
                     "tests/fixtures/fallbacks.json",
                 )
             ]
+
             today = parse_date("2020-10-01")
             level = "subnational"
             scraper_configuration = configuration[f"scraper_{level}"]
-            results = run_scrapers(
+            scrapers_afg = Scrapers(
                 scraper_configuration,
+                level,
                 ["AFG"],
                 adminone,
-                level,
                 downloader,
                 today=today,
-                scrapers=["gam"],
                 population_lookup=population_lookup,
+            )
+            results = scrapers_afg.run(
+                scrapers=["gam"],
             )
             assert results["headers"] == [
                 ["Malnutrition Estimate"],
@@ -470,15 +452,17 @@ class TestScraper:
                 )
             ]
             scraper_configuration = configuration["other"]
-            results = run_scrapers(
+            scrapers_afg = Scrapers(
                 scraper_configuration,
+                level,
                 ["AFG"],
                 adminone,
-                level,
                 downloader,
                 today=today,
-                scrapers=["gam"],
                 population_lookup=population_lookup,
+            )
+            results = scrapers_afg.run(
+                scrapers=["gam"],
             )
             assert results["headers"] == [
                 ["Malnutrition Estimate"],
@@ -493,17 +477,21 @@ class TestScraper:
                     "tests/fixtures/unicef_who_wb_global_expanded_databases_severe_wasting.xlsx",
                 )
             ]
+
+
             level = "global"
             scraper_configuration = configuration[f"scraper_{level}"]
-            results = run_scrapers(
+            scrapers_glb = Scrapers(
                 scraper_configuration,
+                level,
                 configuration["HRPs"],
                 adminone,
-                level,
                 downloader,
                 today=today,
-                scrapers=["covax"],
                 population_lookup=population_lookup,
+            )
+            results = scrapers_glb.run(
+                scrapers=["covax"],
             )
             assert results["headers"] == [
                 [
@@ -578,15 +566,8 @@ class TestScraper:
                     "tests/fixtures/COVID-19 Vaccine Doses in HRP Countries - Data HXL.csv",
                 ),
             ]
-            results = run_scrapers(
-                scraper_configuration,
-                configuration["HRPs"],
-                adminone,
-                level,
-                downloader,
-                today=today,
+            results = scrapers_glb.run(
                 scrapers=["cerf_global"],
-                population_lookup=population_lookup,
             )
             assert results["headers"] == [
                 [
@@ -724,15 +705,8 @@ class TestScraper:
                     "https://data.humdata.org/dataset/cerf-covid-19-allocations",
                 ),
             ]
-            results = run_scrapers(
-                scraper_configuration,
-                configuration["HRPs"],
-                adminone,
-                level,
-                downloader,
-                today=today,
+            results = scrapers_glb.run(
                 scrapers=["ourworldindata"],
-                population_lookup=population_lookup,
             )
             assert results["headers"] == [
                 ["TotalDosesAdministered"],
@@ -748,15 +722,17 @@ class TestScraper:
                 )
             ]
             today = parse_date("2021-05-03")
-            results = run_scrapers(
+            scrapers_glb = Scrapers(
                 scraper_configuration,
+                level,
                 configuration["HRPs"],
                 adminone,
-                level,
                 downloader,
                 today=today,
-                scrapers=["cerf_global"],
                 population_lookup=population_lookup,
+            )
+            results = scrapers_glb.run(
+                scrapers=["cerf_global"],
             )
             assert results["headers"] == [
                 [
@@ -894,15 +870,8 @@ class TestScraper:
                     "https://data.humdata.org/dataset/cerf-covid-19-allocations",
                 ),
             ]
-            results = run_scrapers(
-                scraper_configuration,
-                configuration["HRPs"],
-                adminone,
-                level,
-                downloader,
-                today=today,
+            results = scrapers_glb.run(
                 scrapers=["ourworldindata"],
-                population_lookup=population_lookup,
             )
             assert results["headers"] == [
                 ["TotalDosesAdministered"],
@@ -912,21 +881,23 @@ class TestScraper:
             assert results["sources"] == [
                 (
                     "#capacity+doses+administered+total",
-                    "2020-10-01",
+                    "2021-05-03",
                     "Our World in Data",
                     "tests/fixtures/ourworldindata_vaccinedoses.csv",
                 )
             ]
             scraper_configuration = configuration["other"]
-            results = run_scrapers(
+            scrapers_glb = Scrapers(
                 scraper_configuration,
+                level,
                 configuration["HRPs"],
                 adminone,
-                level,
                 downloader,
                 today=today,
-                scrapers=["ourworldindata"],
                 population_lookup=population_lookup,
+            )
+            results = scrapers_glb.run(
+                scrapers=["ourworldindata"],
             )
             assert results["headers"] == [
                 ["TotalDosesAdministered"],

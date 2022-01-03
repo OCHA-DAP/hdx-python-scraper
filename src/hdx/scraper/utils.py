@@ -48,16 +48,16 @@ def get_rowval(row: Dict, valcol: str) -> Any:
 
 
 def get_date_from_dataset_date(
-    dataset: Union[Dataset, str], today: datetime = None
+    dataset: Union[Dataset, str], today: Optional[datetime] = None
 ) -> Optional[str]:
     """Return the date or end date of a dataset
 
     Args:
         dataset (Union[Dataset, str]): Dataset object or name or id of dataset
-        today (datetime): Date to use for today. Defaults to None (datetime.now())
+        today (Optional[datetime]): Date to use for today. Defaults to None (datetime.now())
 
     Returns:
-        Any: Value of column or template
+        Optional[datetime]: Date or end date of a dataset
     """
     if isinstance(dataset, str):
         dataset = Dataset.read_from_hdx(dataset)
@@ -65,10 +65,7 @@ def get_date_from_dataset_date(
         date_info = dataset.get_date_of_dataset()
     else:
         date_info = dataset.get_date_of_dataset(today=today)
-    enddate = date_info.get("enddate_str")
-    if not enddate:
-        return None
-    return enddate[:10]
+    return date_info.get("enddate")
 
 
 def add_population(
