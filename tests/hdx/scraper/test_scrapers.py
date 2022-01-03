@@ -478,7 +478,6 @@ class TestScrapers:
                 )
             ]
 
-
             level = "global"
             scraper_configuration = configuration[f"scraper_{level}"]
             scrapers_glb = Scrapers(
