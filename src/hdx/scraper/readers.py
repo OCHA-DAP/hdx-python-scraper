@@ -1,14 +1,11 @@
 import logging
 from collections.abc import MutableMapping
 from datetime import datetime
-from os.path import join
-from typing import Any, Dict, Iterator, List, Optional, Tuple, Union
+from typing import Any, Dict, Iterator, List, Optional, Tuple
 
 from hdx.data.dataset import Dataset
 from hdx.utilities.dateparse import parse_date
 from hdx.utilities.downloader import Download
-from hdx.utilities.path import temp_dir
-from olefile import olefile
 
 from hdx.scraper.utils import get_date_from_dataset_date, match_template
 
