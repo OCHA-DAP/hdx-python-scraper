@@ -68,15 +68,12 @@ def get_date_from_dataset_date(
     return date_info.get("enddate")
 
 
-def add_population(
-    population_lookup: Dict, headers: List[List], columns: List[Dict]
-) -> None:
+def add_population(population_lookup: Dict, results: Dict) -> None:
     """Add population data to dictionary
 
     Args:
         population_lookup (Dict): Population dictionary
-        headers (List[List]): List of headers
-        columns (List[Dict]): List of columns
+        results (Dict): Results of scraper (headers, values, sources)
 
     Returns:
         None
@@ -84,11 +81,11 @@ def add_population(
     if population_lookup is None:
         return
     try:
-        population_index = headers[1].index("#population")
+        population_index = results["headers"][1].index("#population")
     except ValueError:
         population_index = None
     if population_index is not None:
-        for key, value in columns[population_index].items():
+        for key, value in results["values"][population_index].items():
             try:
                 valint = int(value)
                 population_lookup[key] = valint

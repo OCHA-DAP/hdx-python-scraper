@@ -24,6 +24,7 @@ class RowParser:
         level (str): Can be global, national or subnational
         datasetinfo (Dict): Dictionary of information about dataset
         headers (List[str]): Row headers
+        header_to_hxltag (Optional[Dict[str, str]]): Mapping from headers to HXL hashtags or None
         subsets (List[Dict]): List of subset definitions
         maxdateonly (bool): Whether to only take the most recent date. Defaults to True.
     """
@@ -35,6 +36,7 @@ class RowParser:
         level: str,
         datasetinfo: Dict,
         headers: List[str],
+        header_to_hxltag: Optional[Dict[str, str]],
         subsets: List[Dict],
         maxdateonly: bool = True,
     ) -> None:
@@ -49,8 +51,10 @@ class RowParser:
             return lvl
 
         self.level = get_level(level)
+        self.name = datasetinfo["name"]
         self.today = datasetinfo["date"]
         self.sort = datasetinfo.get("sort")
+        self.stop_row = datasetinfo.get("stop_row")
         self.datecol = datasetinfo.get("date_col")
         self.datetype = datasetinfo.get("date_type")
         if self.datetype:
@@ -100,8 +104,33 @@ class RowParser:
         self.maxdateonly = maxdateonly
         self.flatteninfo = datasetinfo.get("flatten")
         self.headers = headers
+        self.header_to_hxltag: Optional[Dict[str, str]] = header_to_hxltag
         self.filters = dict()
-        self.read_external_filter(datasetinfo)
+        self.read_external_filter(datasetinfo.get("external_filter"))
+
+    def read_external_filter(self, external_filter: Optional[Dict]) -> None:
+        """Read filter list from external url pointing to a HXLated file
+
+        Args:
+            external_filter (Optional[Dict]): Extenral filter information in dictionary
+
+        Returns:
+            None
+        """
+        if not external_filter:
+            return
+        hxltags = external_filter["hxltags"]
+        data = hxl.data(external_filter["url"])
+        for row in data:
+            for hxltag in data.columns:
+                if hxltag.display_tag in hxltags:
+                    if self.header_to_hxltag:
+                        header = hxltag.display_tag
+                    else:
+                        header = hxltag.header
+                    dict_of_lists_add(
+                        self.filters, header, row.get("#country+code")
+                    )
 
     def get_filter_str_for_eval(self, filter):
         if self.filter_cols:
@@ -115,31 +144,27 @@ class RowParser:
                     filter = filter.replace(col, f"row['{col}']")
         return filter
 
-    def filter_sort_rows(
-        self, iterator: Iterator[Dict], hxl_row: Dict, stop_row: Dict
-    ) -> Iterator[Dict]:
+    def filter_sort_rows(self, iterator: Iterator[Dict]) -> Iterator[Dict]:
         """Apply prefilter and sort the input data before processing. If date_col is specified along with any of
         sum_cols, process_cols or append_cols, and sorting is not specified, then apply a sort by date to ensure
         correct results.
 
         Args:
-            hxl_row (Dict): Mapping from column header to HXL hashtag
-            stop_row (Dict): Keys and values of row at which to stop processing
             iterator (Iterator[Dict]): Input data
         Returns:
             Iterator[Dict]: Input data with prefilter applied if specified and sorted if specified or deemed necessary
         """
         rows = list()
         for row in iterator:
-            if not isinstance(row, dict):
-                row = row.value
-            if hxl_row:
+            if self.header_to_hxltag:
                 newrow = dict()
                 for header in row:
-                    newrow[hxl_row[header]] = row[header]
+                    newrow[self.header_to_hxltag[header]] = row[header]
                 row = newrow
-            if stop_row:
-                if all(row[key] == value for key, value in stop_row.items()):
+            if self.stop_row:
+                if all(
+                    row[key] == value for key, value in self.stop_row.items()
+                ):
                     break
             for newrow in self.flatten(row):
                 rows.append(newrow)
@@ -163,32 +188,6 @@ class RowParser:
             reverse = self.sort.get("reverse", False)
             rows = sorted(list(rows), key=itemgetter(*keys), reverse=reverse)
         return rows
-
-    def read_external_filter(self, datasetinfo: Dict) -> None:
-        """Read filter list from external url pointing to a HXLated file
-
-        Args:
-            datasetinfo (Dict): Dictionary of information about dataset
-
-        Returns:
-            None
-        """
-        external_filter = datasetinfo.get("external_filter")
-        if not external_filter:
-            return
-        hxltags = external_filter["hxltags"]
-        data = hxl.data(external_filter["url"])
-        use_hxl = datasetinfo.get("use_hxl", False)
-        for row in data:
-            for hxltag in data.columns:
-                if hxltag.display_tag in hxltags:
-                    if use_hxl:
-                        header = hxltag.display_tag
-                    else:
-                        header = hxltag.header
-                    dict_of_lists_add(
-                        self.filters, header, row.get("#country+code")
-                    )
 
     def flatten(self, row: Dict) -> Generator[Dict, None, None]:
         """Flatten a wide spreadsheet format into a long one
@@ -250,9 +249,7 @@ class RowParser:
                 return True
         return False
 
-    def parse(
-        self, row: Dict, scrapername: str = None
-    ) -> Tuple[Optional[str], Optional[List[bool]]]:
+    def parse(self, row: Dict) -> Tuple[Optional[str], Optional[List[bool]]]:
         """Parse row checking for valid admin information and if the row should be filtered out in each subset given
         its definition.
 
@@ -269,7 +266,7 @@ class RowParser:
 
         def get_adm(admcol, i):
             template_string, match_string = match_template(admcol)
-            if template_string:
+            if template_string and self.headers:
                 admcol = self.headers[int(match_string)]
             adm = row[admcol]
             if not adm:
@@ -286,7 +283,7 @@ class RowParser:
                     adms[i], exact = Country.get_iso3_country_code_fuzzy(adm)
                 elif i == 1:
                     adms[i], exact = self.adminone.get_pcode(
-                        adms[0], adm, scrapername
+                        adms[0], adm, self.name
                     )
                 if adms[i] not in self.adms[i]:
                     adms[i] = None

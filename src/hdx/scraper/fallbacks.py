@@ -1,18 +1,13 @@
 import logging
-from typing import Dict, List
-
-from hdx.utilities.dictandlist import dict_of_lists_add
+from typing import Dict, List, Tuple
 
 logger = logging.getLogger(__name__)
 
 
 def use_fallbacks(
-    name: str,
     fallbacks: Dict,
-    output_cols: List[str],
-    output_hxltags: List[str],
-    results: Dict,
-) -> None:
+    headers: Tuple[List, List],
+) -> Tuple[List, List]:
     """Use provided fallbacks when there is a problem obtaining the latest data. The
     fallbacks dictionary should have the following keys: "data" containing a list of
     dictionaries from HXL hashtag to value, "admin name" to specify a particular admin
@@ -28,25 +23,21 @@ def use_fallbacks(
     "sources hxltags": ["#indicator+name", "#date", "#meta+source", "#meta+url"]}
 
     Args:
-        name (str): Name of mini scraper
         fallbacks (Dict): Fallbacks dictionary
         output_cols (List[str]): Names of output columns
         output_hxltags (List[str]): HXL hashtags of output columns
-        results (Dict): Dictionary of output containing output headers, values and sources
 
     Returns:
-        None
+        Tuple[List, List]: Tuple of (Output values, output sources)
     """
-    retheaders = results["headers"]
-    retvalues = results["values"]
+    values = list()
+    sources = list()
 
     fb_data = fallbacks["data"]
     fb_adm_name = fallbacks.get("admin name", None)
     fb_adm_hxltag = fallbacks.get("admin hxltag", None)
 
-    retheaders[0].extend(output_cols)
-    retheaders[1].extend(output_hxltags)
-
+    output_hxltags = headers[1]
     valdicts = [dict() for _ in output_hxltags]
     for row in fb_data:
         if fb_adm_name:
@@ -61,12 +52,12 @@ def use_fallbacks(
             val = row.get(hxltag)
             if val is not None:
                 valdicts[i][adm_key] = val
-    retvalues.extend(valdicts)
+    values.extend(valdicts)
     fb_sources_hxltags = fallbacks["sources hxltags"]
     for row in fallbacks["sources"]:
         hxltag = row[fb_sources_hxltags[0]]
         if hxltag in output_hxltags:
-            results["sources"].append(
+            sources.append(
                 (
                     hxltag,
                     row[fb_sources_hxltags[1]],
@@ -74,5 +65,4 @@ def use_fallbacks(
                     row[fb_sources_hxltags[3]],
                 )
             )
-    logger.error(f"Used fallback data for {name}!")
-    dict_of_lists_add(results, "fallbacks", name)
+    return values, sources
