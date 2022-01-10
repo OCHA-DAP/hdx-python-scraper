@@ -7,7 +7,6 @@ from tests.hdx.scraper import get_fallbacks
 
 
 class TestScraperGlobal:
-
     def test_get_tabular_global(self, configuration, fallback_data):
         with Download(user_agent="test") as downloader:
             today = parse_date("2020-10-01")

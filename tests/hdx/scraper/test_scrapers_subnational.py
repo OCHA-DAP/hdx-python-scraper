@@ -6,7 +6,6 @@ from hdx.scraper.scrapers import run_scrapers
 
 
 class TestScraperSubnational:
-
     def test_get_tabular_subnational(self, configuration):
         with Download(user_agent="test") as downloader:
             today = parse_date("2020-10-01")
