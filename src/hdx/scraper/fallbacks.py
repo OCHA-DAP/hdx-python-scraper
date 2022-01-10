@@ -43,7 +43,10 @@ def use_fallbacks(
         if fb_adm_name:
             adm_key = fb_adm_name
         elif fb_adm_hxltag:
-            adm_key = row[fb_adm_hxltag]
+            if fb_adm_hxltag == "global":
+                adm_key = "global"
+            else:
+                adm_key = row[fb_adm_hxltag]
         else:
             raise ValueError(
                 "Either admin name or admin hxltag must be specified!"

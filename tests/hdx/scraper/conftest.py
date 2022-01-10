@@ -5,6 +5,7 @@ import pytest
 from hdx.api.configuration import Configuration
 from hdx.api.locations import Locations
 from hdx.location.country import Country
+from hdx.utilities.loader import load_json
 
 
 @pytest.fixture(scope="session")
@@ -31,3 +32,8 @@ def configuration():
 @pytest.fixture(scope="session")
 def fixtures():
     return join("tests", "fixtures")
+
+
+@pytest.fixture(scope="session")
+def fallback_data():
+    return load_json(join("tests", "fixtures", "fallbacks.json"))
