@@ -26,7 +26,7 @@ class Scraper:
     sources.
 
     Args:
-        configuration (Dict): Configuration for mini scrapers
+        datasetinfo (Dict): Information about dataset
         level (str): Can be global, national or subnational
         countryiso3s (List[str]): List of ISO3 country codes to process
         adminone (AdminOne): AdminOne object from HDX Python Country library

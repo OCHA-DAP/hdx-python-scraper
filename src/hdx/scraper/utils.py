@@ -68,6 +68,47 @@ def get_date_from_dataset_date(
     return date_info.get("enddate")
 
 
+def get_isodate_from_dataset_date(
+    dataset: Union[Dataset, str], today: Optional[datetime] = None
+) -> Optional[str]:
+    """Return the date or end date of a dataset as an iso formatted date
+
+    Args:
+        dataset (Union[Dataset, str]): Dataset object or name or id of dataset
+        today (Optional[datetime]): Date to use for today. Defaults to None (datetime.now())
+
+    Returns:
+        Optional[str]: Date or end date of a dataset
+    """
+    date = get_date_from_dataset_date(dataset, today)
+    if date:
+        date = date.strftime("%Y-%m-%d")
+    return date
+
+
+def get_sources_from_datasetinfo(datasetinfo, hxltags):
+    """
+    Gets sources given dataset information and a set of HXL hashtags
+
+    Args:
+        datasetinfo (Dict): Information about dataset
+        hxltags: List[str]: List of hxltags
+
+    Returns:
+        List[Tuple]: List of (hxltag, date, source, source url)
+
+    """
+    return [
+        (
+            hxltag,
+            datasetinfo["date"].strftime("%Y-%m-%d"),
+            datasetinfo["source"],
+            datasetinfo["source_url"],
+        )
+        for hxltag in hxltags
+    ]
+
+
 def add_population(population_lookup: Dict, results: Dict) -> None:
     """Add population data to dictionary
 
