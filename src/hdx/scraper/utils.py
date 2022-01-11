@@ -49,7 +49,7 @@ def get_rowval(row: Dict, valcol: str) -> Any:
 
 def get_date_from_dataset_date(
     dataset: Union[Dataset, str], today: Optional[datetime] = None
-) -> Optional[str]:
+) -> Optional[datetime]:
     """Return the date or end date of a dataset
 
     Args:
