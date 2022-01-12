@@ -452,7 +452,7 @@ class Scraper:
             sources = self.get_sources()
             fallback = False
             logger.info(f"Processed {name}")
-        except Exception as ex:
+        except Exception:
             if not self.fallbacks:
                 raise
             if not self.headers[1]:
