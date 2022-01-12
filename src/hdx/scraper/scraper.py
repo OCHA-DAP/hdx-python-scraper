@@ -452,14 +452,14 @@ class Scraper:
             sources = self.get_sources()
             fallback = False
             logger.info(f"Processed {name}")
-        except Exception:
+        except Exception as ex:
             if not self.fallbacks:
                 raise
             if not self.headers[1]:
                 raise
             values, sources = use_fallbacks(self.fallbacks, self.headers)
             fallback = True
-            logger.error(f"Used fallback data for {name}!")
+            logger.exception(f"Used fallback data for {name}!")
         results["headers"] = self.headers
         results["values"] = values
         results["sources"] = sources
