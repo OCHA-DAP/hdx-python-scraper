@@ -1,3 +1,5 @@
+import logging
+
 from hdx.location.adminone import AdminOne
 from hdx.utilities.dateparse import parse_date
 from hdx.utilities.downloader import Download
@@ -7,7 +9,7 @@ from tests.hdx.scraper import get_fallbacks
 
 
 class TestScraperGlobal:
-    def test_get_tabular_global(self, configuration, fallback_data):
+    def test_get_tabular_global(self, caplog, configuration, fallback_data):
         with Download(user_agent="test") as downloader:
             today = parse_date("2020-10-01")
             adminone = AdminOne(configuration)
@@ -389,121 +391,127 @@ class TestScraperGlobal:
 
             # Test fallbacks with subsets
             fallbacks = get_fallbacks(fallback_data, level)
-            results = run_scrapers(
-                scraper_configuration,
-                level,
-                configuration["HRPs"],
-                adminone,
-                downloader,
-                today=today,
-                population_lookup=population_lookup,
-                fallbacks=fallbacks,
-                scrapers=["broken_cerf_url"],
-            )
-            assert results["headers"] == cerf_headers
-            assert results["values"] == [
-                {"global": 7811775.670000001},
-                {"global": 7811775.670000001},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {"global": 89298924.0},
-                {"global": 6747035.0},
-                {},
-                {"global": 2549856.0},
-                {"global": 10552573.0},
-                {"global": 26098817.0},
-                {"global": 43350643.0},
-            ]
-            assert results["sources"] == [
-                (
-                    "#value+cbpf+funding+total+usd",
-                    "2020-09-01",
-                    "CERF and CBPF",
-                    "tests/fixtures/fallbacks.json",
-                ),
-                (
-                    "#value+cbpf+funding+gmempty+total+usd",
-                    "2020-09-01",
-                    "CERF and CBPF",
-                    "tests/fixtures/fallbacks.json",
-                ),
-                (
-                    "#value+cbpf+funding+gm0+total+usd",
-                    "2020-09-01",
-                    "CERF and CBPF",
-                    "tests/fixtures/fallbacks.json",
-                ),
-                (
-                    "#value+cbpf+funding+gm1+total+usd",
-                    "2020-09-01",
-                    "CERF and CBPF",
-                    "tests/fixtures/fallbacks.json",
-                ),
-                (
-                    "#value+cbpf+funding+gm2+total+usd",
-                    "2020-09-01",
-                    "CERF and CBPF",
-                    "tests/fixtures/fallbacks.json",
-                ),
-                (
-                    "#value+cbpf+funding+gm3+total+usd",
-                    "2020-09-01",
-                    "CERF and CBPF",
-                    "tests/fixtures/fallbacks.json",
-                ),
-                (
-                    "#value+cbpf+funding+gm4+total+usd",
-                    "2020-09-01",
-                    "CERF and CBPF",
-                    "tests/fixtures/fallbacks.json",
-                ),
-                (
-                    "#value+cerf+funding+total+usd",
-                    "2020-09-01",
-                    "CERF and CBPF",
-                    "tests/fixtures/fallbacks.json",
-                ),
-                (
-                    "#value+cerf+funding+gmempty+total+usd",
-                    "2020-09-01",
-                    "CERF and CBPF",
-                    "tests/fixtures/fallbacks.json",
-                ),
-                (
-                    "#value+cerf+funding+gm0+total+usd",
-                    "2020-09-01",
-                    "CERF and CBPF",
-                    "tests/fixtures/fallbacks.json",
-                ),
-                (
-                    "#value+cerf+funding+gm1+total+usd",
-                    "2020-09-01",
-                    "CERF and CBPF",
-                    "tests/fixtures/fallbacks.json",
-                ),
-                (
-                    "#value+cerf+funding+gm2+total+usd",
-                    "2020-09-01",
-                    "CERF and CBPF",
-                    "tests/fixtures/fallbacks.json",
-                ),
-                (
-                    "#value+cerf+funding+gm3+total+usd",
-                    "2020-09-01",
-                    "CERF and CBPF",
-                    "tests/fixtures/fallbacks.json",
-                ),
-                (
-                    "#value+cerf+funding+gm4+total+usd",
-                    "2020-09-01",
-                    "CERF and CBPF",
-                    "tests/fixtures/fallbacks.json",
-                ),
-            ]
-            assert results["fallbacks"] == ["broken_cerf_url"]
+            with caplog.at_level(logging.ERROR):
+                results = run_scrapers(
+                    scraper_configuration,
+                    level,
+                    configuration["HRPs"],
+                    adminone,
+                    downloader,
+                    today=today,
+                    population_lookup=population_lookup,
+                    fallbacks=fallbacks,
+                    scrapers=["broken_cerf_url"],
+                )
+                assert results["headers"] == cerf_headers
+                assert results["values"] == [
+                    {"global": 7811775.670000001},
+                    {"global": 7811775.670000001},
+                    {},
+                    {},
+                    {},
+                    {},
+                    {},
+                    {"global": 89298924.0},
+                    {"global": 6747035.0},
+                    {},
+                    {"global": 2549856.0},
+                    {"global": 10552573.0},
+                    {"global": 26098817.0},
+                    {"global": 43350643.0},
+                ]
+                assert results["sources"] == [
+                    (
+                        "#value+cbpf+funding+total+usd",
+                        "2020-09-01",
+                        "CERF and CBPF",
+                        "tests/fixtures/fallbacks.json",
+                    ),
+                    (
+                        "#value+cbpf+funding+gmempty+total+usd",
+                        "2020-09-01",
+                        "CERF and CBPF",
+                        "tests/fixtures/fallbacks.json",
+                    ),
+                    (
+                        "#value+cbpf+funding+gm0+total+usd",
+                        "2020-09-01",
+                        "CERF and CBPF",
+                        "tests/fixtures/fallbacks.json",
+                    ),
+                    (
+                        "#value+cbpf+funding+gm1+total+usd",
+                        "2020-09-01",
+                        "CERF and CBPF",
+                        "tests/fixtures/fallbacks.json",
+                    ),
+                    (
+                        "#value+cbpf+funding+gm2+total+usd",
+                        "2020-09-01",
+                        "CERF and CBPF",
+                        "tests/fixtures/fallbacks.json",
+                    ),
+                    (
+                        "#value+cbpf+funding+gm3+total+usd",
+                        "2020-09-01",
+                        "CERF and CBPF",
+                        "tests/fixtures/fallbacks.json",
+                    ),
+                    (
+                        "#value+cbpf+funding+gm4+total+usd",
+                        "2020-09-01",
+                        "CERF and CBPF",
+                        "tests/fixtures/fallbacks.json",
+                    ),
+                    (
+                        "#value+cerf+funding+total+usd",
+                        "2020-09-01",
+                        "CERF and CBPF",
+                        "tests/fixtures/fallbacks.json",
+                    ),
+                    (
+                        "#value+cerf+funding+gmempty+total+usd",
+                        "2020-09-01",
+                        "CERF and CBPF",
+                        "tests/fixtures/fallbacks.json",
+                    ),
+                    (
+                        "#value+cerf+funding+gm0+total+usd",
+                        "2020-09-01",
+                        "CERF and CBPF",
+                        "tests/fixtures/fallbacks.json",
+                    ),
+                    (
+                        "#value+cerf+funding+gm1+total+usd",
+                        "2020-09-01",
+                        "CERF and CBPF",
+                        "tests/fixtures/fallbacks.json",
+                    ),
+                    (
+                        "#value+cerf+funding+gm2+total+usd",
+                        "2020-09-01",
+                        "CERF and CBPF",
+                        "tests/fixtures/fallbacks.json",
+                    ),
+                    (
+                        "#value+cerf+funding+gm3+total+usd",
+                        "2020-09-01",
+                        "CERF and CBPF",
+                        "tests/fixtures/fallbacks.json",
+                    ),
+                    (
+                        "#value+cerf+funding+gm4+total+usd",
+                        "2020-09-01",
+                        "CERF and CBPF",
+                        "tests/fixtures/fallbacks.json",
+                    ),
+                ]
+                assert results["fallbacks"] == ["broken_cerf_url"]
+                assert "Used fallback data for broken_cerf_url!" in caplog.text
+                assert (
+                    "Getting tabular stream for NOTEXIST.csv failed!"
+                    in caplog.text
+                )
 
             results = run_scrapers(
                 scraper_configuration,
