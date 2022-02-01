@@ -732,13 +732,13 @@ other:
     url: "tests/fixtures/ourworldindata_vaccinedoses.csv"
     headers: 1
     use_hxl: True
-    adm_cols:
+    prefilter: "#country+code == 'OWID_WRL'"
+    exclude_tags:
       - "#country+code"
-    adm_vals:
-      - "OWID_WRL"
     date_col: "#date"
     date_type: "date"
-    date_level: "national"
+    filter_cols:
+      - "#country+code"
     input_cols:
       - "#total+vaccinations"
     output_cols:
