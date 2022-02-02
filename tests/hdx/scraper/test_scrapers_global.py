@@ -560,3 +560,26 @@ class TestScraperGlobal:
                     "tests/fixtures/ourworldindata_vaccinedoses.csv",
                 )
             ]
+            results = run_scrapers(
+                scraper_configuration,
+                level,
+                configuration["HRPs"],
+                adminone,
+                downloader,
+                today=today,
+                scrapers=["altworldindata"],
+                population_lookup=population_lookup,
+            )
+            assert results["headers"] == (
+                ["TotalDosesAdministered"],
+                ["#capacity+doses+administered+total"],
+            )
+            assert results["values"] == [{"global": "1175451507"}]
+            assert results["sources"] == [
+                (
+                    "#capacity+doses+administered+total",
+                    "2021-05-03",
+                    "Our World in Data",
+                    "tests/fixtures/ourworldindata_vaccinedoses.csv",
+                )
+            ]

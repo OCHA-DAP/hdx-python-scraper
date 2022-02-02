@@ -8,7 +8,7 @@ from hdx.utilities.dictandlist import dict_of_lists_add
 from hdx.utilities.downloader import Download
 
 from hdx.scraper.scraper import Scraper
-from hdx.scraper.utils import add_population
+from hdx.scraper.utils import add_population, get_level
 
 logger = logging.getLogger(__name__)
 
@@ -71,7 +71,7 @@ def run_scrapers(
         datasetinfo["name"] = name
         scraper = Scraper(
             datasetinfo,
-            level,
+            get_level(level),
             countryiso3s,
             adminone,
             int_downloader,

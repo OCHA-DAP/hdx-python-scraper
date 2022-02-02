@@ -21,7 +21,8 @@ class RowParser:
     Args:
         countryiso3s (List[str]): List of ISO3 country codes to process
         adminone (AdminOne): AdminOne object from HDX Python Country library that handles processing of admin level 1
-        level (str): Can be global, national or subnational
+        level (Optional[int]): Can be None, 0 or 1
+        datelevel (Optional[int]): Can be None, 0 or 1
         datasetinfo (Dict): Dictionary of information about dataset
         headers (List[str]): Row headers
         header_to_hxltag (Optional[Dict[str, str]]): Mapping from headers to HXL hashtags or None
@@ -33,24 +34,16 @@ class RowParser:
         self,
         countryiso3s: List[str],
         adminone: AdminOne,
-        level: str,
+        level: Optional[int],
+        datelevel: Optional[int],
         datasetinfo: Dict,
         headers: List[str],
         header_to_hxltag: Optional[Dict[str, str]],
         subsets: List[Dict],
         maxdateonly: bool = True,
     ) -> None:
-        def get_level(lvl):
-            if isinstance(lvl, str):
-                if lvl == "global":
-                    return None
-                elif lvl == "national":
-                    return 0
-                else:
-                    return 1
-            return lvl
-
-        self.level = get_level(level)
+        self.level = level
+        self.datelevel = datelevel
         self.name = datasetinfo["name"]
         self.today = datasetinfo["date"]
         self.sort = datasetinfo.get("sort")
@@ -65,11 +58,6 @@ class RowParser:
         else:
             date = 0
         self.maxdate = date
-        datelevel = datasetinfo.get("date_level")
-        if datelevel is None:
-            self.datelevel = self.level
-        else:
-            self.datelevel = get_level(datelevel)
         self.single_maxdate = datasetinfo.get("single_maxdate", False)
         self.ignore_future_date = datasetinfo.get("ignore_future_date", True)
         self.adminone = adminone

@@ -6,7 +6,7 @@ import regex
 from hdx.location.adminone import AdminOne
 from hdx.utilities.dateparse import get_datetime_from_timestamp, parse_date
 from hdx.utilities.dictandlist import dict_of_lists_add
-from hdx.utilities.downloader import Download, DownloadError
+from hdx.utilities.downloader import Download
 from hdx.utilities.text import (  # noqa: F401
     get_fraction_str,
     get_numeric_if_possible,
@@ -16,7 +16,7 @@ from hdx.utilities.text import (  # noqa: F401
 from hdx.scraper.fallbacks import use_fallbacks
 from hdx.scraper.readers import read
 from hdx.scraper.rowparser import RowParser
-from hdx.scraper.utils import get_rowval
+from hdx.scraper.utils import get_level, get_rowval
 
 logger = logging.getLogger(__name__)
 
@@ -27,7 +27,7 @@ class Scraper:
 
     Args:
         datasetinfo (Dict): Information about dataset
-        level (str): Can be global, national or subnational
+        level (Optional[int]): Can be None, 0 or 1
         countryiso3s (List[str]): List of ISO3 country codes to process
         adminone (AdminOne): AdminOne object from HDX Python Country library
         downloader (Download): Download object for downloading files
@@ -50,7 +50,7 @@ class Scraper:
     def __init__(
         self,
         datasetinfo: Dict,
-        level: str,
+        level: Optional[int],
         countryiso3s: List[str],
         adminone: AdminOne,
         downloader: Download,
@@ -59,7 +59,12 @@ class Scraper:
         fallbacks: Optional[Dict] = None,
     ):
         self.datasetinfo = datasetinfo
-        self.level = level
+        self.level: Optional[int] = level
+        datelevel = datasetinfo.get("date_level")
+        if datelevel is None:
+            self.datelevel = self.level
+        else:
+            self.datelevel = get_level(datelevel)
         self.countryiso3s = countryiso3s
         self.adminone = adminone
         self.downloader = downloader
@@ -180,6 +185,7 @@ class Scraper:
         while not header_to_hxltag:
             header_to_hxltag = next(iterator)
         exclude_tags = self.datasetinfo.get("exclude_tags", list())
+        find_tags = self.datasetinfo.get("find_tags")
         adm_cols = list()
         input_cols = list()
         columns = list()
@@ -187,20 +193,22 @@ class Scraper:
             hxltag = header_to_hxltag[header]
             if not hxltag or hxltag in exclude_tags:
                 continue
-            if "#country" in hxltag:
-                if "code" in hxltag:
-                    if len(adm_cols) == 0:
-                        adm_cols.append(hxltag)
-                    else:
-                        adm_cols[0] = hxltag
-                continue
-            if "#adm1" in hxltag:
-                if "code" in hxltag:
-                    if len(adm_cols) == 0:
-                        adm_cols.append(None)
-                    if len(adm_cols) == 1:
-                        adm_cols.append(hxltag)
-                continue
+            if find_tags or (find_tags is None and self.datelevel is not None):
+                if "#country" in hxltag:
+                    if "code" in hxltag:
+                        if len(adm_cols) == 0:
+                            adm_cols.append(hxltag)
+                        else:
+                            adm_cols[0] = hxltag
+                    continue
+                if find_tags or self.datelevel != 0:
+                    if "#adm1" in hxltag:
+                        if "code" in hxltag:
+                            if len(adm_cols) == 0:
+                                adm_cols.append(None)
+                            if len(adm_cols) == 1:
+                                adm_cols.append(hxltag)
+                        continue
             if (
                 hxltag == self.datasetinfo.get("date_col")
                 and self.datasetinfo.get("include_date", False) is False
@@ -443,6 +451,7 @@ class Scraper:
                 self.countryiso3s,
                 self.adminone,
                 self.level,
+                self.datelevel,
                 self.datasetinfo,
                 headers,
                 header_to_hxltag,

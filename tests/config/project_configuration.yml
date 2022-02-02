@@ -745,6 +745,23 @@ other:
       - "TotalDosesAdministered"
     output_hxltags:
       - "#capacity+doses+administered+total"
+  altworldindata:
+    source: "Our World in Data"
+    format: "csv"
+    url: "tests/fixtures/ourworldindata_vaccinedoses.csv"
+    headers: 1
+    use_hxl: True
+    prefilter: "#country+code == 'OWID_WRL'"
+    date_col: "#date"
+    date_type: "date"
+    filter_cols:
+      - "#country+code"
+    input_cols:
+      - "#total+vaccinations"
+    output_cols:
+      - "TotalDosesAdministered"
+    output_hxltags:
+      - "#capacity+doses+administered+total"
 
 scraper_subnational:
   gam:

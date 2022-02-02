@@ -132,3 +132,20 @@ def add_population(population_lookup: Dict, results: Dict) -> None:
                 population_lookup[key] = valint
             except ValueError:
                 pass
+
+
+def get_level(level: str) -> Optional[int]:
+    """Get the level as a number
+
+    Args:
+        level (str): Can be global, national or subnational
+
+    Returns:
+        Optional[int]: Level as a number
+    """
+    if level == "global":
+        return None
+    elif level == "national":
+        return 0
+    else:
+        return 1
