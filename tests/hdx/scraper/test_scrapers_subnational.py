@@ -2,7 +2,8 @@ from hdx.location.adminone import AdminOne
 from hdx.utilities.dateparse import parse_date
 from hdx.utilities.downloader import Download
 
-from hdx.scraper.scrapers import run_scrapers
+from hdx.scraper.runner import Runner
+from tests.hdx.scraper.conftest import check_scraper
 
 
 class TestScraperSubnational:
@@ -10,24 +11,16 @@ class TestScraperSubnational:
         with Download(user_agent="test") as downloader:
             today = parse_date("2020-10-01")
             adminone = AdminOne(configuration)
-            population_lookup = dict()
             level = "subnational"
             scraper_configuration = configuration[f"scraper_{level}"]
-            results = run_scrapers(
-                scraper_configuration,
-                level,
-                ["AFG"],
-                adminone,
-                downloader,
-                today=today,
-                population_lookup=population_lookup,
-                scrapers=["gam"],
-            )
-            assert results["headers"] == (
+            runner = Runner(("AFG",), adminone, downloader, dict(), today)
+            runner.add_configurables(scraper_configuration, level)
+            name = "gam"
+            headers = (
                 ["Malnutrition Estimate"],
                 ["#severity+malnutrition+num+subnational"],
             )
-            assert results["values"] == [
+            values = [
                 {
                     "AF17": 3.371688,
                     "AF31": 3.519166,
@@ -65,7 +58,7 @@ class TestScraperSubnational:
                     "AF26": 4.572629,
                 }
             ]
-            assert results["sources"] == [
+            sources = [
                 (
                     "#severity+malnutrition+num+subnational",
                     "2020-10-01",
@@ -73,24 +66,17 @@ class TestScraperSubnational:
                     "tests/fixtures/unicef_who_wb_global_expanded_databases_severe_wasting.xlsx",
                 )
             ]
-            assert results["fallbacks"] == list()
+            check_scraper(name, runner, level, headers, values, sources)
+
             scraper_configuration = configuration["other"]
-            results = run_scrapers(
-                scraper_configuration,
-                level,
-                ["AFG"],
-                adminone,
-                downloader,
-                today=today,
-                population_lookup=population_lookup,
-                scrapers=["gam"],
-            )
-            assert results["headers"] == (
+            runner.add_configurables(scraper_configuration, level)
+            name = "gam_other"
+            headers = (
                 ["Malnutrition Estimate"],
                 ["#severity+malnutrition+num+subnational"],
             )
-            assert results["values"] == [{"AF09": 1.524646, "AF24": 1.043487}]
-            assert results["sources"] == [
+            values = [{"AF09": 1.524646, "AF24": 1.043487}]
+            sources = [
                 (
                     "#severity+malnutrition+num+subnational",
                     "2020-10-01",
@@ -98,3 +84,4 @@ class TestScraperSubnational:
                     "tests/fixtures/unicef_who_wb_global_expanded_databases_severe_wasting.xlsx",
                 )
             ]
+            check_scraper(name, runner, level, headers, values, sources)

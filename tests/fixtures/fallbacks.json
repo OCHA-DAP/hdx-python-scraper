@@ -11,12 +11,14 @@
       "#value+cerf+funding+gm4+total+usd": 43350643.0
     }
   ],
+  "regional_data": [],
   "national_data": [
     {
       "#country+code": "AFG",
       "#capacity+doses+administered+total": "230000"
     }
   ],
+  "subnational_data": [],
   "sources": [
     {
       "#indicator+name": "#capacity+doses+administered+total",

@@ -699,7 +699,7 @@ scraper_global:
 
 
 other:
-  gam:
+  gam_other:
     source: "UNICEF"
     format: "xlsx"
     url: "tests/fixtures/unicef_who_wb_global_expanded_databases_severe_wasting.xlsx"
@@ -726,7 +726,7 @@ other:
       - "Malnutrition Estimate"
     output_hxltags:
       - "#severity+malnutrition+num+subnational"
-  ourworldindata:
+  ourworldindata_other:
     source: "Our World in Data"
     format: "csv"
     url: "tests/fixtures/ourworldindata_vaccinedoses.csv"

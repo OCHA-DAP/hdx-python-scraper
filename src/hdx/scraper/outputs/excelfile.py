@@ -4,6 +4,8 @@ from typing import Dict, List, Optional, Union
 from openpyxl import Workbook
 from openpyxl.utils.dataframe import dataframe_to_rows
 
+from hdx.scraper.outputs.base import BaseOutput
+
 try:
     from pandas import DataFrame
 except ImportError:
@@ -12,8 +14,8 @@ except ImportError:
 logger = logging.getLogger(__name__)
 
 
-class ExcelOutput:
-    """ExcelOutput class enabling writing to Excel spreadsheets.
+class ExcelFile(BaseOutput):
+    """ExcelFile class enabling writing to Excel spreadsheets.
 
     Args:
         excel_path (str): Path to output spreadsheet
@@ -24,10 +26,10 @@ class ExcelOutput:
     def __init__(
         self, excel_path: str, tabs: Dict[str, str], updatetabs: List[str]
     ) -> None:
+        super().__init__(updatetabs)
         self.workbook = Workbook()
         self.excel_path = excel_path
         self.tabs = tabs
-        self.updatetabs = updatetabs
 
     def update_tab(
         self,

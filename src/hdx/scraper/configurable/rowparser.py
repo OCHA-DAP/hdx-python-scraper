@@ -10,7 +10,7 @@ from hdx.location.country import Country
 from hdx.utilities.dateparse import parse_date
 from hdx.utilities.dictandlist import dict_of_lists_add
 
-from hdx.scraper.utils import match_template
+from hdx.scraper.utilities import match_template
 
 logger = logging.getLogger(__name__)
 
@@ -19,10 +19,11 @@ class RowParser:
     """RowParser class for parsing each row.
 
     Args:
+        name (str): Name of scraper
         countryiso3s (List[str]): List of ISO3 country codes to process
         adminone (AdminOne): AdminOne object from HDX Python Country library that handles processing of admin level 1
-        level (Optional[int]): Can be None, 0 or 1
-        datelevel (Optional[int]): Can be None, 0 or 1
+        level (str): Can be global, national or subnational
+        datelevel (str): Can be global, national or subnational
         datasetinfo (Dict): Dictionary of information about dataset
         headers (List[str]): Row headers
         header_to_hxltag (Optional[Dict[str, str]]): Mapping from headers to HXL hashtags or None
@@ -32,19 +33,36 @@ class RowParser:
 
     def __init__(
         self,
+        name: str,
         countryiso3s: List[str],
         adminone: AdminOne,
-        level: Optional[int],
-        datelevel: Optional[int],
+        level: str,
+        datelevel: str,
         datasetinfo: Dict,
         headers: List[str],
         header_to_hxltag: Optional[Dict[str, str]],
         subsets: List[Dict],
         maxdateonly: bool = True,
     ) -> None:
-        self.level = level
-        self.datelevel = datelevel
-        self.name = datasetinfo["name"]
+        def get_level(level: str) -> Optional[int]:
+            """Get the level as a number
+
+            Args:
+                level (str): Can be global, national or subnational
+
+            Returns:
+                Optional[int]: Level as a number
+            """
+            if level == "global":
+                return None
+            elif level == "national":
+                return 0
+            else:
+                return 1
+
+        self.name = name
+        self.level = get_level(level)
+        self.datelevel = get_level(datelevel)
         self.today = datasetinfo["date"]
         self.sort = datasetinfo.get("sort")
         self.stop_row = datasetinfo.get("stop_row")

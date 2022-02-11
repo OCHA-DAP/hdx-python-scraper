@@ -13,27 +13,28 @@ from hdx.utilities.text import (  # noqa: F401
     number_format,
 )
 
-from hdx.scraper.fallbacks import use_fallbacks
-from hdx.scraper.readers import read
-from hdx.scraper.rowparser import RowParser
-from hdx.scraper.utils import get_level, get_rowval
+from hdx.scraper.base_scraper import BaseScraper
+from hdx.scraper.configurable.rowparser import RowParser
+from hdx.scraper.utilities import get_rowval
+from hdx.scraper.utilities.readers import read
 
 logger = logging.getLogger(__name__)
 
 
-class Scraper:
+class ConfigurableScraper(BaseScraper):
     """Runs one mini scraper given dataset information and returns headers, values and
     sources.
 
     Args:
+        name (str): Name of scraper
         datasetinfo (Dict): Information about dataset
-        level (Optional[int]): Can be None, 0 or 1
+        level (str): Can be global, national or subnational
         countryiso3s (List[str]): List of ISO3 country codes to process
         adminone (AdminOne): AdminOne object from HDX Python Country library
         downloader (Download): Download object for downloading files
         today (datetime): Value to use for today. Defaults to datetime.now().
         population_lookup (Optional[Dict[str,int]]): Admin code to population dict. Defaults to None.
-        fallbacks (Optional[Dict]): Fallback data to use. Defaults to None.
+        **kwargs: Variables to use when evaluating template arguments in urls
     """
 
     brackets = r"""
@@ -49,85 +50,73 @@ class Scraper:
 
     def __init__(
         self,
+        name: str,
         datasetinfo: Dict,
-        level: Optional[int],
+        level: str,
         countryiso3s: List[str],
         adminone: AdminOne,
         downloader: Download,
         today: datetime = datetime.now(),
-        population_lookup: Optional[Dict[str, int]] = None,
-        fallbacks: Optional[Dict] = None,
+        **kwargs: Any,
     ):
-        self.datasetinfo = datasetinfo
-        self.level: Optional[int] = level
+        self.level = level
         datelevel = datasetinfo.get("date_level")
         if datelevel is None:
             self.datelevel = self.level
         else:
-            self.datelevel = get_level(datelevel)
+            self.datelevel = datelevel
         self.countryiso3s = countryiso3s
         self.adminone = adminone
         self.downloader = downloader
         self.today = today
-        self.population_lookup: Optional[Dict[str, int]] = population_lookup
-        self.fallbacks: Optional[Dict] = fallbacks
-        self.subsets = self.get_subsets_from_datasetinfo()
-        self.headers = (list(), list())
+        self.subsets = self.get_subsets_from_datasetinfo(datasetinfo)
+        headers = {level: (list(), list())}
         for subset in self.subsets:
-            self.headers[0].extend(subset["output_cols"])
-            self.headers[1].extend(subset["output_hxltags"])
+            headers[level][0].extend(subset["output_cols"])
+            headers[level][1].extend(subset["output_hxltags"])
+        self.variables = kwargs
         self.rowparser = None
+        super().__init__(name, datasetinfo, headers)
 
-    def get_subsets_from_datasetinfo(self) -> List[Dict]:
+    @staticmethod
+    def get_subsets_from_datasetinfo(datasetinfo) -> List[Dict]:
         """Get subsets from dataset information
 
         Returns:
             List[Dict]: List of subsets
         """
-        subsets = self.datasetinfo.get("subsets")
+        subsets = datasetinfo.get("subsets")
         if not subsets:
             subsets = [
                 {
-                    "filter": self.datasetinfo.get("filter"),
-                    "input_cols": self.datasetinfo.get("input_cols", list()),
-                    "input_transforms": self.datasetinfo.get(
+                    "filter": datasetinfo.get("filter"),
+                    "input_cols": datasetinfo.get("input_cols", list()),
+                    "input_transforms": datasetinfo.get(
                         "input_transforms", dict()
                     ),
-                    "process_cols": self.datasetinfo.get(
-                        "process_cols", list()
-                    ),
-                    "input_keep": self.datasetinfo.get("input_keep", list()),
-                    "input_append": self.datasetinfo.get(
-                        "input_append", list()
-                    ),
-                    "sum_cols": self.datasetinfo.get("sum_cols"),
-                    "input_ignore_vals": self.datasetinfo.get(
+                    "process_cols": datasetinfo.get("process_cols", list()),
+                    "input_keep": datasetinfo.get("input_keep", list()),
+                    "input_append": datasetinfo.get("input_append", list()),
+                    "sum_cols": datasetinfo.get("sum_cols"),
+                    "input_ignore_vals": datasetinfo.get(
                         "input_ignore_vals", list()
                     ),
-                    "output_cols": self.datasetinfo.get("output_cols", list()),
-                    "output_hxltags": self.datasetinfo.get(
+                    "output_cols": datasetinfo.get("output_cols", list()),
+                    "output_hxltags": datasetinfo.get(
                         "output_hxltags", list()
                     ),
                 }
             ]
         return subsets
 
-    def get_sources(
+    def add_sources(
         self,
     ) -> List[Tuple]:
         """Get source for each HXL hashtag
 
         Returns:
-            List[Tuple]: Source for each HXL hashtag
+            List[Tuple]: List of (hxltag, date, source, source url)
         """
-        sources = list()
-        source = self.datasetinfo["source"]
-        if isinstance(source, str):
-            source = {"default_source": source}
-        source_url = self.datasetinfo["source_url"]
-        if isinstance(source_url, str):
-            source_url = {"default_url": source_url}
-
         date = self.datasetinfo.get("date")
         use_date_from_date_col = self.datasetinfo.get(
             "use_date_from_date_col", False
@@ -145,20 +134,8 @@ class Scraper:
                 date = get_datetime_from_timestamp(date)
             else:
                 raise ValueError("No date type specified!")
-        date = date.strftime("%Y-%m-%d")
-
-        sources.extend(
-            [
-                (
-                    hxltag,
-                    date,
-                    source.get(hxltag, source["default_source"]),
-                    source_url.get(hxltag, source_url["default_url"]),
-                )
-                for hxltag in self.headers[1]
-            ]
-        )
-        return sources
+        self.datasetinfo["date"] = date
+        return super().add_sources()
 
     def use_hxl(
         self, headers: List[str], iterator: Iterator[Dict]
@@ -193,7 +170,10 @@ class Scraper:
             hxltag = header_to_hxltag[header]
             if not hxltag or hxltag in exclude_tags:
                 continue
-            if find_tags or (find_tags is None and self.datelevel is not None):
+            if find_tags or (
+                find_tags is None
+                and self.datelevel not in ("global", "regional")
+            ):
                 if "#country" in hxltag:
                     if "code" in hxltag:
                         if len(adm_cols) == 0:
@@ -201,7 +181,7 @@ class Scraper:
                         else:
                             adm_cols[0] = hxltag
                     continue
-                if find_tags or self.datelevel != 0:
+                if find_tags or self.datelevel != "national":
                     if "#adm1" in hxltag:
                         if "code" in hxltag:
                             if len(adm_cols) == 0:
@@ -217,7 +197,7 @@ class Scraper:
             input_cols.append(hxltag)
             columns.append(header)
         self.datasetinfo["adm_cols"] = adm_cols
-        self.headers = (list(), list())
+        self.headers = {self.level: (list(), list())}
         for subset in self.subsets:
             orig_input_cols = subset.get("input_cols", list())
             if not orig_input_cols:
@@ -231,8 +211,9 @@ class Scraper:
             if not orig_hxltags:
                 orig_hxltags.extend(input_cols)
             subset["output_hxltags"] = orig_hxltags
-            self.headers[0].extend(orig_columns)
-            self.headers[1].extend(orig_hxltags)
+            self.headers[self.level][0].extend(orig_columns)
+            self.headers[self.level][1].extend(orig_hxltags)
+        self.initialise_values_sources()
         return header_to_hxltag
 
     def run_scraper(
@@ -288,7 +269,8 @@ class Scraper:
         for row in self.rowparser.filter_sort_rows(iterator):
             add_row(row)
 
-        retvalues = list()
+        values = self.values[self.level]
+        values_pos = 0
         for subset in self.subsets:
             valdicts = valuedicts[subset["filter"]]
             process_cols = subset.get("process_cols")
@@ -303,7 +285,6 @@ class Scraper:
                 reverse=True,
             )
             if process_cols:
-                newvaldicts = [dict() for _ in process_cols]
 
                 def text_replacement(string, adm):
                     # pzbgvjh is arbitrary! It is simply to prevent accidental replacement
@@ -358,12 +339,13 @@ class Scraper:
                                     "#population",
                                     "self.population_lookup[adm]",
                                 )
-                                newvaldicts[i][adm] = eval(formula)
+                                value = eval(formula)
                             else:
-                                newvaldicts[i][adm] = ""
+                                value = ""
                         else:
-                            newvaldicts[i][adm] = ""
-                retvalues.extend(newvaldicts)
+                            value = ""
+                        values[values_pos][adm] = value
+                    values_pos += 1
             elif sum_cols:
                 for sum_col in sum_cols:
                     formula = sum_col["formula"]
@@ -406,71 +388,49 @@ class Scraper:
                     formula = formula.replace(
                         "#pzbgvjh", "self.population_lookup[adm]"
                     )
-                    newvaldict = dict()
                     for adm in valdicts[0].keys():
                         try:
                             val = eval(formula)
                         except (ValueError, TypeError, KeyError):
                             val = ""
-                        newvaldict[adm] = val
-                    retvalues.append(newvaldict)
+                        values[values_pos][adm] = val
+                    values_pos += 1
             else:
-                retvalues.extend(valdicts)
-        return retvalues
+                for valdict in valdicts:
+                    for adm in valdict:
+                        values[values_pos][adm] = valdict[adm]
+                    values_pos += 1
 
-    def run(
-        self,
-        **kwargs: Any,
-    ) -> Dict:
-        """Runs one mini scraper described in dataset information and returns a
-        dictionary containing the headers, values, source information and whether
-        fallback data was used.
-
-        Args:
-            **kwargs: Variables to use when evaluating template arguments in urls
+    def run(self) -> None:
+        """Runs one mini scraper given dataset information
 
         Returns:
-            Dict: Dictionary of output headers, values, source and whether fallback used
+            None
         """
-        results = dict()
-        name = self.datasetinfo["name"]
-        try:
-            headers, iterator = read(
-                self.downloader, self.datasetinfo, today=self.today, **kwargs
-            )
-            if "source_url" not in self.datasetinfo:
-                self.datasetinfo["source_url"] = self.datasetinfo["url"]
-            date = self.datasetinfo.get("date")
-            if date:
-                if isinstance(date, str):
-                    self.datasetinfo["date"] = parse_date(date)
-            if not date or self.datasetinfo.get("force_date_today", False):
-                self.datasetinfo["date"] = self.today
-            header_to_hxltag = self.use_hxl(headers, iterator)
-            self.rowparser = RowParser(
-                self.countryiso3s,
-                self.adminone,
-                self.level,
-                self.datelevel,
-                self.datasetinfo,
-                headers,
-                header_to_hxltag,
-                self.subsets,
-            )
-            values = self.run_scraper(iterator)
-            sources = self.get_sources()
-            fallback = False
-            logger.info(f"Processed {name}")
-        except Exception:
-            if not self.fallbacks:
-                raise
-            if not self.headers[1]:
-                raise
-            values, sources = use_fallbacks(self.fallbacks, self.headers)
-            fallback = True
-            logger.exception(f"Used fallback data for {name}!")
-        results["headers"] = self.headers
-        results["values"] = values
-        results["sources"] = sources
-        results["fallbacks"] = fallback
-        return results
+        headers, iterator = read(
+            self.downloader,
+            self.datasetinfo,
+            today=self.today,
+            **self.variables,
+        )
+        if "source_url" not in self.datasetinfo:
+            self.datasetinfo["source_url"] = self.datasetinfo["url"]
+        date = self.datasetinfo.get("date")
+        if date:
+            if isinstance(date, str):
+                self.datasetinfo["date"] = parse_date(date)
+        if not date or self.datasetinfo.get("force_date_today", False):
+            self.datasetinfo["date"] = self.today
+        header_to_hxltag = self.use_hxl(headers, iterator)
+        self.rowparser = RowParser(
+            self.name,
+            self.countryiso3s,
+            self.adminone,
+            self.level,
+            self.datelevel,
+            self.datasetinfo,
+            headers,
+            header_to_hxltag,
+            self.subsets,
+        )
+        self.run_scraper(iterator)

@@ -9,8 +9,8 @@ except ImportError:
     pass
 
 
-class NoOutput:
-    """NoOutput class for testing that mimics the format of other output classes but does nothing.
+class BaseOutput:
+    """Base class for output that can also be used for testing as it does nothing.
 
     Args:
         updatetabs (List[str]): Tabs to update
@@ -24,7 +24,6 @@ class NoOutput:
         tabname: str,
         values: Union[List, DataFrame],
         hxltags: Optional[Dict] = None,
-        limit: Optional[int] = None,
     ) -> None:
         """Update tab with values
 
@@ -32,7 +31,6 @@ class NoOutput:
             tabname (str): Tab to update
             values (Union[List, DataFrame]): Either values in a list of dicts or a DataFrame
             hxltags (Optional[Dict]): HXL tag mapping. Defaults to None.
-            limit (Optional[int]): Maximum number of rows to output
 
         Returns:
             None
