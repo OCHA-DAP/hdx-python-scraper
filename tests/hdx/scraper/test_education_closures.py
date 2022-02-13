@@ -79,3 +79,56 @@ class TestScraperEducationClosures:
                 ),
             ]
             check_scraper(name, runner, "national", headers, values, sources)
+
+            runner = Runner(("AFG",), adminone, downloader, dict(), today)
+            datasetinfo = {
+                "format": "csv",
+                "dataset": "global-school-closures-covid19",
+                "url": "NOTEXIST.csv",
+                "resource": "School Closures",
+                "headers": 1,
+            }
+            education_closures = EducationClosures(
+                datasetinfo, today, countries, Region(), downloader
+            )
+            runner.add_custom(education_closures)
+            runner.run()
+            name = education_closures.name
+            headers = (["School Closure"], ["#impact+type"])
+            values = [{"AFG": "Partially open"}]
+            sources = [
+                (
+                    "#impact+type",
+                    "2020-09-01",
+                    "UNESCO",
+                    "tests/fixtures/fallbacks.json",
+                )
+            ]
+            check_scraper(
+                name,
+                runner,
+                "national",
+                headers,
+                values,
+                sources,
+                fallbacks_used=True,
+            )
+            headers = (["No. closed countries"], ["#status+country+closed"])
+            values = [{"ROAP": 3}]
+            sources = [
+                (
+                    "#status+country+closed",
+                    "2020-09-01",
+                    "UNESCO",
+                    "tests/fixtures/fallbacks.json",
+                )
+            ]
+            check_scraper(
+                name,
+                runner,
+                "regional",
+                headers,
+                values,
+                sources,
+                fallbacks_used=True,
+            )
