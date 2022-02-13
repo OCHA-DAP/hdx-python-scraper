@@ -80,6 +80,7 @@ def run_check_scraper(
 ):
     runner.run_one(name)
     check_scraper(
+        name,
         runner,
         level,
         headers,
@@ -102,9 +103,15 @@ def check_scrapers(
     fallbacks_used=False,
 ):
     runner.run(names)
-    check_scraper(runner, level, headers, values, sources, population_lookup)
     for name in names:
-        scraper = runner.get_scraper(name)
-        assert scraper.has_run is True
-        assert scraper.fallbacks_used is fallbacks_used
+        check_scraper(
+            name,
+            runner,
+            level,
+            headers,
+            values,
+            sources,
+            population_lookup,
+            fallbacks_used=fallbacks_used,
+        )
     runner.set_not_run_many(names)
