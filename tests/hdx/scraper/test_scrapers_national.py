@@ -3,7 +3,7 @@ from hdx.utilities.dateparse import parse_date
 from hdx.utilities.downloader import Download
 
 from hdx.scraper.runner import Runner
-from tests.hdx.scraper.conftest import check_scraper, check_scrapers
+from tests.hdx.scraper.conftest import check_scrapers, run_check_scraper
 
 
 class TestScraperNational:
@@ -26,7 +26,7 @@ class TestScraperNational:
                     "https://data.humdata.org/organization/world-bank-group",
                 )
             ]
-            check_scraper(
+            run_check_scraper(
                 name,
                 runner,
                 level,
@@ -186,7 +186,7 @@ class TestScraperNational:
                     "https://docs.google.com/spreadsheets/d/e/2PACX-1vRSzJzuyVt9i_mkRQ2HbxrUl2Lx2VIhkTHQM-laE8NyhQTy70zQTCuFS3PXbhZGAt1l2bkoA4_dAoAP/pub?gid=1565063847&single=true&output=csv",
                 ),
             ]
-            check_scraper(name, runner, level, headers, values, sources)
+            run_check_scraper(name, runner, level, headers, values, sources)
 
             name = "sadd"
             headers = (
@@ -235,7 +235,7 @@ class TestScraperNational:
                     "tests/fixtures/covid-19-sex-disaggregated-data.csv",
                 ),
             ]
-            check_scraper(name, runner, level, headers, values, sources)
+            run_check_scraper(name, runner, level, headers, values, sources)
 
             runner = Runner(
                 ("AFG", "PHL"), adminone, downloader, dict(), today
@@ -256,7 +256,7 @@ class TestScraperNational:
                     "tests/fixtures/ourworldindata_vaccinedoses.csv",
                 )
             ]
-            check_scraper(name, runner, level, headers, values, sources)
+            run_check_scraper(name, runner, level, headers, values, sources)
 
             name = "covidtests"
             headers = (
@@ -305,7 +305,7 @@ class TestScraperNational:
                     "https://data.humdata.org/dataset/total-covid-19-tests-performed-by-country",
                 ),
             ]
-            check_scraper(name, runner, level, headers, values, sources)
+            run_check_scraper(name, runner, level, headers, values, sources)
 
             today = parse_date("2021-05-03")
             runner = Runner(
@@ -326,7 +326,7 @@ class TestScraperNational:
                     "tests/fixtures/ourworldindata_vaccinedoses.csv",
                 )
             ]
-            check_scraper(name, runner, level, headers, values, sources)
+            run_check_scraper(name, runner, level, headers, values, sources)
 
             # Test fallbacks
             name = "broken_owd_url"
@@ -343,7 +343,7 @@ class TestScraperNational:
                     "tests/fixtures/fallbacks.json",
                 )
             ]
-            check_scraper(
+            run_check_scraper(
                 name,
                 runner,
                 level,

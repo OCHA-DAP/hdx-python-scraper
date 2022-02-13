@@ -5,7 +5,7 @@ from hdx.utilities.dateparse import parse_date
 from hdx.utilities.downloader import Download
 
 from hdx.scraper.runner import Runner
-from tests.hdx.scraper.conftest import check_scraper
+from tests.hdx.scraper.conftest import run_check_scraper
 
 
 class TestScraperGlobal:
@@ -93,7 +93,7 @@ class TestScraperGlobal:
                     "tests/fixtures/COVID-19 Vaccine Doses in HRP Countries - Data HXL.csv",
                 ),
             ]
-            check_scraper(name, runner, level, headers, values, sources)
+            run_check_scraper(name, runner, level, headers, values, sources)
 
             cerf_headers = (
                 [
@@ -233,7 +233,7 @@ class TestScraperGlobal:
                     "https://data.humdata.org/dataset/cerf-covid-19-allocations",
                 ),
             ]
-            check_scraper(name, runner, level, headers, values, sources)
+            run_check_scraper(name, runner, level, headers, values, sources)
 
             name = "ourworldindata"
             headers = (
@@ -249,7 +249,7 @@ class TestScraperGlobal:
                     "tests/fixtures/ourworldindata_vaccinedoses.csv",
                 )
             ]
-            check_scraper(name, runner, level, headers, values, sources)
+            run_check_scraper(name, runner, level, headers, values, sources)
 
             today = parse_date("2021-05-03")
             runner = Runner(
@@ -360,7 +360,7 @@ class TestScraperGlobal:
                     "https://data.humdata.org/dataset/cerf-covid-19-allocations",
                 ),
             ]
-            check_scraper(name, runner, level, headers, values, sources)
+            run_check_scraper(name, runner, level, headers, values, sources)
 
             # Test fallbacks with subsets
             with caplog.at_level(logging.ERROR):
@@ -468,7 +468,7 @@ class TestScraperGlobal:
                         "tests/fixtures/fallbacks.json",
                     ),
                 ]
-                check_scraper(
+                run_check_scraper(
                     name,
                     runner,
                     level,
@@ -497,7 +497,7 @@ class TestScraperGlobal:
                     "tests/fixtures/ourworldindata_vaccinedoses.csv",
                 )
             ]
-            check_scraper(name, runner, level, headers, values, sources)
+            run_check_scraper(name, runner, level, headers, values, sources)
 
             scraper_configuration = configuration["other"]
             runner.add_configurables(scraper_configuration, level)
@@ -515,7 +515,7 @@ class TestScraperGlobal:
                     "tests/fixtures/ourworldindata_vaccinedoses.csv",
                 )
             ]
-            check_scraper(name, runner, level, headers, values, sources)
+            run_check_scraper(name, runner, level, headers, values, sources)
 
             name = "altworldindata"
             headers = (
@@ -531,4 +531,4 @@ class TestScraperGlobal:
                     "tests/fixtures/ourworldindata_vaccinedoses.csv",
                 )
             ]
-            check_scraper(name, runner, level, headers, values, sources)
+            run_check_scraper(name, runner, level, headers, values, sources)

@@ -3,7 +3,7 @@ from hdx.utilities.dateparse import parse_date
 from hdx.utilities.downloader import Download
 
 from hdx.scraper.runner import Runner
-from tests.hdx.scraper.conftest import check_scraper
+from tests.hdx.scraper.conftest import run_check_scraper
 
 
 class TestScraperSubnational:
@@ -66,7 +66,7 @@ class TestScraperSubnational:
                     "tests/fixtures/unicef_who_wb_global_expanded_databases_severe_wasting.xlsx",
                 )
             ]
-            check_scraper(name, runner, level, headers, values, sources)
+            run_check_scraper(name, runner, level, headers, values, sources)
 
             scraper_configuration = configuration["other"]
             runner.add_configurables(scraper_configuration, level)
@@ -84,4 +84,4 @@ class TestScraperSubnational:
                     "tests/fixtures/unicef_who_wb_global_expanded_databases_severe_wasting.xlsx",
                 )
             ]
-            check_scraper(name, runner, level, headers, values, sources)
+            run_check_scraper(name, runner, level, headers, values, sources)
