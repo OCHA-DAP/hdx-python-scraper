@@ -10,7 +10,8 @@ from tests.hdx.scraper.education_closures import EducationClosures
 class TestScraperEducationClosures:
     def test_get_education_closures(self, configuration, fallbacks):
         with Download(user_agent="test") as downloader:
-            today = parse_date("2020-10-01")
+            today_str = "2020-10-01"
+            today = parse_date(today_str)
             adminone = AdminOne(configuration)
             level = "national"
             countries = ("AFG",)
@@ -22,6 +23,7 @@ class TestScraperEducationClosures:
             datasetinfo = {
                 "format": "csv",
                 "dataset": "global-school-closures-covid19",
+                "date": today_str,
                 "url": "tests/fixtures/covid_impact_education.csv",
                 "resource": "School Closures",
                 "headers": 1,
@@ -37,7 +39,7 @@ class TestScraperEducationClosures:
             sources = [
                 (
                     "#impact+type",
-                    "2022-02-14",
+                    today_str,
                     "UNESCO",
                     "https://data.humdata.org/dataset/global-school-closures-covid19",
                 )
@@ -48,7 +50,7 @@ class TestScraperEducationClosures:
             sources = [
                 (
                     "#status+country+closed",
-                    "2022-02-14",
+                    today_str,
                     "UNESCO",
                     "https://data.humdata.org/dataset/global-school-closures-covid19",
                 )
@@ -67,7 +69,7 @@ class TestScraperEducationClosures:
             sources = [
                 (
                     "#impact+type",
-                    "2022-02-14",
+                    today_str,
                     "UNESCO",
                     "https://data.humdata.org/dataset/global-school-closures-covid19",
                 ),
