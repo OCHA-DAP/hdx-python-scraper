@@ -3,8 +3,9 @@ from hdx.utilities.dateparse import parse_date
 from hdx.utilities.downloader import Download
 
 from hdx.scraper.runner import Runner
-from tests.hdx.scraper.conftest import check_scraper, check_scrapers
-from tests.hdx.scraper.education_closures import EducationClosures
+
+from .conftest import check_scraper, check_scrapers
+from .education_closures import EducationClosures
 
 
 class TestScraperEducationClosures:

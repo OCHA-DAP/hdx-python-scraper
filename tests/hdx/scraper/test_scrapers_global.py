@@ -5,7 +5,8 @@ from hdx.utilities.dateparse import parse_date
 from hdx.utilities.downloader import Download
 
 from hdx.scraper.runner import Runner
-from tests.hdx.scraper.conftest import run_check_scraper
+
+from .conftest import run_check_scraper
 
 
 class TestScraperGlobal:

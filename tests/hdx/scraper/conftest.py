@@ -5,11 +5,11 @@ import pytest
 from hdx.api.configuration import Configuration
 from hdx.api.locations import Locations
 from hdx.location.country import Country
-from hdx.utilities.loader import load_json
 
 from hdx.scraper.base_scraper import BaseScraper
 from hdx.scraper.utilities.fallbacks import Fallbacks
-from tests.hdx.scraper import bool_assert
+
+from . import bool_assert
 
 
 @pytest.fixture(scope="session")
