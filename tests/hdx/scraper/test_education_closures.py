@@ -3,7 +3,7 @@ from hdx.utilities.dateparse import parse_date
 from hdx.utilities.downloader import Download
 
 from hdx.scraper.runner import Runner
-from tests.hdx.scraper.conftest import check_scraper
+from tests.hdx.scraper.conftest import check_scraper, check_scrapers
 from tests.hdx.scraper.education_closures import EducationClosures
 
 
@@ -62,25 +62,32 @@ class TestScraperEducationClosures:
             runner.run_one("population")
             check_scraper(name, runner, "regional", headers, values, sources)
             headers = (
-                ["School Closure", "Population"],
-                ["#impact+type", "#population"],
+                ["Population", "School Closure"],
+                ["#population", "#impact+type"],
             )
-            values = [{"AFG": "Closed due to COVID-19"}, {"AFG": 38041754}]
+            values = [{"AFG": 38041754}, {"AFG": "Closed due to COVID-19"}]
             sources = [
-                (
-                    "#impact+type",
-                    today_str,
-                    "UNESCO",
-                    "https://data.humdata.org/dataset/global-school-closures-covid19",
-                ),
                 (
                     "#population",
                     "2020-10-01",
                     "World Bank",
                     "https://data.humdata.org/organization/world-bank-group",
                 ),
+                (
+                    "#impact+type",
+                    today_str,
+                    "UNESCO",
+                    "https://data.humdata.org/dataset/global-school-closures-covid19",
+                ),
             ]
-            check_scraper(name, runner, "national", headers, values, sources)
+            check_scrapers(
+                ("population", name),
+                runner,
+                "national",
+                headers,
+                values,
+                sources,
+            )
 
             runner = Runner(("AFG",), adminone, downloader, dict(), today)
             datasetinfo = {

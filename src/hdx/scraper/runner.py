@@ -102,9 +102,12 @@ class Runner:
         for name in names:
             self.get_scraper(name).has_run = False
 
-    def get_results(self):
+    def get_results(self, names=None):
+        if not names:
+            names = self.scrapers.keys()
         results = dict()
-        for name, scraper in self.scrapers.items():
+        for name in names:
+            scraper = self.get_scraper(name)
             if not scraper.has_run:
                 continue
             for level, headers in scraper.headers.items():

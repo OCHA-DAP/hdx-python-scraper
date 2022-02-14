@@ -43,6 +43,32 @@ def fallbacks(fixtures):
     Fallbacks.add(join(fixtures, "fallbacks.json"))
 
 
+def check_scrapers(
+    names,
+    runner,
+    level,
+    headers,
+    values,
+    sources,
+    population_lookup=None,
+    fallbacks_used=False,
+):
+    for name in names:
+        scraper = runner.get_scraper(name)
+        bool_assert(scraper.has_run, True, "Scraper has not run!")
+        bool_assert(
+            scraper.fallbacks_used,
+            fallbacks_used,
+            f"Fallbacks used {scraper.fallbacks_used} is not as expected!",
+        )
+    results = runner.get_results(names)[level]
+    assert results["headers"] == headers
+    assert results["values"] == values
+    assert results["sources"] == sources
+    if population_lookup:
+        assert BaseScraper.population_lookup == population_lookup
+
+
 def check_scraper(
     name,
     runner,
@@ -53,19 +79,16 @@ def check_scraper(
     population_lookup=None,
     fallbacks_used=False,
 ):
-    results = runner.get_results()[level]
-    scraper = runner.get_scraper(name)
-    bool_assert(scraper.has_run, True, "Scraper has not run!")
-    bool_assert(
-        scraper.fallbacks_used,
-        fallbacks_used,
-        f"Fallbacks used {scraper.fallbacks_used} is not as expected!",
+    check_scrapers(
+        (name,),
+        runner,
+        level,
+        headers,
+        values,
+        sources,
+        population_lookup,
+        fallbacks_used=fallbacks_used,
     )
-    assert results["headers"] == headers
-    assert results["values"] == values
-    assert results["sources"] == sources
-    if population_lookup:
-        assert BaseScraper.population_lookup == population_lookup
 
 
 def run_check_scraper(
@@ -92,7 +115,7 @@ def run_check_scraper(
     runner.set_not_run(name)
 
 
-def check_scrapers(
+def run_check_scrapers(
     names,
     runner,
     level,
@@ -103,15 +126,14 @@ def check_scrapers(
     fallbacks_used=False,
 ):
     runner.run(names)
-    for name in names:
-        check_scraper(
-            name,
-            runner,
-            level,
-            headers,
-            values,
-            sources,
-            population_lookup,
-            fallbacks_used=fallbacks_used,
-        )
+    check_scrapers(
+        names,
+        runner,
+        level,
+        headers,
+        values,
+        sources,
+        population_lookup,
+        fallbacks_used=fallbacks_used,
+    )
     runner.set_not_run_many(names)
