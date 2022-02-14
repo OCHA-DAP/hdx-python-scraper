@@ -3,7 +3,7 @@ from datetime import datetime
 import pytest
 from hdx.utilities.downloader import Download
 
-from hdx.scraper.readers import get_url, read
+from hdx.scraper.utilities.readers import get_url, read
 
 
 class TestReaders:

@@ -4,29 +4,23 @@ from hdx.location.adminone import AdminOne
 from hdx.utilities.dateparse import parse_date
 from hdx.utilities.downloader import Download
 
-from hdx.scraper.scrapers import run_scrapers
-from tests.hdx.scraper import get_fallbacks
+from hdx.scraper.runner import Runner
+from tests.hdx.scraper.conftest import run_check_scraper
 
 
 class TestScraperGlobal:
-    def test_get_tabular_global(self, caplog, configuration, fallback_data):
+    def test_get_tabular_global(self, caplog, configuration, fallbacks):
         with Download(user_agent="test") as downloader:
             today = parse_date("2020-10-01")
             adminone = AdminOne(configuration)
-            population_lookup = dict()
             level = "global"
             scraper_configuration = configuration[f"scraper_{level}"]
-            results = run_scrapers(
-                scraper_configuration,
-                level,
-                configuration["HRPs"],
-                adminone,
-                downloader,
-                today=today,
-                population_lookup=population_lookup,
-                scrapers=["covax"],
+            runner = Runner(
+                configuration["HRPs"], adminone, downloader, dict(), today
             )
-            assert results["headers"] == (
+            runner.add_configurables(scraper_configuration, level)
+            name = "covax"
+            headers = (
                 [
                     "Covax Interim Forecast Doses",
                     "Covax Delivered Doses",
@@ -46,7 +40,7 @@ class TestScraperGlobal:
                     "#capacity+doses+covax+astrazenecaskbio",
                 ],
             )
-            assert results["values"] == [
+            values = [
                 {"global": "73248240"},
                 {"global": "12608040"},
                 {"global": "23728358"},
@@ -55,7 +49,7 @@ class TestScraperGlobal:
                 {"global": "67116000"},
                 {"global": "5860800"},
             ]
-            assert results["sources"] == [
+            sources = [
                 (
                     "#capacity+doses+forecast+covax",
                     "2020-08-07",
@@ -99,6 +93,7 @@ class TestScraperGlobal:
                     "tests/fixtures/COVID-19 Vaccine Doses in HRP Countries - Data HXL.csv",
                 ),
             ]
+            run_check_scraper(name, runner, level, headers, values, sources)
 
             cerf_headers = (
                 [
@@ -134,18 +129,9 @@ class TestScraperGlobal:
                     "#value+cerf+funding+gm4+total+usd",
                 ],
             )
-            results = run_scrapers(
-                scraper_configuration,
-                level,
-                configuration["HRPs"],
-                adminone,
-                downloader,
-                today=today,
-                population_lookup=population_lookup,
-                scrapers=["cerf_global"],
-            )
-            assert results["headers"] == cerf_headers
-            assert results["values"] == [
+            name = "cerf_global"
+            headers = cerf_headers
+            values = [
                 {"global": 906790749.5500005},
                 {"global": 829856355.4100008},
                 {"global": 37432868.04999999},
@@ -161,7 +147,7 @@ class TestScraperGlobal:
                 {"global": 349338181.0},
                 {"global": 147855321.0},
             ]
-            assert results["sources"] == [
+            sources = [
                 (
                     "#value+cbpf+funding+total+usd",
                     "2020-10-01",
@@ -247,24 +233,15 @@ class TestScraperGlobal:
                     "https://data.humdata.org/dataset/cerf-covid-19-allocations",
                 ),
             ]
-            assert results["fallbacks"] == list()
+            run_check_scraper(name, runner, level, headers, values, sources)
 
-            results = run_scrapers(
-                scraper_configuration,
-                level,
-                configuration["HRPs"],
-                adminone,
-                downloader,
-                today=today,
-                population_lookup=population_lookup,
-                scrapers=["ourworldindata"],
-            )
-            assert results["headers"] == (
+            name = "ourworldindata"
+            headers = (
                 ["TotalDosesAdministered"],
                 ["#capacity+doses+administered+total"],
             )
-            assert results["values"] == [dict()]
-            assert results["sources"] == [
+            values = [dict()]
+            sources = [
                 (
                     "#capacity+doses+administered+total",
                     "2020-10-01",
@@ -272,20 +249,16 @@ class TestScraperGlobal:
                     "tests/fixtures/ourworldindata_vaccinedoses.csv",
                 )
             ]
+            run_check_scraper(name, runner, level, headers, values, sources)
 
             today = parse_date("2021-05-03")
-            results = run_scrapers(
-                scraper_configuration,
-                level,
-                configuration["HRPs"],
-                adminone,
-                downloader,
-                today=today,
-                scrapers=["cerf_global"],
-                population_lookup=population_lookup,
+            runner = Runner(
+                configuration["HRPs"], adminone, downloader, dict(), today
             )
-            assert results["headers"] == cerf_headers
-            assert results["values"] == [
+            runner.add_configurables(scraper_configuration, level)
+            name = "cerf_global"
+            headers = cerf_headers
+            values = [
                 {"global": 7811774.670000001},
                 {"global": 7811774.670000001},
                 {},
@@ -301,7 +274,7 @@ class TestScraperGlobal:
                 {"global": 26098816.0},
                 {"global": 43350642.0},
             ]
-            assert results["sources"] == [
+            sources = [
                 (
                     "#value+cbpf+funding+total+usd",
                     "2021-05-03",
@@ -387,24 +360,13 @@ class TestScraperGlobal:
                     "https://data.humdata.org/dataset/cerf-covid-19-allocations",
                 ),
             ]
-            assert results["fallbacks"] == list()
+            run_check_scraper(name, runner, level, headers, values, sources)
 
             # Test fallbacks with subsets
-            fallbacks = get_fallbacks(fallback_data, level)
             with caplog.at_level(logging.ERROR):
-                results = run_scrapers(
-                    scraper_configuration,
-                    level,
-                    configuration["HRPs"],
-                    adminone,
-                    downloader,
-                    today=today,
-                    population_lookup=population_lookup,
-                    fallbacks=fallbacks,
-                    scrapers=["broken_cerf_url"],
-                )
-                assert results["headers"] == cerf_headers
-                assert results["values"] == [
+                name = "broken_cerf_url"
+                headers = cerf_headers
+                values = [
                     {"global": 7811775.670000001},
                     {"global": 7811775.670000001},
                     {},
@@ -420,7 +382,7 @@ class TestScraperGlobal:
                     {"global": 26098817.0},
                     {"global": 43350643.0},
                 ]
-                assert results["sources"] == [
+                sources = [
                     (
                         "#value+cbpf+funding+total+usd",
                         "2020-09-01",
@@ -506,29 +468,28 @@ class TestScraperGlobal:
                         "tests/fixtures/fallbacks.json",
                     ),
                 ]
-                assert results["fallbacks"] == ["broken_cerf_url"]
-                assert "Used fallback data for broken_cerf_url!" in caplog.text
+                run_check_scraper(
+                    name,
+                    runner,
+                    level,
+                    headers,
+                    values,
+                    sources,
+                    fallbacks_used=True,
+                )
+                assert f"Using fallbacks for {name}!" in caplog.text
                 assert (
                     "Getting tabular stream for NOTEXIST.csv failed!"
                     in caplog.text
                 )
 
-            results = run_scrapers(
-                scraper_configuration,
-                level,
-                configuration["HRPs"],
-                adminone,
-                downloader,
-                today=today,
-                population_lookup=population_lookup,
-                scrapers=["ourworldindata"],
-            )
-            assert results["headers"] == (
+            name = "ourworldindata"
+            headers = (
                 ["TotalDosesAdministered"],
                 ["#capacity+doses+administered+total"],
             )
-            assert results["values"] == [{"global": "13413871"}]
-            assert results["sources"] == [
+            values = [{"global": "13413871"}]
+            sources = [
                 (
                     "#capacity+doses+administered+total",
                     "2021-05-03",
@@ -536,23 +497,17 @@ class TestScraperGlobal:
                     "tests/fixtures/ourworldindata_vaccinedoses.csv",
                 )
             ]
+            run_check_scraper(name, runner, level, headers, values, sources)
+
             scraper_configuration = configuration["other"]
-            results = run_scrapers(
-                scraper_configuration,
-                level,
-                configuration["HRPs"],
-                adminone,
-                downloader,
-                today=today,
-                scrapers=["ourworldindata"],
-                population_lookup=population_lookup,
-            )
-            assert results["headers"] == (
+            runner.add_configurables(scraper_configuration, level)
+            name = "ourworldindata_other"
+            headers = (
                 ["TotalDosesAdministered"],
                 ["#capacity+doses+administered+total"],
             )
-            assert results["values"] == [{"global": "1175451507"}]
-            assert results["sources"] == [
+            values = [{"global": "1175451507"}]
+            sources = [
                 (
                     "#capacity+doses+administered+total",
                     "2021-05-03",
@@ -560,22 +515,15 @@ class TestScraperGlobal:
                     "tests/fixtures/ourworldindata_vaccinedoses.csv",
                 )
             ]
-            results = run_scrapers(
-                scraper_configuration,
-                level,
-                configuration["HRPs"],
-                adminone,
-                downloader,
-                today=today,
-                scrapers=["altworldindata"],
-                population_lookup=population_lookup,
-            )
-            assert results["headers"] == (
+            run_check_scraper(name, runner, level, headers, values, sources)
+
+            name = "altworldindata"
+            headers = (
                 ["TotalDosesAdministered"],
                 ["#capacity+doses+administered+total"],
             )
-            assert results["values"] == [{"global": "1175451507"}]
-            assert results["sources"] == [
+            values = [{"global": "1175451507"}]
+            sources = [
                 (
                     "#capacity+doses+administered+total",
                     "2021-05-03",
@@ -583,3 +531,4 @@ class TestScraperGlobal:
                     "tests/fixtures/ourworldindata_vaccinedoses.csv",
                 )
             ]
+            run_check_scraper(name, runner, level, headers, values, sources)

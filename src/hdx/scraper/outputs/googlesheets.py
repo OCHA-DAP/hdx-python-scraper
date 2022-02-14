@@ -4,6 +4,8 @@ from typing import Dict, List, Optional, Union
 
 import gspread
 
+from hdx.scraper.outputs.base import BaseOutput
+
 try:
     import numpy
     from pandas import DataFrame
@@ -14,7 +16,7 @@ except ImportError:
 logger = logging.getLogger(__name__)
 
 
-class GoogleSheets:
+class GoogleSheets(BaseOutput):
     """GoogleSheets class enabling writing to Google spreadsheets.
 
     Args:
@@ -33,6 +35,7 @@ class GoogleSheets:
         tabs: Dict[str, str],
         updatetabs: List[str],
     ) -> None:
+        super().__init__(updatetabs)
         info = json.loads(gsheet_auth)
         scopes = ["https://www.googleapis.com/auth/spreadsheets"]
         self.gc = gspread.service_account_from_dict(info, scopes=scopes)
@@ -44,7 +47,6 @@ class GoogleSheets:
             logger.info(f"Updating only these spreadsheets: {updatesheets}")
         self.updatesheets = updatesheets
         self.tabs = tabs
-        self.updatetabs = updatetabs
 
     def update_tab(
         self,

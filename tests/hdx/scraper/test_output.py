@@ -9,10 +9,10 @@ from hdx.utilities.dateparse import parse_date
 from hdx.utilities.downloader import Download
 from hdx.utilities.path import temp_dir
 
-from hdx.scraper.exceloutput import ExcelOutput
-from hdx.scraper.googlesheets import GoogleSheets
-from hdx.scraper.jsonoutput import JsonOutput
-from hdx.scraper.nooutput import NoOutput
+from hdx.scraper.outputs.base import BaseOutput
+from hdx.scraper.outputs.excelfile import ExcelFile
+from hdx.scraper.outputs.googlesheets import GoogleSheets
+from hdx.scraper.outputs.json import JsonFile
 
 
 class TestOutput:
@@ -31,8 +31,8 @@ class TestOutput:
             with Download(user_agent="test") as downloader:
                 tabs = configuration["tabs"]
                 sheetname = list(tabs.values())[0]
-                noout = NoOutput(tabs)
-                excelout = ExcelOutput(
+                noout = BaseOutput(tabs)
+                excelout = ExcelFile(
                     join(tempdir, "test_output.xlsx"), tabs, tabs
                 )
                 gsheet_auth = getenv("GSHEET_AUTH")
@@ -41,7 +41,7 @@ class TestOutput:
                 googleout = GoogleSheets(
                     configuration, gsheet_auth, None, tabs, tabs
                 )
-                jsonout = JsonOutput(configuration, tabs)
+                jsonout = JsonFile(configuration, tabs)
                 output = [
                     list(hxltags.keys()),
                     list(hxltags.values()),
@@ -152,8 +152,8 @@ class TestOutput:
 
     def test_jsonoutput(self, configuration, fixtures, hxltags):
         tabs = configuration["tabs"]
-        noout = NoOutput(tabs)
-        jsonout = JsonOutput(configuration, tabs)
+        noout = BaseOutput(tabs)
+        jsonout = JsonFile(configuration, tabs)
         rows = [
             {
                 "Country Code": "#country+code",

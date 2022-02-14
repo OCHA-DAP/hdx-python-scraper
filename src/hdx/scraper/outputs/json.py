@@ -7,19 +7,21 @@ from hdx.utilities.dictandlist import dict_of_lists_add
 from hdx.utilities.downloader import Download
 from hdx.utilities.saver import save_json
 
+from hdx.scraper.outputs.base import BaseOutput
+
 try:
     from pandas import DataFrame
 except ImportError:
     pass
 
-from hdx.scraper.readers import read
-from hdx.scraper.utils import match_template
+from hdx.scraper.utilities import match_template
+from hdx.scraper.utilities.readers import read
 
 logger = logging.getLogger(__name__)
 
 
-class JsonOutput:
-    """JsonOutput class enabling writing to JSON files.
+class JsonFile(BaseOutput):
+    """JsonFile class enabling writing to JSON files.
 
     Args:
         configuration (Dict): Configuration for Google Sheets
@@ -27,8 +29,8 @@ class JsonOutput:
     """
 
     def __init__(self, configuration, updatetabs):
+        super().__init__(updatetabs)
         self.json_configuration = configuration["json"]
-        self.updatetabs = updatetabs
         self.json = dict()
 
     def add_data_row(self, key: str, row: Dict) -> None:

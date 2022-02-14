@@ -17,3 +17,7 @@ def get_fallbacks(fallback_data, level):
         ],
     }
     return fallbacks
+
+
+def bool_assert(actual, expected, msg):
+    assert actual is expected, msg

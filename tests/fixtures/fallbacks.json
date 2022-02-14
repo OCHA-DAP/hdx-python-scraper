@@ -11,12 +11,20 @@
       "#value+cerf+funding+gm4+total+usd": 43350643.0
     }
   ],
+  "regional_data": [
+    {
+      "#region+name": "ROAP",
+      "#status+country+closed": 3
+    }
+  ],
   "national_data": [
     {
       "#country+code": "AFG",
-      "#capacity+doses+administered+total": "230000"
+      "#capacity+doses+administered+total": "230000",
+      "#impact+type": "Partially open"
     }
   ],
+  "subnational_data": [],
   "sources": [
     {
       "#indicator+name": "#capacity+doses+administered+total",
@@ -106,6 +114,18 @@
       "#indicator+name": "#value+cerf+funding+gm4+total+usd",
       "#date": "2020-09-01",
       "#meta+source": "CERF and CBPF",
+      "#meta+url": "tests/fixtures/fallbacks.json"
+    },
+    {
+      "#indicator+name": "#impact+type",
+      "#date": "2020-09-01",
+      "#meta+source": "UNESCO",
+      "#meta+url": "tests/fixtures/fallbacks.json"
+    },
+    {
+      "#indicator+name": "#status+country+closed",
+      "#date": "2020-09-01",
+      "#meta+source": "UNESCO",
       "#meta+url": "tests/fixtures/fallbacks.json"
     }
   ]
