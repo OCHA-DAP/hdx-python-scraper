@@ -19,6 +19,11 @@ To use the optional functions for outputting data from Pandas to JSON, Excel etc
 
     pip install hdx-python-scraper[pandas]
 
+## Breaking Changes
+
+From 1.4.4, significant refactor that adds custom scraper support and a runner class - 
+documentation will be updated soon  
+
 # Scraper Framework Configuration
 
 The following is an example of how the framework is set up:
