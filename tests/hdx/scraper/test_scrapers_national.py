@@ -15,7 +15,18 @@ class TestScraperNational:
             level = "national"
             scraper_configuration = configuration[f"scraper_{level}"]
             runner = Runner(("AFG",), adminone, downloader, dict(), today)
-            runner.add_configurables(scraper_configuration, level)
+            keys = runner.add_configurables(scraper_configuration, level)
+            assert keys == [
+                "population",
+                "who_national",
+                "who_national2",
+                "access",
+                "sadd",
+                "ourworldindata",
+                "broken_owd_url",
+                "covidtests",
+            ]
+
             name = "population"
             headers = (["Population"], ["#population"])
             values = [{"AFG": 38041754}]
@@ -35,6 +46,9 @@ class TestScraperNational:
                 values,
                 sources,
                 population_lookup=values[0],
+                urls_read=[
+                    "tests/fixtures/API_SP.POP.TOTL_DS2_en_excel_v2_1302508_LIST.xls"
+                ],
             )
 
             names = ("who_national", "who_national2")
@@ -84,7 +98,15 @@ class TestScraperNational:
                     "tests/fixtures/WHO-COVID-19-global-data.csv",
                 ),
             ]
-            run_check_scrapers(names, runner, level, headers, values, sources)
+            run_check_scrapers(
+                names,
+                runner,
+                level,
+                headers,
+                values,
+                sources,
+                urls_read=["tests/fixtures/WHO-COVID-19-global-data.csv"],
+            )
 
             name = "access"
             headers = (

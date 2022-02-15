@@ -19,7 +19,14 @@ class TestScraperGlobal:
             runner = Runner(
                 configuration["HRPs"], adminone, downloader, dict(), today
             )
-            runner.add_configurables(scraper_configuration, level)
+            keys = runner.add_configurables(scraper_configuration, level)
+            assert keys == [
+                "covax",
+                "ourworldindata",
+                "cerf_global",
+                "broken_cerf_url",
+            ]
+
             name = "covax"
             headers = (
                 [

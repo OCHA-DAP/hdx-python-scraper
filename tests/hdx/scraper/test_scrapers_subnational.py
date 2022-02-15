@@ -15,7 +15,9 @@ class TestScraperSubnational:
             level = "subnational"
             scraper_configuration = configuration[f"scraper_{level}"]
             runner = Runner(("AFG",), adminone, downloader, dict(), today)
-            runner.add_configurables(scraper_configuration, level)
+            keys = runner.add_configurables(scraper_configuration, level)
+            assert keys == ["gam"]
+
             name = "gam"
             headers = (
                 ["Malnutrition Estimate"],

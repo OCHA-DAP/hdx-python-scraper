@@ -28,6 +28,7 @@ class BaseScraper(ABC):
         self.initialise_values_sources()
         self.has_run = False
         self.fallbacks_used = False
+        self.urls_read = set()
 
     def initialise_values_sources(self):
         self.values: Dict[str, Tuple] = {
@@ -107,6 +108,14 @@ class BaseScraper(ABC):
                     except ValueError:
                         pass
 
+    def add_urls_read(self):
+        url = self.datasetinfo.get("url")
+        if url:
+            self.urls_read.add(url)
+
+    def get_urls_read(self):
+        return self.urls_read
+
     @abstractmethod
     def run(self) -> None:
         """
@@ -115,3 +124,12 @@ class BaseScraper(ABC):
         Returns:
             None
         """
+
+    def run_after_fallbacks(self) -> None:
+        """
+        Executed when fallbacks are used
+
+        Returns:
+            None
+        """
+        pass
