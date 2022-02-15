@@ -91,9 +91,9 @@ class TestScraperEducation:
                 values,
                 sources,
             )
-            assert runner.get_urls_read() == [
-                "tests/fixtures/API_SP.POP.TOTL_DS2_en_excel_v2_1302508_LIST.xls",
-                "tests/fixtures/covid_impact_education.csv",
+            assert runner.get_source_urls() == [
+                "https://data.humdata.org/dataset/global-school-closures-covid19",
+                "https://data.humdata.org/organization/world-bank-group",
             ]
 
             runner = Runner(("AFG",), adminone, downloader, dict(), today)
@@ -220,8 +220,8 @@ class TestScraperEducation:
             check_scraper(name, runner, "regional", headers, values, sources)
 
             # closures used fallbacks so there is no no url from that scraper
-            assert runner.get_urls_read() == [
-                "tests/fixtures/countries-enrollment-data-uis-feb-22.xlsx"
+            assert runner.get_source_urls() == [
+                "https://data.humdata.org/dataset/global-school-closures-covid19"
             ]
 
             datasetinfo = {
@@ -237,7 +237,6 @@ class TestScraperEducation:
             )
             runner.add_custom(education_closures)
             runner.run()
-            assert runner.get_urls_read() == [
-                "tests/fixtures/countries-enrollment-data-uis-feb-22.xlsx",
-                "tests/fixtures/covid_impact_education.csv",
+            assert runner.get_source_urls() == [
+                "https://data.humdata.org/dataset/global-school-closures-covid19",
             ]

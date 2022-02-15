@@ -81,8 +81,8 @@ class Runner:
             try:
                 scraper.run()
                 scraper.add_sources()
+                scraper.add_source_urls()
                 scraper.add_population()
-                scraper.add_urls_read()
                 logger.info(f"Processed {scraper.name}")
             except Exception as ex:
                 logger.exception(f"Using fallbacks for {scraper.name}!")
@@ -147,13 +147,13 @@ class Runner:
                 level_results["sources"].extend(scraper.get_sources(level))
         return results
 
-    def get_urls_read(self, names=None):
-        urls_read = set()
+    def get_source_urls(self, names=None):
+        source_urls = set()
         if not names:
             names = self.scrapers.keys()
         for name in names:
             scraper = self.get_scraper(name)
             if not scraper.has_run:
                 continue
-            urls_read.update(scraper.get_urls_read())
-        return sorted(urls_read)
+            source_urls.update(scraper.get_source_urls())
+        return sorted(source_urls)

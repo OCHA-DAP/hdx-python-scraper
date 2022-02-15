@@ -52,7 +52,7 @@ def check_scrapers(
     sources,
     population_lookup=None,
     fallbacks_used=False,
-    urls_read=None,
+    source_urls=None,
 ):
     for name in names:
         scraper = runner.get_scraper(name)
@@ -68,8 +68,8 @@ def check_scrapers(
     assert results["sources"] == sources
     if population_lookup:
         assert BaseScraper.population_lookup == population_lookup
-    if urls_read:
-        assert runner.get_urls_read() == urls_read
+    if source_urls:
+        assert runner.get_source_urls() == source_urls
 
 
 def check_scraper(
@@ -81,7 +81,7 @@ def check_scraper(
     sources,
     population_lookup=None,
     fallbacks_used=False,
-    urls_read=None,
+    source_urls=None,
 ):
     check_scrapers(
         (name,),
@@ -92,7 +92,7 @@ def check_scraper(
         sources,
         population_lookup,
         fallbacks_used,
-        urls_read,
+        source_urls,
     )
 
 
@@ -105,7 +105,7 @@ def run_check_scraper(
     sources,
     population_lookup=None,
     fallbacks_used=False,
-    urls_read=None,
+    source_urls=None,
 ):
     runner.run_one(name)
     check_scraper(
@@ -117,7 +117,7 @@ def run_check_scraper(
         sources,
         population_lookup,
         fallbacks_used,
-        urls_read,
+        source_urls,
     )
     runner.set_not_run(name)
 
@@ -131,7 +131,7 @@ def run_check_scrapers(
     sources,
     population_lookup=None,
     fallbacks_used=False,
-    urls_read=None,
+    source_urls=None,
 ):
     runner.run(names)
     check_scrapers(
@@ -143,6 +143,6 @@ def run_check_scrapers(
         sources,
         population_lookup,
         fallbacks_used,
-        urls_read,
+        source_urls,
     )
     runner.set_not_run_many(names)

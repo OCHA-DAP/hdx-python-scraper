@@ -46,8 +46,8 @@ class TestScraperNational:
                 values,
                 sources,
                 population_lookup=values[0],
-                urls_read=[
-                    "tests/fixtures/API_SP.POP.TOTL_DS2_en_excel_v2_1302508_LIST.xls"
+                source_urls=[
+                    "https://data.humdata.org/organization/world-bank-group"
                 ],
             )
 
@@ -105,7 +105,7 @@ class TestScraperNational:
                 headers,
                 values,
                 sources,
-                urls_read=["tests/fixtures/WHO-COVID-19-global-data.csv"],
+                source_urls=["tests/fixtures/WHO-COVID-19-global-data.csv"],
             )
 
             name = "access"
@@ -209,7 +209,18 @@ class TestScraperNational:
                     "https://docs.google.com/spreadsheets/d/e/2PACX-1vRSzJzuyVt9i_mkRQ2HbxrUl2Lx2VIhkTHQM-laE8NyhQTy70zQTCuFS3PXbhZGAt1l2bkoA4_dAoAP/pub?gid=1565063847&single=true&output=csv",
                 ),
             ]
-            run_check_scraper(name, runner, level, headers, values, sources)
+            run_check_scraper(
+                name,
+                runner,
+                level,
+                headers,
+                values,
+                sources,
+                source_urls=[
+                    "https://data.humdata.org/dataset/security-incidents-on-aid-workers",
+                    "https://docs.google.com/spreadsheets/d/e/2PACX-1vRSzJzuyVt9i_mkRQ2HbxrUl2Lx2VIhkTHQM-laE8NyhQTy70zQTCuFS3PXbhZGAt1l2bkoA4_dAoAP/pub?gid=1565063847&single=true&output=csv",
+                ],
+            )
 
             name = "sadd"
             headers = (

@@ -28,7 +28,7 @@ class BaseScraper(ABC):
         self.initialise_values_sources()
         self.has_run = False
         self.fallbacks_used = False
-        self.urls_read = set()
+        self.source_urls = set()
 
     def initialise_values_sources(self):
         self.values: Dict[str, Tuple] = {
@@ -94,6 +94,18 @@ class BaseScraper(ABC):
     def get_sources(self, level):
         return self.sources[level]
 
+    def add_source_urls(self):
+        source_url = self.datasetinfo.get("source_url")
+        if source_url:
+            if isinstance(source_url, str):
+                self.source_urls.add(source_url)
+            else:
+                for url in source_url.values():
+                    self.source_urls.add(url)
+
+    def get_source_urls(self):
+        return self.source_urls
+
     def add_population(self):
         for level in self.headers:
             try:
@@ -107,14 +119,6 @@ class BaseScraper(ABC):
                         self.population_lookup[key] = valint
                     except ValueError:
                         pass
-
-    def add_urls_read(self):
-        url = self.datasetinfo.get("url")
-        if url:
-            self.urls_read.add(url)
-
-    def get_urls_read(self):
-        return self.urls_read
 
     @abstractmethod
     def run(self) -> None:
