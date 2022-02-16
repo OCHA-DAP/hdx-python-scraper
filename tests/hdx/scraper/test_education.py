@@ -64,6 +64,15 @@ class TestScraperEducation:
             runner.add_configurables(scraper_configuration, level)
             runner.run_one("population")
             check_scraper(name, runner, "regional", headers, values, sources)
+            names = ("population", name)
+            assert (
+                runner.get_headers(
+                    names=names,
+                    levels=("regional",),
+                    hxltags=("#population", "#status+country+closed"),
+                )["regional"]
+                == headers
+            )
             headers = (
                 ["Population", "School Closure"],
                 ["#population", "#impact+type"],
@@ -83,8 +92,16 @@ class TestScraperEducation:
                     "https://data.humdata.org/dataset/global-school-closures-covid19",
                 ),
             ]
+            assert (
+                runner.get_headers(
+                    names=names,
+                    levels=("national",),
+                    headers=("Population", "School Closure"),
+                )["national"]
+                == headers
+            )
             check_scrapers(
-                ("population", name),
+                names,
                 runner,
                 "national",
                 headers,

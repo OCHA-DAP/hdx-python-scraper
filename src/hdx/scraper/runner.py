@@ -1,5 +1,5 @@
 import logging
-from typing import Dict, Iterable, Type
+from typing import Iterable, Type
 
 from hdx.utilities.downloader import Download
 
@@ -139,7 +139,32 @@ class Runner:
         for name in names:
             self.get_scraper(name).has_run = False
 
-    def get_results(self, names=None):
+    def get_headers(self, names=None, levels=None, headers=None, hxltags=None):
+        if not names:
+            names = self.scrapers.keys()
+        results = dict()
+        for name in names:
+            scraper = self.get_scraper(name)
+            if not scraper.has_run:
+                continue
+            for level, scraper_headers in scraper.headers.items():
+                if levels is not None and level not in levels:
+                    continue
+                level_results = results.get(level)
+                if level_results is None:
+                    level_results = (list(), list())
+                    results[level] = level_results
+                for i, header in enumerate(scraper_headers[0]):
+                    if headers is not None and header not in headers:
+                        continue
+                    hxltag = scraper_headers[1][i]
+                    if hxltags is not None and hxltag not in hxltags:
+                        continue
+                    level_results[0].append(header)
+                    level_results[1].append(hxltag)
+        return results
+
+    def get_results(self, names=None, levels=None):
         if not names:
             names = self.scrapers.keys()
         results = dict()
@@ -148,6 +173,8 @@ class Runner:
             if not scraper.has_run:
                 continue
             for level, headers in scraper.headers.items():
+                if levels is not None and level not in levels:
+                    continue
                 level_results = results.get(level)
                 if level_results is None:
                     level_results = {
