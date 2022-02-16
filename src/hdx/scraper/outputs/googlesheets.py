@@ -39,9 +39,9 @@ class GoogleSheets(BaseOutput):
         info = json.loads(gsheet_auth)
         scopes = ["https://www.googleapis.com/auth/spreadsheets"]
         self.gc = gspread.service_account_from_dict(info, scopes=scopes)
-        self.googlesheets = configuration["googlesheets"]
+        self.configuration = configuration
         if updatesheets is None:
-            updatesheets = self.googlesheets.keys()
+            updatesheets = self.configuration.keys()
             logger.info("Updating all spreadsheets")
         else:
             logger.info(f"Updating only these spreadsheets: {updatesheets}")
@@ -68,10 +68,10 @@ class GoogleSheets(BaseOutput):
         """
         if tabname not in self.updatetabs:
             return
-        for sheet in self.googlesheets:
+        for sheet in self.configuration:
             if sheet not in self.updatesheets:
                 continue
-            url = self.googlesheets[sheet]
+            url = self.configuration[sheet]
             spreadsheet = self.gc.open_by_url(url)
 
             tab = spreadsheet.worksheet(self.tabs[tabname])

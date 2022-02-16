@@ -95,7 +95,7 @@ class BaseScraper(ABC):
     def get_sources(self, level):
         return self.sources[level]
 
-    def add_source_urls(self):
+    def add_source_urls(self) -> None:
         source_url = self.datasetinfo.get("source_url")
         if source_url:
             if isinstance(source_url, str):

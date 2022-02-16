@@ -30,7 +30,7 @@ class JsonFile(BaseOutput):
 
     def __init__(self, configuration, updatetabs):
         super().__init__(updatetabs)
-        self.json_configuration = configuration["json"]
+        self.configuration = configuration
         self.json = dict()
 
     def add_data_row(self, key: str, row: Dict) -> None:
@@ -172,9 +172,7 @@ class JsonFile(BaseOutput):
         Returns:
             None
         """
-        for datasetinfo in self.json_configuration.get(
-            "additional_json", list()
-        ):
+        for datasetinfo in self.configuration.get("additional_json", list()):
             headers, iterator = read(downloader, datasetinfo, today=today)
             hxl_row = next(iterator)
             if not isinstance(hxl_row, dict):
@@ -201,7 +199,7 @@ class JsonFile(BaseOutput):
             List[str]: List of file paths
         """
         filepaths = list()
-        filepath = self.json_configuration["filepath"]
+        filepath = self.configuration["filepath"]
         if folder:
             filepath = join(folder, filepath)
         logger.info(f"Writing JSON to {filepath}")
@@ -209,7 +207,7 @@ class JsonFile(BaseOutput):
         filepaths.append(filepath)
         for kwarg in kwargs:
             exec(f"{kwarg}={kwargs[kwarg]}")
-        additional = self.json_configuration.get("additional", list())
+        additional = self.configuration.get("additional", list())
         for filedetails in additional:
             json = dict()
             remove = filedetails.get("remove")

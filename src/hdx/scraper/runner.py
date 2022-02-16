@@ -1,5 +1,5 @@
 import logging
-from typing import Iterable, Type
+from typing import Iterable
 
 from hdx.utilities.downloader import Download
 
@@ -30,11 +30,11 @@ class Runner:
         self.scrapers_to_run = scrapers_to_run
         self.scrapers = dict()
 
-    def add_custom(self, scraper: Type[BaseScraper]):
+    def add_custom(self, scraper: BaseScraper):
         self.scrapers[scraper.name] = scraper
         scraper.errors_on_exit = self.errors_on_exit
 
-    def add_customs(self, scrapers: Iterable[Type[BaseScraper]]):
+    def add_customs(self, scrapers: Iterable[BaseScraper]):
         for scraper in scrapers:
             self.add_custom(scraper)
 
