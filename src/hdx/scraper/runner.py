@@ -1,5 +1,5 @@
 import logging
-from typing import Iterable, Type
+from typing import Dict, Iterable, Type
 
 from hdx.utilities.downloader import Download
 
@@ -32,6 +32,7 @@ class Runner:
 
     def add_custom(self, scraper: Type[BaseScraper]):
         self.scrapers[scraper.name] = scraper
+        scraper.errors_on_exit = self.errors_on_exit
 
     def add_customs(self, scrapers: Iterable[Type[BaseScraper]]):
         for scraper in scrapers:
@@ -58,6 +59,7 @@ class Runner:
             self.adminone,
             int_downloader,
             self.today,
+            self.errors_on_exit,
         )
         return key
 
@@ -73,10 +75,23 @@ class Runner:
     def get_scraper(self, name):
         return self.scrapers.get(name)
 
-    def run_one(self, name, run_again=False):
+    def get_scraper_exception(self, name):
         scraper = self.get_scraper(name)
         if not scraper:
             raise ValueError(f"No such scraper {name}!")
+        return scraper
+
+    def add_instance_variables(self, name, **kwargs):
+        scraper = self.get_scraper_exception(name)
+        for key, value in kwargs.items():
+            setattr(scraper, key, value)
+
+    def add_post_run(self, name, fn):
+        scraper = self.get_scraper_exception(name)
+        scraper.post_run = lambda: fn(scraper)
+
+    def run_one(self, name, run_again=False):
+        scraper = self.get_scraper_exception(name)
         if scraper.has_run is False or run_again:
             try:
                 scraper.run()
@@ -87,7 +102,7 @@ class Runner:
             except Exception as ex:
                 logger.exception(f"Using fallbacks for {scraper.name}!")
                 if self.errors_on_exit:
-                    self.errors_on_exit.append(
+                    self.errors_on_exit.add(
                         f"Using fallbacks for {scraper.name}! Error: {ex}"
                     )
                 for level in scraper.headers.keys():
@@ -100,6 +115,7 @@ class Runner:
                 scraper.fallbacks_used = True
                 scraper.run_after_fallbacks()
             scraper.has_run = True
+            scraper.post_run()
 
     def run_scraper(self, name, run_again=False):
         if self.scrapers_to_run and not any(

@@ -249,6 +249,29 @@ scraper_national:
       - "#affected+tested+per1000"
       - "#affected+tested+avg+per1000"
       - "#affected+tested+positive+pct"
+  idps:
+    format: "csv"
+    dataset: "idmc-internally-displaced-persons-idps"
+    url: "tests/fixtures/displacement_data.csv"
+    headers: 1
+    use_hxl: True
+    date_col: "#date+year"
+    date_type: "year"
+    input_cols:
+      - "#affected+idps+ind+stock+conflict"
+      - "#affected+idps+ind+stock+disaster"
+    input_transforms:
+      "#affected+idps+ind+stock+conflict": "int(#affected+idps+ind+stock+conflict) if #affected+idps+ind+stock+conflict else 0"
+      "#affected+idps+ind+stock+disaster": "int(#affected+idps+ind+stock+disaster) if #affected+idps+ind+stock+disaster else 0"
+    process_cols:
+      - "#affected+idps+ind+stock+conflict + #affected+idps+ind+stock+disaster"
+    output_cols:
+      - "TotalIDPs"
+    output_hxltags:
+      - "#affected+displaced"
+
+unhcr_myanmar_idps:
+  url: "tests/fixtures/unhcr_myanmar_idps.json"
 
 scraper_global:
   covax:

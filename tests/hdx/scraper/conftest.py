@@ -66,9 +66,9 @@ def check_scrapers(
     assert results["headers"] == headers
     assert results["values"] == values
     assert results["sources"] == sources
-    if population_lookup:
+    if population_lookup is not None:
         assert BaseScraper.population_lookup == population_lookup
-    if source_urls:
+    if source_urls is not None:
         assert runner.get_source_urls() == source_urls
 
 

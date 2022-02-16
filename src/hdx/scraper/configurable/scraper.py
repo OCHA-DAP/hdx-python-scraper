@@ -7,6 +7,7 @@ from hdx.location.adminone import AdminOne
 from hdx.utilities.dateparse import get_datetime_from_timestamp, parse_date
 from hdx.utilities.dictandlist import dict_of_lists_add
 from hdx.utilities.downloader import Download
+from hdx.utilities.errors_onexit import ErrorsOnExit
 from hdx.utilities.text import (  # noqa: F401
     get_fraction_str,
     get_numeric_if_possible,
@@ -33,7 +34,7 @@ class ConfigurableScraper(BaseScraper):
         adminone (AdminOne): AdminOne object from HDX Python Country library
         downloader (Download): Download object for downloading files
         today (datetime): Value to use for today. Defaults to datetime.now().
-        population_lookup (Optional[Dict[str,int]]): Admin code to population dict. Defaults to None.
+        errors_on_exit (ErrorsOnExit): ErrorsOnExit object that logs errors on exit
         **kwargs: Variables to use when evaluating template arguments in urls
     """
 
@@ -57,6 +58,7 @@ class ConfigurableScraper(BaseScraper):
         adminone: AdminOne,
         downloader: Download,
         today: datetime = datetime.now(),
+        errors_on_exit: Optional[ErrorsOnExit] = None,
         **kwargs: Any,
     ):
         self.level = level
@@ -74,9 +76,10 @@ class ConfigurableScraper(BaseScraper):
         for subset in self.subsets:
             headers[level][0].extend(subset["output_cols"])
             headers[level][1].extend(subset["output_hxltags"])
+        super().__init__(name, datasetinfo, headers)
+        self.errors_on_exit = errors_on_exit
         self.variables = kwargs
         self.rowparser = None
-        super().__init__(name, datasetinfo, headers)
 
     @staticmethod
     def get_subsets_from_datasetinfo(datasetinfo) -> List[Dict]:

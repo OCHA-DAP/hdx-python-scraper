@@ -29,6 +29,7 @@ class BaseScraper(ABC):
         self.has_run = False
         self.fallbacks_used = False
         self.source_urls = set()
+        self.errors_on_exit = None
 
     def initialise_values_sources(self):
         self.values: Dict[str, Tuple] = {
@@ -132,6 +133,15 @@ class BaseScraper(ABC):
     def run_after_fallbacks(self) -> None:
         """
         Executed when fallbacks are used
+
+        Returns:
+            None
+        """
+        pass
+
+    def post_run(self) -> None:
+        """
+        Executed after running
 
         Returns:
             None

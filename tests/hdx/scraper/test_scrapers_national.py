@@ -1,10 +1,12 @@
 from hdx.location.adminone import AdminOne
 from hdx.utilities.dateparse import parse_date
 from hdx.utilities.downloader import Download
+from hdx.utilities.errors_onexit import ErrorsOnExit
 
 from hdx.scraper.runner import Runner
 
 from .conftest import run_check_scraper, run_check_scrapers
+from .unhcr_myanmar_idps import idps_post_run
 
 
 class TestScraperNational:
@@ -25,6 +27,7 @@ class TestScraperNational:
                 "ourworldindata",
                 "broken_owd_url",
                 "covidtests",
+                "idps",
             ]
 
             name = "population"
@@ -342,8 +345,14 @@ class TestScraperNational:
             run_check_scraper(name, runner, level, headers, values, sources)
 
             today = parse_date("2021-05-03")
+            errors_on_exit = ErrorsOnExit()
             runner = Runner(
-                ("AFG", "PHL"), adminone, downloader, dict(), today
+                ("AFG", "PHL"),
+                adminone,
+                downloader,
+                dict(),
+                today,
+                errors_on_exit=errors_on_exit,
             )
             runner.add_configurables(scraper_configuration, level)
             name = "ourworldindata"
@@ -386,3 +395,91 @@ class TestScraperNational:
                 sources,
                 fallbacks_used=True,
             )
+            assert errors_on_exit.errors == [
+                "Using fallbacks for broken_owd_url! Error: Getting tabular stream for NOTEXIST.csv failed!"
+            ]
+
+            runner = Runner(
+                ("AFG", "MMR", "PHL"),
+                adminone,
+                downloader,
+                dict(),
+                today,
+                errors_on_exit=errors_on_exit,
+            )
+            runner.add_configurables(scraper_configuration, level)
+            name = "idps"
+            headers = (
+                ["TotalIDPs"],
+                ["#affected+displaced"],
+            )
+            values = [{"AFG": 4664000, "MMR": 509600, "PHL": 298000}]
+            sources = [
+                (
+                    "#affected+displaced",
+                    "2020-12-31",
+                    "IDMC",
+                    "https://data.humdata.org/dataset/idmc-internally-displaced-persons-idps",
+                )
+            ]
+            run_check_scraper(
+                name,
+                runner,
+                level,
+                headers,
+                values,
+                sources,
+                source_urls=[
+                    "https://data.humdata.org/dataset/idmc-internally-displaced-persons-idps"
+                ],
+            )
+
+            runner.add_instance_variables(
+                "idps", overrideinfo=configuration["unhcr_myanmar_idps"]
+            )
+            runner.add_post_run("idps", idps_post_run)
+            values = [{"AFG": 4664000, "MMR": 569591, "PHL": 298000}]
+            run_check_scraper(
+                name,
+                runner,
+                level,
+                headers,
+                values,
+                sources,
+                source_urls=[
+                    "https://data.humdata.org/dataset/idmc-internally-displaced-persons-idps",
+                    "tests/fixtures/unhcr_myanmar_idps.json",
+                ],
+            )
+            assert errors_on_exit.errors == [
+                "Using fallbacks for broken_owd_url! Error: Getting tabular stream for NOTEXIST.csv failed!"
+            ]
+            runner = Runner(
+                ("AFG", "MMR", "PHL"),
+                adminone,
+                downloader,
+                dict(),
+                today,
+                errors_on_exit=errors_on_exit,
+            )
+            runner.add_configurables(scraper_configuration, level)
+            runner.add_instance_variables(
+                "idps", overrideinfo={"url": "NOT EXIST"}
+            )
+            runner.add_post_run("idps", idps_post_run)
+            values = [{"AFG": 4664000, "MMR": 509600, "PHL": 298000}]
+            run_check_scraper(
+                name,
+                runner,
+                level,
+                headers,
+                values,
+                sources,
+                source_urls=[
+                    "https://data.humdata.org/dataset/idmc-internally-displaced-persons-idps"
+                ],
+            )
+            assert errors_on_exit.errors == [
+                "Using fallbacks for broken_owd_url! Error: Getting tabular stream for NOTEXIST.csv failed!",
+                "Not using UNHCR Myanmar IDPs override! Error: Setup of Streaming Download of http:///NOT EXIST failed!",
+            ]
