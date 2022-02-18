@@ -144,6 +144,10 @@ class Runner:
             names = self.scrapers.keys()
         results = dict()
         for name in names:
+            if self.scrapers_to_run and not any(
+                x in name for x in self.scrapers_to_run
+            ):
+                continue
             scraper = self.get_scraper(name)
             for level, scraper_headers in scraper.headers.items():
                 if levels is not None and level not in levels:
@@ -167,6 +171,10 @@ class Runner:
             names = self.scrapers.keys()
         results = dict()
         for name in names:
+            if self.scrapers_to_run and not any(
+                x in name for x in self.scrapers_to_run
+            ):
+                continue
             scraper = self.get_scraper(name)
             if not scraper.has_run:
                 continue
