@@ -145,8 +145,6 @@ class Runner:
         results = dict()
         for name in names:
             scraper = self.get_scraper(name)
-            if not scraper.has_run:
-                continue
             for level, scraper_headers in scraper.headers.items():
                 if levels is not None and level not in levels:
                     continue
