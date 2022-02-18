@@ -122,6 +122,7 @@ class Runner:
             x in name for x in self.scrapers_to_run
         ):
             return False
+        logger.info(f"Running {name}")
         self.run_one(name, run_again)
         return True
 
@@ -129,7 +130,6 @@ class Runner:
         for name in self.scrapers:
             if what_to_run and name not in what_to_run:
                 continue
-            logger.info(f"Running {name}")
             self.run_scraper(name, run_again)
 
     def set_not_run(self, name):
