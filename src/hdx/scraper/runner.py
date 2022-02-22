@@ -196,7 +196,14 @@ class Runner:
                 level_results["sources"].extend(scraper.get_sources(level))
         return results
 
-    def get_rows(self, level, adms, headers, row_fns, names=None):
+    def get_rows(
+        self,
+        level,
+        adms,
+        headers=(tuple(), tuple()),
+        row_fns=tuple(),
+        names=None,
+    ):
         results = self.get_results(names, [level]).get(level)
         rows = list()
         if results:
