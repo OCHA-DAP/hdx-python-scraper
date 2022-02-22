@@ -196,6 +196,23 @@ class Runner:
                 level_results["sources"].extend(scraper.get_sources(level))
         return results
 
+    def get_rows(self, level, adms, headers, row_fns, names=None):
+        results = self.get_results(names, [level]).get(level)
+        rows = list()
+        if results:
+            all_headers = results["headers"]
+            rows.append(list(headers[0]) + all_headers[0])
+            rows.append(list(headers[1]) + all_headers[1])
+            all_values = results["values"]
+            for adm in adms:
+                row = list()
+                for fn in row_fns:
+                    row.append(fn(adm))
+                for values in all_values:
+                    row.append(values.get(adm))
+                rows.append(row)
+        return rows
+
     def get_source_urls(self, names=None):
         source_urls = set()
         if not names:

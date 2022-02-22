@@ -5,7 +5,7 @@ from hdx.utilities.errors_onexit import ErrorsOnExit
 
 from hdx.scraper.runner import Runner
 
-from .conftest import run_check_scraper, run_check_scrapers
+from .conftest import check_scrapers, run_check_scraper, run_check_scrapers
 from .unhcr_myanmar_idps import idps_post_run
 
 
@@ -16,7 +16,8 @@ class TestScraperNational:
             adminone = AdminOne(configuration)
             level = "national"
             scraper_configuration = configuration[f"scraper_{level}"]
-            runner = Runner(("AFG",), adminone, downloader, dict(), today)
+            iso3s = ("AFG",)
+            runner = Runner(iso3s, adminone, downloader, dict(), today)
             keys = runner.add_configurables(scraper_configuration, level)
             assert keys == [
                 "population",
@@ -101,7 +102,8 @@ class TestScraperNational:
                     "tests/fixtures/WHO-COVID-19-global-data.csv",
                 ),
             ]
-            run_check_scrapers(
+            runner.run(names)
+            check_scrapers(
                 names,
                 runner,
                 level,
@@ -110,6 +112,28 @@ class TestScraperNational:
                 sources,
                 source_urls=["tests/fixtures/WHO-COVID-19-global-data.csv"],
             )
+            fns = [lambda x: x]
+            rows = runner.get_rows(
+                "national", iso3s, (("iso3",), ("#country+code",)), fns, names
+            )
+            assert rows == [
+                [
+                    "iso3",
+                    "CasesPer100000",
+                    "DeathsPer100000",
+                    "Cases2Per100000",
+                    "Deaths2Per100000",
+                ],
+                [
+                    "#country+code",
+                    "#affected+infected+per100000",
+                    "#affected+killed+per100000",
+                    "#affected+infected+2+per100000",
+                    "#affected+killed+2+per100000",
+                ],
+                ["AFG", "96.99", "3.41", "96.99", "3.41"],
+            ]
+            runner.set_not_run_many(names)
 
             name = "access"
             headers = (

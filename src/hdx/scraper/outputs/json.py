@@ -26,12 +26,14 @@ class JsonFile(BaseOutput):
     Args:
         configuration (Dict): Configuration for Google Sheets
         updatetabs (List[str]): Tabs to update
+        suffix (str): A suffix to add to keys. Default is _data.
     """
 
-    def __init__(self, configuration, updatetabs):
+    def __init__(self, configuration, updatetabs, suffix="_data"):
         super().__init__(updatetabs)
         self.configuration = configuration
         self.json = dict()
+        self.suffix = suffix
 
     def add_data_row(self, key: str, row: Dict) -> None:
         """Add row to JSON under a key
@@ -43,7 +45,7 @@ class JsonFile(BaseOutput):
         Returns:
             None
         """
-        dict_of_lists_add(self.json, f"{key}_data", row)
+        dict_of_lists_add(self.json, f"{key}{self.suffix}", row)
 
     def add_dataframe_rows(
         self, key: str, df: DataFrame, hxltags: Optional[Dict] = None
@@ -60,7 +62,7 @@ class JsonFile(BaseOutput):
         """
         if hxltags:
             df = df.rename(columns=hxltags)
-        self.json[f"{key}_data"] = df.to_dict(orient="records")
+        self.json[f"{key}{self.suffix}"] = df.to_dict(orient="records")
 
     def add_data_rows_by_key(
         self,
@@ -80,7 +82,7 @@ class JsonFile(BaseOutput):
         Returns:
             None
         """
-        fullname = f"{key}_data"
+        fullname = f"{key}{self.suffix}"
         jsondict = self.json.get(fullname, dict())
         jsondict[countryiso] = list()
         for row in rows:
@@ -216,11 +218,11 @@ class JsonFile(BaseOutput):
             else:
                 tabs = list()
                 for key in self.json.keys():
-                    tab = key.replace("_data", "")
+                    tab = key.replace("{self.suffix}", "")
                     if tab not in remove:
                         tabs.append({"tab": tab})
             for tabdetails in tabs:
-                key = f'{tabdetails["tab"]}_data'
+                key = f'{tabdetails["tab"]}{self.suffix}'
                 newjson = self.json.get(key)
                 filters = tabdetails.get("filters", dict())
                 hxltags = tabdetails.get("hxltags")
