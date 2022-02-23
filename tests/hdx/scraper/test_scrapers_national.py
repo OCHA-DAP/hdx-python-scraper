@@ -137,6 +137,7 @@ class TestScraperNational:
                 ],
                 ["AFG", "96.99", "3.41", "96.99", "3.41"],
             ]
+            assert runner.get_sources() == sources
             runner.set_not_run_many(names)
 
             name = "access"

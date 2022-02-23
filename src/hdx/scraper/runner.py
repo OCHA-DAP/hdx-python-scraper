@@ -229,6 +229,32 @@ class Runner:
                 rows.append(row)
         return rows
 
+    def get_sources(self, names=None, levels=None):
+        if not names:
+            names = self.scrapers.keys()
+        hxltags = set()
+        sources = list()
+        for name in names:
+            if self.scrapers_to_run and not any(
+                x in name for x in self.scrapers_to_run
+            ):
+                continue
+            scraper = self.get_scraper(name)
+            if not scraper.has_run:
+                continue
+            if levels is not None:
+                levels_to_check = levels
+            else:
+                levels_to_check = scraper.sources.keys()
+            for level in levels_to_check:
+                for source in scraper.get_sources(level):
+                    hxltag = source[0]
+                    if hxltag in hxltags:
+                        continue
+                    hxltags.add(hxltag)
+                    sources.append(source)
+        return sources
+
     def get_source_urls(self, names=None):
         source_urls = set()
         if not names:
