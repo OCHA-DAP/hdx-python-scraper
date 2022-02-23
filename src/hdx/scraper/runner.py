@@ -166,7 +166,7 @@ class Runner:
                     level_results[1].append(hxltag)
         return results
 
-    def get_results(self, names=None, levels=None):
+    def get_results(self, names=None, levels=None, overrides=dict()):
         if not names:
             names = self.scrapers.keys()
         results = dict()
@@ -178,8 +178,14 @@ class Runner:
             scraper = self.get_scraper(name)
             if not scraper.has_run:
                 continue
+            override = overrides.get(name, dict())
             for level, headers in scraper.headers.items():
-                if levels is not None and level not in levels:
+                level_override = override.get(level)
+                if level_override:
+                    output_level = level_override
+                else:
+                    output_level = level
+                if levels is not None and output_level not in levels:
                     continue
                 level_results = results.get(level)
                 if level_results is None:
@@ -189,7 +195,7 @@ class Runner:
                         "sources": list(),
                         "fallbacks": list(),
                     }
-                    results[level] = level_results
+                    results[output_level] = level_results
                 level_results["headers"][0].extend(headers[0])
                 level_results["headers"][1].extend(headers[1])
                 level_results["values"].extend(scraper.get_values(level))
@@ -203,8 +209,11 @@ class Runner:
         headers=(tuple(), tuple()),
         row_fns=tuple(),
         names=None,
+        overrides=dict(),
     ):
-        results = self.get_results(names, [level]).get(level)
+        results = self.get_results(names, [level], overrides=overrides).get(
+            level
+        )
         rows = list()
         if results:
             all_headers = results["headers"]

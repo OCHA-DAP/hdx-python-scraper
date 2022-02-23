@@ -104,7 +104,7 @@ class TestScraperGlobal:
             runner.run_one(name)
             check_scraper(name, runner, level, headers, values, sources)
             rows = runner.get_rows("global", ("global",))
-            assert rows == [
+            expected_rows = [
                 [
                     "Covax Interim Forecast Doses",
                     "Covax Delivered Doses",
@@ -133,6 +133,11 @@ class TestScraperGlobal:
                     "5860800",
                 ],
             ]
+            assert rows == expected_rows
+            rows = runner.get_rows(
+                "gho", ("global",), overrides={name: {"global": "gho"}}
+            )
+            assert rows == expected_rows
             runner.set_not_run(name)
 
             cerf_headers = (
