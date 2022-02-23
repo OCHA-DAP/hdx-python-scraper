@@ -116,7 +116,7 @@ class TestScraperNational:
             def passthrough_fn(x):
                 return x
 
-            fns = (passthrough_fn,)
+            fns = passthrough_fn,
             rows = runner.get_rows(
                 "national", iso3s, (("iso3",), ("#country+code",)), fns, names
             )
