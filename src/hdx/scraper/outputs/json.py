@@ -218,7 +218,7 @@ class JsonFile(BaseOutput):
             else:
                 tabs = list()
                 for key in self.json.keys():
-                    tab = key.replace("{self.suffix}", "")
+                    tab = key.replace(f"{self.suffix}", "")
                     if tab not in remove:
                         tabs.append({"tab": tab})
             for tabdetails in tabs:

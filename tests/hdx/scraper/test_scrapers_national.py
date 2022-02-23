@@ -5,7 +5,7 @@ from hdx.utilities.errors_onexit import ErrorsOnExit
 
 from hdx.scraper.runner import Runner
 
-from .conftest import check_scrapers, run_check_scraper, run_check_scrapers
+from .conftest import check_scrapers, run_check_scraper
 from .unhcr_myanmar_idps import idps_post_run
 
 
@@ -16,7 +16,7 @@ class TestScraperNational:
             adminone = AdminOne(configuration)
             level = "national"
             scraper_configuration = configuration[f"scraper_{level}"]
-            iso3s = "AFG",
+            iso3s = ("AFG",)
             runner = Runner(iso3s, adminone, downloader, dict(), today)
             keys = runner.add_configurables(scraper_configuration, level)
             assert keys == [
@@ -112,7 +112,11 @@ class TestScraperNational:
                 sources,
                 source_urls=["tests/fixtures/WHO-COVID-19-global-data.csv"],
             )
-            fns = lambda x: x,
+
+            def passthrough_fn(x):
+                return x
+
+            fns = (passthrough_fn,)
             rows = runner.get_rows(
                 "national", iso3s, (("iso3",), ("#country+code",)), fns, names
             )
