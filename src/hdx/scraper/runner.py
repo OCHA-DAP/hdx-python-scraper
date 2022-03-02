@@ -29,9 +29,12 @@ class Runner:
         self.errors_on_exit = errors_on_exit
         self.scrapers_to_run = scrapers_to_run
         self.scrapers = dict()
+        self.scraper_names = list()
 
     def add_custom(self, scraper: BaseScraper):
         self.scrapers[scraper.name] = scraper
+        if scraper.name not in self.scraper_names:
+            self.scraper_names.append(scraper.name)
         scraper.errors_on_exit = self.errors_on_exit
 
     def add_customs(self, scrapers: Iterable[BaseScraper]):
@@ -51,6 +54,8 @@ class Runner:
             key = f"{name}{suffix}"
         else:
             key = name
+        if key not in self.scraper_names:
+            self.scraper_names.append(key)
         self.scrapers[key] = ConfigurableScraper(
             name,
             datasetinfo,
@@ -71,6 +76,15 @@ class Runner:
                 self.add_configurable(name, datasetinfo, level, suffix)
             )
         return keys
+
+    def prioritise_scrapers(self, scraper_names):
+        for scraper_name in scraper_names:
+            if scraper_name in self.scraper_names:
+                self.scraper_names.remove(scraper_name)
+                self.scraper_names.insert(0, scraper_name)
+
+    def get_scraper_names(self):
+        return self.scraper_names
 
     def get_scraper(self, name):
         return self.scrapers.get(name)
@@ -126,8 +140,11 @@ class Runner:
         self.run_one(name, run_again)
         return True
 
-    def run(self, what_to_run=None, run_again=False):
-        for name in self.scrapers:
+    def run(
+        self, what_to_run=None, run_again=False, prioritise_scrapers=tuple()
+    ):
+        self.prioritise_scrapers(prioritise_scrapers)
+        for name in self.scraper_names:
             if what_to_run and name not in what_to_run:
                 continue
             self.run_scraper(name, run_again)

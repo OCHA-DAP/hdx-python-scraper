@@ -257,3 +257,13 @@ class TestScraperEducation:
             assert runner.get_source_urls() == [
                 "https://data.humdata.org/dataset/global-school-closures-covid19",
             ]
+
+            assert runner.get_scraper_names() == [
+                "education_closures",
+                "education_enrolment",
+            ]
+            runner.prioritise_scrapers(("education_enrolment",))
+            assert runner.get_scraper_names() == [
+                "education_enrolment",
+                "education_closures",
+            ]
