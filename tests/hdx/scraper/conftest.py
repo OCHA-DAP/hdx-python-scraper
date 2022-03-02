@@ -5,11 +5,11 @@ import pytest
 from hdx.api.configuration import Configuration
 from hdx.api.locations import Locations
 from hdx.location.country import Country
-from hdx.utilities.loader import load_json
 
 from hdx.scraper.base_scraper import BaseScraper
 from hdx.scraper.utilities.fallbacks import Fallbacks
-from tests.hdx.scraper import bool_assert
+
+from . import bool_assert
 
 
 @pytest.fixture(scope="session")
@@ -52,6 +52,7 @@ def check_scrapers(
     sources,
     population_lookup=None,
     fallbacks_used=False,
+    source_urls=None,
 ):
     for name in names:
         scraper = runner.get_scraper(name)
@@ -65,8 +66,10 @@ def check_scrapers(
     assert results["headers"] == headers
     assert results["values"] == values
     assert results["sources"] == sources
-    if population_lookup:
+    if population_lookup is not None:
         assert BaseScraper.population_lookup == population_lookup
+    if source_urls is not None:
+        assert runner.get_source_urls() == source_urls
 
 
 def check_scraper(
@@ -78,6 +81,7 @@ def check_scraper(
     sources,
     population_lookup=None,
     fallbacks_used=False,
+    source_urls=None,
 ):
     check_scrapers(
         (name,),
@@ -87,7 +91,8 @@ def check_scraper(
         values,
         sources,
         population_lookup,
-        fallbacks_used=fallbacks_used,
+        fallbacks_used,
+        source_urls,
     )
 
 
@@ -100,6 +105,7 @@ def run_check_scraper(
     sources,
     population_lookup=None,
     fallbacks_used=False,
+    source_urls=None,
 ):
     runner.run_one(name)
     check_scraper(
@@ -111,6 +117,7 @@ def run_check_scraper(
         sources,
         population_lookup,
         fallbacks_used,
+        source_urls,
     )
     runner.set_not_run(name)
 
@@ -124,6 +131,7 @@ def run_check_scrapers(
     sources,
     population_lookup=None,
     fallbacks_used=False,
+    source_urls=None,
 ):
     runner.run(names)
     check_scrapers(
@@ -134,6 +142,7 @@ def run_check_scrapers(
         values,
         sources,
         population_lookup,
-        fallbacks_used=fallbacks_used,
+        fallbacks_used,
+        source_urls,
     )
     runner.set_not_run_many(names)

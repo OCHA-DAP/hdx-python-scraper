@@ -1,7 +1,9 @@
 import logging
+from typing import Iterable
 
 from hdx.utilities.downloader import Download
 
+from hdx.scraper.base_scraper import BaseScraper
 from hdx.scraper.configurable.scraper import ConfigurableScraper
 from hdx.scraper.utilities.fallbacks import Fallbacks
 
@@ -28,10 +30,15 @@ class Runner:
         self.scrapers_to_run = scrapers_to_run
         self.scrapers = dict()
 
-    def add_custom(self, scraper):
+    def add_custom(self, scraper: BaseScraper):
         self.scrapers[scraper.name] = scraper
+        scraper.errors_on_exit = self.errors_on_exit
 
-    def add_configurable(self, name, datasetinfo, level):
+    def add_customs(self, scrapers: Iterable[BaseScraper]):
+        for scraper in scrapers:
+            self.add_custom(scraper)
+
+    def add_configurable(self, name, datasetinfo, level, suffix=None):
         basic_auth = self.basic_auths.get(name)
         if basic_auth is None:
             int_downloader = self.downloader
@@ -40,7 +47,11 @@ class Runner:
                 basic_auth=basic_auth,
                 rate_limit={"calls": 1, "period": 0.1},
             )
-        self.scrapers[name] = ConfigurableScraper(
+        if suffix:
+            key = f"{name}{suffix}"
+        else:
+            key = name
+        self.scrapers[key] = ConfigurableScraper(
             name,
             datasetinfo,
             level,
@@ -48,52 +59,78 @@ class Runner:
             self.adminone,
             int_downloader,
             self.today,
+            self.errors_on_exit,
         )
+        return key
 
-    def add_configurables(self, configuration, level):
+    def add_configurables(self, configuration, level, suffix=None):
+        keys = list()
         for name in configuration:
             datasetinfo = configuration[name]
-            self.add_configurable(name, datasetinfo, level)
+            keys.append(
+                self.add_configurable(name, datasetinfo, level, suffix)
+            )
+        return keys
 
     def get_scraper(self, name):
         return self.scrapers.get(name)
 
-    def run_one(self, name):
+    def get_scraper_exception(self, name):
         scraper = self.get_scraper(name)
         if not scraper:
             raise ValueError(f"No such scraper {name}!")
-        try:
-            scraper.run()
-            scraper.add_sources()
-            scraper.add_population()
-            logger.info(f"Processed {scraper.name}")
-        except Exception as ex:
-            logger.exception(f"Using fallbacks for {scraper.name}!")
-            if self.errors_on_exit:
-                self.errors_on_exit.append(
-                    f"Using fallbacks for {scraper.name}! Error: {ex}"
-                )
-            for level in scraper.headers.keys():
-                values, sources = Fallbacks.get(level, scraper.headers[level])
-                scraper.values[level] = values
-                scraper.sources[level] = sources
-            scraper.fallbacks_used = True
-        scraper.has_run = True
+        return scraper
 
-    def run_scraper(self, name):
+    def add_instance_variables(self, name, **kwargs):
+        scraper = self.get_scraper_exception(name)
+        for key, value in kwargs.items():
+            setattr(scraper, key, value)
+
+    def add_post_run(self, name, fn):
+        scraper = self.get_scraper_exception(name)
+        scraper.post_run = lambda: fn(scraper)
+
+    def run_one(self, name, run_again=False):
+        scraper = self.get_scraper_exception(name)
+        if scraper.has_run is False or run_again:
+            try:
+                scraper.run()
+                scraper.add_sources()
+                scraper.add_source_urls()
+                scraper.add_population()
+                logger.info(f"Processed {scraper.name}")
+            except Exception as ex:
+                logger.exception(f"Using fallbacks for {scraper.name}!")
+                if self.errors_on_exit:
+                    self.errors_on_exit.add(
+                        f"Using fallbacks for {scraper.name}! Error: {ex}"
+                    )
+                for level in scraper.headers.keys():
+                    values, sources = Fallbacks.get(
+                        level, scraper.headers[level]
+                    )
+                    scraper.values[level] = values
+                    scraper.sources[level] = sources
+                scraper.add_population()
+                scraper.fallbacks_used = True
+                scraper.run_after_fallbacks()
+            scraper.has_run = True
+            scraper.post_run()
+
+    def run_scraper(self, name, run_again=False):
         if self.scrapers_to_run and not any(
             x in name for x in self.scrapers_to_run
         ):
             return False
-        self.run_one(name)
+        logger.info(f"Running {name}")
+        self.run_one(name, run_again)
         return True
 
-    def run(self, what_to_run=None):
+    def run(self, what_to_run=None, run_again=False):
         for name in self.scrapers:
             if what_to_run and name not in what_to_run:
                 continue
-            logger.info(f"Running {name}")
-            self.run_scraper(name)
+            self.run_scraper(name, run_again)
 
     def set_not_run(self, name):
         self.get_scraper(name).has_run = False
@@ -102,15 +139,54 @@ class Runner:
         for name in names:
             self.get_scraper(name).has_run = False
 
-    def get_results(self, names=None):
+    def get_headers(self, names=None, levels=None, headers=None, hxltags=None):
         if not names:
             names = self.scrapers.keys()
         results = dict()
         for name in names:
+            if self.scrapers_to_run and not any(
+                x in name for x in self.scrapers_to_run
+            ):
+                continue
+            scraper = self.get_scraper(name)
+            for level, scraper_headers in scraper.headers.items():
+                if levels is not None and level not in levels:
+                    continue
+                level_results = results.get(level)
+                if level_results is None:
+                    level_results = (list(), list())
+                    results[level] = level_results
+                for i, header in enumerate(scraper_headers[0]):
+                    if headers is not None and header not in headers:
+                        continue
+                    hxltag = scraper_headers[1][i]
+                    if hxltags is not None and hxltag not in hxltags:
+                        continue
+                    level_results[0].append(header)
+                    level_results[1].append(hxltag)
+        return results
+
+    def get_results(self, names=None, levels=None, overrides=dict()):
+        if not names:
+            names = self.scrapers.keys()
+        results = dict()
+        for name in names:
+            if self.scrapers_to_run and not any(
+                x in name for x in self.scrapers_to_run
+            ):
+                continue
             scraper = self.get_scraper(name)
             if not scraper.has_run:
                 continue
+            override = overrides.get(name, dict())
             for level, headers in scraper.headers.items():
+                level_override = override.get(level)
+                if level_override:
+                    output_level = level_override
+                else:
+                    output_level = level
+                if levels is not None and output_level not in levels:
+                    continue
                 level_results = results.get(level)
                 if level_results is None:
                     level_results = {
@@ -119,9 +195,73 @@ class Runner:
                         "sources": list(),
                         "fallbacks": list(),
                     }
-                    results[level] = level_results
+                    results[output_level] = level_results
                 level_results["headers"][0].extend(headers[0])
                 level_results["headers"][1].extend(headers[1])
                 level_results["values"].extend(scraper.get_values(level))
                 level_results["sources"].extend(scraper.get_sources(level))
         return results
+
+    def get_rows(
+        self,
+        level,
+        adms,
+        headers=(tuple(), tuple()),
+        row_fns=tuple(),
+        names=None,
+        overrides=dict(),
+    ):
+        results = self.get_results(names, [level], overrides=overrides).get(
+            level
+        )
+        rows = list()
+        if results:
+            all_headers = results["headers"]
+            rows.append(list(headers[0]) + all_headers[0])
+            rows.append(list(headers[1]) + all_headers[1])
+            all_values = results["values"]
+            for adm in adms:
+                row = list()
+                for fn in row_fns:
+                    row.append(fn(adm))
+                for values in all_values:
+                    row.append(values.get(adm))
+                rows.append(row)
+        return rows
+
+    def get_sources(self, names=None, levels=None):
+        if not names:
+            names = self.scrapers.keys()
+        hxltags = set()
+        sources = list()
+        for name in names:
+            if self.scrapers_to_run and not any(
+                x in name for x in self.scrapers_to_run
+            ):
+                continue
+            scraper = self.get_scraper(name)
+            if not scraper.has_run:
+                continue
+            if levels is not None:
+                levels_to_check = levels
+            else:
+                levels_to_check = scraper.sources.keys()
+            for level in levels_to_check:
+                for source in scraper.get_sources(level):
+                    hxltag = source[0]
+                    if hxltag in hxltags:
+                        continue
+                    hxltags.add(hxltag)
+                    sources.append(source)
+        return sources
+
+    def get_source_urls(self, names=None):
+        source_urls = set()
+        if not names:
+            names = self.scrapers.keys()
+        for name in names:
+            scraper = self.get_scraper(name)
+            if not scraper.has_run:
+                continue
+            source_urls.update(scraper.get_source_urls())
+        return sorted(source_urls)

@@ -5,7 +5,8 @@ from hdx.utilities.dateparse import parse_date
 from hdx.utilities.downloader import Download
 
 from hdx.scraper.runner import Runner
-from tests.hdx.scraper.conftest import run_check_scraper
+
+from .conftest import check_scraper, run_check_scraper
 
 
 class TestScraperGlobal:
@@ -18,7 +19,14 @@ class TestScraperGlobal:
             runner = Runner(
                 configuration["HRPs"], adminone, downloader, dict(), today
             )
-            runner.add_configurables(scraper_configuration, level)
+            keys = runner.add_configurables(scraper_configuration, level)
+            assert keys == [
+                "covax",
+                "ourworldindata",
+                "cerf_global",
+                "broken_cerf_url",
+            ]
+
             name = "covax"
             headers = (
                 [
@@ -93,7 +101,44 @@ class TestScraperGlobal:
                     "tests/fixtures/COVID-19 Vaccine Doses in HRP Countries - Data HXL.csv",
                 ),
             ]
-            run_check_scraper(name, runner, level, headers, values, sources)
+            runner.run_one(name)
+            check_scraper(name, runner, level, headers, values, sources)
+            rows = runner.get_rows("global", ("global",))
+            expected_rows = [
+                [
+                    "Covax Interim Forecast Doses",
+                    "Covax Delivered Doses",
+                    "Other Delivered Doses",
+                    "Total Delivered Doses",
+                    "Covax Pfizer-BioNTech Doses",
+                    "Covax Astrazeneca-SII Doses",
+                    "Covax Astrazeneca-SKBio Doses",
+                ],
+                [
+                    "#capacity+doses+forecast+covax",
+                    "#capacity+doses+delivered+covax",
+                    "#capacity+doses+delivered+others",
+                    "#capacity+doses+delivered+total",
+                    "#capacity+doses+covax+pfizerbiontech",
+                    "#capacity+doses+covax+astrazenecasii",
+                    "#capacity+doses+covax+astrazenecaskbio",
+                ],
+                [
+                    "73248240",
+                    "12608040",
+                    "23728358",
+                    "36336398",
+                    "271440",
+                    "67116000",
+                    "5860800",
+                ],
+            ]
+            assert rows == expected_rows
+            rows = runner.get_rows(
+                "gho", ("global",), overrides={name: {"global": "gho"}}
+            )
+            assert rows == expected_rows
+            runner.set_not_run(name)
 
             cerf_headers = (
                 [

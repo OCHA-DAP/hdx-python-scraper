@@ -1,9 +1,12 @@
 from hdx.location.adminone import AdminOne
 from hdx.utilities.dateparse import parse_date
 from hdx.utilities.downloader import Download
+from hdx.utilities.errors_onexit import ErrorsOnExit
 
 from hdx.scraper.runner import Runner
-from tests.hdx.scraper.conftest import run_check_scraper, run_check_scrapers
+
+from .conftest import check_scrapers, run_check_scraper
+from .unhcr_myanmar_idps import idps_post_run
 
 
 class TestScraperNational:
@@ -13,8 +16,21 @@ class TestScraperNational:
             adminone = AdminOne(configuration)
             level = "national"
             scraper_configuration = configuration[f"scraper_{level}"]
-            runner = Runner(("AFG",), adminone, downloader, dict(), today)
-            runner.add_configurables(scraper_configuration, level)
+            iso3s = ("AFG",)
+            runner = Runner(iso3s, adminone, downloader, dict(), today)
+            keys = runner.add_configurables(scraper_configuration, level)
+            assert keys == [
+                "population",
+                "who_national",
+                "who_national2",
+                "access",
+                "sadd",
+                "ourworldindata",
+                "broken_owd_url",
+                "covidtests",
+                "idps",
+            ]
+
             name = "population"
             headers = (["Population"], ["#population"])
             values = [{"AFG": 38041754}]
@@ -34,6 +50,9 @@ class TestScraperNational:
                 values,
                 sources,
                 population_lookup=values[0],
+                source_urls=[
+                    "https://data.humdata.org/organization/world-bank-group"
+                ],
             )
 
             names = ("who_national", "who_national2")
@@ -83,7 +102,43 @@ class TestScraperNational:
                     "tests/fixtures/WHO-COVID-19-global-data.csv",
                 ),
             ]
-            run_check_scrapers(names, runner, level, headers, values, sources)
+            runner.run(names)
+            check_scrapers(
+                names,
+                runner,
+                level,
+                headers,
+                values,
+                sources,
+                source_urls=["tests/fixtures/WHO-COVID-19-global-data.csv"],
+            )
+
+            def passthrough_fn(x):
+                return x
+
+            fns = (passthrough_fn,)
+            rows = runner.get_rows(
+                "national", iso3s, (("iso3",), ("#country+code",)), fns, names
+            )
+            assert rows == [
+                [
+                    "iso3",
+                    "CasesPer100000",
+                    "DeathsPer100000",
+                    "Cases2Per100000",
+                    "Deaths2Per100000",
+                ],
+                [
+                    "#country+code",
+                    "#affected+infected+per100000",
+                    "#affected+killed+per100000",
+                    "#affected+infected+2+per100000",
+                    "#affected+killed+2+per100000",
+                ],
+                ["AFG", "96.99", "3.41", "96.99", "3.41"],
+            ]
+            assert runner.get_sources() == sources
+            runner.set_not_run_many(names)
 
             name = "access"
             headers = (
@@ -186,7 +241,18 @@ class TestScraperNational:
                     "https://docs.google.com/spreadsheets/d/e/2PACX-1vRSzJzuyVt9i_mkRQ2HbxrUl2Lx2VIhkTHQM-laE8NyhQTy70zQTCuFS3PXbhZGAt1l2bkoA4_dAoAP/pub?gid=1565063847&single=true&output=csv",
                 ),
             ]
-            run_check_scraper(name, runner, level, headers, values, sources)
+            run_check_scraper(
+                name,
+                runner,
+                level,
+                headers,
+                values,
+                sources,
+                source_urls=[
+                    "https://data.humdata.org/dataset/security-incidents-on-aid-workers",
+                    "https://docs.google.com/spreadsheets/d/e/2PACX-1vRSzJzuyVt9i_mkRQ2HbxrUl2Lx2VIhkTHQM-laE8NyhQTy70zQTCuFS3PXbhZGAt1l2bkoA4_dAoAP/pub?gid=1565063847&single=true&output=csv",
+                ],
+            )
 
             name = "sadd"
             headers = (
@@ -308,8 +374,14 @@ class TestScraperNational:
             run_check_scraper(name, runner, level, headers, values, sources)
 
             today = parse_date("2021-05-03")
+            errors_on_exit = ErrorsOnExit()
             runner = Runner(
-                ("AFG", "PHL"), adminone, downloader, dict(), today
+                ("AFG", "PHL"),
+                adminone,
+                downloader,
+                dict(),
+                today,
+                errors_on_exit=errors_on_exit,
             )
             runner.add_configurables(scraper_configuration, level)
             name = "ourworldindata"
@@ -352,3 +424,91 @@ class TestScraperNational:
                 sources,
                 fallbacks_used=True,
             )
+            assert errors_on_exit.errors == [
+                "Using fallbacks for broken_owd_url! Error: Getting tabular stream for NOTEXIST.csv failed!"
+            ]
+
+            runner = Runner(
+                ("AFG", "MMR", "PHL"),
+                adminone,
+                downloader,
+                dict(),
+                today,
+                errors_on_exit=errors_on_exit,
+            )
+            runner.add_configurables(scraper_configuration, level)
+            name = "idps"
+            headers = (
+                ["TotalIDPs"],
+                ["#affected+displaced"],
+            )
+            values = [{"AFG": 4664000, "MMR": 509600, "PHL": 298000}]
+            sources = [
+                (
+                    "#affected+displaced",
+                    "2020-12-31",
+                    "IDMC",
+                    "https://data.humdata.org/dataset/idmc-internally-displaced-persons-idps",
+                )
+            ]
+            run_check_scraper(
+                name,
+                runner,
+                level,
+                headers,
+                values,
+                sources,
+                source_urls=[
+                    "https://data.humdata.org/dataset/idmc-internally-displaced-persons-idps"
+                ],
+            )
+
+            runner.add_instance_variables(
+                "idps", overrideinfo=configuration["unhcr_myanmar_idps"]
+            )
+            runner.add_post_run("idps", idps_post_run)
+            values = [{"AFG": 4664000, "MMR": 569591, "PHL": 298000}]
+            run_check_scraper(
+                name,
+                runner,
+                level,
+                headers,
+                values,
+                sources,
+                source_urls=[
+                    "https://data.humdata.org/dataset/idmc-internally-displaced-persons-idps",
+                    "tests/fixtures/unhcr_myanmar_idps.json",
+                ],
+            )
+            assert errors_on_exit.errors == [
+                "Using fallbacks for broken_owd_url! Error: Getting tabular stream for NOTEXIST.csv failed!"
+            ]
+            runner = Runner(
+                ("AFG", "MMR", "PHL"),
+                adminone,
+                downloader,
+                dict(),
+                today,
+                errors_on_exit=errors_on_exit,
+            )
+            runner.add_configurables(scraper_configuration, level)
+            runner.add_instance_variables(
+                "idps", overrideinfo={"url": "NOT EXIST"}
+            )
+            runner.add_post_run("idps", idps_post_run)
+            values = [{"AFG": 4664000, "MMR": 509600, "PHL": 298000}]
+            run_check_scraper(
+                name,
+                runner,
+                level,
+                headers,
+                values,
+                sources,
+                source_urls=[
+                    "https://data.humdata.org/dataset/idmc-internally-displaced-persons-idps"
+                ],
+            )
+            assert errors_on_exit.errors == [
+                "Using fallbacks for broken_owd_url! Error: Getting tabular stream for NOTEXIST.csv failed!",
+                "Not using UNHCR Myanmar IDPs override! Error: Setup of Streaming Download of http:///NOT EXIST failed!",
+            ]

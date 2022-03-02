@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from copy import deepcopy
-from typing import Dict, List, Tuple
+from typing import Dict, List, Optional, Tuple
 
 
 class BaseScraper(ABC):
@@ -28,6 +28,8 @@ class BaseScraper(ABC):
         self.initialise_values_sources()
         self.has_run = False
         self.fallbacks_used = False
+        self.source_urls = set()
+        self.errors_on_exit = None
 
     def initialise_values_sources(self):
         self.values: Dict[str, Tuple] = {
@@ -38,7 +40,7 @@ class BaseScraper(ABC):
             level: list() for level in self.headers
         }
 
-    def get_headers(self, level: str) -> Tuple[Tuple]:
+    def get_headers(self, level: str) -> Optional[Tuple[Tuple]]:
         """
         Get headers for a particular level like national or subnational
 
@@ -46,11 +48,11 @@ class BaseScraper(ABC):
             level (str): Level for which to get headers
 
         Returns:
-            Tuple[Tuple]: Scraper headers
+            Optional[Tuple[Tuple]]: Scraper headers or None
         """
-        return self.headers[level]
+        return self.headers.get(level)
 
-    def get_values(self, level: str) -> Tuple:
+    def get_values(self, level: str) -> Optional[Tuple]:
         """
         Get values for a particular level like national or subnational
 
@@ -58,9 +60,9 @@ class BaseScraper(ABC):
             level (str): Level for which to get headers
 
         Returns:
-            Tuple: Scraper values
+            Optional[Tuple]: Scraper values or None
         """
-        return self.values[level]
+        return self.values.get(level)
 
     def add_sources(self):
         """
@@ -91,7 +93,19 @@ class BaseScraper(ABC):
             ]
 
     def get_sources(self, level):
-        return self.sources[level]
+        return self.sources.get(level)
+
+    def add_source_urls(self) -> None:
+        source_url = self.datasetinfo.get("source_url")
+        if source_url:
+            if isinstance(source_url, str):
+                self.source_urls.add(source_url)
+            else:
+                for url in source_url.values():
+                    self.source_urls.add(url)
+
+    def get_source_urls(self):
+        return self.source_urls
 
     def add_population(self):
         for level in self.headers:
@@ -115,3 +129,21 @@ class BaseScraper(ABC):
         Returns:
             None
         """
+
+    def run_after_fallbacks(self) -> None:
+        """
+        Executed when fallbacks are used
+
+        Returns:
+            None
+        """
+        pass
+
+    def post_run(self) -> None:
+        """
+        Executed after running
+
+        Returns:
+            None
+        """
+        pass

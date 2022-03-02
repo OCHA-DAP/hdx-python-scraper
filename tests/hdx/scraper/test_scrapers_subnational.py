@@ -3,7 +3,8 @@ from hdx.utilities.dateparse import parse_date
 from hdx.utilities.downloader import Download
 
 from hdx.scraper.runner import Runner
-from tests.hdx.scraper.conftest import run_check_scraper
+
+from .conftest import run_check_scraper
 
 
 class TestScraperSubnational:
@@ -14,7 +15,9 @@ class TestScraperSubnational:
             level = "subnational"
             scraper_configuration = configuration[f"scraper_{level}"]
             runner = Runner(("AFG",), adminone, downloader, dict(), today)
-            runner.add_configurables(scraper_configuration, level)
+            keys = runner.add_configurables(scraper_configuration, level)
+            assert keys == ["gam"]
+
             name = "gam"
             headers = (
                 ["Malnutrition Estimate"],

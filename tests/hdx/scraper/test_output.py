@@ -39,9 +39,13 @@ class TestOutput:
                 if not gsheet_auth:
                     raise ValueError("No gsheet authorisation supplied!")
                 googleout = GoogleSheets(
-                    configuration, gsheet_auth, None, tabs, tabs
+                    configuration["googlesheets"],
+                    gsheet_auth,
+                    None,
+                    tabs,
+                    tabs,
                 )
-                jsonout = JsonFile(configuration, tabs)
+                jsonout = JsonFile(configuration["json"], tabs)
                 output = [
                     list(hxltags.keys()),
                     list(hxltags.values()),
@@ -153,7 +157,7 @@ class TestOutput:
     def test_jsonoutput(self, configuration, fixtures, hxltags):
         tabs = configuration["tabs"]
         noout = BaseOutput(tabs)
-        jsonout = JsonFile(configuration, tabs)
+        jsonout = JsonFile(configuration["json"], tabs)
         rows = [
             {
                 "Country Code": "#country+code",
