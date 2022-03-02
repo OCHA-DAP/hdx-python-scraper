@@ -183,7 +183,9 @@ class Runner:
                     level_results[1].append(hxltag)
         return results
 
-    def get_results(self, names=None, levels=None, overrides=dict()):
+    def get_results(
+        self, names=None, levels=None, overrides=dict(), has_run=True
+    ):
         if not names:
             names = self.scrapers.keys()
         results = dict()
@@ -193,7 +195,7 @@ class Runner:
             ):
                 continue
             scraper = self.get_scraper(name)
-            if not scraper.has_run:
+            if has_run and not scraper.has_run:
                 continue
             override = overrides.get(name, dict())
             for level, headers in scraper.headers.items():
