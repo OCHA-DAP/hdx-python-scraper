@@ -78,7 +78,7 @@ class Runner:
         return keys
 
     def prioritise_scrapers(self, scraper_names):
-        for scraper_name in scraper_names:
+        for scraper_name in reversed(scraper_names):
             if scraper_name in self.scraper_names:
                 self.scraper_names.remove(scraper_name)
                 self.scraper_names.insert(0, scraper_name)
