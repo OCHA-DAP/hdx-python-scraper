@@ -31,15 +31,24 @@ class Runner:
         self.scrapers = dict()
         self.scraper_names = list()
 
-    def add_custom(self, scraper: BaseScraper):
-        self.scrapers[scraper.name] = scraper
-        if scraper.name not in self.scraper_names:
-            self.scraper_names.append(scraper.name)
+    def add_custom(self, scraper: BaseScraper, add_to_run: bool = False):
+        scraper_name = scraper.name
+        self.scrapers[scraper_name] = scraper
+        if scraper_name not in self.scraper_names:
+            self.scraper_names.append(scraper_name)
+        if (
+            add_to_run
+            and self.scrapers_to_run is not None
+            and scraper_name not in self.scrapers_to_run
+        ):
+            self.scrapers_to_run.append(scraper_name)
         scraper.errors_on_exit = self.errors_on_exit
 
-    def add_customs(self, scrapers: Iterable[BaseScraper]):
+    def add_customs(
+        self, scrapers: Iterable[BaseScraper], add_to_run: bool = False
+    ):
         for scraper in scrapers:
-            self.add_custom(scraper)
+            self.add_custom(scraper, add_to_run)
 
     def add_configurable(self, name, datasetinfo, level, suffix=None):
         basic_auth = self.basic_auths.get(name)
