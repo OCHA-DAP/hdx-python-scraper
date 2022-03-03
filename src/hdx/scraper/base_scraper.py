@@ -22,8 +22,12 @@ class BaseScraper(ABC):
         form: {"national": ({"AFG": 1.2, "PSE": 1.4}, {"AFG": 123, "PSE": 241}, ...)}}
         It should be called last from the inheriting scraper's constructor.
         """
-        self.name = name
+        self.setup(name, headers)
         self.datasetinfo = deepcopy(datasetinfo)
+        self.can_fallback = True
+
+    def setup(self, name: str, headers: Dict[str, Tuple]):
+        self.name = name
         self.headers = headers
         self.initialise_values_sources()
         self.has_run = False
