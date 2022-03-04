@@ -24,6 +24,7 @@ class BaseScraper(ABC):
         """
         self.setup(name, headers)
         self.datasetinfo = deepcopy(datasetinfo)
+        self.errors_on_exit = None
         self.can_fallback = True
 
     def setup(self, name: str, headers: Dict[str, Tuple]):
@@ -33,7 +34,6 @@ class BaseScraper(ABC):
         self.has_run = False
         self.fallbacks_used = False
         self.source_urls = set()
-        self.errors_on_exit = None
 
     def initialise_values_sources(self):
         self.values: Dict[str, Tuple] = {

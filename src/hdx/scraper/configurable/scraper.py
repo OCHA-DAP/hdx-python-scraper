@@ -132,7 +132,6 @@ class ConfigurableScraper(BaseScraper):
             **self.variables,
         )
 
-
     def add_sources(
         self,
     ) -> List[Tuple]:
