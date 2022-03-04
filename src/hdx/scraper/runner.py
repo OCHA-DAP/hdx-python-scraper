@@ -123,6 +123,8 @@ class Runner:
                 scraper.add_population()
                 logger.info(f"Processed {scraper.name}")
             except Exception as ex:
+                if scraper.can_fallback is False:
+                    raise
                 logger.exception(f"Using fallbacks for {scraper.name}!")
                 if self.errors_on_exit:
                     self.errors_on_exit.add(

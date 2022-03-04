@@ -1,3 +1,4 @@
+import copy
 import logging
 from datetime import datetime
 from typing import Any, Dict, Iterator, List, Optional, Tuple
@@ -6,7 +7,7 @@ import regex
 from hdx.location.adminone import AdminOne
 from hdx.utilities.dateparse import get_datetime_from_timestamp, parse_date
 from hdx.utilities.dictandlist import dict_of_lists_add
-from hdx.utilities.downloader import Download
+from hdx.utilities.downloader import Download, DownloadError
 from hdx.utilities.errors_onexit import ErrorsOnExit
 from hdx.utilities.text import (  # noqa: F401
     get_fraction_str,
@@ -72,14 +73,25 @@ class ConfigurableScraper(BaseScraper):
         self.downloader = downloader
         self.today = today
         self.subsets = self.get_subsets_from_datasetinfo(datasetinfo)
+        self.errors_on_exit = errors_on_exit
+        self.variables = kwargs
+        self.rowparser = None
+        self.datasetinfo = copy.deepcopy(datasetinfo)
+        self.use_hxl_called = False
         headers = {level: (list(), list())}
         for subset in self.subsets:
             headers[level][0].extend(subset["output_cols"])
             headers[level][1].extend(subset["output_hxltags"])
-        super().__init__(name, datasetinfo, headers)
-        self.errors_on_exit = errors_on_exit
-        self.variables = kwargs
-        self.rowparser = None
+        self.can_fallback = True
+        if len(headers[level][0]) == 0:
+            use_hxl = self.datasetinfo.get("use_hxl", False)
+            if use_hxl:
+                try:
+                    file_headers, iterator = self.get_iterator()
+                    self.use_hxl(headers, file_headers, iterator)
+                except DownloadError:
+                    self.can_fallback = False
+        self.setup(name, headers)
 
     @staticmethod
     def get_subsets_from_datasetinfo(datasetinfo) -> List[Dict]:
@@ -112,6 +124,14 @@ class ConfigurableScraper(BaseScraper):
             ]
         return subsets
 
+    def get_iterator(self):
+        return read(
+            self.downloader,
+            self.datasetinfo,
+            today=self.today,
+            **self.variables,
+        )
+
     def add_sources(
         self,
     ) -> List[Tuple]:
@@ -140,8 +160,17 @@ class ConfigurableScraper(BaseScraper):
         self.datasetinfo["date"] = date
         return super().add_sources()
 
+    def read_hxl(self, iterator):
+        use_hxl = self.datasetinfo.get("use_hxl", False)
+        if not use_hxl:
+            return None
+        header_to_hxltag = next(iterator)
+        while not header_to_hxltag:
+            header_to_hxltag = next(iterator)
+        return header_to_hxltag
+
     def use_hxl(
-        self, headers: List[str], iterator: Iterator[Dict]
+        self, headers, file_headers: List[str], iterator: Iterator[Dict]
     ) -> Optional[Dict]:
         """If the mini scraper configuration defines that HXL is used (use_hxl is True),
         then read the mapping from headers to HXL hash tags. Since each row is a
@@ -152,24 +181,24 @@ class ConfigurableScraper(BaseScraper):
         original file.
 
         Args:
-            headers (List[str]): List of all headers of input file
+            file_headers (List[str]): List of all headers of input file
             iterator (Iterator[Dict]): Iterator over the rows
 
         Returns:
             Optional[Dict]: Dictionary that maps from header to HXL hashtag or None
         """
-        use_hxl = self.datasetinfo.get("use_hxl", False)
-        if not use_hxl:
+        header_to_hxltag = self.read_hxl(iterator)
+        if not header_to_hxltag:
             return None
-        header_to_hxltag = next(iterator)
-        while not header_to_hxltag:
-            header_to_hxltag = next(iterator)
+        if self.use_hxl_called:
+            return header_to_hxltag
+        self.use_hxl_called = True
         exclude_tags = self.datasetinfo.get("exclude_tags", list())
         find_tags = self.datasetinfo.get("find_tags")
         adm_cols = list()
         input_cols = list()
         columns = list()
-        for header in headers:
+        for header in file_headers:
             hxltag = header_to_hxltag[header]
             if not hxltag or hxltag in exclude_tags:
                 continue
@@ -200,7 +229,6 @@ class ConfigurableScraper(BaseScraper):
             input_cols.append(hxltag)
             columns.append(header)
         self.datasetinfo["adm_cols"] = adm_cols
-        self.headers = {self.level: (list(), list())}
         for subset in self.subsets:
             orig_input_cols = subset.get("input_cols", list())
             if not orig_input_cols:
@@ -214,9 +242,9 @@ class ConfigurableScraper(BaseScraper):
             if not orig_hxltags:
                 orig_hxltags.extend(input_cols)
             subset["output_hxltags"] = orig_hxltags
-            self.headers[self.level][0].extend(orig_columns)
-            self.headers[self.level][1].extend(orig_hxltags)
-        self.initialise_values_sources()
+            if headers:
+                headers[self.level][0].extend(orig_columns)
+                headers[self.level][1].extend(orig_hxltags)
         return header_to_hxltag
 
     def run_scraper(
@@ -410,12 +438,8 @@ class ConfigurableScraper(BaseScraper):
         Returns:
             None
         """
-        headers, iterator = read(
-            self.downloader,
-            self.datasetinfo,
-            today=self.today,
-            **self.variables,
-        )
+        file_headers, iterator = self.get_iterator()
+        header_to_hxltag = self.use_hxl(None, file_headers, iterator)
         if "source_url" not in self.datasetinfo:
             self.datasetinfo["source_url"] = self.datasetinfo["url"]
         date = self.datasetinfo.get("date")
@@ -424,7 +448,6 @@ class ConfigurableScraper(BaseScraper):
                 self.datasetinfo["date"] = parse_date(date)
         if not date or self.datasetinfo.get("force_date_today", False):
             self.datasetinfo["date"] = self.today
-        header_to_hxltag = self.use_hxl(headers, iterator)
         self.rowparser = RowParser(
             self.name,
             self.countryiso3s,
@@ -432,7 +455,7 @@ class ConfigurableScraper(BaseScraper):
             self.level,
             self.datelevel,
             self.datasetinfo,
-            headers,
+            file_headers,
             header_to_hxltag,
             self.subsets,
         )
