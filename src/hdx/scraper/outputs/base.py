@@ -1,15 +1,13 @@
 from datetime import datetime
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional, Union
 
 from hdx.utilities.downloader import Download
 
-if TYPE_CHECKING:
-    from pandas import DataFrame
 
 try:
     from pandas import DataFrame
 except ImportError:
-    pass
+    pandas = None
 
 
 class BaseOutput:
