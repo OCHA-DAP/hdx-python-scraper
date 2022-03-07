@@ -12,7 +12,8 @@ from hdx.scraper.outputs.base import BaseOutput
 try:
     from pandas import DataFrame
 except ImportError:
-    pass
+    DataFrame = None
+
 
 from hdx.scraper.utilities import match_template
 from hdx.scraper.utilities.readers import read

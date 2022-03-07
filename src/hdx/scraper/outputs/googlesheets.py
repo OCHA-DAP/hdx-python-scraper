@@ -10,7 +10,7 @@ try:
     import numpy
     from pandas import DataFrame
 except ImportError:
-    pass
+    DataFrame = None
 
 
 logger = logging.getLogger(__name__)

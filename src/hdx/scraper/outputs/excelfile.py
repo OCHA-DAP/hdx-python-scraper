@@ -9,7 +9,8 @@ from hdx.scraper.outputs.base import BaseOutput
 try:
     from pandas import DataFrame
 except ImportError:
-    pass
+    DataFrame = None
+
 
 logger = logging.getLogger(__name__)
 
