@@ -21,9 +21,9 @@ class RowParser:
     Args:
         name (str): Name of scraper
         countryiso3s (List[str]): List of ISO3 country codes to process
-        adminone (AdminOne): AdminOne object from HDX Python Country library that handles processing of admin level 1
-        level (str): Can be global, national or subnational
-        datelevel (str): Can be global, national or subnational
+        adminone (AdminOne): AdminOne object from HDX Python Country library that handles processing of admin level_type 1
+        level (str): Can be national, subnational or single
+        datelevel (str): Can be global, regional, national, subnational
         datasetinfo (Dict): Dictionary of information about dataset
         headers (List[str]): Row headers
         header_to_hxltag (Optional[Dict[str, str]]): Mapping from headers to HXL hashtags or None
@@ -45,15 +45,16 @@ class RowParser:
         maxdateonly: bool = True,
     ) -> None:
         def get_level(level: str) -> Optional[int]:
-            """Get the level as a number
+            """Get the level_name as a number. "Single" valued outputs are typically
+            regional or global
 
             Args:
-                level (str): Can be global, national or subnational
+                level (str): Can be national, subnational or single (for a single value)
 
             Returns:
                 Optional[int]: Level as a number
             """
-            if level == "global":
+            if level == "single":
                 return None
             elif level == "national":
                 return 0
@@ -100,7 +101,7 @@ class RowParser:
         else:
             if self.datelevel > len(self.admcols):
                 raise ValueError(
-                    "No admin columns specified for required level!"
+                    "No admin columns specified for required level_type!"
                 )
             self.maxdates = {
                 i: {adm: date for adm in self.adms[self.datelevel]}

@@ -40,13 +40,13 @@ def fixtures():
 
 @pytest.fixture(scope="session")
 def fallbacks(fixtures):
-    Fallbacks.add(join(fixtures, "fallbacks.json"))
+    Fallbacks.add(join(fixtures, "fallbacks.json"), sources_key="sources")
 
 
 def check_scrapers(
     names,
     runner,
-    level,
+    level_name,
     headers,
     values,
     sources,
@@ -62,7 +62,7 @@ def check_scrapers(
             fallbacks_used,
             f"Fallbacks used {scraper.fallbacks_used} is not as expected!",
         )
-    results = runner.get_results(names)[level]
+    results = runner.get_results(names)[level_name]
     assert results["headers"] == headers
     assert results["values"] == values
     assert results["sources"] == sources
@@ -75,7 +75,7 @@ def check_scrapers(
 def check_scraper(
     name,
     runner,
-    level,
+    level_name,
     headers,
     values,
     sources,
@@ -86,7 +86,7 @@ def check_scraper(
     check_scrapers(
         (name,),
         runner,
-        level,
+        level_name,
         headers,
         values,
         sources,
@@ -99,7 +99,7 @@ def check_scraper(
 def run_check_scraper(
     name,
     runner,
-    level,
+    level_name,
     headers,
     values,
     sources,
@@ -111,7 +111,7 @@ def run_check_scraper(
     check_scraper(
         name,
         runner,
-        level,
+        level_name,
         headers,
         values,
         sources,
@@ -125,7 +125,7 @@ def run_check_scraper(
 def run_check_scrapers(
     names,
     runner,
-    level,
+    level_name,
     headers,
     values,
     sources,
@@ -137,7 +137,7 @@ def run_check_scrapers(
     check_scrapers(
         names,
         runner,
-        level,
+        level_name,
         headers,
         values,
         sources,

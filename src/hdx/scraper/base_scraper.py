@@ -9,7 +9,7 @@ class BaseScraper(ABC):
     Args:
         name (str): Name of scraper
         datasetinfo (Dict): Information about dataset
-        headers: Dict[str, Tuple]: Headers to be oytput at each level
+        headers: Dict[str, Tuple]: Headers to be oytput at each level_name
     """
 
     population_lookup = dict()
@@ -46,7 +46,7 @@ class BaseScraper(ABC):
 
     def get_headers(self, level: str) -> Optional[Tuple[Tuple]]:
         """
-        Get headers for a particular level like national or subnational
+        Get headers for a particular level_name like national or subnational
 
         Args:
             level (str): Level for which to get headers
@@ -58,7 +58,7 @@ class BaseScraper(ABC):
 
     def get_values(self, level: str) -> Optional[Tuple]:
         """
-        Get values for a particular level like national or subnational
+        Get values for a particular level_name like national or subnational
 
         Args:
             level (str): Level for which to get headers
@@ -70,7 +70,7 @@ class BaseScraper(ABC):
 
     def add_sources(self):
         """
-        Adds sources for a particular level
+        Adds sources for a particular level_name
 
         Returns:
             List[Tuple]: List of (hxltag, date, source, source url)

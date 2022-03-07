@@ -50,7 +50,9 @@ class Runner:
         for scraper in scrapers:
             self.add_custom(scraper, add_to_run)
 
-    def add_configurable(self, name, datasetinfo, level, suffix=None):
+    def add_configurable(
+        self, name, datasetinfo, level, level_name=None, suffix=None
+    ):
         basic_auth = self.basic_auths.get(name)
         if basic_auth is None:
             int_downloader = self.downloader
@@ -72,17 +74,22 @@ class Runner:
             self.countryiso3s,
             self.adminone,
             int_downloader,
+            level_name,
             self.today,
             self.errors_on_exit,
         )
         return key
 
-    def add_configurables(self, configuration, level, suffix=None):
+    def add_configurables(
+        self, configuration, level, level_name=None, suffix=None
+    ):
         keys = list()
         for name in configuration:
             datasetinfo = configuration[name]
             keys.append(
-                self.add_configurable(name, datasetinfo, level, suffix)
+                self.add_configurable(
+                    name, datasetinfo, level, level_name, suffix
+                )
             )
         return keys
 

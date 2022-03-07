@@ -14,12 +14,15 @@ class TestScraperGlobal:
         with Download(user_agent="test") as downloader:
             today = parse_date("2020-10-01")
             adminone = AdminOne(configuration)
-            level = "global"
-            scraper_configuration = configuration[f"scraper_{level}"]
+            level = "single"
+            level_name = "global"
+            scraper_configuration = configuration[f"scraper_{level_name}"]
             runner = Runner(
                 configuration["HRPs"], adminone, downloader, dict(), today
             )
-            keys = runner.add_configurables(scraper_configuration, level)
+            keys = runner.add_configurables(
+                scraper_configuration, level, level_name
+            )
             assert keys == [
                 "covax",
                 "ourworldindata",
@@ -102,7 +105,7 @@ class TestScraperGlobal:
                 ),
             ]
             runner.run_one(name)
-            check_scraper(name, runner, level, headers, values, sources)
+            check_scraper(name, runner, level_name, headers, values, sources)
             rows = runner.get_rows("global", ("value",))
             expected_rows = [
                 [
@@ -278,7 +281,9 @@ class TestScraperGlobal:
                     "https://data.humdata.org/dataset/cerf-covid-19-allocations",
                 ),
             ]
-            run_check_scraper(name, runner, level, headers, values, sources)
+            run_check_scraper(
+                name, runner, level_name, headers, values, sources
+            )
 
             name = "ourworldindata"
             headers = (
@@ -294,13 +299,15 @@ class TestScraperGlobal:
                     "tests/fixtures/ourworldindata_vaccinedoses.csv",
                 )
             ]
-            run_check_scraper(name, runner, level, headers, values, sources)
+            run_check_scraper(
+                name, runner, level_name, headers, values, sources
+            )
 
             today = parse_date("2021-05-03")
             runner = Runner(
                 configuration["HRPs"], adminone, downloader, dict(), today
             )
-            runner.add_configurables(scraper_configuration, level)
+            runner.add_configurables(scraper_configuration, level, level_name)
             name = "cerf_global"
             headers = cerf_headers
             values = [
@@ -405,7 +412,9 @@ class TestScraperGlobal:
                     "https://data.humdata.org/dataset/cerf-covid-19-allocations",
                 ),
             ]
-            run_check_scraper(name, runner, level, headers, values, sources)
+            run_check_scraper(
+                name, runner, level_name, headers, values, sources
+            )
 
             # Test fallbacks with subsets
             with caplog.at_level(logging.ERROR):
@@ -516,7 +525,7 @@ class TestScraperGlobal:
                 run_check_scraper(
                     name,
                     runner,
-                    level,
+                    level_name,
                     headers,
                     values,
                     sources,
@@ -542,10 +551,12 @@ class TestScraperGlobal:
                     "tests/fixtures/ourworldindata_vaccinedoses.csv",
                 )
             ]
-            run_check_scraper(name, runner, level, headers, values, sources)
+            run_check_scraper(
+                name, runner, level_name, headers, values, sources
+            )
 
             scraper_configuration = configuration["other"]
-            runner.add_configurables(scraper_configuration, level)
+            runner.add_configurables(scraper_configuration, level, level_name)
             name = "ourworldindata_other"
             headers = (
                 ["TotalDosesAdministered"],
@@ -560,7 +571,9 @@ class TestScraperGlobal:
                     "tests/fixtures/ourworldindata_vaccinedoses.csv",
                 )
             ]
-            run_check_scraper(name, runner, level, headers, values, sources)
+            run_check_scraper(
+                name, runner, level_name, headers, values, sources
+            )
 
             name = "altworldindata"
             headers = (
@@ -576,4 +589,6 @@ class TestScraperGlobal:
                     "tests/fixtures/ourworldindata_vaccinedoses.csv",
                 )
             ]
-            run_check_scraper(name, runner, level, headers, values, sources)
+            run_check_scraper(
+                name, runner, level_name, headers, values, sources
+            )

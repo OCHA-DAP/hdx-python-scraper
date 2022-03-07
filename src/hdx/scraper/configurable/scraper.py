@@ -30,10 +30,11 @@ class ConfigurableScraper(BaseScraper):
     Args:
         name (str): Name of scraper
         datasetinfo (Dict): Information about dataset
-        level (str): Can be global, national or subnational
+        level (str): Can be national, subnational or single
         countryiso3s (List[str]): List of ISO3 country codes to process
         adminone (AdminOne): AdminOne object from HDX Python Country library
         downloader (Download): Download object for downloading files
+        level_name (Optional[str]): Customised level_name name. Defaults to None (level_name).
         today (datetime): Value to use for today. Defaults to datetime.now().
         errors_on_exit (ErrorsOnExit): ErrorsOnExit object that logs errors on exit
         **kwargs: Variables to use when evaluating template arguments in urls
@@ -58,6 +59,7 @@ class ConfigurableScraper(BaseScraper):
         countryiso3s: List[str],
         adminone: AdminOne,
         downloader: Download,
+        level_name: Optional[str] = None,
         today: datetime = datetime.now(),
         errors_on_exit: Optional[ErrorsOnExit] = None,
         **kwargs: Any,
@@ -68,6 +70,10 @@ class ConfigurableScraper(BaseScraper):
             self.datelevel = self.level
         else:
             self.datelevel = datelevel
+        if level_name is None:
+            self.level_name = level
+        else:
+            self.level_name = level_name
         self.countryiso3s = countryiso3s
         self.adminone = adminone
         self.downloader = downloader
@@ -78,12 +84,12 @@ class ConfigurableScraper(BaseScraper):
         self.rowparser = None
         self.datasetinfo = copy.deepcopy(datasetinfo)
         self.use_hxl_called = False
-        headers = {level: (list(), list())}
+        headers = {self.level_name: (list(), list())}
         for subset in self.subsets:
-            headers[level][0].extend(subset["output_cols"])
-            headers[level][1].extend(subset["output_hxltags"])
+            headers[self.level_name][0].extend(subset["output_cols"])
+            headers[self.level_name][1].extend(subset["output_hxltags"])
         self.can_fallback = True
-        if len(headers[level][0]) == 0:
+        if len(headers[self.level_name][0]) == 0:
             use_hxl = self.datasetinfo.get("use_hxl", False)
             if use_hxl:
                 try:
@@ -202,10 +208,7 @@ class ConfigurableScraper(BaseScraper):
             hxltag = header_to_hxltag[header]
             if not hxltag or hxltag in exclude_tags:
                 continue
-            if find_tags or (
-                find_tags is None
-                and self.datelevel not in ("global", "regional")
-            ):
+            if find_tags or (find_tags is None and self.datelevel != "single"):
                 if "#country" in hxltag:
                     if "code" in hxltag:
                         if len(adm_cols) == 0:
@@ -243,8 +246,8 @@ class ConfigurableScraper(BaseScraper):
                 orig_hxltags.extend(input_cols)
             subset["output_hxltags"] = orig_hxltags
             if headers:
-                headers[self.level][0].extend(orig_columns)
-                headers[self.level][1].extend(orig_hxltags)
+                headers[self.level_name][0].extend(orig_columns)
+                headers[self.level_name][1].extend(orig_hxltags)
         return header_to_hxltag
 
     def run_scraper(
@@ -300,7 +303,7 @@ class ConfigurableScraper(BaseScraper):
         for row in self.rowparser.filter_sort_rows(iterator):
             add_row(row)
 
-        values = self.values[self.level]
+        values = self.values[self.level_name]
         values_pos = 0
         for subset in self.subsets:
             valdicts = valuedicts[subset["filter"]]
