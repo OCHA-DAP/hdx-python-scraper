@@ -49,13 +49,13 @@ class TestScraperGlobal:
                 ],
             )
             values = [
-                {"global": "73248240"},
-                {"global": "12608040"},
-                {"global": "23728358"},
-                {"global": "36336398"},
-                {"global": "271440"},
-                {"global": "67116000"},
-                {"global": "5860800"},
+                {"value": "73248240"},
+                {"value": "12608040"},
+                {"value": "23728358"},
+                {"value": "36336398"},
+                {"value": "271440"},
+                {"value": "67116000"},
+                {"value": "5860800"},
             ]
             sources = [
                 (
@@ -103,7 +103,7 @@ class TestScraperGlobal:
             ]
             runner.run_one(name)
             check_scraper(name, runner, level, headers, values, sources)
-            rows = runner.get_rows("global", ("global",))
+            rows = runner.get_rows("global", ("value",))
             expected_rows = [
                 [
                     "Covax Interim Forecast Doses",
@@ -135,7 +135,7 @@ class TestScraperGlobal:
             ]
             assert rows == expected_rows
             rows = runner.get_rows(
-                "gho", ("global",), overrides={name: {"global": "gho"}}
+                "gho", ("value",), overrides={name: {"global": "gho"}}
             )
             assert rows == expected_rows
             runner.set_not_run(name)
@@ -177,20 +177,20 @@ class TestScraperGlobal:
             name = "cerf_global"
             headers = cerf_headers
             values = [
-                {"global": 906790749.5500005},
-                {"global": 829856355.4100008},
-                {"global": 37432868.04999999},
-                {"global": 39501526.08999999},
+                {"value": 906790749.5500005},
+                {"value": 829856355.4100008},
+                {"value": 37432868.04999999},
+                {"value": 39501526.08999999},
                 {},
                 {},
                 {},
-                {"global": 848145238.0},
+                {"value": 848145238.0},
                 {},
-                {"global": 50042305.0},
-                {"global": 75349572.0},
-                {"global": 224560378.0},
-                {"global": 349338181.0},
-                {"global": 147855321.0},
+                {"value": 50042305.0},
+                {"value": 75349572.0},
+                {"value": 224560378.0},
+                {"value": 349338181.0},
+                {"value": 147855321.0},
             ]
             sources = [
                 (
@@ -304,20 +304,20 @@ class TestScraperGlobal:
             name = "cerf_global"
             headers = cerf_headers
             values = [
-                {"global": 7811774.670000001},
-                {"global": 7811774.670000001},
+                {"value": 7811774.670000001},
+                {"value": 7811774.670000001},
                 {},
                 {},
                 {},
                 {},
                 {},
-                {"global": 89298919.0},
-                {"global": 6747034.0},
+                {"value": 89298919.0},
+                {"value": 6747034.0},
                 {},
-                {"global": 2549855.0},
-                {"global": 10552572.0},
-                {"global": 26098816.0},
-                {"global": 43350642.0},
+                {"value": 2549855.0},
+                {"value": 10552572.0},
+                {"value": 26098816.0},
+                {"value": 43350642.0},
             ]
             sources = [
                 (
@@ -412,20 +412,20 @@ class TestScraperGlobal:
                 name = "broken_cerf_url"
                 headers = cerf_headers
                 values = [
-                    {"global": 7811775.670000001},
-                    {"global": 7811775.670000001},
+                    {"value": 7811775.670000001},
+                    {"value": 7811775.670000001},
                     {},
                     {},
                     {},
                     {},
                     {},
-                    {"global": 89298924.0},
-                    {"global": 6747035.0},
+                    {"value": 89298924.0},
+                    {"value": 6747035.0},
                     {},
-                    {"global": 2549856.0},
-                    {"global": 10552573.0},
-                    {"global": 26098817.0},
-                    {"global": 43350643.0},
+                    {"value": 2549856.0},
+                    {"value": 10552573.0},
+                    {"value": 26098817.0},
+                    {"value": 43350643.0},
                 ]
                 sources = [
                     (
@@ -533,7 +533,7 @@ class TestScraperGlobal:
                 ["TotalDosesAdministered"],
                 ["#capacity+doses+administered+total"],
             )
-            values = [{"global": "13413871"}]
+            values = [{"value": "13413871"}]
             sources = [
                 (
                     "#capacity+doses+administered+total",
@@ -551,7 +551,7 @@ class TestScraperGlobal:
                 ["TotalDosesAdministered"],
                 ["#capacity+doses+administered+total"],
             )
-            values = [{"global": "1175451507"}]
+            values = [{"value": "1175451507"}]
             sources = [
                 (
                     "#capacity+doses+administered+total",
@@ -567,7 +567,7 @@ class TestScraperGlobal:
                 ["TotalDosesAdministered"],
                 ["#capacity+doses+administered+total"],
             )
-            values = [{"global": "1175451507"}]
+            values = [{"value": "1175451507"}]
             sources = [
                 (
                     "#capacity+doses+administered+total",

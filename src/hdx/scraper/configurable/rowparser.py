@@ -360,5 +360,5 @@ class RowParser:
                     else:
                         self.maxdates[i][adms[self.datelevel]] = date
         if self.level is None:
-            return "global", should_process_subset
+            return "value", should_process_subset
         return adms[self.level], should_process_subset

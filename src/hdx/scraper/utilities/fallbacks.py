@@ -15,7 +15,7 @@ class Fallbacks:
         "subnational": "subnational_data",
     }
     default_admin_name_mapping = {
-        "global": "global",
+        "global": "value",
         "regional": "#region+name",
         "national": "#country+code",
         "subnational": "#adm1+code",
@@ -99,7 +99,7 @@ class Fallbacks:
                     raise ValueError(
                         "Either admin name or admin hxltag must be specified!"
                     )
-                if adm_key != "global":
+                if adm_key != "value":
                     adm_key = row[adm_key]
                 for i, hxltag in enumerate(output_hxltags):
                     val = row.get(hxltag)
