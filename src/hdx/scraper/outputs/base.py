@@ -7,7 +7,7 @@ from hdx.utilities.downloader import Download
 try:
     from pandas import DataFrame
 except ImportError:
-    pandas = None
+    DataFrame = None
 
 
 class BaseOutput:
