@@ -191,7 +191,7 @@ class JsonFile(BaseOutput):
                         newrow[hxl_row[key]] = row[key]
                 self.add_data_row(name, newrow)
 
-    def save(self, folder: str = None, **kwargs: Any) -> List[str]:
+    def save(self, folder: Optional[str] = None, **kwargs: Any) -> List[str]:
         """Save JSON file and any addition subsets of that JSON defined in the additional configuration
 
         Args:
