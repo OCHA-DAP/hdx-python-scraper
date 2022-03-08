@@ -1,5 +1,5 @@
 import logging
-from typing import Iterable
+from typing import Iterable, List
 
 from hdx.utilities.downloader import Download
 
@@ -31,7 +31,9 @@ class Runner:
         self.scrapers = dict()
         self.scraper_names = list()
 
-    def add_custom(self, scraper: BaseScraper, add_to_run: bool = False):
+    def add_custom(
+        self, scraper: BaseScraper, add_to_run: bool = False
+    ) -> str:
         scraper_name = scraper.name
         self.scrapers[scraper_name] = scraper
         if scraper_name not in self.scraper_names:
@@ -43,16 +45,19 @@ class Runner:
         ):
             self.scrapers_to_run.append(scraper_name)
         scraper.errors_on_exit = self.errors_on_exit
+        return scraper_name
 
     def add_customs(
         self, scrapers: Iterable[BaseScraper], add_to_run: bool = False
-    ):
+    ) -> List[str]:
+        scraper_names = list()
         for scraper in scrapers:
-            self.add_custom(scraper, add_to_run)
+            scraper_names.append(self.add_custom(scraper, add_to_run))
+        return scraper_names
 
     def add_configurable(
         self, name, datasetinfo, level, level_name=None, suffix=None
-    ):
+    ) -> str:
         basic_auth = self.basic_auths.get(name)
         if basic_auth is None:
             int_downloader = self.downloader
@@ -82,7 +87,7 @@ class Runner:
 
     def add_configurables(
         self, configuration, level, level_name=None, suffix=None
-    ):
+    ) -> List[str]:
         keys = list()
         for name in configuration:
             datasetinfo = configuration[name]
