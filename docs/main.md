@@ -173,7 +173,7 @@ It is helpful to look at a few example mini scrapers to see how they are configu
 The economicindex mini scraper reads the dataset “covid-19-economic-exposure-index” on HDX, taking from it dataset 
 source, date of dataset and using the url of the dataset in HDX as the source url (used by the DATA link in the 
 visual). The scraper framework finds the first resource that is of format “xlsx”, reads the “economic exposure” 
-sheet and looks for the headers in row 1. Note that it is possible to specify a specific resource name using the 
+sheet and looks for the headers in row 1 (by default). Note that it is possible to specify a specific resource name using the 
 key "resource" instead of searching for the first resource of a particular format.
 
 adm_cols defines the column or columns in which to look for admin information. As this is a national level 
@@ -182,10 +182,9 @@ scraper, it uses the “Country” column. input_cols specifies the column(s) to
 use for the input_cols.
 
      economicindex:
-        format: "xlsx"
         dataset: "covid-19-economic-exposure-index"
+        format: "xlsx"
         sheet: "economic exposure"
-        headers: 1
         adm_cols:
           - "Country"
         input_cols:
@@ -205,10 +204,9 @@ converted to either an int or float if it is possible.
      population:
         source: "Multiple Sources"
         source_url: "https://data.humdata.org/search?organization=worldpop&q=%22population%20counts%22"
-        format: "csv"
-        url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vS3_uBOV_uRDSxOggfBus_pkCs6Iw9lm0nAxzwG14YF_frpm13WPKiM1oNnQ9zrUA/pub?gid=1565793974&single=true&output=csv"
         dataset: "global-humanitarian-response-plan-covid-19-administrative-boundaries-and-population-statistics"
-        headers: 1
+        url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vS3_uBOV_uRDSxOggfBus_pkCs6Iw9lm0nAxzwG14YF_frpm13WPKiM1oNnQ9zrUA/pub?gid=1565793974&single=true&output=csv"
+        format: "csv"
         adm_cols:
           - "alpha_3"
           - "ADM1_PCODE"
@@ -227,9 +225,8 @@ the existing. keep_cols defines any columns where if the same admin appears agai
 rather than replaced.
 
      travel:
-        format: "csv"
         dataset: "covid-19-global-travel-restrictions-and-airline-information"
-        headers: 1
+        format: "csv"
         adm_cols:
           - "iso3"
         input_cols:
@@ -254,8 +251,8 @@ for each admin, obtain the data (in this case the “National Point Estimate”)
 date (unless ignore_future_date is set to False then future dates will be allowed).
 
      gam:
-        format: "xlsx"
         dataset: "world-global-expanded-database-on-severe-wasting"
+        format: "xlsx"
         sheet: "Trend"
         headers:
           - 3
@@ -272,13 +269,13 @@ date (unless ignore_future_date is set to False then future dates will be allowe
           - "#severity+malnutrition+num+national"
 
 The covidtests mini scraper gets “new_tests” and “new_tests_per_thousand” for the latest date where a 
-date_condition is satisfied which is that “new_tests” is a value greater than zero.
+date_condition is satisfied which is that “new_tests” is a value greater than zero. 
+Here, the default sheet of 1 and the default headers rows of 1 are assumed. These
+defaults apply for both xls and xlsx.
 
      covidtests:
-        format: "xlsx"
         dataset: "total-covid-19-tests-performed-by-country"
-        headers: 1
-        sheet: 1
+        format: "xlsx"
         date_col: "date"
         date_type: "date"
         date_condition: "new_tests is not None and new_tests > 0"
@@ -299,9 +296,8 @@ names provided use_hxl is set to True. By default all the HXLated columns are re
 inferred and the rest taken as values except if defined as a date_col.
 
      oxcgrt:
-        format: "csv"
         dataset: "oxford-covid-19-government-response-tracker"
-        headers: 1
+        format: "csv"
         use_hxl: True
         date_col: "#date"
         date_type: "date"
@@ -310,10 +306,8 @@ In the imperial mini scraper, output_columns and output_hxltags are defined whic
 tags in the HXLated file should be used rather than using all HXLated columns.
 
      imperial:
-        format: "xlsx"
         dataset: "imperial-college-covid-19-projections"
-        sheet: 1
-        headers: 1
+        format: "xlsx"
         use_hxl: True
         output_columns:
           - "Imp: Total Cases(min)"
@@ -332,9 +326,8 @@ of the other columns in input_cols. In this case, input_cols specifies a new col
 input_cols. That new column is given a header and a HXL tag (in output_columns and output_hxltags).
 
      idmc:
-        format: "csv"
         dataset: "idmc-internally-displaced-persons-idps"
-        headers: 1
+        format: "csv"
         use_hxl: True
         date_col: "#date+year"
         date_type: "year"
@@ -357,8 +350,8 @@ contains one or more filters in Python syntax. Column names can be used directly
 in input_cols and date_col, then all should be put as a list under the key filter_cols.
 
      needs:
-        format: "xlsx"
         dataset: "global-humanitarian-overview-2020-figures"
+        format: "xlsx"
         sheet: "Raw Data"
         headers: 1
         adm_cols:
@@ -385,8 +378,8 @@ fuzzy match if the input has more than 3 characters.
      population:
         source: "World Bank"
         source_url: "https://data.humdata.org/organization/world-bank-group"
-        format: "xls"
         url: "http://api.worldbank.org/v2/en/indicator/SP.POP.TOTL?downloadformat=excel&dataformat=list"
+        format: "xls"
         sheet: "Data"
         headers: 3
         adm_cols:
@@ -408,11 +401,9 @@ it would need to be under a key filter_cols.
 
     covidtests:
         source: "Our World in Data"
-        format: "xlsx"
         dataset: "total-covid-19-tests-performed-by-country"
         url: "tests/fixtures/owid-covid-data.xlsx"
-        headers: 1
-        sheet: 1
+        format: "xlsx"
         prefilter: "new_tests is not None and new_tests > 0"
      ...
 
@@ -421,9 +412,8 @@ using data from another file, the url of which is defined in external_filter. Sp
 data to only include countries listed in the  “#country+code+v_iso2” column of the external_filter file.
  
      sadd:
-         format: "csv"
          dataset: "covid-19-sex-disaggregated-data-tracker"
-         headers: 1
+         format: "csv"
          external_filter:
            url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vR9PhPG7-aH0EkaBGzXYlrO9252gqs-UuKIeDQr9D3pOLBOdQ_AoSwWi21msHsdyT7thnjuhSY6ykSX/pub?gid=434885896&single=true&output=csv"
            hxltags:
@@ -447,10 +437,8 @@ formula, the number of values that were summed in each column will be the same. 
 mini scraper).
 
      fsnwg:
-        format: "xlsx"
         dataset: "cadre-harmonise"
-        headers: 1
-        sheet: 1
+        format: "xlsx"
         sort:
           reverse: True
           keys:
@@ -511,9 +499,8 @@ either “-2222” or “-4444” is the value included in the sum of any column
 
      who_subnational:
         source: "WHO"
-        format: "csv"
         url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRfjaIXE1hvEIXD66g6cuCbPrGdZkx6vLIgXO_znVbjQ-OgwfaI1kJPhxhgjw2Yg08CmtBuMLAZkTnu/pub?gid=337443769&single=true&output=csv"
-        headers: 1
+        format: "csv"
         adm_cols:
           - "iso"
           - "Admin1"
@@ -560,9 +547,8 @@ in source and source_url. It maps specific HXL tags by key to sources or falls b
           "#event+year+todate+num": "https://data.humdata.org/dataset/security-incidents-on-aid-workers"
           "#event+year+previous+todate+num": "https://data.humdata.org/dataset/security-incidents-on-aid-workers"
           "default_url": "https://docs.google.com/spreadsheets/d/e/2PACX-1vRSzJzuyVt9i_mkRQ2HbxrUl2Lx2VIhkTHQM-laE8NyhQTy70zQTCuFS3PXbhZGAt1l2bkoA4_dAoAP/pub?gid=1565063847&single=true&output=csv"
-        format: "csv"
         url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRSzJzuyVt9i_mkRQ2HbxrUl2Lx2VIhkTHQM-laE8NyhQTy70zQTCuFS3PXbhZGAt1l2bkoA4_dAoAP/pub?gid=1565063847&single=true&output=csv"
-        headers: 1
+        format: "csv"
         use_hxl: True
         input_transforms:
           "#access+visas+pct": "get_numeric_if_possible(#access+visas+pct)"
@@ -575,8 +561,8 @@ The field adm_vals allows overriding the country iso 3 codes and admin 1 pcodes 
 
       gam:
         source: "UNICEF"
-        format: "xlsx"
         url: "tests/fixtures/unicef_who_wb_global_expanded_databases_severe_wasting.xlsx"
+        format: "xlsx"
         sheet: "Trend"
         headers:
           - 3
@@ -609,9 +595,8 @@ used process_cols or append_cols.
 
       ourworldindata:
         source: "Our World in Data"
-        format: "csv"
         url: "tests/fixtures/ourworldindata_vaccinedoses.csv"
-        headers: 1
+        format: "csv"
         use_hxl: True
         adm_cols:
           - "#country+code"
@@ -633,9 +618,8 @@ been treated as a special case of national data by using OWID_WRL in the #countr
 
       ourworldindata:
         source: "Our World in Data"
-        format: "csv"
         url: "tests/fixtures/ourworldindata_vaccinedoses.csv"
-        headers: 1
+        format: "csv"
         use_hxl: True
         adm_cols:
           - "#country+code"
@@ -655,9 +639,9 @@ If columns need to be summed and the latest date chosen overall not per admin un
 single_maxdate as shown below:
 
       cerf_global:
-        format: "csv"
-        url: "tests/fixtures/full_pfmb_allocations.csv"
         dataset: "cerf-covid-19-allocations"
+        url: "tests/fixtures/full_pfmb_allocations.csv"
+        format: "csv"
         force_date_today: True
         headers: 1
         date_col: "AllocationYear"

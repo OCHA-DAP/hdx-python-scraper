@@ -53,6 +53,8 @@ def read_tabular(
     if isinstance(headers, list):
         kwargs["fill_merged_cells"] = True
     format = datasetinfo["format"]
+    if not sheet and format in ("xls", "xlsx"):
+        sheet = 1
     compression = datasetinfo.get("compression")
     if compression:
         kwargs["compression"] = compression

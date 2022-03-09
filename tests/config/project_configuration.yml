@@ -45,8 +45,8 @@ scraper_national:
   population:
     source: "World Bank"
     source_url: "https://data.humdata.org/organization/world-bank-group"
-    format: "xls"
     url: "tests/fixtures/API_SP.POP.TOTL_DS2_en_excel_v2_1302508_LIST.xls"
+    format: "xls"
     sheet: "Data"
     headers: 3
     sort:
@@ -66,9 +66,8 @@ scraper_national:
   # only for testing dividing by population
   who_national:
     source: "WHO"
-    format: "csv"
     url: "tests/fixtures/WHO-COVID-19-global-data.csv"
-    headers: 1
+    format: "csv"
     adm_cols:
       - "Country_code"
     date_col: "Date_reported"
@@ -89,9 +88,8 @@ scraper_national:
   # A fake one where we sum all values in cumulative column across dates which in practice makes no sense
   who_national2:
     source: "WHO"
-    format: "csv"
     url: "tests/fixtures/WHO-COVID-19-global-data.csv"
-    headers: 1
+    format: "csv"
     adm_cols:
       - "Country_code"
     date_col: "Date_reported"
@@ -131,7 +129,6 @@ scraper_national:
       "default_url": "https://docs.google.com/spreadsheets/d/e/2PACX-1vRSzJzuyVt9i_mkRQ2HbxrUl2Lx2VIhkTHQM-laE8NyhQTy70zQTCuFS3PXbhZGAt1l2bkoA4_dAoAP/pub?gid=1565063847&single=true&output=csv"
     format: "csv"
     url: "tests/fixtures/Access Indicators  - Data for Dashboard.csv"
-    headers: 1
     use_hxl: True
     sort:
       keys:
@@ -144,10 +141,9 @@ scraper_national:
       "#population+education": "get_numeric_if_possible(#population+education)"
   sadd:
     source: "SADD"
-    format: "csv"
     date: "2020-08-07"
     url: "tests/fixtures/covid-19-sex-disaggregated-data.csv"
-    headers: 1
+    format: "csv"
     external_filter:
       url: "https://github.com/mcarans/hdx-python-scraper/raw/main/tests/fixtures/sadd-countries-to-include.csv"
       hxltags:
@@ -181,9 +177,8 @@ scraper_national:
       - "#affected+f+killed+pct"
   ourworldindata:
     source: "Our World in Data"
-    format: "csv"
     url: "tests/fixtures/ourworldindata_vaccinedoses.csv"
-    headers: 1
+    format: "csv"
     use_hxl: True
     external_filter:
       url: "https://github.com/OCHA-DAP/hdx-python-scraper/raw/main/tests/fixtures/COVID-19%20Vaccine%20Doses%20in%20HRP%20Countries%20-%20Data%20HXL.csv"
@@ -202,9 +197,8 @@ scraper_national:
   # for testing broken url
   broken_owd_url:
     source: "Our World in Data"
-    format: "csv"
     url: "NOTEXIST.csv"
-    headers: 1
+    format: "csv"
     use_hxl: True
     external_filter:
       url: "https://github.com/OCHA-DAP/hdx-python-scraper/raw/main/tests/fixtures/COVID-19%20Vaccine%20Doses%20in%20HRP%20Countries%20-%20Data%20HXL.csv"
@@ -222,11 +216,9 @@ scraper_national:
       - "#capacity+doses+administered+total"
   covidtests:
     source: "Our World in Data"
-    format: "xlsx"
     dataset: "total-covid-19-tests-performed-by-country"
     url: "tests/fixtures/owid-covid-data.xlsx"
-    sheet: 1
-    headers: 1
+    format: "xlsx"
     prefilter: "new_tests is not None and new_tests > 0"
     force_date_today: True
     date_col: "date"
@@ -250,10 +242,9 @@ scraper_national:
       - "#affected+tested+avg+per1000"
       - "#affected+tested+positive+pct"
   idps:
-    format: "csv"
     dataset: "idmc-internally-displaced-persons-idps"
     url: "tests/fixtures/displacement_data.csv"
-    headers: 1
+    format: "csv"
     use_hxl: True
     date_col: "#date+year"
     date_type: "year"
@@ -276,10 +267,9 @@ unhcr_myanmar_idps:
 scraper_global:
   covax:
     source: "covax"
-    format: "csv"
     date: "2020-08-07"
     url: "tests/fixtures/COVID-19 Vaccine Doses in HRP Countries - Data HXL.csv"
-    headers: 1
+    format: "csv"
     use_hxl: True
     adm_cols:
       - "#country+code"
@@ -334,9 +324,8 @@ scraper_global:
       - "#capacity+doses+covax+astrazenecaskbio"
   ourworldindata:
     source: "Our World in Data"
-    format: "csv"
     url: "tests/fixtures/ourworldindata_vaccinedoses.csv"
-    headers: 1
+    format: "csv"
     use_hxl: True
     external_filter:
       url: "https://github.com/OCHA-DAP/hdx-python-scraper/raw/main/tests/fixtures/COVID-19%20Vaccine%20Doses%20in%20HRP%20Countries%20-%20Data%20HXL.csv"
@@ -357,10 +346,9 @@ scraper_global:
     output_hxltags:
       - "#capacity+doses+administered+total"
   cerf_global:
-    format: "csv"
-    url: "tests/fixtures/full_pfmb_allocations.csv"
     dataset: "cerf-covid-19-allocations"
-    headers: 1
+    url: "tests/fixtures/full_pfmb_allocations.csv"
+    format: "csv"
     force_date_today: True
     date_col: "AllocationYear"
     date_type: "year"
@@ -539,10 +527,9 @@ scraper_global:
           - "#value+cerf+funding+gm4+total+usd"
   # for testing broken url with subsets
   broken_cerf_url:
-    format: "csv"
-    url: "NOTEXIST.csv"
     dataset: "cerf-covid-19-allocations"
-    headers: 1
+    url: "NOTEXIST.csv"
+    format: "csv"
     force_date_today: True
     date_col: "AllocationYear"
     date_type: "year"
@@ -724,8 +711,8 @@ scraper_global:
 other:
   gam_other:
     source: "UNICEF"
-    format: "xlsx"
     url: "tests/fixtures/unicef_who_wb_global_expanded_databases_severe_wasting.xlsx"
+    format: "xlsx"
     sheet: "Trend"
     headers:
       - 3
@@ -751,9 +738,8 @@ other:
       - "#severity+malnutrition+num+subnational"
   ourworldindata_other:
     source: "Our World in Data"
-    format: "csv"
     url: "tests/fixtures/ourworldindata_vaccinedoses.csv"
-    headers: 1
+    format: "csv"
     use_hxl: True
     adm_cols:
       - "#country+code"
@@ -770,9 +756,8 @@ other:
       - "#capacity+doses+administered+total"
   altworldindata:
     source: "Our World in Data"
-    format: "csv"
     url: "tests/fixtures/ourworldindata_vaccinedoses.csv"
-    headers: 1
+    format: "csv"
     use_hxl: True
     prefilter: "#country+code == 'OWID_WRL'"
     date_col: "#date"
@@ -789,8 +774,8 @@ other:
 scraper_subnational:
   gam:
     source: "UNICEF"
-    format: "xlsx"
     url: "tests/fixtures/unicef_who_wb_global_expanded_databases_severe_wasting.xlsx"
+    format: "xlsx"
     sheet: "Trend"
     headers:
       - 3
