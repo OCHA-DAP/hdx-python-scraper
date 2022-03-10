@@ -269,7 +269,7 @@ scraper_national:
     date_col: "Date"
     date_type: "date"
     ignore_future_date: False
-    adm_single: "UKN"
+    adm_single: "UKR"
     input_cols:
       - "Civilian casualities(OHCHR) - Killed"
       - "Civilian casualities(OHCHR) - Injured"

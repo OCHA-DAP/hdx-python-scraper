@@ -304,7 +304,7 @@ class TestScraperNational:
             ]
             run_check_scraper(name, runner, level, headers, values, sources)
 
-            runner = Runner(("UKN",), adminone, downloader, dict(), today)
+            runner = Runner(("UKR",), adminone, downloader, dict(), today)
             runner.add_configurables(scraper_configuration, level)
 
             name = "casualties"
@@ -312,7 +312,7 @@ class TestScraperNational:
                 ["CiviliansKilled", "CiviliansInjured"],
                 ["#affected+killed", "#affected+injured"],
             )
-            values = [{"UKN": "351"}, {"UKN": "707"}]
+            values = [{"UKR": "351"}, {"UKR": "707"}]
             sources = [
                 (
                     "#affected+killed",

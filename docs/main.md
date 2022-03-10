@@ -205,7 +205,7 @@ date_col and date_type (which can be date, year or int):
         headers: 2
         date_col: "Date"
         date_type: "date"
-        adm_single: "UKN"
+        adm_single: "UKR"
         input_cols:
           - "Civilian casualities(OHCHR) - Killed"
           - "Civilian casualities(OHCHR) - Injured"
