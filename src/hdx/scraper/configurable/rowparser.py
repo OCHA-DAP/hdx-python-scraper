@@ -82,6 +82,9 @@ class RowParser:
         self.adminone = adminone
         self.admcols = datasetinfo.get("adm_cols", list())
         self.admexact = datasetinfo.get("adm_exact", False)
+        self.admsingle = datasetinfo.get("adm_single", None)
+        if self.admsingle:
+            self.datelevel = None
         self.subsets = subsets
         self.filter_cols = datasetinfo.get("filter_cols", list())
         prefilter = datasetinfo.get("prefilter")
@@ -362,4 +365,6 @@ class RowParser:
                         self.maxdates[i][adms[self.datelevel]] = date
         if self.level is None:
             return "value", should_process_subset
+        if self.admsingle:
+            return self.admsingle, should_process_subset
         return adms[self.level], should_process_subset

@@ -260,6 +260,25 @@ scraper_national:
       - "TotalIDPs"
     output_hxltags:
       - "#affected+displaced"
+  casualties:
+    source: "OHCHR"
+    source_url: "https://data.humdata.org/dataset/ukraine-key-figures-2022"
+    url: "tests/fixtures/Ukraine Key Figures.csv"
+    format: "csv"
+    headers: 2
+    date_col: "Date"
+    date_type: "date"
+    ignore_future_date: False
+    adm_single: "UKN"
+    input_cols:
+      - "Civilian casualities(OHCHR) - Killed"
+      - "Civilian casualities(OHCHR) - Injured"
+    output_cols:
+      - "CiviliansKilled"
+      - "CiviliansInjured"
+    output_hxltags:
+      - "#affected+killed"
+      - "#affected+injured"
 
 unhcr_myanmar_idps:
   url: "tests/fixtures/unhcr_myanmar_idps.json"

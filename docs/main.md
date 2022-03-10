@@ -194,6 +194,28 @@ use for the input_cols.
         output_hxltags:
           - "#severity+economic+num"
 
+The casualties mini scraper reads from a file that has data for only one admin unit 
+which is specified using adm_single. The latest row by date is obtained by specifying
+date_col and date_type (which can be date, year or int):
+
+      casualties:
+        source: "OHCHR"
+        dataset: "ukraine-key-figures-2022"
+        format: "csv"
+        headers: 2
+        date_col: "Date"
+        date_type: "date"
+        adm_single: "UKN"
+        input_cols:
+          - "Civilian casualities(OHCHR) - Killed"
+          - "Civilian casualities(OHCHR) - Injured"
+        output_cols:
+          - "CiviliansKilled"
+          - "CiviliansInjured"
+        output_hxltags:
+          - "#affected+killed"
+          - "#affected+injured"
+
 The population mini scraper configuration directly provides metadata for source, source_url and the download 
 location given by url only taking the source date from the dataset. The scraper pulls subnational data so adm_cols 
 defines both a country column “alpha_3” and an admin 1 pcode column “ADM1_PCODE”. 
@@ -370,10 +392,10 @@ in input_cols and date_col, then all should be put as a list under the key filte
             output_hxltags:
               - "#affected+inneed"
 
-The population mini scraper matches admin names only using exact matching (adm_exact is set to True) rather than 
-the default which tries fuzzy matching in the event of a failure to match exactly. In this case, the fuzzy 
-matching was incorrect. Note: a future fix in HDX Python Country may render this flag unnecessary as it will only 
-fuzzy match if the input has more than 3 characters. 
+The population mini scraper matches country code only using exact matching (adm_exact is 
+set to True) rather than the default which tries fuzzy matching in the event of a 
+failure to match exactly. This is useful when matching produces false positives which is
+very rare so is usually not needed. 
 
      population:
         source: "World Bank"

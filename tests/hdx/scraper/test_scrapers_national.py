@@ -29,6 +29,7 @@ class TestScraperNational:
                 "broken_owd_url",
                 "covidtests",
                 "idps",
+                "casualties",
             ]
 
             name = "population"
@@ -302,6 +303,41 @@ class TestScraperNational:
                 ),
             ]
             run_check_scraper(name, runner, level, headers, values, sources)
+
+            runner = Runner(("UKN",), adminone, downloader, dict(), today)
+            runner.add_configurables(scraper_configuration, level)
+
+            name = "casualties"
+            headers = (
+                ["CiviliansKilled", "CiviliansInjured"],
+                ["#affected+killed", "#affected+injured"],
+            )
+            values = [{"UKN": "351"}, {"UKN": "707"}]
+            sources = [
+                (
+                    "#affected+killed",
+                    "2020-10-01",
+                    "OHCHR",
+                    "https://data.humdata.org/dataset/ukraine-key-figures-2022",
+                ),
+                (
+                    "#affected+injured",
+                    "2020-10-01",
+                    "OHCHR",
+                    "https://data.humdata.org/dataset/ukraine-key-figures-2022",
+                ),
+            ]
+            run_check_scraper(
+                name,
+                runner,
+                level,
+                headers,
+                values,
+                sources,
+                source_urls=[
+                    "https://data.humdata.org/dataset/ukraine-key-figures-2022"
+                ],
+            )
 
             runner = Runner(
                 ("AFG", "PHL"), adminone, downloader, dict(), today
