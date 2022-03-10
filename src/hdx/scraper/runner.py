@@ -16,16 +16,18 @@ class Runner:
         countryiso3s,
         adminone,
         downloader,
-        basic_auths,
         today,
+        basic_auths=dict(),
+        get_auths=dict(),
         errors_on_exit=None,
         scrapers_to_run=None,
     ):
         self.countryiso3s = countryiso3s
         self.adminone = adminone
         self.downloader = downloader
-        self.basic_auths = basic_auths
         self.today = today
+        self.basic_auths = basic_auths
+        self.get_auths = get_auths
         self.errors_on_exit = errors_on_exit
         self.scrapers_to_run = scrapers_to_run
         self.scrapers = dict()
@@ -60,7 +62,14 @@ class Runner:
     ) -> str:
         basic_auth = self.basic_auths.get(name)
         if basic_auth is None:
-            int_downloader = self.downloader
+            get_auth = self.get_auths.get(name)
+            if get_auth is None:
+                int_downloader = self.downloader
+            else:
+                int_downloader = Download(
+                    headers=get_auth,
+                    rate_limit={"calls": 1, "period": 0.1},
+                )
         else:
             int_downloader = Download(
                 basic_auth=basic_auth,
