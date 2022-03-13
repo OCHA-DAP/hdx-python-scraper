@@ -452,11 +452,12 @@ date_col is comprised of the amalgamation of two columns “reference_year” an
 column. For example, the formula “get_fraction_str(phase3, population)” takes the sum of all phase 3 values for an 
 admin 1 and divides it by the sum of all population values for an admin 1. 
 
-mustbepopulated determines if values are included or not. If it is True, then only when all columns in input_cols 
-for the row are populated is the value included. This means that when using multiple summed columns together in a 
-formula, the number of values that were summed in each column will be the same. The last formula uses 
-“#population” which is replaced by the population for the admin (which has been previously obtained by another 
-mini scraper).
+mustbepopulated determines if values are included or not and is by default False. If it 
+is True, then only when all columns in input_cols for the row are populated is the value 
+included. This means that when using multiple summed columns together in a formula, the 
+number of values that were summed in each column will be the same. The last formula uses 
+“#population” which is replaced by the population for the admin (which has been 
+previously obtained by another mini scraper).
 
      fsnwg:
         dataset: "cadre-harmonise"
@@ -629,7 +630,6 @@ used process_cols or append_cols.
           - "#total+vaccinations"
         sum_cols:
           - formula: "number_format(#total+vaccinations, format='%.0f')"
-            mustbepopulated: False
         output_cols:
           - "TotalDosesAdministered"
         output_hxltags:
@@ -681,7 +681,6 @@ single_maxdate as shown below:
               Budget: "float(Budget)"
             sum_cols:
               - formula: "Budget"
-                mustbepopulated: False
             output_cols:
               - "CBPFFundingGM0"
             output_hxltags:
