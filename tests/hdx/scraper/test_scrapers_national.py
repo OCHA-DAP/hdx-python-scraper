@@ -138,7 +138,20 @@ class TestScraperNational:
                 ],
                 ["AFG", "96.99", "3.41", "96.99", "3.41"],
             ]
-            assert runner.get_sources() == sources
+            combined_sources = [
+                (
+                    "#date+start+conflict",
+                    "2022-02-24",
+                    "Meduza",
+                    "https://meduza.io/en/news/2022/02/24/putin-announces-start-of-military-operation-in-eastern-ukraine",
+                ),
+            ] + sources
+            assert (
+                runner.get_sources(
+                    additional_sources=configuration["additional_sources"]
+                )
+                == combined_sources
+            )
             runner.set_not_run_many(names)
 
             name = "access"

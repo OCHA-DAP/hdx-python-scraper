@@ -10,7 +10,7 @@ from hdx.location.country import Country
 from hdx.utilities.dateparse import parse_date
 from hdx.utilities.dictandlist import dict_of_lists_add
 
-from hdx.scraper.utilities import match_template
+from ..utilities import match_template
 
 logger = logging.getLogger(__name__)
 

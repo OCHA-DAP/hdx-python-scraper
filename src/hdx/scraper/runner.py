@@ -1,11 +1,13 @@
 import logging
 from typing import Iterable, List
 
+from hdx.data.dataset import Dataset
 from hdx.utilities.downloader import Download
 
-from hdx.scraper.base_scraper import BaseScraper
-from hdx.scraper.configurable.scraper import ConfigurableScraper
-from hdx.scraper.utilities.fallbacks import Fallbacks
+from .base_scraper import BaseScraper
+from .configurable.scraper import ConfigurableScraper
+from .utilities import get_isodate_from_dataset_date
+from .utilities.fallbacks import Fallbacks
 
 logger = logging.getLogger(__name__)
 
@@ -16,8 +18,8 @@ class Runner:
         countryiso3s,
         adminone,
         downloader,
-        basic_auths,
-        today,
+        basic_auths=dict(),
+        today=None,
         errors_on_exit=None,
         scrapers_to_run=None,
     ):
@@ -135,7 +137,7 @@ class Runner:
                 scraper.add_population()
                 logger.info(f"Processed {scraper.name}")
             except Exception as ex:
-                if scraper.can_fallback is False:
+                if not Fallbacks.exist() or scraper.can_fallback is False:
                     raise
                 logger.exception(f"Using fallbacks for {scraper.name}!")
                 if self.errors_on_exit:
@@ -271,11 +273,30 @@ class Runner:
                 rows.append(row)
         return rows
 
-    def get_sources(self, names=None, levels=None):
+    def get_sources(self, names=None, levels=None, additional_sources=tuple()):
         if not names:
             names = self.scrapers.keys()
         hxltags = set()
         sources = list()
+        for sourceinfo in additional_sources:
+            date = sourceinfo.get("date")
+            if date is None:
+                if sourceinfo.get("force_date_today", False):
+                    date = self.today.strftime("%Y-%m-%d")
+            source = sourceinfo.get("source")
+            source_url = sourceinfo.get("source_url")
+            dataset_name = sourceinfo.get("dataset")
+            if dataset_name:
+                dataset = Dataset.read_from_hdx(dataset_name)
+                if date is None:
+                    date = get_isodate_from_dataset_date(
+                        dataset, today=self.today
+                    )
+                if source is None:
+                    source = dataset["dataset_source"]
+                if source_url is None:
+                    source_url = dataset.get_hdx_url()
+            sources.append((sourceinfo["indicator"], date, source, source_url))
         for name in names:
             if self.scrapers_to_run and not any(
                 x in name for x in self.scrapers_to_run

@@ -7,7 +7,7 @@ from hdx.data.dataset import Dataset
 from hdx.utilities.dateparse import parse_date
 from hdx.utilities.downloader import Download
 
-from hdx.scraper.utilities import get_date_from_dataset_date, match_template
+from . import get_date_from_dataset_date, match_template
 
 logger = logging.getLogger(__name__)
 

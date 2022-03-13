@@ -7,7 +7,7 @@ from hdx.utilities.dictandlist import dict_of_lists_add
 from hdx.utilities.downloader import Download
 from hdx.utilities.saver import save_json
 
-from hdx.scraper.outputs.base import BaseOutput
+from .base import BaseOutput
 
 try:
     from pandas import DataFrame
@@ -15,8 +15,8 @@ except ImportError:
     DataFrame = None
 
 
-from hdx.scraper.utilities import match_template
-from hdx.scraper.utilities.readers import read
+from ..utilities import match_template
+from ..utilities.readers import read
 
 logger = logging.getLogger(__name__)
 

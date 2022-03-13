@@ -15,10 +15,10 @@ from hdx.utilities.text import (  # noqa: F401
     number_format,
 )
 
-from hdx.scraper.base_scraper import BaseScraper
-from hdx.scraper.configurable.rowparser import RowParser
-from hdx.scraper.utilities import get_rowval
-from hdx.scraper.utilities.readers import read
+from ..base_scraper import BaseScraper
+from ..utilities import get_rowval
+from ..utilities.readers import read
+from .rowparser import RowParser
 
 logger = logging.getLogger(__name__)
 

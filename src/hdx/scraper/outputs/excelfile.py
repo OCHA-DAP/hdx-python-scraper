@@ -4,7 +4,7 @@ from typing import Dict, List, Optional, Union
 from openpyxl import Workbook
 from openpyxl.utils.dataframe import dataframe_to_rows
 
-from hdx.scraper.outputs.base import BaseOutput
+from .base import BaseOutput
 
 try:
     from pandas import DataFrame

@@ -21,33 +21,36 @@ To use the optional functions for outputting data from Pandas to JSON, Excel etc
 
 ## Breaking Changes
 
-From 1.4.4, significant refactor that adds custom scraper support and a runner class - 
-documentation will be updated soon  
+From 1.4.4, significant refactor that adds custom scraper support and a runner class  
 
 # Scraper Framework Configuration
 
 The following is an example of how the framework is set up:
 
-    today = datetime.now()
-    adminone = AdminOne(configuration)
-    population_lookup = dict()
-    headers, columns, sources = run_scrapers(configuration, ["AFG"], adminone, "national", downloader, today=today, population_lookup=population_lookup, scrapers=["population"])
-    assert headers == [["Population"], ["#population"]]
-    assert columns == [{"AFG": 38041754}]
-    assert sources == [("#population", "2020-10-01", "World Bank", "https://data.humdata.org/organization/world-bank-group")]
-    results = run_scrapers(configuration, ["AFG"], adminone, "national", downloader, today=today, population_lookup=population_lookup, scrapers=["who"])
-    assert results["headers"] == [["CasesPer100000", "DeathsPer100000", "Cases2Per100000", "Deaths2Per100000"], ["#affected+infected+per100000", "#affected+killed+per100000", "#affected+infected+2+per100000", "#affected+killed+2+per100000"]]
-    assert results["values"]  == [{"AFG": "96.99"}, {"AFG": "3.41"}, {"AFG": "96.99"}, {"AFG": "3.41"}]
-    assert results["sources"] == [("#affected+infected+per100000", "2020-08-06", "WHO", "tests/fixtures/WHO-COVID-19-global-data.csv"), ("#affected+killed+per100000", "2020-08-06", "WHO", "tests/fixtures/WHO-COVID-19-global-data.csv"), ("#affected+infected+2+per100000", "2020-08-06", "WHO", "tests/fixtures/WHO-COVID-19-global-data.csv"), ("#affected+killed+2+per100000", "2020-08-06", "WHO", "tests/fixtures/WHO-COVID-19-global-data.csv")]
+        today = parse_date("2020-10-01")
+        adminone = AdminOne(configuration)
+        Fallbacks.add(json_path, sources_key="sources")
+        runner = Runner(("AFG",), adminone, downloader, dict(), today)
+        keys = runner.add_configurables(scraper_configuration, "national")
+        education_closures = EducationClosures(
+            datasetinfo, today, countries, region, downloader
+        )
+        runner.add_custom(education_closures)
+        runner.run(prioritise_scrapers=("population_national", "population_subnational"))
+        results = runner.get_results()["national"]
+        assert results["headers"] == [("header1", header2"...), ("hxltag1", "hxltag2",...)]
+        assert results["values"] == [{"AFG": 38041754, "PSE": ...}, {"AFG": 123, "PSE": ...}, ...]
+        assert results["sources"] == [("#population", "2020-10-01", "World Bank", "https://..."), ...]
+        
 
-The first parameter is a configuration. More on this later.
+## AdminOne Class
 
-The second parameter is a list of country iso3s. The third is an AdminOne object. More about this can be found in 
-the [HDX Python Country](https://github.com/OCHA-DAP/hdx-python-country) library, but briefly that class accepts a 
-configuration as follows:
+More about the AdminOne class can be found in the 
+[HDX Python Country](https://github.com/OCHA-DAP/hdx-python-country) library. Briefly, 
+that class accepts a configuration as follows:
 
-country_name_mappings defines the country name overrides we use (ie. where we deviate from the names in the OCHA 
-countries and territories file).
+country_name_mappings defines the country name overrides we use (ie. where we deviate 
+from the names in the OCHA countries and territories file).
 
     country_name_mappings:
       PSE: "occupied Palestinian territory"
@@ -69,8 +72,8 @@ adm_mappings defines mappings from country name to iso3 and from admin 1 name to
         "nord-ouest": "HT09"
     ...
 
-adm1_name_replacements defines some find and replaces that are done to improve automatic admin1 name matching to 
-pcode.
+adm1_name_replacements defines some find and replaces that are done to improve automatic 
+admin1 name matching to pcode.
 
     adm1_name_replacements:
       " urban": ""
@@ -84,19 +87,68 @@ adm1_fuzzy_ignore defines admin 1 names to ignore.
       - "nord"
     ...
 
-The third parameter specifies which scraper set to process corresponding to a name in the configuration beginning
-scraper_ (but without needing the scraper_ part in the parameter).
+## Runner Class
 
-The population scraper is a special case, so it is read first so that populations can be used by subsequent 
-scrapers in calculations.
+The Runner constructor takes various parameters. 
+
+The first parameter is a list of country iso3s. 
+
+The second is an AdminOne object. 
+
+The third parameter Runner takes is an object of class Download from the 
+[HDX Python Utilities](https://github.com/OCHA-DAP/hdx-python-utilities) library. This
+class simplifies and standardises common downloading operations.
+
+The fourth parameter is an optional  list of basic authorisations, with each being a 
+base64 encoded username:password. 
+
+The fifth is the datetime you want to use for "today". If you pass None, it will use the 
+current datetime.
+
+The sixth is an optional object of class ErrorsOnExit from the 
+[HDX Python Utilities](https://github.com/OCHA-DAP/hdx-python-utilities) library. This
+class collects and outputs errors on exit.
+
+The last optional parameter is a list of scrapers to run.
+
+## Fallbacks
+
+Fallbacks can be defined which are used for example when there is a network issue. This
+is done using the `Fallbacks.add()` call. This can only be done if there is a JSON 
+output defined. `Fallbacks.add()` takes a few parameters. 
+
+The first parameter is a path to the output JSON.
+
+The second optional parameter is a mapping from level name to key in the JSON. The 
+default is:
+
+    {
+        "global": "global_data",
+        "regional": "regional_data",
+        "national": "national_data",
+        "subnational": "subnational_data",
+    }
+
+The third optional parameter specifies the key where the sources can be found, 
+defaulting to `sources`.
+
+The fourth parameter, also optional, specifies a mapping from level to admin name. The
+default is:
+
+    {
+        "global": "value",
+        "regional": "#region+name",
+        "national": "#country+code",
+        "subnational": "#adm1+code",
+    }
 
 ## Configuration Parameter
 
-The framework is configured by passing in a configuration. Typically this will come from a yaml file such as 
-config/project_configuration.yml.
+The framework is configured by passing in a configuration. Typically this will come from 
+a yaml file such as `config/project_configuration.yml`.
 
-The configuration should have a mapping from the internal dictionaries to the tabs in the spreadsheet or keys in 
-the JSON output file(s):
+The configuration should have a mapping from the internal dictionaries to the tabs in 
+the spreadsheet or keys in the JSON output file(s):
 
     tabs:
       world: "WorldData"
@@ -107,7 +159,8 @@ the JSON output file(s):
       covid_trend: "CovidTrend"
       sources: "Sources"
 
-Then the location of Google spreadsheets are defined, for prod (production), test and scratch:
+Then the location of Google spreadsheets are defined, for prod (production), test and 
+scratch:
 
     googlesheets:
       prod: "https://docs.google.com/spreadsheets/d/SPREADSHEET_KEY_PROD/edit"
@@ -152,25 +205,44 @@ files.
           remove:
             - "national"
 
-Next comes additional sources. This allows additional HXL hashtags to be associated with a dataset date, source 
-and url. In the ones below, the metadata is obtained from datasets on HDX.
+Next comes any additional sources. This allows additional HXL hashtags to be associated 
+with a dataset date, source and url. In the ones below, the metadata is either specified 
+or obtained from datasets on HDX.
 
     additional_sources:
+      - indicator: "#date+start+conflict"
+        date: "2022-02-24"
+        source: "Meduza"
+        source_url: "https://meduza.io/en/news/2022/02/24/putin-announces-start-of-military-operation-in-eastern-ukraine"
       - indicator: "#food-prices"
         dataset: "wfp-food-prices"
       - indicator: "#vaccination-campaigns"
         dataset: "immunization-campaigns-impacted"
 
-scraper_tabname defines a set of mini scrapers that use the framework and produce data for the tab tabname eg.
+Sources can be obtained by calling `get_sources` with or without the optional
+`additional_sources` parameter:
+
+    runner.get_sources(additional_sources=[...])
+
+scraper_tabname defines a set of configurable scrapers that use the framework and 
+produce data for the tab tabname which typically coresponds to a level like national or 
+subnational eg.
 
     scraper_national:
     …
 
+It is also possible to define custom scrapers that are not driven by configuration.
+These must inherit `BaseScraper`, calling its constructor and providing a `run` method.
+An example of this can be seen [here](https://github.com/OCHA-DAP/hdx-python-scraper/blob/main/tests/hdx/scraper/education_closures.py).
+
+A full project using a configuration like the above can be seen 
+[here](https://github.com/OCHA-DAP/hdx-scraper-ukraine-viz/blob/main/scrapers/main.py).
+
 ## Examples
 
-It is helpful to look at a few example mini scrapers to see how they are configured:
+It is helpful to look at a few example configurable scrapers to see how they are configured:
 
-The economicindex mini scraper reads the dataset “covid-19-economic-exposure-index” on HDX, taking from it dataset 
+The economicindex configurable scraper reads the dataset “covid-19-economic-exposure-index” on HDX, taking from it dataset 
 source, date of dataset and using the url of the dataset in HDX as the source url (used by the DATA link in the 
 visual). The scraper framework finds the first resource that is of format “xlsx”, reads the “economic exposure” 
 sheet and looks for the headers in row 1 (by default). Note that it is possible to specify a specific resource name using the 
@@ -194,7 +266,7 @@ use for the input_cols.
         output_hxltags:
           - "#severity+economic+num"
 
-The casualties mini scraper reads from a file that has data for only one admin unit 
+The casualties configurable scraper reads from a file that has data for only one admin unit 
 which is specified using adm_single. The latest row by date is obtained by specifying
 date_col and date_type (which can be date, year or int):
 
@@ -216,7 +288,7 @@ date_col and date_type (which can be date, year or int):
           - "#affected+killed"
           - "#affected+injured"
 
-The population mini scraper configuration directly provides metadata for source, source_url and the download 
+The population configurable scraper configuration directly provides metadata for source, source_url and the download 
 location given by url only taking the source date from the dataset. The scraper pulls subnational data so adm_cols 
 defines both a country column “alpha_3” and an admin 1 pcode column “ADM1_PCODE”. 
 
@@ -241,7 +313,7 @@ converted to either an int or float if it is possible.
         output_hxltags:
           - "#population"
 
-The travel mini scraper reads values from the “info” and “published” columns of the source. append_cols defines 
+The travel configurable scraper reads values from the “info” and “published” columns of the source. append_cols defines 
 any columns where if the same admin appears again (in this case, the same country), then that data is appended to 
 the existing. keep_cols defines any columns where if the same admin appears again, the existing value is kept 
 rather than replaced.
@@ -265,7 +337,7 @@ rather than replaced.
           - "#severity+travel"
           - "#severity+date+travel"
 
-The gam mini scraper reads from a spreadsheet that has a multiline header (headers defined as rows 3 and 4). 
+The gam configurable scraper reads from a spreadsheet that has a multiline header (headers defined as rows 3 and 4). 
 Experimentation is often needed with row numbers since in my experience, they are sometimes offset from the real 
 row numbers seen when opening the spreadsheet. date_col defines a column that contains date information and 
 date_type specifies in what form the date information is held eg. as a date, a year or an int. The scraper will 
@@ -290,7 +362,7 @@ date (unless ignore_future_date is set to False then future dates will be allowe
         output_hxltags:
           - "#severity+malnutrition+num+national"
 
-The covidtests mini scraper gets “new_tests” and “new_tests_per_thousand” for the latest date where a 
+The covidtests configurable scraper gets “new_tests” and “new_tests_per_thousand” for the latest date where a 
 date_condition is satisfied which is that “new_tests” is a value greater than zero. 
 Here, the default sheet of 1 and the default headers rows of 1 are assumed. These
 defaults apply for both xls and xlsx.
@@ -313,7 +385,7 @@ defaults apply for both xls and xlsx.
           - "#affected+tested"
           - "#affected+tested+per1000"
 
-The oxcgrt mini scraper reads from a data source that has HXL tags and these can be used instead of the header 
+The oxcgrt configurable scraper reads from a data source that has HXL tags and these can be used instead of the header 
 names provided use_hxl is set to True. By default all the HXLated columns are read with the admin related ones 
 inferred and the rest taken as values except if defined as a date_col.
 
@@ -324,7 +396,7 @@ inferred and the rest taken as values except if defined as a date_col.
         date_col: "#date"
         date_type: "date"
 
-In the imperial mini scraper, output_columns and output_hxltags are defined which specify which columns and HXL 
+In the imperial configurable scraper, output_columns and output_hxltags are defined which specify which columns and HXL 
 tags in the HXLated file should be used rather than using all HXLated columns.
 
      imperial:
@@ -342,7 +414,7 @@ tags in the HXLated file should be used rather than using all HXLated columns.
           - "#affected+killed+min+imperial"
           - "#affected+killed+max+imperial"
 
-The idmc mini scraper reads 2 HXLated columns defined in input_cols. In input_transforms, a cast to int is 
+The idmc configurable scraper reads 2 HXLated columns defined in input_cols. In input_transforms, a cast to int is 
 performed if the value is not None or it is set to 0. einput_cols defines new column(s) that can be combinations 
 of the other columns in input_cols. In this case, input_cols specifies a new column which sums the 2 columns in 
 input_cols. That new column is given a header and a HXL tag (in output_columns and output_hxltags).
@@ -366,7 +438,7 @@ input_cols. That new column is given a header and a HXL tag (in output_columns a
         output_hxltags:
           - "#affected+displaced"
 
-The needs mini scraper takes data for the latest available date for each country. subsets allows the definition of 
+The needs configurable scraper takes data for the latest available date for each country. subsets allows the definition of 
 multiple indicators by way of filters. A filter is defined for each indicator (in this case there is one) which 
 contains one or more filters in Python syntax. Column names can be used directly and if all are not already specified 
 in input_cols and date_col, then all should be put as a list under the key filter_cols.
@@ -392,7 +464,7 @@ in input_cols and date_col, then all should be put as a list under the key filte
             output_hxltags:
               - "#affected+inneed"
 
-The population mini scraper matches country code only using exact matching (adm_exact is 
+The population configurable scraper matches country code only using exact matching (adm_exact is 
 set to True) rather than the default which tries fuzzy matching in the event of a 
 failure to match exactly. This is useful when matching produces false positives which is
 very rare so is usually not needed. 
@@ -417,7 +489,7 @@ very rare so is usually not needed.
         output_hxltags:
           - "#population"
 
-The covid tests mini scraper applies a prefilter to the data that only processes rows where the value in the column
+The covid tests configurable scraper applies a prefilter to the data that only processes rows where the value in the column
 "new_tests" is not None and is greater than zero. If "new_tests" was not specified in input_cols or date_col, then
 it would need to be under a key filter_cols.
 
@@ -429,7 +501,7 @@ it would need to be under a key filter_cols.
         prefilter: "new_tests is not None and new_tests > 0"
      ...
 
-The sadd mini scraper reads data from the dataset “covid-19-sex-disaggregated-data-tracker”. It filters that data 
+The sadd configurable scraper reads data from the dataset “covid-19-sex-disaggregated-data-tracker”. It filters that data 
 using data from another file, the url of which is defined in external_filter. Specifically, it cuts down the sadd 
 data to only include countries listed in the  “#country+code+v_iso2” column of the external_filter file.
  
@@ -442,7 +514,7 @@ data to only include countries listed in the  “#country+code+v_iso2” column 
              - "#country+code+v_iso2"
      ...
 
-The fsnwg mini scraper first applies a sort to the data it reads. The reverse sort is based on the keys 
+The fsnwg configurable scraper first applies a sort to the data it reads. The reverse sort is based on the keys 
 “reference_year” and “reference_code”. adm_cols defines a country column adm0_pcod3 and three admin 1 level 
 columns (“adm1_pcod2”, “adm1_pcod3”, “adm1_name”) which are examined consecutively until a match with the internal 
 admin 1 is made. 
@@ -457,7 +529,7 @@ is True, then only when all columns in input_cols for the row are populated is t
 included. This means that when using multiple summed columns together in a formula, the 
 number of values that were summed in each column will be the same. The last formula uses 
 “#population” which is replaced by the population for the admin (which has been 
-previously obtained by another mini scraper).
+previously obtained by another configurable scraper).
 
      fsnwg:
         dataset: "cadre-harmonise"
@@ -516,7 +588,7 @@ previously obtained by another mini scraper).
               - "#affected+ch+food+p3plus+pct"
               - "#affected+ch+food+analysed+pct"
 
-The who_subnational mini scraper defines two values in input_ignore_vals which if found are ignored. Since 
+The who_subnational configurable scraper defines two values in input_ignore_vals which if found are ignored. Since 
 mustbepopulated is True, then only when all columns in input_cols for the row are populated and do not contain 
 either “-2222” or “-4444” is the value included in the sum of any column used in sum_cols. 
 
@@ -550,7 +622,7 @@ either “-2222” or “-4444” is the value included in the sum of any column
             output_hxltags:
               - "#population+hepb1+pct+vaccinated"
 
-The access mini scraper provides different sources for each HXL tag by providing dictionaries instead of strings 
+The access configurable scraper provides different sources for each HXL tag by providing dictionaries instead of strings 
 in source and source_url. It maps specific HXL tags by key to sources or falls back on a “default_source” and 
 “default_url” for all unspecified HXL tags.
 
@@ -580,7 +652,7 @@ in source and source_url. It maps specific HXL tags by key to sources or falls b
           "#activity+cbpf+project+insecurity+pct": "get_numeric_if_possible(#activity+cbpf+project+insecurity+pct)"
           "#population+education": "get_numeric_if_possible(#population+education)"
 
-The field adm_vals allows overriding the country iso 3 codes and admin 1 pcodes for teh specific mini scraper:
+The field adm_vals allows overriding the country iso 3 codes and admin 1 pcodes for the specific configurable scraper:
 
       gam:
         source: "UNICEF"

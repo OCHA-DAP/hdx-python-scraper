@@ -4,7 +4,7 @@ from typing import Dict, List, Optional, Union
 
 import gspread
 
-from hdx.scraper.outputs.base import BaseOutput
+from .base import BaseOutput
 
 try:
     import numpy

@@ -40,6 +40,12 @@ json:
       remove:
         - "national"
 
+additional_sources:
+  - indicator: "#date+start+conflict"
+    date: "2022-02-24"
+    source: "Meduza"
+    source_url: "https://meduza.io/en/news/2022/02/24/putin-announces-start-of-military-operation-in-eastern-ukraine"
+
 # national
 scraper_national:
   population:
