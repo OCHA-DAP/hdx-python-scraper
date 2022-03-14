@@ -1,21 +1,28 @@
 # Summary
 
-The HDX Python Scraper Library is designed to enable you to easily develop code that assembles data from one or more 
-tabular sources that can be csv, xls, xlsx or JSON. It uses a YAML file that specifies for each source what needs to 
-be read and allows some transformations to be performed on the data. The output is written to JSON, Google sheets 
-and/or Excel and includes the addition of [Humanitarian Exchange Language (HXL)](https://hxlstandard.org/) hashtags 
-specified in the YAML file.   
+The HDX Python Scraper Library is designed to enable you to easily develop code that 
+assembles data from one or more tabular sources that can be csv, xls, xlsx or JSON. It 
+uses a YAML file that specifies for each source what needs to be read and allows some 
+transformations to be performed on the data. The output is written to JSON, Google sheets 
+and/or Excel and includes the addition of 
+[Humanitarian Exchange Language (HXL)](https://hxlstandard.org/) hashtags specified in 
+the YAML file. Custom Python scrapers can also be written that conform to a defined 
+specification and the framework handles the execution of both configurable and custom 
+scrapers.
 
 # Information
 
-This library is part of the [Humanitarian Data Exchange](https://data.humdata.org/) (HDX) project. If you have 
+This library is part of the 
+[Humanitarian Data Exchange](https://data.humdata.org/) (HDX) project. If you have 
 humanitarian related data, please upload your datasets to HDX.
 
 The code for the library is [here](https://github.com/OCHA-DAP/hdx-python-scraper).
-The library has detailed API documentation which can be found in the menu on the left and starts 
+The library has detailed API documentation which can be found in the menu on the left 
+and starts 
 [here](https://hdx-python-scraper.readthedocs.io/en/latest/api-documentation/source-readers). 
 
-To use the optional functions for outputting data from Pandas to JSON, Excel etc., install with:
+To use the optional functions for outputting data from Pandas to JSON, Excel etc., 
+install with:
 
     pip install hdx-python-scraper[pandas]
 
