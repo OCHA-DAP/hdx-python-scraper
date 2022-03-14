@@ -25,11 +25,16 @@ From 1.4.4, significant refactor that adds custom scraper support and a runner c
 
 # Scraper Framework Configuration
 
-The following is an example of how the framework is set up:
+A full project showing how the scraper framework is used in a real world scenario is 
+[here](https://github.com/OCHA-DAP/hdx-scraper-ukraine-viz/blob/main/scrapers/main.py).
+It is very helpful to look at that project to see a full working setup that demonstrates
+usage of many of the features of this library.
+
+The library is set up broadly as follows:
 
         today = parse_date("2020-10-01")
         adminone = AdminOne(configuration)
-        Fallbacks.add(json_path, sources_key="sources")
+        Fallbacks.add(json_path)
         runner = Runner(("AFG",), adminone, downloader, dict(), today)
         keys = runner.add_configurables(scraper_configuration, "national")
         education_closures = EducationClosures(
@@ -38,7 +43,7 @@ The following is an example of how the framework is set up:
         runner.add_custom(education_closures)
         runner.run(prioritise_scrapers=("population_national", "population_subnational"))
         results = runner.get_results()["national"]
-        assert results["headers"] == [("header1", header2"...), ("hxltag1", "hxltag2",...)]
+        assert results["headers"] == [("header1", header2"...), ("#hxltag1", "#hxltag2",...)]
         assert results["values"] == [{"AFG": 38041754, "PSE": ...}, {"AFG": 123, "PSE": ...}, ...]
         assert results["sources"] == [("#population", "2020-10-01", "World Bank", "https://..."), ...]
         
@@ -142,7 +147,47 @@ default is:
         "subnational": "#adm1+code",
     }
 
-## Configuration Parameter
+## Output
+
+Output can go to Excel, Google Sheets and/or a JSON file. This can be set up similarly
+to the example below:
+
+    excelout = ExcelFile(excel_path, tabs, updatetabs)
+    gsheets = GoogleSheets(gsheet_config, gsheet_auth, updatesheets, tabs, updatetabs)
+    jsonout = JsonFile(json_config, updatetabs)
+    outputs = {"gsheets": gsheets, "excel": excelout, "json": jsonout}
+    ...
+    update_subnational(runner, scraper_names, adminone, outputs)
+
+The `update_subnational` function is defined as follows:
+
+    subnational_headers = (
+        ("iso3", "countryname", "adm1_pcode", "adm1_name"),
+        ("#country+code", "#country+name", "#adm1+code", "#adm1+name"),)
+
+    def update_tab(outputs, name, data):
+        logger.info(f"Updating tab: {name}")
+        for output in outputs.values():
+            output.update_tab(name, data)
+
+    def update_subnational(runner, names, adminone, outputs):
+        def get_country_name(adm):
+            countryiso3 = adminone.pcode_to_iso3[adm]
+            return Country.get_country_name_from_iso3(countryiso3)
+    
+        fns = (
+            lambda adm: adminone.pcode_to_iso3[adm],
+            get_country_name,
+            lambda adm: adm,
+            lambda adm: adminone.pcode_to_name[adm],
+        )
+        rows = runner.get_rows(
+            "subnational", adminone.pcodes, subnational_headers, fns, names=names
+        )
+        if rows:
+            update_tab(outputs, "subnational", rows)
+
+## Configuration File
 
 The framework is configured by passing in a configuration. Typically this will come from 
 a yaml file such as `config/project_configuration.yml`.
@@ -234,9 +279,6 @@ subnational eg.
 It is also possible to define custom scrapers that are not driven by configuration.
 These must inherit `BaseScraper`, calling its constructor and providing a `run` method.
 An example of this can be seen [here](https://github.com/OCHA-DAP/hdx-python-scraper/blob/main/tests/hdx/scraper/education_closures.py).
-
-A full project using a configuration like the above can be seen 
-[here](https://github.com/OCHA-DAP/hdx-scraper-ukraine-viz/blob/main/scrapers/main.py).
 
 ## Examples
 
