@@ -463,10 +463,12 @@ tags in the HXLated file should be used rather than using all HXLated columns.
           - "#affected+killed+min+imperial"
           - "#affected+killed+max+imperial"
 
-The idmc configurable scraper reads 2 HXLated columns defined in input_cols. In input_transforms, a cast to int is 
-performed if the value is not None or it is set to 0. einput_cols defines new column(s) that can be combinations 
-of the other columns in input_cols. In this case, input_cols specifies a new column which sums the 2 columns in 
-input_cols. That new column is given a header and a HXL tag (in output_columns and output_hxltags).
+The idmc configurable scraper reads 2 HXLated columns defined in input_cols. In 
+input_transforms, a cast to int is performed if the value is not None or it is set to 0. 
+process_cols defines new column(s) that can be combinations of the other columns in 
+input_cols. In this case, process_cols specifies a new column which sums the 2 columns 
+in input_cols. That new column is given a header and a HXL tag (in output_columns and 
+output_hxltags).
 
      idmc:
         dataset: "idmc-internally-displaced-persons-idps"
@@ -480,7 +482,7 @@ input_cols. That new column is given a header and a HXL tag (in output_columns a
         input_transforms:
           "#affected+idps+ind+stock+conflict": "int(#affected+idps+ind+stock+conflict) if #affected+idps+ind+stock+conflict else 0"
           "#affected+idps+ind+stock+disaster": "int(#affected+idps+ind+stock+disaster) if #affected+idps+ind+stock+disaster else 0"
-        input_cols:
+        process_cols:
           - "#affected+idps+ind+stock+conflict + #affected+idps+ind+stock+disaster"
         output_columns:
           - "TotalIDPs"
