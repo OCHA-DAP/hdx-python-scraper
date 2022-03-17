@@ -136,7 +136,7 @@ class BaseScraper(ABC):
 
     def run_after_fallbacks(self) -> None:
         """
-        Executed when fallbacks are used
+        Executed after fallbacks are used
 
         Returns:
             None

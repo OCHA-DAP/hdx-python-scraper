@@ -359,17 +359,29 @@ class TestScraperNational:
 
             name = "ourworldindata"
             headers = (
-                ["TotalDosesAdministered"],
-                ["#capacity+doses+administered+total"],
+                [
+                    "TotalDosesAdministered",
+                    "PopulationCoverageAdministeredDoses",
+                ],
+                [
+                    "#capacity+doses+administered+total",
+                    "#capacity+doses+administered+coverage+pct",
+                ],
             )
-            values = [dict()]
+            values = [dict(), dict()]
             sources = [
                 (
                     "#capacity+doses+administered+total",
                     "2020-10-01",
                     "Our World in Data",
                     "tests/fixtures/ourworldindata_vaccinedoses.csv",
-                )
+                ),
+                (
+                    "#capacity+doses+administered+coverage+pct",
+                    "2020-10-01",
+                    "Our World in Data",
+                    "tests/fixtures/ourworldindata_vaccinedoses.csv",
+                ),
             ]
             run_check_scraper(name, runner, level, headers, values, sources)
 
@@ -435,17 +447,29 @@ class TestScraperNational:
             runner.add_configurables(scraper_configuration, level)
             name = "ourworldindata"
             headers = (
-                ["TotalDosesAdministered"],
-                ["#capacity+doses+administered+total"],
+                [
+                    "TotalDosesAdministered",
+                    "PopulationCoverageAdministeredDoses",
+                ],
+                [
+                    "#capacity+doses+administered+total",
+                    "#capacity+doses+administered+coverage+pct",
+                ],
             )
-            values = [{"AFG": "240000"}]
+            values = [{"AFG": 240000}, {"AFG": "0.0032"}]
             sources = [
                 (
                     "#capacity+doses+administered+total",
                     "2021-05-03",
                     "Our World in Data",
                     "tests/fixtures/ourworldindata_vaccinedoses.csv",
-                )
+                ),
+                (
+                    "#capacity+doses+administered+coverage+pct",
+                    "2021-05-03",
+                    "Our World in Data",
+                    "tests/fixtures/ourworldindata_vaccinedoses.csv",
+                ),
             ]
             run_check_scraper(name, runner, level, headers, values, sources)
 

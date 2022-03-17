@@ -196,10 +196,15 @@ scraper_national:
     date_type: "date"
     input_cols:
       - "#total+vaccinations"
+    process_cols:
+      - "#total+vaccinations"
+      - "number_format((#total+vaccinations / 2) / #population)"
     output_cols:
       - "TotalDosesAdministered"
+      - "PopulationCoverageAdministeredDoses"
     output_hxltags:
       - "#capacity+doses+administered+total"
+      - "#capacity+doses+administered+coverage+pct"
   # for testing broken url
   broken_owd_url:
     source: "Our World in Data"
@@ -734,6 +739,29 @@ scraper_global:
 
 
 other:
+  population_other:
+    source: "World Bank"
+    source_url: "https://data.humdata.org/organization/world-bank-group"
+    url: "tests/fixtures/API_SP.POP.TOTL_DS2_en_excel_v2_1302508_LIST.xls"
+    format: "xls"
+    sheet: "Data"
+    headers: 3
+    sort:
+      keys:
+        - "Year"
+    adm_cols:
+      - "Country Code"
+    adm_vals:
+      - "WLD"
+    date_col: "Year"
+    date_type: "year"
+    input_cols:
+      - "Value"
+    population_key: "global"
+    output_cols:
+      - "Population"
+    output_hxltags:
+      - "#population"
   gam_other:
     source: "UNICEF"
     url: "tests/fixtures/unicef_who_wb_global_expanded_databases_severe_wasting.xlsx"
@@ -791,10 +819,16 @@ other:
       - "#country+code"
     input_cols:
       - "#total+vaccinations"
+    population_key: "global"
+    process_cols:
+      - "#total+vaccinations"
+      - "number_format((#total+vaccinations / 2) / #population)"
     output_cols:
       - "TotalDosesAdministered"
+      - "PopulationCoverageAdministeredDoses"
     output_hxltags:
       - "#capacity+doses+administered+total"
+      - "#capacity+doses+administered+coverage+pct"
 
 scraper_subnational:
   gam:

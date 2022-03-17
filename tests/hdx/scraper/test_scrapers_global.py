@@ -557,6 +557,32 @@ class TestScraperGlobal:
 
             scraper_configuration = configuration["other"]
             runner.add_configurables(scraper_configuration, level, level_name)
+            name = "population_other"
+            headers = (
+                ["Population"],
+                ["#population"],
+            )
+            val = 7673533972
+            values = [{"value": val}]
+            pop_value = {"global": val}
+            sources = [
+                (
+                    "#population",
+                    "2021-05-03",
+                    "World Bank",
+                    "https://data.humdata.org/organization/world-bank-group",
+                )
+            ]
+            run_check_scraper(
+                name,
+                runner,
+                level_name,
+                headers,
+                values,
+                sources,
+                population_lookup=pop_value,
+            )
+
             name = "ourworldindata_other"
             headers = (
                 ["TotalDosesAdministered"],
@@ -577,17 +603,29 @@ class TestScraperGlobal:
 
             name = "altworldindata"
             headers = (
-                ["TotalDosesAdministered"],
-                ["#capacity+doses+administered+total"],
+                [
+                    "TotalDosesAdministered",
+                    "PopulationCoverageAdministeredDoses",
+                ],
+                [
+                    "#capacity+doses+administered+total",
+                    "#capacity+doses+administered+coverage+pct",
+                ],
             )
-            values = [{"value": "1175451507"}]
+            values = [{"value": 1175451507}, {"value": "0.0766"}]
             sources = [
                 (
                     "#capacity+doses+administered+total",
                     "2021-05-03",
                     "Our World in Data",
                     "tests/fixtures/ourworldindata_vaccinedoses.csv",
-                )
+                ),
+                (
+                    "#capacity+doses+administered+coverage+pct",
+                    "2021-05-03",
+                    "Our World in Data",
+                    "tests/fixtures/ourworldindata_vaccinedoses.csv",
+                ),
             ]
             run_check_scraper(
                 name, runner, level_name, headers, values, sources

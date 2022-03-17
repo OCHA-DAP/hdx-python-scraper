@@ -115,6 +115,7 @@ class ConfigurableScraper(BaseScraper):
                     "input_transforms": datasetinfo.get(
                         "input_transforms", dict()
                     ),
+                    "population_key": datasetinfo.get("population_key"),
                     "process_cols": datasetinfo.get("process_cols", list()),
                     "input_keep": datasetinfo.get("input_keep", list()),
                     "input_append": datasetinfo.get("input_append", list()),
@@ -165,6 +166,9 @@ class ConfigurableScraper(BaseScraper):
                 raise ValueError("No date type specified!")
         self.datasetinfo["date"] = date
         return super().add_sources()
+
+    def add_population(self):
+        return
 
     def read_hxl(self, iterator):
         use_hxl = self.datasetinfo.get("use_hxl", False)
@@ -307,17 +311,33 @@ class ConfigurableScraper(BaseScraper):
         values_pos = 0
         for subset in self.subsets:
             valdicts = valuedicts[subset["filter"]]
+            population_key = subset.get("population_key")
+            if population_key is None:
+                population_str = "self.population_lookup[adm]"
+            else:
+                population_str = "self.population_lookup[population_key]"
             process_cols = subset.get("process_cols")
             input_keep = subset.get("input_keep", list())
             sum_cols = subset.get("sum_cols")
             input_ignore_vals = subset.get("input_ignore_vals", list())
             valcols = subset["input_cols"]
+            output_hxltags = subset["output_hxltags"]
             # Indices of list sorted by length
             sorted_len_indices = sorted(
                 range(len(valcols)),
                 key=lambda k: len(valcols[k]),
                 reverse=True,
             )
+
+            def add_population(index, adm, value):
+                if not value:
+                    return
+                if output_hxltags[index] == "#population":
+                    if population_key is None:
+                        self.population_lookup[adm] = value
+                    else:
+                        self.population_lookup[population_key] = value
+
             if process_cols:
 
                 def text_replacement(string, adm):
@@ -371,7 +391,7 @@ class ConfigurableScraper(BaseScraper):
                             if hasvalues_t:
                                 formula = formula.replace(
                                     "#population",
-                                    "self.population_lookup[adm]",
+                                    population_str,
                                 )
                                 value = eval(formula)
                             else:
@@ -379,9 +399,10 @@ class ConfigurableScraper(BaseScraper):
                         else:
                             value = ""
                         values[values_pos][adm] = value
+                        add_population(i, adm, value)
                     values_pos += 1
             elif sum_cols:
-                for sum_col in sum_cols:
+                for ind, sum_col in enumerate(sum_cols):
                     formula = sum_col["formula"]
                     mustbepopulated = sum_col.get("mustbepopulated", False)
                     newvaldicts = [dict() for _ in valdicts]
@@ -419,20 +440,21 @@ class ConfigurableScraper(BaseScraper):
                         formula = formula.replace(
                             valcols[i], f"newvaldicts[{i}][adm]"
                         )
-                    formula = formula.replace(
-                        "#pzbgvjh", "self.population_lookup[adm]"
-                    )
+                    formula = formula.replace("#pzbgvjh", population_str)
                     for adm in valdicts[0].keys():
                         try:
                             val = eval(formula)
                         except (ValueError, TypeError, KeyError):
                             val = ""
                         values[values_pos][adm] = val
+                        add_population(ind, adm, val)
                     values_pos += 1
             else:
-                for valdict in valdicts:
+                for i, valdict in enumerate(valdicts):
                     for adm in valdict:
-                        values[values_pos][adm] = valdict[adm]
+                        value = valdict[adm]
+                        values[values_pos][adm] = value
+                        add_population(i, adm, value)
                     values_pos += 1
 
     def run(self) -> None:

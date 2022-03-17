@@ -199,6 +199,8 @@ The `update_subnational` function is defined as follows:
 The framework is configured by passing in a configuration. Typically this will come from 
 a yaml file such as `config/project_configuration.yml`.
 
+### Output Specification
+
 The configuration should have a mapping from the internal dictionaries to the tabs in 
 the spreadsheet or keys in the JSON output file(s):
 
@@ -257,6 +259,8 @@ files.
           remove:
             - "national"
 
+### Sources
+
 Next comes any additional sources. This allows additional HXL hashtags to be associated 
 with a dataset date, source and url. In the ones below, the metadata is either specified 
 or obtained from datasets on HDX.
@@ -276,6 +280,8 @@ Sources can be obtained by calling `get_sources` with or without the optional
 
     runner.get_sources(additional_sources=[...])
 
+### Configurable Scrapers
+
 scraper_tabname defines a set of configurable scrapers that use the framework and 
 produce data for the tab tabname which typically coresponds to a level like national or 
 subnational eg.
@@ -283,11 +289,64 @@ subnational eg.
     scraper_national:
     …
 
-It is also possible to define custom scrapers that are not driven by configuration.
-These must inherit `BaseScraper`, calling its constructor and providing a `run` method.
-An example of this can be seen [here](https://github.com/OCHA-DAP/hdx-python-scraper/blob/main/tests/hdx/scraper/education_closures.py).
+More details on this can be seen later in the [examples of configurable scrapers](https://hdx-python-scraper.readthedocs.io/en/latest/#examples-of-configurable-scrapers).
 
-## Examples
+## Custom Scrapers
+
+It is also possible to define custom scrapers that are not driven by configuration.
+These must inherit 
+[BaseScraper](https://github.com/OCHA-DAP/hdx-python-scraper/blob/main/src/hdx/scraper/base_scraper.py), 
+calling its constructor and providing a `run` method. Other methods where a default 
+implementation has been provided can be overridden such as `add_sources` and 
+`add_population`. There are also two hooks for running steps at particular points.
+`run_after_fallbacks` is executed after fallbacks are used and `post_run` is executed 
+after running whether or not fallbacks were used.
+
+The structure is broadly as follows:
+
+    class MyScraper(BaseScraper):
+        def __init__(
+            self, datasetinfo: Dict, today, countryiso3s, downloader
+        ):
+            super().__init__(
+                "scraper_name",
+                datasetinfo,
+                {
+                    "national": (("Header1",), ("#hxltag1",)),
+                    "regional": (("Header1",), ("#hxltag1",),),
+                },
+            )
+            self.today = today
+            self.countryiso3s = countryiso3s
+            self.downloader = downloader
+    
+        def run(self) -> None:
+            headers, iterator = read(
+                self.downloader, self.datasetinfo
+            )
+            output_national = self.get_values("national")[0]
+            ...
+
+
+An example of a custom scraper can be seen 
+[here](https://github.com/OCHA-DAP/hdx-python-scraper/blob/main/tests/hdx/scraper/education_closures.py).
+
+## Population Data
+
+Population data is treated as a special class of data. By default, configurable and 
+custom scrapers detect population data by looking for the output HXL hash tag 
+`#population` and add it to a dictionary `population_lookup` that is a variable of the
+`BaseScraper` class and hence accessible to all scrapers.
+
+For configurable scrapers where columns are evaluated (rather than assigned), it is 
+possible to use `#population` and the appropriate population value for the 
+administrative unit will be substituted automatically. Where output is a single value,
+for example where working on global data, then `population_key` must be specified both
+for any configurable scraper that outputs a single population value and for any
+configurable scraper that needs that single population value. `population_key` defines
+what key will be used with `population_lookup`.
+
+## Examples of Configurable Scrapers
 
 It is helpful to look at a few example configurable scrapers to see how they are configured:
 
@@ -337,9 +396,11 @@ date_col and date_type (which can be date, year or int):
           - "#affected+killed"
           - "#affected+injured"
 
-The population configurable scraper configuration directly provides metadata for source, source_url and the download 
-location given by url only taking the source date from the dataset. The scraper pulls subnational data so adm_cols 
-defines both a country column “alpha_3” and an admin 1 pcode column “ADM1_PCODE”. 
+The population configurable scraper configuration directly provides metadata for source, 
+source_url and the download  location given by url only taking the source date from the 
+dataset. The scraper pulls subnational data so adm_cols defines both a country column 
+`alpha_3` and an admin 1 pcode column `ADM1_PCODE`. Running this scraper will result in
+`population_lookup` in the `BaseScraper` being populated with key value pairs.
 
 input_transforms defines operations to be performed on each value in the column. In this case, the value is 
 converted to either an int or float if it is possible.
@@ -518,7 +579,8 @@ in input_cols and date_col, then all should be put as a list under the key filte
 The population configurable scraper matches country code only using exact matching (adm_exact is 
 set to True) rather than the default which tries fuzzy matching in the event of a 
 failure to match exactly. This is useful when matching produces false positives which is
-very rare so is usually not needed. 
+very rare so is usually not needed. It populates the `population_lookup` dictionary of
+`BaseScraper`.
 
      population:
         source: "World Bank"
@@ -536,6 +598,33 @@ very rare so is usually not needed.
         input_cols:
           - "Value"
         output_columns:
+          - "Population"
+        output_hxltags:
+          - "#population"
+
+The configurable scraper below which is intended to produce global data pulls out only 
+the `WLD` value from the input data. It populates the `population_lookup` dictionary of
+`BaseScraper` using the key `global`.
+
+        source: "World Bank"
+        source_url: "https://data.humdata.org/organization/world-bank-group"
+        url: "tests/fixtures/API_SP.POP.TOTL_DS2_en_excel_v2_1302508_LIST.xls"
+        format: "xls"
+        sheet: "Data"
+        headers: 3
+        sort:
+          keys:
+            - "Year"
+        adm_cols:
+          - "Country Code"
+        adm_vals:
+          - "WLD"
+        date_col: "Year"
+        date_type: "year"
+        input_cols:
+          - "Value"
+        population_key: "global"
+        output_cols:
           - "Population"
         output_hxltags:
           - "#population"
@@ -779,6 +868,34 @@ been treated as a special case of national data by using OWID_WRL in the #countr
           - "TotalDosesAdministered"
         output_hxltags:
           - "#capacity+doses+administered+total"
+
+This filtering for OWID_WRL can be more simply achieved by using a prefilter as in the
+below example. This configurable scraper also outputs a calculated column using
+process_cols. That column is evaluated using population data from `population_lookup` 
+of `BaseScraper` using the key `global`.
+
+      ourworldindata:
+        source: "Our World in Data"
+        url: "tests/fixtures/ourworldindata_vaccinedoses.csv"
+        format: "csv"
+        use_hxl: True
+        prefilter: "#country+code == 'OWID_WRL'"
+        date_col: "#date"
+        date_type: "date"
+        filter_cols:
+          - "#country+code"
+        input_cols:
+          - "#total+vaccinations"
+        population_key: "global"
+        process_cols:
+          - "#total+vaccinations"
+          - "number_format((#total+vaccinations / 2) / #population)"
+        output_cols:
+          - "TotalDosesAdministered"
+          - "PopulationCoverageAdministeredDoses"
+        output_hxltags:
+          - "#capacity+doses+administered+total"
+          - "#capacity+doses+administered+coverage+pct"
 
 If columns need to be summed and the latest date chosen overall not per admin unit, then we can specify 
 single_maxdate as shown below:

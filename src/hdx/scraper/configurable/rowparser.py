@@ -122,7 +122,7 @@ class RowParser:
         """Read filter list from external url pointing to a HXLated file
 
         Args:
-            external_filter (Optional[Dict]): Extenral filter information in dictionary
+            external_filter (Optional[Dict]): External filter information in dictionary
 
         Returns:
             None
