@@ -88,16 +88,27 @@ output_directory = "docs/build"
 
         [[tool.pydoc-markdown.renderer.pages.children]]
         title = "Source Readers"
-        contents = ["hdx.scraper.readers.*"]
+        contents = ["hdx.scraper.utilities.readers.*"]
+
+        [[tool.pydoc-markdown.renderer.pages.children]]
+        title = "Configurable Scrapers"
+        contents = ["hdx.scraper.configurable.*"]
+
+        [[tool.pydoc-markdown.renderer.pages.children]]
+        title = "Base Class for Scrapers"
+        contents = ["hdx.scraper.base_scraper.*"]
+
+        [[tool.pydoc-markdown.renderer.pages.children]]
+        title = "Fallbacks"
+        contents = ["hdx.scraper.utilities.fallbacks.*"]
 
         [[tool.pydoc-markdown.renderer.pages.children]]
         title = "Run Scrapers"
-        contents = ["hdx.scraper.scrapers.*"]
+        contents = ["hdx.scraper.runner.*"]
 
         [[tool.pydoc-markdown.renderer.pages.children]]
         title = "Outputs"
-        contents = ["hdx.scraper.jsonoutput.*", "hdx.scraper.googlesheets.*",
-            "hdx.scraper.exceloutput.*"]
+        contents = ["hdx.scraper.outputs.*"]
 
 [tool.readthedocs-custom-steps]
 script = """
