@@ -2,6 +2,7 @@ from hdx.location.adminone import AdminOne
 from hdx.utilities.dateparse import parse_date
 from hdx.utilities.downloader import Download
 
+from hdx.scraper.base_scraper import BaseScraper
 from hdx.scraper.runner import Runner
 
 from .conftest import run_check_scraper
@@ -9,6 +10,7 @@ from .conftest import run_check_scraper
 
 class TestScraperSubnational:
     def test_get_tabular_subnational(self, configuration):
+        BaseScraper.population_lookup = dict()
         with Download(user_agent="test") as downloader:
             today = parse_date("2020-10-01")
             adminone = AdminOne(configuration)

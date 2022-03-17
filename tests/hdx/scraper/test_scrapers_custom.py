@@ -2,6 +2,7 @@ from hdx.location.adminone import AdminOne
 from hdx.utilities.dateparse import parse_date
 from hdx.utilities.downloader import Download
 
+from hdx.scraper.base_scraper import BaseScraper
 from hdx.scraper.runner import Runner
 
 from .conftest import check_scraper, check_scrapers
@@ -11,6 +12,7 @@ from .education_enrolment import EducationEnrolment
 
 class TestScraperEducation:
     def test_get_education(self, configuration, fallbacks):
+        BaseScraper.population_lookup = dict()
         with Download(user_agent="test") as downloader:
             today_str = "2020-10-01"
             today = parse_date(today_str)

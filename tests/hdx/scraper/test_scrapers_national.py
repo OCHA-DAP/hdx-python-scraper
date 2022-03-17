@@ -3,6 +3,7 @@ from hdx.utilities.dateparse import parse_date
 from hdx.utilities.downloader import Download
 from hdx.utilities.errors_onexit import ErrorsOnExit
 
+from hdx.scraper.base_scraper import BaseScraper
 from hdx.scraper.runner import Runner
 
 from .conftest import check_scrapers, run_check_scraper
@@ -11,6 +12,7 @@ from .unhcr_myanmar_idps import idps_post_run
 
 class TestScraperNational:
     def test_get_tabular_national(self, configuration, fallbacks):
+        BaseScraper.population_lookup = dict()
         with Download(user_agent="test") as downloader:
             today = parse_date("2020-10-01")
             adminone = AdminOne(configuration)
