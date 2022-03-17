@@ -28,7 +28,8 @@ install with:
 
 ## Breaking Changes
 
-From 1.4.4, significant refactor that adds custom scraper support and a runner class  
+From 1.4.4, significant refactor that adds custom scraper support and a runner class.
+API documentation still needs updating.
 
 # Scraper Framework Configuration
 

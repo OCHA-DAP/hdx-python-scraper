@@ -36,7 +36,7 @@ class ConfigurableScraper(BaseScraper):
         downloader (Download): Download object for downloading files
         level_name (Optional[str]): Customised level_name name. Defaults to None (level_name).
         today (datetime): Value to use for today. Defaults to datetime.now().
-        errors_on_exit (ErrorsOnExit): ErrorsOnExit object that logs errors on exit
+        errors_on_exit (Optional[ErrorsOnExit]): ErrorsOnExit object that logs errors on exit
         **kwargs: Variables to use when evaluating template arguments in urls
     """
 

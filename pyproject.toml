@@ -96,15 +96,15 @@ output_directory = "docs/build"
 
         [[tool.pydoc-markdown.renderer.pages.children]]
         title = "Base Class for Scrapers"
-        contents = ["hdx.scraper.base_scraper.*"]
+        contents = ["hdx.scraper.base_scraper.BaseScraper"]
 
         [[tool.pydoc-markdown.renderer.pages.children]]
         title = "Fallbacks"
-        contents = ["hdx.scraper.utilities.fallbacks.*"]
+        contents = ["hdx.scraper.utilities.fallbacks.Fallbacks"]
 
         [[tool.pydoc-markdown.renderer.pages.children]]
         title = "Run Scrapers"
-        contents = ["hdx.scraper.runner.*"]
+        contents = ["hdx.scraper.runner.Runner"]
 
         [[tool.pydoc-markdown.renderer.pages.children]]
         title = "Outputs"
@@ -147,7 +147,7 @@ commands =
 [testenv:docs]
 wheel_build_env = py310
 deps =
-    pydoc-markdown
+    pydoc-markdown==4.5.1
 commands =
     pydoc-markdown
 

@@ -1,8 +1,11 @@
 import logging
-from typing import Iterable, List
+from datetime import datetime
+from typing import Iterable, List, Optional, Dict
 
 from hdx.data.dataset import Dataset
+from hdx.location.adminone import AdminOne
 from hdx.utilities.downloader import Download
+from hdx.utilities.errors_onexit import ErrorsOnExit
 
 from .base_scraper import BaseScraper
 from .configurable.scraper import ConfigurableScraper
@@ -13,15 +16,27 @@ logger = logging.getLogger(__name__)
 
 
 class Runner:
+    """Runner class
+
+    Args:
+        countryiso3s (List[str]): List of ISO3 country codes to process
+        adminone (AdminOne): AdminOne object from HDX Python Country library
+        downloader (Download): Download object for downloading files
+        basic_auths (Dict[str, str]): Basic authorisations dictionaries
+        today (datetime): Value to use for today. Defaults to datetime.now().
+        errors_on_exit (ErrorsOnExit): ErrorsOnExit object that logs errors on exit
+        scrapers_to_run (Optional[List[str]]): Scrapers to run. Defaults to None.
+    """
+
     def __init__(
         self,
-        countryiso3s,
-        adminone,
-        downloader,
-        basic_auths=dict(),
-        today=None,
-        errors_on_exit=None,
-        scrapers_to_run=None,
+        countryiso3s: List[str],
+        adminone: AdminOne,
+        downloader: Download,
+        basic_auths: Dict[str, str] = dict(),
+        today: datetime = datetime.now(),
+        errors_on_exit: Optional[ErrorsOnExit] = None,
+        scrapers_to_run: Optional[List[str]] = None,
     ):
         self.countryiso3s = countryiso3s
         self.adminone = adminone
