@@ -1,6 +1,6 @@
 import logging
 from datetime import datetime
-from typing import Iterable, List, Optional, Dict
+from typing import Dict, Iterable, List, Optional
 
 from hdx.data.dataset import Dataset
 from hdx.location.adminone import AdminOne
