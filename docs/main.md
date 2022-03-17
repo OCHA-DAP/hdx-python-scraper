@@ -221,8 +221,8 @@ scratch:
       test: "https://docs.google.com/spreadsheets/d/SPREADSHEET_KEY_TEST/edit"
       scratch: "https://docs.google.com/spreadsheets/d/SPREADSHEET_KEY_SCRATCH/edit"
 
-The json outputs are then specified. Under the key “additional”, subsets of the full json can be saved as separate 
-files.
+The json outputs are then specified. Under the key “additional”, subsets of the full 
+json can be saved as separate files.
 
     json:
       additional_json:
@@ -348,18 +348,23 @@ what key will be used with `population_lookup`.
 
 ## Examples of Configurable Scrapers
 
-It is helpful to look at a few example configurable scrapers to see how they are configured:
+It is helpful to look at a few example configurable scrapers to see how they are 
+configured:
 
-The economicindex configurable scraper reads the dataset “covid-19-economic-exposure-index” on HDX, taking from it dataset 
-source, date of dataset and using the url of the dataset in HDX as the source url (used by the DATA link in the 
-visual). The scraper framework finds the first resource that is of format “xlsx”, reads the “economic exposure” 
-sheet and looks for the headers in row 1 (by default). Note that it is possible to specify a specific resource name using the 
-key "resource" instead of searching for the first resource of a particular format.
+The economicindex configurable scraper reads the dataset 
+“covid-19-economic-exposure-index” on HDX, taking from it dataset source, date of 
+dataset and using the url of the dataset in HDX as the source url. (In HDX data
+explorers, these are used by the DATA links.) The scraper framework finds the first 
+resource that is of format `xlsx`, reads the “economic exposure” sheet and looks for the 
+headers in row 1 (by default). Note that it is possible to specify a specific resource 
+name using the key `resource` instead of searching for the first resource of a 
+particular format.
 
-adm_cols defines the column or columns in which to look for admin information. As this is a national level 
-scraper, it uses the “Country” column. input_cols specifies the column(s) to use for values, in this case 
-“Covid 19 Economic exposure index”. output_columns and output_hxltags define the header name(s) and HXL tag(s) to 
-use for the input_cols.
+`adm_cols` defines the column or columns in which to look for admin information. As this 
+is a national level scraper, it uses the "Country" column. `input_cols` specifies the 
+column(s) to use for values, in this case “Covid 19 Economic exposure index”. 
+`output_columns` and `output_hxltags` define the header name(s) and HXL tag(s) to 
+use for the `input_cols`.
 
      economicindex:
         dataset: "covid-19-economic-exposure-index"
@@ -374,9 +379,9 @@ use for the input_cols.
         output_hxltags:
           - "#severity+economic+num"
 
-The casualties configurable scraper reads from a file that has data for only one admin unit 
-which is specified using adm_single. The latest row by date is obtained by specifying
-date_col and date_type (which can be date, year or int):
+The casualties configurable scraper reads from a file that has data for only one admin 
+unit which is specified using adm_single. The latest row by date is obtained by 
+specifying `date_col` and `date_type` (which can be date, year or int):
 
       casualties:
         source: "OHCHR"
@@ -402,8 +407,8 @@ dataset. The scraper pulls subnational data so adm_cols defines both a country c
 `alpha_3` and an admin 1 pcode column `ADM1_PCODE`. Running this scraper will result in
 `population_lookup` in the `BaseScraper` being populated with key value pairs.
 
-input_transforms defines operations to be performed on each value in the column. In this case, the value is 
-converted to either an int or float if it is possible.
+`input_transforms` defines operations to be performed on each value in the column. In 
+this case, the value is converted to either an int or float if it is possible.
 
      population:
         source: "Multiple Sources"
@@ -423,9 +428,10 @@ converted to either an int or float if it is possible.
         output_hxltags:
           - "#population"
 
-The travel configurable scraper reads values from the “info” and “published” columns of the source. append_cols defines 
-any columns where if the same admin appears again (in this case, the same country), then that data is appended to 
-the existing. keep_cols defines any columns where if the same admin appears again, the existing value is kept 
+The travel configurable scraper reads values from the “info” and “published” columns of 
+the source. append_cols defines any columns where if the same admin appears again (in 
+this case, the same country), then that data is appended to the existing. `keep_cols` 
+defines any columns where if the same admin appears again, the existing value is kept 
 rather than replaced.
 
      travel:
@@ -447,12 +453,14 @@ rather than replaced.
           - "#severity+travel"
           - "#severity+date+travel"
 
-The gam configurable scraper reads from a spreadsheet that has a multiline header (headers defined as rows 3 and 4). 
-Experimentation is often needed with row numbers since in my experience, they are sometimes offset from the real 
-row numbers seen when opening the spreadsheet. date_col defines a column that contains date information and 
-date_type specifies in what form the date information is held eg. as a date, a year or an int. The scraper will 
-for each admin, obtain the data (in this case the “National Point Estimate”) for the latest date up to the current
-date (unless ignore_future_date is set to False then future dates will be allowed).
+The gam configurable scraper reads from a spreadsheet that has a multiline header 
+(headers defined as rows 3 and 4). Experimentation is often needed with row numbers 
+since in my experience, they are sometimes offset from the real row numbers seen when 
+opening the spreadsheet. `date_col` defines a column that contains date information and 
+`date_type` specifies in what form the date information is held eg. as a date, a year or
+an int. The scraper will for each admin, obtain the data (in this case the “National 
+Point Estimate”) for the latest date up to the current date (unless `ignore_future_date` 
+is set to False then future dates will be allowed).
 
      gam:
         dataset: "world-global-expanded-database-on-severe-wasting"
@@ -472,10 +480,10 @@ date (unless ignore_future_date is set to False then future dates will be allowe
         output_hxltags:
           - "#severity+malnutrition+num+national"
 
-The covidtests configurable scraper gets “new_tests” and “new_tests_per_thousand” for the latest date where a 
-date_condition is satisfied which is that “new_tests” is a value greater than zero. 
-Here, the default sheet of 1 and the default headers rows of 1 are assumed. These
-defaults apply for both xls and xlsx.
+The covidtests configurable scraper gets “new_tests” and “new_tests_per_thousand” for 
+the latest date where a date_condition is satisfied which is that “new_tests” is a value 
+greater than zero. Here, the default sheet of 1 and the default headers rows of 1 are 
+assumed. These defaults apply for both xls and xlsx.
 
      covidtests:
         dataset: "total-covid-19-tests-performed-by-country"
@@ -495,9 +503,10 @@ defaults apply for both xls and xlsx.
           - "#affected+tested"
           - "#affected+tested+per1000"
 
-The oxcgrt configurable scraper reads from a data source that has HXL tags and these can be used instead of the header 
-names provided use_hxl is set to True. By default all the HXLated columns are read with the admin related ones 
-inferred and the rest taken as values except if defined as a date_col.
+The oxcgrt configurable scraper reads from a data source that has HXL tags and these can 
+be used instead of the header names provided use_hxl is set to True. By default all the 
+HXLated columns are read with the admin related ones inferred and the rest taken as 
+values except if defined as a `date_col`.
 
      oxcgrt:
         dataset: "oxford-covid-19-government-response-tracker"
@@ -506,8 +515,9 @@ inferred and the rest taken as values except if defined as a date_col.
         date_col: "#date"
         date_type: "date"
 
-In the imperial configurable scraper, output_columns and output_hxltags are defined which specify which columns and HXL 
-tags in the HXLated file should be used rather than using all HXLated columns.
+In the imperial configurable scraper, `output_columns` and `output_hxltags` are defined 
+which specify which columns and HXL tags in the HXLated file should be used rather than 
+using all HXLated columns.
 
      imperial:
         dataset: "imperial-college-covid-19-projections"
@@ -524,12 +534,12 @@ tags in the HXLated file should be used rather than using all HXLated columns.
           - "#affected+killed+min+imperial"
           - "#affected+killed+max+imperial"
 
-The idmc configurable scraper reads 2 HXLated columns defined in input_cols. In 
-input_transforms, a cast to int is performed if the value is not None or it is set to 0. 
-process_cols defines new column(s) that can be combinations of the other columns in 
-input_cols. In this case, process_cols specifies a new column which sums the 2 columns 
-in input_cols. That new column is given a header and a HXL tag (in output_columns and 
-output_hxltags).
+The idmc configurable scraper reads 2 HXLated columns defined in `input_cols`. In 
+`input_transforms`, a cast to int is performed if the value is not None or it is set to 
+0. `process_cols` defines new column(s) that can be combinations of the other columns in 
+`input_cols`. In this case, `process_cols` specifies a new column which sums the 2 
+columns in `input_cols`. That new column is given a header and a HXL tag (in 
+`output_columns` and `output_hxltags`).
 
      idmc:
         dataset: "idmc-internally-displaced-persons-idps"
@@ -550,10 +560,12 @@ output_hxltags).
         output_hxltags:
           - "#affected+displaced"
 
-The needs configurable scraper takes data for the latest available date for each country. subsets allows the definition of 
-multiple indicators by way of filters. A filter is defined for each indicator (in this case there is one) which 
-contains one or more filters in Python syntax. Column names can be used directly and if all are not already specified 
-in input_cols and date_col, then all should be put as a list under the key filter_cols.
+The needs configurable scraper takes data for the latest available date for each country. 
+`subsets` allows the definition of multiple indicators by way of filters. A filter is 
+defined for each indicator (in this case there is one) which contains one or more 
+filters in Python syntax. Column names can be used directly and if all are not already 
+specified in `input_cols` and `date_col`, then all should be put as a list under the key 
+`filter_cols`.
 
      needs:
         dataset: "global-humanitarian-overview-2020-figures"
@@ -576,11 +588,11 @@ in input_cols and date_col, then all should be put as a list under the key filte
             output_hxltags:
               - "#affected+inneed"
 
-The population configurable scraper matches country code only using exact matching (adm_exact is 
-set to True) rather than the default which tries fuzzy matching in the event of a 
-failure to match exactly. This is useful when matching produces false positives which is
-very rare so is usually not needed. It populates the `population_lookup` dictionary of
-`BaseScraper`.
+The population configurable scraper matches country code only using exact matching 
+(`adm_exact` is set to True) rather than the default which tries fuzzy matching in the 
+event of a failure to match exactly. This is useful when matching produces false 
+positives which is very rare so is usually not needed. It populates the 
+`population_lookup` dictionary of `BaseScraper`.
 
      population:
         source: "World Bank"
@@ -603,7 +615,7 @@ very rare so is usually not needed. It populates the `population_lookup` diction
           - "#population"
 
 The configurable scraper below which is intended to produce global data pulls out only 
-the `WLD` value from the input data. It populates the `population_lookup` dictionary of
+the "WLD" value from the input data. It populates the `population_lookup` dictionary of
 `BaseScraper` using the key `global`.
 
         source: "World Bank"
@@ -629,9 +641,10 @@ the `WLD` value from the input data. It populates the `population_lookup` dictio
         output_hxltags:
           - "#population"
 
-The covid tests configurable scraper applies a prefilter to the data that only processes rows where the value in the column
-"new_tests" is not None and is greater than zero. If "new_tests" was not specified in input_cols or date_col, then
-it would need to be under a key filter_cols.
+The covid tests configurable scraper applies a `prefilter` to the data that only 
+processes rows where the value in the column "new_tests" is not None and is greater than 
+zero. If "new_tests" was not specified in `input_cols` or `date_col`, then it would need 
+to be under a key `filter_cols`.
 
     covidtests:
         source: "Our World in Data"
@@ -641,9 +654,11 @@ it would need to be under a key filter_cols.
         prefilter: "new_tests is not None and new_tests > 0"
      ...
 
-The sadd configurable scraper reads data from the dataset “covid-19-sex-disaggregated-data-tracker”. It filters that data 
-using data from another file, the url of which is defined in external_filter. Specifically, it cuts down the sadd 
-data to only include countries listed in the  “#country+code+v_iso2” column of the external_filter file.
+The sadd configurable scraper reads data from the dataset 
+“covid-19-sex-disaggregated-data-tracker”. It filters that data using data from another 
+file, the url of which is defined in `external_filter`. Specifically, it cuts down the 
+sadd data to only include countries listed in the “#country+code+v_iso2” column of the 
+`external_filter` file.
  
      sadd:
          dataset: "covid-19-sex-disaggregated-data-tracker"
@@ -654,22 +669,24 @@ data to only include countries listed in the  “#country+code+v_iso2” column 
              - "#country+code+v_iso2"
      ...
 
-The fsnwg configurable scraper first applies a sort to the data it reads. The reverse sort is based on the keys 
-“reference_year” and “reference_code”. adm_cols defines a country column adm0_pcod3 and three admin 1 level 
-columns (“adm1_pcod2”, “adm1_pcod3”, “adm1_name”) which are examined consecutively until a match with the internal 
-admin 1 is made. 
+The fsnwg configurable scraper first applies a sort to the data it reads. The reverse 
+sort is based on the keys “reference_year” and “reference_code”. `adm_cols` defines a 
+country column "adm0_pcod3" and three admin 1 level columns (“adm1_pcod2”, “adm1_pcod3”, 
+“adm1_name”) which are examined consecutively until a match with the internal admin 1 is 
+made. 
 
-date_col is comprised of the amalgamation of two columns “reference_year” and “reference_code” 
-(corresponding to the two columns which were used for sorting earlier). sum_cols is used to sum values in a 
-column. For example, the formula “get_fraction_str(phase3, population)” takes the sum of all phase 3 values for an 
+`date_col` is comprised of the amalgamation of two columns “reference_year” and 
+“reference_code” (corresponding to the two columns which were used for sorting earlier). 
+`sum_cols` is used to sum values in a column. For example, the formula 
+`get_fraction_str(phase3, population)` takes the sum of all phase 3 values for an 
 admin 1 and divides it by the sum of all population values for an admin 1. 
 
-mustbepopulated determines if values are included or not and is by default False. If it 
-is True, then only when all columns in input_cols for the row are populated is the value 
-included. This means that when using multiple summed columns together in a formula, the 
-number of values that were summed in each column will be the same. The last formula uses 
-“#population” which is replaced by the population for the admin (which has been 
-previously obtained by another configurable scraper).
+`mustbepopulated` determines if values are included or not and is by default False. If 
+it is True, then only when all columns in `input_cols` for the row are populated is the 
+value included. This means that when using multiple summed columns together in a 
+formula, the number of values that were summed in each column will be the same. The last 
+formula uses “#population” which is replaced by the population for the admin unit (which 
+is taken from the `population_lookup` variable of `BaseScraper`).
 
      fsnwg:
         dataset: "cadre-harmonise"
@@ -728,9 +745,10 @@ previously obtained by another configurable scraper).
               - "#affected+ch+food+p3plus+pct"
               - "#affected+ch+food+analysed+pct"
 
-The who_subnational configurable scraper defines two values in input_ignore_vals which if found are ignored. Since 
-mustbepopulated is True, then only when all columns in input_cols for the row are populated and do not contain 
-either “-2222” or “-4444” is the value included in the sum of any column used in sum_cols. 
+The who_subnational configurable scraper defines two values in `input_ignore_vals` which 
+if found are ignored. Since `mustbepopulated` is True, then only when all columns in 
+`input_cols` for the row are populated and do not contain either “-2222” or “-4444” is 
+the value included in the sum of any column used in `sum_cols`. 
 
      who_subnational:
         source: "WHO"
@@ -762,9 +780,10 @@ either “-2222” or “-4444” is the value included in the sum of any column
             output_hxltags:
               - "#population+hepb1+pct+vaccinated"
 
-The access configurable scraper provides different sources for each HXL tag by providing dictionaries instead of strings 
-in source and source_url. It maps specific HXL tags by key to sources or falls back on a “default_source” and 
-“default_url” for all unspecified HXL tags.
+The access configurable scraper provides different sources for each HXL tag by providing 
+dictionaries instead of strings in `source` and `source_url`. It maps specific HXL tags 
+by key to sources or falls back on a “default_source” and “default_url” for all 
+unspecified HXL tags.
 
      access:
         source:
@@ -792,7 +811,8 @@ in source and source_url. It maps specific HXL tags by key to sources or falls b
           "#activity+cbpf+project+insecurity+pct": "get_numeric_if_possible(#activity+cbpf+project+insecurity+pct)"
           "#population+education": "get_numeric_if_possible(#population+education)"
 
-The field adm_vals allows overriding the country iso 3 codes and admin 1 pcodes for the specific configurable scraper:
+The field `adm_vals` allows overriding the country iso 3 codes and admin 1 pcodes for 
+the specific configurable scraper so that only those specified in `adm_vals` are used:
 
       gam:
         source: "UNICEF"
@@ -822,11 +842,12 @@ The field adm_vals allows overriding the country iso 3 codes and admin 1 pcodes 
         output_hxltags:
           - "#severity+malnutrition+num+subnational"
 
-The date_level field enables reading of data containing dates where the latest date must be used at a particular level
-such as per country or per admin 1. For example, we might want to produce a global value by summing the latest 
-available value per country as shown below. We have specified a date_col and sum_cols. The library will apply 
-a sort by date (since we have not specified one) to ensure correct results. This would also happen if we had
-used process_cols or append_cols. 
+The `date_level` field enables reading of data containing dates where the latest date 
+must be used at a particular level such as per country or per admin 1. For example, we 
+might want to produce a global value by summing the latest available value per country 
+as shown below. We have specified a date_col and sum_cols. The library will apply a sort 
+by date (since we have not specified one) to ensure correct results. This would also 
+happen if we had used `process_cols` or `append_cols`. 
 
       ourworldindata:
         source: "Our World in Data"
@@ -847,8 +868,9 @@ used process_cols or append_cols.
         output_hxltags:
           - "#capacity+doses+administered+total"
 
-An example of combining adm_vals, date_col and date_level is getting the latest global value in which global data has
-been treated as a special case of national data by using OWID_WRL in the #country+code field:
+An example of combining `adm_vals`, `date_col` and `date_level` is getting the latest 
+global value in which global data has been treated as a special case of national data by 
+using "OWID_WRL" in the "#country+code" field:
 
       ourworldindata:
         source: "Our World in Data"
@@ -869,9 +891,9 @@ been treated as a special case of national data by using OWID_WRL in the #countr
         output_hxltags:
           - "#capacity+doses+administered+total"
 
-This filtering for OWID_WRL can be more simply achieved by using a prefilter as in the
+This filtering for "OWID_WRL" can be more simply achieved by using a prefilter as in the
 below example. This configurable scraper also outputs a calculated column using
-process_cols. That column is evaluated using population data from `population_lookup` 
+`process_cols`. That column is evaluated using population data from `population_lookup` 
 of `BaseScraper` using the key `global`.
 
       ourworldindata:
@@ -897,8 +919,8 @@ of `BaseScraper` using the key `global`.
           - "#capacity+doses+administered+total"
           - "#capacity+doses+administered+coverage+pct"
 
-If columns need to be summed and the latest date chosen overall not per admin unit, then we can specify 
-single_maxdate as shown below:
+If columns need to be summed and the latest date chosen overall not per admin unit, then 
+we can specify `single_maxdate` as shown below:
 
       cerf_global:
         dataset: "cerf-covid-19-allocations"
