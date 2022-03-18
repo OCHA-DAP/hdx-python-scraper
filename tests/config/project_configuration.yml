@@ -857,10 +857,22 @@ scraper_subnational:
       - "#severity+malnutrition+num+subnational"
 
 # aggregation
-aggregation:
+aggregation_sum:
   process_cols:
     "Population":
       action: "sum"
+
+# aggregation
+aggregation_mean:
+  process_cols:
+    "Population":
+      action: "mean"
+
+# aggregation
+aggregation_range:
+  process_cols:
+    "Population":
+      action: "range"
 
 HRPs:
   - AFG

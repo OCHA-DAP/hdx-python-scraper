@@ -46,8 +46,10 @@ class TestScrapersAggregation:
                     "https://data.humdata.org/organization/world-bank-group"
                 ],
             )
+
             adm_aggregation = {"AFG": ("ROAP",), "MMR": ("ROAP",)}
-            aggregator_configuration = configuration["aggregation"]
+
+            aggregator_configuration = configuration["aggregation_sum"]
             scrapers = Aggregator.get_scrapers(
                 aggregator_configuration,
                 "national",
@@ -69,5 +71,54 @@ class TestScrapersAggregation:
                 values,
                 list(),
                 population_lookup=national_values[0] | values[0],
+                source_urls=list(),
+            )
+
+            aggregator_configuration = configuration["aggregation_mean"]
+            scrapers = Aggregator.get_scrapers(
+                aggregator_configuration,
+                "national",
+                "regional",
+                adm_aggregation,
+                runner,
+            )
+            scraper_names = runner.add_customs(scrapers, add_to_run=True)
+            name = "population_regional"
+            assert scraper_names == [name]
+
+            level = "regional"
+            values = [{"ROAP": 46043587}]
+            run_check_scraper(
+                name,
+                runner,
+                level,
+                headers,
+                values,
+                list(),
+                population_lookup=national_values[0] | values[0],
+                source_urls=list(),
+            )
+
+            aggregator_configuration = configuration["aggregation_range"]
+            scrapers = Aggregator.get_scrapers(
+                aggregator_configuration,
+                "national",
+                "regional",
+                adm_aggregation,
+                runner,
+            )
+            scraper_names = runner.add_customs(scrapers, add_to_run=True)
+            name = "population_regional"
+            assert scraper_names == [name]
+
+            level = "regional"
+            values = [{"ROAP": "38041754-54045420"}]
+            run_check_scraper(
+                name,
+                runner,
+                level,
+                headers,
+                values,
+                list(),
                 source_urls=list(),
             )

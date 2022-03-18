@@ -157,7 +157,12 @@ class Aggregator(BaseScraper):
                             total += value
                 if action == "mean":
                     if not isinstance(total, str):
-                        total /= novals
+                        if isinstance(total, int):
+                            quotient, remainder = divmod(total, novals)
+                            if remainder == 0:
+                                total = quotient
+                            else:
+                                total /= novals
                 if isinstance(total, float):
                     output_values[output_adm] = number_format(
                         total, trailing_zeros=False
