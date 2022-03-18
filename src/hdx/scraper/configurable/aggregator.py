@@ -35,7 +35,6 @@ class Aggregator(BaseScraper):
     def get_scrapers(
         cls, configuration, input_level, output_level, adm_aggregation, runner
     ):
-        process_cols = configuration["process_cols"]
         input_results = runner.get_results(levels=input_level, has_run=False)
         aggregation_scrapers = list()
         if not input_results:
@@ -48,7 +47,7 @@ class Aggregator(BaseScraper):
             input_values[input_header] = input_vals[index]
         if not isinstance(adm_aggregation, dict):
             adm_aggregation = {x: ("value",) for x in adm_aggregation}
-        for header, process_info in process_cols.items():
+        for header, process_info in configuration.items():
             name = f"{slugify(header.lower(), separator='_')}_{output_level}"
             config_headers = process_info.get("headers")
             if config_headers:

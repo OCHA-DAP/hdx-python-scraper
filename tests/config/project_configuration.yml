@@ -858,34 +858,30 @@ scraper_subnational:
 
 # aggregation
 aggregation_sum:
-  process_cols:
-    "Population":
-      action: "sum"
+  "Population":
+    action: "sum"
 
 aggregation_mean:
-  process_cols:
-    "Population":
-      action: "mean"
+  "Population":
+    action: "mean"
 
 aggregation_range:
-  process_cols:
-    "Population":
-      action: "range"
+  "Population":
+    action: "range"
 
 aggregation_global:
-  process_cols:
-    "Population":
-      action: "sum"
-      population_key: "global"
-    "CasesPer100000":
-      action: "mean"
-    "CasesPerPopulation":
-      hxltag: "#affected+infected+perpop"
-      headers:
-        - "CasesPer100000"
-      action: "eval"
-      population_key: "global"
-      formula: "number_format(CasesPer100000 * 100000 / #population)"
+  "Population":
+    action: "sum"
+    population_key: "global"
+  "CasesPer100000":
+    action: "mean"
+  "CasesPerPopulation":
+    hxltag: "#affected+infected+perpop"
+    headers:
+      - "CasesPer100000"
+    action: "eval"
+    population_key: "global"
+    formula: "number_format(CasesPer100000 * 100000 / #population)"
 
 HRPs:
   - AFG
