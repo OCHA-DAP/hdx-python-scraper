@@ -82,9 +82,7 @@ class TestScrapersAggregation:
                 adm_aggregation,
                 runner,
             )
-            scraper_names = runner.add_customs(scrapers, add_to_run=True)
-            name = "population_regional"
-            assert scraper_names == [name]
+            runner.add_customs(scrapers, add_to_run=True)
 
             level = "regional"
             values = [{"ROAP": 46043587}]
@@ -107,9 +105,7 @@ class TestScrapersAggregation:
                 adm_aggregation,
                 runner,
             )
-            scraper_names = runner.add_customs(scrapers, add_to_run=True)
-            name = "population_regional"
-            assert scraper_names == [name]
+            runner.add_customs(scrapers, add_to_run=True)
 
             level = "regional"
             values = [{"ROAP": "38041754-54045420"}]
@@ -120,5 +116,31 @@ class TestScrapersAggregation:
                 headers,
                 values,
                 list(),
+                source_urls=list(),
+            )
+
+            aggregator_configuration = configuration["aggregation_sum_global"]
+            adm_aggregation = ("AFG", "MMR")
+            scrapers = Aggregator.get_scrapers(
+                aggregator_configuration,
+                "national",
+                "regional",
+                adm_aggregation,
+                runner,
+            )
+            runner.add_customs(scrapers, add_to_run=True)
+
+            BaseScraper.population_lookup = dict()
+            level = "regional"
+            pop = 92087174
+            values = [{"value": pop}]
+            run_check_scraper(
+                name,
+                runner,
+                level,
+                headers,
+                values,
+                list(),
+                population_lookup={"global": pop},
                 source_urls=list(),
             )

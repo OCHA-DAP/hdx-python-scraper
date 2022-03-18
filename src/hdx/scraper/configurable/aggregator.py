@@ -1,7 +1,7 @@
 import copy
 import logging
 import sys
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Union
 
 from hdx.utilities.dictandlist import dict_of_lists_add
 from hdx.utilities.text import (
@@ -22,7 +22,7 @@ class Aggregator(BaseScraper):
         name: str,
         datasetinfo: Dict,
         headers: Dict[str, Tuple],
-        adm_aggregation,
+        adm_aggregation: Union[Dict,List],
         input_values: Dict,
         aggregation_scrapers: [List[BaseScraper]],
     ):
@@ -46,6 +46,8 @@ class Aggregator(BaseScraper):
         input_values = dict()
         for index, input_header in enumerate(input_headers[0]):
             input_values[input_header] = input_vals[index]
+        if not isinstance(adm_aggregation, dict):
+            adm_aggregation = {x: ("value",) for x in adm_aggregation}
         for header, process_info in process_cols.items():
             name = f"{slugify(header.lower(), separator='_')}_{output_level}"
             config_headers = process_info.get("headers")
@@ -134,7 +136,18 @@ class Aggregator(BaseScraper):
                 logger.error(message.format(header))
         return headers, columns
 
-    def process(self, output_level: str, output_values):
+    def process(self, output_level: str, output_hxltag, output_values):
+        population_key = self.datasetinfo.get("population_key")
+
+        def add_population(adm, value):
+            if not value:
+                return
+            if output_hxltag == "#population":
+                if population_key is None:
+                    self.population_lookup[adm] = value
+                else:
+                    self.population_lookup[population_key] = value
+
         action = self.datasetinfo["action"]
         if action == "sum" or action == "mean":
             for output_adm, valuelist in output_values.items():
@@ -169,6 +182,7 @@ class Aggregator(BaseScraper):
                     )
                 else:
                     output_values[output_adm] = total
+                    add_population(output_adm, total)
         elif action == "range":
             for output_adm, valuelist in output_values.items():
                 min = sys.maxsize
@@ -199,10 +213,13 @@ class Aggregator(BaseScraper):
                     values = aggregation_scraper.get_values(output_level)[0]
                     value = values.get(output_adm, "")
                     toeval = toeval.replace(header, str(value))
-                output_values[output_adm] = eval(toeval)
+                total = eval(toeval)
+                output_values[output_adm] = total
+                add_population(output_adm, total)
 
     def run(self):
         output_level = next(iter(self.headers.keys()))
+        output_headers = self.get_headers(output_level)
         output_valdicts = self.get_values(output_level)
         output_values = output_valdicts[0]
         input_valdicts = list()
@@ -220,7 +237,10 @@ class Aggregator(BaseScraper):
                     if value is not None:
                         found_adms.add(key)
                         dict_of_lists_add(output_values, output_adm, value)
-        self.process(output_level, output_values)
+        self.process(output_level, output_headers[1][0], output_values)
 
     def add_sources(self):
+        pass
+
+    def add_population(self):
         pass

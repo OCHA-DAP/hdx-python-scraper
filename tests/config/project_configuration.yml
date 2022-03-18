@@ -874,6 +874,13 @@ aggregation_range:
     "Population":
       action: "range"
 
+# aggregation
+aggregation_sum_global:
+  process_cols:
+    "Population":
+      action: "sum"
+      population_key: "global"
+
 HRPs:
   - AFG
   - BDI
