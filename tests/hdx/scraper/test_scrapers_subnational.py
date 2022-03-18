@@ -8,8 +8,8 @@ from hdx.scraper.runner import Runner
 from .conftest import run_check_scraper
 
 
-class TestScraperSubnational:
-    def test_get_tabular_subnational(self, configuration):
+class TestScrapersSubnational:
+    def test_get_subnational(self, configuration):
         BaseScraper.population_lookup = dict()
         with Download(user_agent="test") as downloader:
             today = parse_date("2020-10-01")

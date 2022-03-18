@@ -856,6 +856,12 @@ scraper_subnational:
     output_hxltags:
       - "#severity+malnutrition+num+subnational"
 
+# aggregation
+aggregation:
+  process_cols:
+    "Population":
+      action: "sum"
+
 HRPs:
   - AFG
   - BDI
