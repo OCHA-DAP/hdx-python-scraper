@@ -862,24 +862,30 @@ aggregation_sum:
     "Population":
       action: "sum"
 
-# aggregation
 aggregation_mean:
   process_cols:
     "Population":
       action: "mean"
 
-# aggregation
 aggregation_range:
   process_cols:
     "Population":
       action: "range"
 
-# aggregation
-aggregation_sum_global:
+aggregation_global:
   process_cols:
     "Population":
       action: "sum"
       population_key: "global"
+    "CasesPer100000":
+      action: "mean"
+    "CasesPerPopulation":
+      hxltag: "#affected+infected+perpop"
+      headers:
+        - "CasesPer100000"
+      action: "eval"
+      population_key: "global"
+      formula: "number_format(CasesPer100000 * 100000 / #population)"
 
 HRPs:
   - AFG

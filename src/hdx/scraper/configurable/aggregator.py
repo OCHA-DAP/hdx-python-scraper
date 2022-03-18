@@ -22,7 +22,7 @@ class Aggregator(BaseScraper):
         name: str,
         datasetinfo: Dict,
         headers: Dict[str, Tuple],
-        adm_aggregation: Union[Dict,List],
+        adm_aggregation: Union[Dict, List],
         input_values: Dict,
         aggregation_scrapers: [List[BaseScraper]],
     ):
@@ -65,7 +65,7 @@ class Aggregator(BaseScraper):
                 if not exists:
                     continue
                 headers = ((header,), (process_info["hxltag"],))
-                scraper = Aggregator(
+                scraper = cls(
                     name,
                     process_info,
                     {output_level: headers},
@@ -81,7 +81,7 @@ class Aggregator(BaseScraper):
                     process_info["headers"] = (header,)
                     header = process_info.get("rename", header)
                     headers = ((header,), (input_headers[1][index],))
-                    scraper = Aggregator(
+                    scraper = cls(
                         name,
                         process_info,
                         {output_level: headers},
@@ -204,15 +204,30 @@ class Aggregator(BaseScraper):
                     output_values[output_adm] = f"{str(min)}-{str(max)}"
         elif action == "eval":
             formula = self.datasetinfo["formula"]
+            if population_key is None:
+                population_str = "self.population_lookup[output_adm]"
+            else:
+                population_str = "self.population_lookup[population_key]"
+            arbitrary_string = "#pzbgvjh"
+            headers = list()
+            for aggregation_scraper in self.aggregation_scrapers:
+                headers.append(
+                    aggregation_scraper.get_headers(output_level)[0][0]
+                )
+            # Indices of list sorted by length
+            sorted_len_indices = sorted(
+                range(len(headers)),
+                key=lambda k: len(headers[k]),
+                reverse=True,
+            )
             for output_adm, valuelist in output_values.items():
-                toeval = formula
-                for aggregation_scraper in self.aggregation_scrapers:
-                    header = aggregation_scraper.get_headers(output_level)[0][
-                        0
-                    ]
+                toeval = formula.replace("#population", arbitrary_string)
+                for i in sorted_len_indices:
+                    aggregation_scraper = self.aggregation_scrapers[i]
                     values = aggregation_scraper.get_values(output_level)[0]
                     value = values.get(output_adm, "")
-                    toeval = toeval.replace(header, str(value))
+                    toeval = toeval.replace(headers[i], str(value))
+                toeval = toeval.replace(arbitrary_string, population_str)
                 total = eval(toeval)
                 output_values[output_adm] = total
                 add_population(output_adm, total)
