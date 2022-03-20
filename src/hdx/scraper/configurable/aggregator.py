@@ -4,7 +4,7 @@ import sys
 from typing import Dict, List, Tuple, Union
 
 from hdx.utilities.dictandlist import dict_of_lists_add
-from hdx.utilities.text import (
+from hdx.utilities.text import (  # noqa: F401
     get_fraction_str,
     get_numeric_if_possible,
     number_format,
