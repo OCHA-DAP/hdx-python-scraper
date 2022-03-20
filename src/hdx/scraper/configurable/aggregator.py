@@ -119,22 +119,6 @@ class Aggregator(BaseScraper):
             return total
         return valuestr
 
-    @staticmethod
-    def get_headers_and_columns(
-        desired_headers, input_headers, input_columns, message
-    ):
-        headers = [list(), list()]
-        columns = list()
-        for header in desired_headers:
-            try:
-                index = input_headers[0].index(header)
-                headers[0].append(header)
-                headers[1].append(input_headers[1][index])
-                columns.append(input_columns[index])
-            except ValueError:
-                logger.error(message.format(header))
-        return headers, columns
-
     def process(self, output_level: str, output_hxltag, output_values):
         population_key = self.datasetinfo.get("population_key")
 

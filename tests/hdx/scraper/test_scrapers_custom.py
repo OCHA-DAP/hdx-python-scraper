@@ -269,3 +269,14 @@ class TestScrapersCustom:
                 "education_enrolment",
                 "education_closures",
             ]
+
+            education_closures.add_hxltag_source("test", "#lala")
+            sources = education_closures.get_sources("test")
+            assert sources == [
+                (
+                    "#lala",
+                    "2020-10-01",
+                    "UNESCO",
+                    "https://data.humdata.org/dataset/global-school-closures-covid19",
+                )
+            ]

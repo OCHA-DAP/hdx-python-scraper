@@ -96,6 +96,16 @@ class BaseScraper(ABC):
                 for hxltag in self.headers[level][1]
             ]
 
+    def add_hxltag_source(self, tab: str, hxltag: str) -> None:
+        self.sources[tab] = [
+            (
+                hxltag,
+                self.datasetinfo["date"].strftime("%Y-%m-%d"),
+                self.datasetinfo["source"],
+                self.datasetinfo["source_url"],
+            )
+        ]
+
     def get_sources(self, level):
         return self.sources.get(level)
 
