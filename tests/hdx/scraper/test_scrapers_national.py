@@ -10,8 +10,8 @@ from .conftest import check_scrapers, run_check_scraper
 from .unhcr_myanmar_idps import idps_post_run
 
 
-class TestScraperNational:
-    def test_get_tabular_national(self, configuration, fallbacks):
+class TestScrapersNational:
+    def test_get_national(self, configuration, fallbacks):
         BaseScraper.population_lookup = dict()
         with Download(user_agent="test") as downloader:
             today = parse_date("2020-10-01")

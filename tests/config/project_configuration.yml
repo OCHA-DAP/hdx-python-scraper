@@ -856,6 +856,33 @@ scraper_subnational:
     output_hxltags:
       - "#severity+malnutrition+num+subnational"
 
+# aggregation
+aggregation_sum:
+  "Population":
+    action: "sum"
+
+aggregation_mean:
+  "Population":
+    action: "mean"
+
+aggregation_range:
+  "Population":
+    action: "range"
+
+aggregation_global:
+  "Population":
+    action: "sum"
+    population_key: "global"
+  "CasesPer100000":
+    action: "mean"
+  "CasesPerPopulation":
+    hxltag: "#affected+infected+perpop"
+    headers:
+      - "CasesPer100000"
+    action: "eval"
+    population_key: "global"
+    formula: "number_format(CasesPer100000 * 100000 / #population)"
+
 HRPs:
   - AFG
   - BDI

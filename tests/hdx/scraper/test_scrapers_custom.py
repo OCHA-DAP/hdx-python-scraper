@@ -10,8 +10,8 @@ from .education_closures import EducationClosures
 from .education_enrolment import EducationEnrolment
 
 
-class TestScraperEducation:
-    def test_get_education(self, configuration, fallbacks):
+class TestScrapersCustom:
+    def test_get_custom(self, configuration, fallbacks):
         BaseScraper.population_lookup = dict()
         with Download(user_agent="test") as downloader:
             today_str = "2020-10-01"

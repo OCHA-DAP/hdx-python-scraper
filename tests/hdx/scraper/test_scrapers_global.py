@@ -11,7 +11,7 @@ from .conftest import check_scraper, run_check_scraper
 
 
 class TestScraperGlobal:
-    def test_get_tabular_global(self, caplog, configuration, fallbacks):
+    def test_get_global(self, caplog, configuration, fallbacks):
         BaseScraper.population_lookup = dict()
         with Download(user_agent="test") as downloader:
             today = parse_date("2020-10-01")
