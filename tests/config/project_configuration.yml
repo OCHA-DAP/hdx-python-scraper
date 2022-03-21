@@ -857,31 +857,60 @@ scraper_subnational:
       - "#severity+malnutrition+num+subnational"
 
 # aggregation
-aggregation_sum:
-  "Population":
-    action: "sum"
+aggregation_hxl:
+  aggregation_sum:
+    "#population":
+      action: "sum"
 
-aggregation_mean:
-  "Population":
-    action: "mean"
+  aggregation_mean:
+    "#population":
+      action: "mean"
 
-aggregation_range:
-  "Population":
-    action: "range"
+  aggregation_range:
+    "#population":
+      action: "range"
 
-aggregation_global:
-  "Population":
-    action: "sum"
-    population_key: "global"
-  "CasesPer100000":
-    action: "mean"
-  "CasesPerPopulation":
-    hxltag: "#affected+infected+perpop"
-    headers:
-      - "CasesPer100000"
-    action: "eval"
-    population_key: "global"
-    formula: "number_format(CasesPer100000 * 100000 / #population)"
+  aggregation_global:
+    "#population":
+      action: "sum"
+      population_key: "global"
+    "#affected+infected+per100000":
+      action: "mean"
+    "#affected+infected+perpop":
+      header: "CasesPerPopulation"
+      hxltags:
+        - "#affected+infected+per100000"
+      action: "eval"
+      population_key: "global"
+      formula: "number_format(#affected+infected+per100000 * 100000 / #population)"
+
+aggregation_nohxl:
+  aggregation_sum:
+    "Population":
+      action: "sum"
+
+  aggregation_mean:
+    "Population":
+      action: "mean"
+
+  aggregation_range:
+    "Population":
+      action: "range"
+
+  aggregation_global:
+    "Population":
+      action: "sum"
+      population_key: "global"
+    "CasesPer100000":
+      action: "mean"
+    "CasesPerPopulation":
+      hxltag: "#affected+infected+perpop"
+      headers:
+        - "CasesPer100000"
+      action: "eval"
+      population_key: "global"
+      formula: "number_format(CasesPer100000 * 100000 / #population)"
+
 
 HRPs:
   - AFG
