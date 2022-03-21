@@ -202,7 +202,7 @@ class TestScrapersAggregation:
                     "#affected+infected+perpop",
                 ],
             )
-            values = [{"value": pop}, {"value": "459.42"}, {"value": "1.0752"}]
+            values = [{"value": pop}, {"value": "229.71"}, {"value": "0.5376"}]
             run_check_scrapers(
                 names,
                 runner,
@@ -412,7 +412,7 @@ class TestScrapersAggregation:
                     "#affected+infected+perpop",
                 ],
             )
-            values = [{"value": pop}, {"value": "459.42"}, {"value": "1.0752"}]
+            values = [{"value": pop}, {"value": "229.71"}, {"value": "0.5376"}]
             run_check_scrapers(
                 names,
                 runner,

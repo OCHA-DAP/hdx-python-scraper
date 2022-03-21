@@ -197,6 +197,8 @@ class Aggregator(BaseScraper):
                                 total = quotient
                             else:
                                 total /= novals
+                        else:
+                            total /= novals
                 if isinstance(total, float):
                     output_values[output_adm] = number_format(
                         total, trailing_zeros=False
