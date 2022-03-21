@@ -80,9 +80,9 @@ class RowParser:
         self.single_maxdate = datasetinfo.get("single_maxdate", False)
         self.ignore_future_date = datasetinfo.get("ignore_future_date", True)
         self.adminone = adminone
-        self.admcols = datasetinfo.get("adm", list())
-        self.admexact = datasetinfo.get("adm_exact", False)
-        self.admsingle = datasetinfo.get("adm_single", None)
+        self.admcols = datasetinfo.get("admin", list())
+        self.admexact = datasetinfo.get("admin_exact", False)
+        self.admsingle = datasetinfo.get("admin_single", None)
         if self.admsingle:
             self.datelevel = None
         self.subsets = subsets
@@ -91,7 +91,7 @@ class RowParser:
         if prefilter is not None:
             prefilter = self.get_filter_str_for_eval(prefilter)
         self.prefilter = prefilter
-        adms = datasetinfo.get("adm_vals")
+        adms = datasetinfo.get("admin_filter")
         if adms is None:
             self.adms = [countryiso3s, self.adminone.pcodes]
         else:

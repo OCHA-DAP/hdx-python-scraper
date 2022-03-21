@@ -58,9 +58,9 @@ scraper_national:
     sort:
       keys:
         - "Year"
-    adm:
+    admin:
       - "Country Code"
-    adm_exact: True
+    admin_exact: True
     date: "Year"
     date_type: "year"
     input:
@@ -74,7 +74,7 @@ scraper_national:
     source: "WHO"
     url: "tests/fixtures/WHO-COVID-19-global-data.csv"
     format: "csv"
-    adm:
+    admin:
       - "Country_code"
     date: "Date_reported"
     date_type: "date"
@@ -96,7 +96,7 @@ scraper_national:
     source: "WHO"
     url: "tests/fixtures/WHO-COVID-19-global-data.csv"
     format: "csv"
-    adm:
+    admin:
       - "Country_code"
     date: "Date_reported"
     date_type: "date"
@@ -154,7 +154,7 @@ scraper_national:
       url: "https://github.com/mcarans/hdx-python-scraper/raw/main/tests/fixtures/sadd-countries-to-include.csv"
       hxl:
         - "#country+code+v_iso2"
-    adm:
+    admin:
       - "Country code"
     input:
       - "Cases (% male)"
@@ -190,7 +190,7 @@ scraper_national:
       url: "https://github.com/OCHA-DAP/hdx-python-scraper/raw/main/tests/fixtures/COVID-19%20Vaccine%20Doses%20in%20HRP%20Countries%20-%20Data%20HXL.csv"
       hxl:
        - "#country+code"
-    adm:
+    admin:
       - "#country+code"
     date: "#date"
     date_type: "date"
@@ -215,7 +215,7 @@ scraper_national:
       url: "https://github.com/OCHA-DAP/hdx-python-scraper/raw/main/tests/fixtures/COVID-19%20Vaccine%20Doses%20in%20HRP%20Countries%20-%20Data%20HXL.csv"
       hxl:
        - "#country+code"
-    adm:
+    admin:
       - "#country+code"
     date: "#date"
     date_type: "date"
@@ -235,7 +235,7 @@ scraper_national:
     date: "date"
     date_type: "date"
     use_date: True
-    adm:
+    admin:
       - "iso_code"
     input:
       - "new_tests"
@@ -280,7 +280,7 @@ scraper_national:
     date: "Date"
     date_type: "date"
     ignore_future_date: False
-    adm_single: "UKR"
+    admin_single: "UKR"
     input:
       - "Civilian casualities(OHCHR) - Killed"
       - "Civilian casualities(OHCHR) - Injured"
@@ -315,7 +315,7 @@ scraper_global:
     url: "tests/fixtures/COVID-19 Vaccine Doses in HRP Countries - Data HXL.csv"
     format: "csv"
     use_hxl: True
-    adm:
+    admin:
       - "#country+code"
     input:
       - "#capacity+covax+total"
@@ -375,7 +375,7 @@ scraper_global:
       url: "https://github.com/OCHA-DAP/hdx-python-scraper/raw/main/tests/fixtures/COVID-19%20Vaccine%20Doses%20in%20HRP%20Countries%20-%20Data%20HXL.csv"
       hxl:
        - "#country+code"
-    adm:
+    admin:
       - "#country+code"
     date: "#date"
     date_type: "date"
@@ -763,9 +763,9 @@ other:
     sort:
       keys:
         - "Year"
-    adm:
+    admin:
       - "Country Code"
-    adm_vals:
+    admin_filter:
       - "WLD"
     date: "Year"
     date_type: "year"
@@ -789,10 +789,10 @@ other:
         new: "Region Name"
       - original: "Region {{1}} Point Estimate"
         new: "Region Point Estimate"
-    adm:
+    admin:
       - "ISO"
       - "Region Name"
-    adm_vals:
+    admin_filter:
       - ["AFG"]
       - ["AF09", "AF24"]
     date: "Year*"
@@ -808,9 +808,9 @@ other:
     url: "tests/fixtures/ourworldindata_vaccinedoses.csv"
     format: "csv"
     use_hxl: True
-    adm:
+    admin:
       - "#country+code"
-    adm_vals:
+    admin_filter:
       - "OWID_WRL"
     date: "#date"
     date_type: "date"
@@ -858,7 +858,7 @@ scraper_subnational:
         new: "Region Name"
       - original: "Region {{1}} Point Estimate"
         new: "Region Point Estimate"
-    adm:
+    admin:
       - "ISO"
       - "Region Name"
     date: "Year*"

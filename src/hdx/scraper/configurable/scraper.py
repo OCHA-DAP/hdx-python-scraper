@@ -229,7 +229,7 @@ class ConfigurableScraper(BaseScraper):
                 continue
             input_cols.append(hxltag)
             columns.append(header)
-        self.datasetinfo["adm"] = adm_cols
+        self.datasetinfo["admin"] = adm_cols
         for subset in self.subsets:
             orig_input_cols = subset.get("input", list())
             if not orig_input_cols:
