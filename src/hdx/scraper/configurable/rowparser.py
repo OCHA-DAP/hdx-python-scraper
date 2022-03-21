@@ -64,10 +64,10 @@ class RowParser:
         self.name = name
         self.level = get_level(level)
         self.datelevel = get_level(datelevel)
-        self.today = datasetinfo["date"]
+        self.today = datasetinfo["source_date"]
         self.sort = datasetinfo.get("sort")
         self.stop_row = datasetinfo.get("stop_row")
-        self.datecol = datasetinfo.get("date_col")
+        self.datecol = datasetinfo.get("date")
         self.datetype = datasetinfo.get("date_type")
         if self.datetype:
             if self.datetype == "date":
@@ -80,7 +80,7 @@ class RowParser:
         self.single_maxdate = datasetinfo.get("single_maxdate", False)
         self.ignore_future_date = datasetinfo.get("ignore_future_date", True)
         self.adminone = adminone
-        self.admcols = datasetinfo.get("adm_cols", list())
+        self.admcols = datasetinfo.get("adm", list())
         self.admexact = datasetinfo.get("adm_exact", False)
         self.admsingle = datasetinfo.get("adm_single", None)
         if self.admsingle:
@@ -129,7 +129,7 @@ class RowParser:
         """
         if not external_filter:
             return
-        hxltags = external_filter["hxltags"]
+        hxltags = external_filter["hxl"]
         data = hxl.data(external_filter["url"])
         for row in data:
             for hxltag in data.columns:
@@ -150,14 +150,14 @@ class RowParser:
             if self.datecol:
                 filter = filter.replace(self.datecol, f"row['{self.datecol}']")
             for subset in self.subsets:
-                for col in subset["input_cols"]:
+                for col in subset["input"]:
                     filter = filter.replace(col, f"row['{col}']")
         return filter
 
     def filter_sort_rows(self, iterator: Iterator[Dict]) -> Iterator[Dict]:
-        """Apply prefilter and sort the input data before processing. If date_col is specified along with any of
-        sum_cols, process_cols or append_cols, and sorting is not specified, then apply a sort by date to ensure
-        correct results.
+        """Apply prefilter and sort the input data before processing. If date_col is
+        specified along with any of sum or process, and sorting is not specified, then
+        apply a sort by date to ensure correct results.
 
         Args:
             iterator (Iterator[Dict]): Input data
@@ -182,12 +182,12 @@ class RowParser:
             if self.datecol:
                 for subset in self.subsets:
                     apply_sort = subset.get(
-                        "sum_cols",
-                        subset.get("process_cols", subset.get("input_append")),
+                        "sum",
+                        subset.get("process", subset.get("input_append")),
                     )
                     if apply_sort:
                         logger.warning(
-                            "sum_cols, process_cols or input_append used without sorting. Applying sort by date to ensure correct results!"
+                            "sum or process used without sorting. Applying sort by date to ensure correct results!"
                         )
                         self.sort = {"keys": [self.datecol], "reverse": True}
                         break

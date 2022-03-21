@@ -97,12 +97,14 @@ def read_hdx_metadata(
                 f"Cannot find {format} resource in {dataset_name}!"
             )
         datasetinfo["url"] = url
-    date = datasetinfo.get("date")
+    date = datasetinfo.get("source_date")
     if date:
         if isinstance(date, str):
-            datasetinfo["date"] = parse_date(date)
+            datasetinfo["source_date"] = parse_date(date)
     else:
-        datasetinfo["date"] = get_date_from_dataset_date(dataset, today=today)
+        datasetinfo["source_date"] = get_date_from_dataset_date(
+            dataset, today=today
+        )
     if "source" not in datasetinfo:
         datasetinfo["source"] = dataset["dataset_source"]
     if "source_url" not in datasetinfo:

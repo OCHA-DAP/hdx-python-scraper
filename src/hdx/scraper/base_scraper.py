@@ -83,7 +83,7 @@ class BaseScraper(ABC):
         if isinstance(source_url, str):
             source_url = {"default_url": source_url}
 
-        date = self.datasetinfo["date"].strftime("%Y-%m-%d")
+        date = self.datasetinfo["source_date"].strftime("%Y-%m-%d")
 
         for level in self.headers:
             self.sources[level] = [
@@ -100,7 +100,7 @@ class BaseScraper(ABC):
         self.sources[tab] = [
             (
                 hxltag,
-                self.datasetinfo["date"].strftime("%Y-%m-%d"),
+                self.datasetinfo["source_date"].strftime("%Y-%m-%d"),
                 self.datasetinfo["source"],
                 self.datasetinfo["source_url"],
             )

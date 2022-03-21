@@ -1,3 +1,5 @@
+from copy import deepcopy
+
 from hdx.location.adminone import AdminOne
 from hdx.utilities.dateparse import parse_date
 from hdx.utilities.downloader import Download
@@ -25,14 +27,7 @@ class TestScrapersCustom:
 
             region = Region()
             runner = Runner(("AFG",), adminone, downloader, dict(), today)
-            datasetinfo = {
-                "format": "csv",
-                "dataset": "global-school-closures-covid19",
-                "date": today_str,
-                "url": "tests/fixtures/covid_impact_education.csv",
-                "resource": "School Closures",
-                "headers": 1,
-            }
+            datasetinfo = configuration["education_closures"]
             education_closures = EducationClosures(
                 datasetinfo, today, countries, region, downloader
             )
@@ -116,13 +111,8 @@ class TestScrapersCustom:
             ]
 
             runner = Runner(("AFG",), adminone, downloader, dict(), today)
-            datasetinfo = {
-                "format": "csv",
-                "dataset": "global-school-closures-covid19",
-                "url": "NOTEXIST.csv",
-                "resource": "School Closures",
-                "headers": 1,
-            }
+            datasetinfo = deepcopy(datasetinfo)
+            datasetinfo["url"] = "NOTEXIST.csv"
             education_closures = EducationClosures(
                 datasetinfo, today, countries, Region(), downloader
             )
@@ -168,15 +158,7 @@ class TestScrapersCustom:
                 fallbacks_used=True,
             )
 
-            datasetinfo = {
-                "format": "xlsx",
-                "dataset": "global-school-closures-covid19",
-                "resource": "Enrollment data",
-                "date": today_str,
-                "url": "tests/fixtures/countries-enrollment-data-uis-feb-22.xlsx",
-                "sheet": 1,
-                "headers": 1,
-            }
+            datasetinfo = configuration["education_enrolment"]
             education_enrolment = EducationEnrolment(
                 datasetinfo, education_closures, countries, region, downloader
             )
@@ -243,14 +225,7 @@ class TestScrapersCustom:
                 "https://data.humdata.org/dataset/global-school-closures-covid19"
             ]
 
-            datasetinfo = {
-                "format": "csv",
-                "dataset": "global-school-closures-covid19",
-                "date": today_str,
-                "url": "tests/fixtures/covid_impact_education.csv",
-                "resource": "School Closures",
-                "headers": 1,
-            }
+            datasetinfo = configuration["education_closures"]
             education_closures = EducationClosures(
                 datasetinfo, today, countries, region, downloader
             )

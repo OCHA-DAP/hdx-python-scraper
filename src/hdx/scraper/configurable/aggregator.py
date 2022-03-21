@@ -50,11 +50,9 @@ class Aggregator(BaseScraper):
         if use_hxl:
             main_index = 1
             header_or_hxltag_str = "hxltag"
-            lookup = "hxltags"
         else:
             main_index = 0
             header_or_hxltag_str = "header"
-            lookup = "headers"
         input_results = input_results[input_level]
         input_headers = input_results["headers"]
         input_vals = input_results["values"]
@@ -68,7 +66,7 @@ class Aggregator(BaseScraper):
         for header_or_hxltag, process_info in configuration.items():
             process_info = copy.deepcopy(process_info)
             name = f"{slugify(header_or_hxltag.lower(), separator='_')}_{output_level}"
-            config_headers_or_hxltags = process_info.get(lookup)
+            config_headers_or_hxltags = process_info.get("input")
             if config_headers_or_hxltags:
                 exists = True
                 for i, config_header_or_hxltag in enumerate(
@@ -80,16 +78,16 @@ class Aggregator(BaseScraper):
                         )
                     except ValueError:
                         logger.error(
-                            f"{output_level} {header_or_hxltag_str} {header_or_hxltag} not found in {input_level} {lookup}!"
+                            f"{output_level} {header_or_hxltag_str} {header_or_hxltag} not found in {input_level} input!"
                         )
                         exists = False
                         break
                 if not exists:
                     continue
                 if use_hxl:
-                    headers = ((process_info["header"],), (header_or_hxltag,))
+                    headers = ((process_info["output"],), (header_or_hxltag,))
                 else:
-                    headers = ((header_or_hxltag,), (process_info["hxltag"],))
+                    headers = ((header_or_hxltag,), (process_info["output"],))
                 scraper = cls(
                     name,
                     process_info,
@@ -103,7 +101,7 @@ class Aggregator(BaseScraper):
             else:
                 try:
                     index = input_headers[main_index].index(header_or_hxltag)
-                    process_info[lookup] = (header_or_hxltag,)
+                    process_info["input"] = (header_or_hxltag,)
                     header_or_hxltag = process_info.get(
                         "rename", header_or_hxltag
                     )
@@ -129,7 +127,7 @@ class Aggregator(BaseScraper):
                     aggregation_scrapers.append(scraper)
                 except ValueError:
                     logger.error(
-                        f"{output_level} {header_or_hxltag_str} {header_or_hxltag} not found in {input_level} {lookup}!"
+                        f"{output_level} {header_or_hxltag_str} {header_or_hxltag} not found in {input_level} input!"
                     )
         return aggregation_scrapers
 
@@ -265,10 +263,7 @@ class Aggregator(BaseScraper):
         output_valdicts = self.get_values(output_level)
         output_values = output_valdicts[0]
         input_valdicts = list()
-        if self.use_hxl:
-            input_headers_or_hxltags = self.datasetinfo["hxltags"]
-        else:
-            input_headers_or_hxltags = self.datasetinfo["headers"]
+        input_headers_or_hxltags = self.datasetinfo["input"]
         for input_header_or_hxltag in input_headers_or_hxltags:
             input_valdicts.append(self.input_values[input_header_or_hxltag])
         found_adms = set()

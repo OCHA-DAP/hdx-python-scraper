@@ -86,8 +86,8 @@ class ConfigurableScraper(BaseScraper):
         self.use_hxl_called = False
         headers = {self.level_name: (list(), list())}
         for subset in self.subsets:
-            headers[self.level_name][0].extend(subset["output_cols"])
-            headers[self.level_name][1].extend(subset["output_hxltags"])
+            headers[self.level_name][0].extend(subset["output"])
+            headers[self.level_name][1].extend(subset["output_hxl"])
         self.can_fallback = True
         if len(headers[self.level_name][0]) == 0:
             use_hxl = self.datasetinfo.get("use_hxl", False)
@@ -111,22 +111,18 @@ class ConfigurableScraper(BaseScraper):
             subsets = [
                 {
                     "filter": datasetinfo.get("filter"),
-                    "input_cols": datasetinfo.get("input_cols", list()),
-                    "input_transforms": datasetinfo.get(
-                        "input_transforms", dict()
-                    ),
+                    "input": datasetinfo.get("input", list()),
+                    "transform": datasetinfo.get("transform", dict()),
                     "population_key": datasetinfo.get("population_key"),
-                    "process_cols": datasetinfo.get("process_cols", list()),
+                    "process": datasetinfo.get("process", list()),
                     "input_keep": datasetinfo.get("input_keep", list()),
                     "input_append": datasetinfo.get("input_append", list()),
-                    "sum_cols": datasetinfo.get("sum_cols"),
+                    "sum": datasetinfo.get("sum"),
                     "input_ignore_vals": datasetinfo.get(
                         "input_ignore_vals", list()
                     ),
-                    "output_cols": datasetinfo.get("output_cols", list()),
-                    "output_hxltags": datasetinfo.get(
-                        "output_hxltags", list()
-                    ),
+                    "output": datasetinfo.get("output", list()),
+                    "output_hxl": datasetinfo.get("output_hxl", list()),
                 }
             ]
         return subsets
@@ -147,10 +143,8 @@ class ConfigurableScraper(BaseScraper):
         Returns:
             List[Tuple]: List of (hxltag, date, source, source url)
         """
-        date = self.datasetinfo.get("date")
-        use_date_from_date_col = self.datasetinfo.get(
-            "use_date_from_date_col", False
-        )
+        date = self.datasetinfo.get("source_date")
+        use_date_from_date_col = self.datasetinfo.get("use_date", False)
         if not date or use_date_from_date_col:
             date = self.rowparser.get_maxdate()
             if date == 0:
@@ -164,7 +158,7 @@ class ConfigurableScraper(BaseScraper):
                 date = get_datetime_from_timestamp(date)
             else:
                 raise ValueError("No date type specified!")
-        self.datasetinfo["date"] = date
+        self.datasetinfo["source_date"] = date
         return super().add_sources()
 
     def add_population(self):
@@ -229,26 +223,26 @@ class ConfigurableScraper(BaseScraper):
                                 adm_cols.append(hxltag)
                         continue
             if (
-                hxltag == self.datasetinfo.get("date_col")
+                hxltag == self.datasetinfo.get("date")
                 and self.datasetinfo.get("include_date", False) is False
             ):
                 continue
             input_cols.append(hxltag)
             columns.append(header)
-        self.datasetinfo["adm_cols"] = adm_cols
+        self.datasetinfo["adm"] = adm_cols
         for subset in self.subsets:
-            orig_input_cols = subset.get("input_cols", list())
+            orig_input_cols = subset.get("input", list())
             if not orig_input_cols:
                 orig_input_cols.extend(input_cols)
-            subset["input_cols"] = orig_input_cols
-            orig_columns = subset.get("output_cols", list())
+            subset["input"] = orig_input_cols
+            orig_columns = subset.get("output", list())
             if not orig_columns:
                 orig_columns.extend(columns)
-            subset["output_cols"] = orig_columns
-            orig_hxltags = subset.get("output_hxltags", list())
+            subset["output"] = orig_columns
+            orig_hxltags = subset.get("output_hxl", list())
             if not orig_hxltags:
                 orig_hxltags.extend(input_cols)
-            subset["output_hxltags"] = orig_hxltags
+            subset["output_hxl"] = orig_hxltags
             if headers:
                 headers[self.level_name][0].extend(orig_columns)
                 headers[self.level_name][1].extend(orig_hxltags)
@@ -269,7 +263,7 @@ class ConfigurableScraper(BaseScraper):
 
         valuedicts = dict()
         for subset in self.subsets:
-            for _ in subset["input_cols"]:
+            for _ in subset["input"]:
                 dict_of_lists_add(valuedicts, subset["filter"], dict())
 
         def add_row(row):
@@ -281,12 +275,12 @@ class ConfigurableScraper(BaseScraper):
                     continue
                 filter = subset["filter"]
                 input_ignore_vals = subset.get("input_ignore_vals", list())
-                input_transforms = subset.get("input_transforms", dict())
-                sum_cols = subset.get("sum_cols")
-                process_cols = subset.get("process_cols")
+                input_transforms = subset.get("transform", dict())
+                sum_cols = subset.get("sum")
+                process_cols = subset.get("process")
                 input_append = subset.get("input_append", list())
                 input_keep = subset.get("input_keep", list())
-                for i, valcol in enumerate(subset["input_cols"]):
+                for i, valcol in enumerate(subset["input"]):
                     valuedict = valuedicts[filter][i]
                     val = get_rowval(row, valcol)
                     input_transform = input_transforms.get(valcol)
@@ -316,12 +310,12 @@ class ConfigurableScraper(BaseScraper):
                 population_str = "self.population_lookup[adm]"
             else:
                 population_str = "self.population_lookup[population_key]"
-            process_cols = subset.get("process_cols")
+            process_cols = subset.get("process")
             input_keep = subset.get("input_keep", list())
-            sum_cols = subset.get("sum_cols")
+            sum_cols = subset.get("sum")
             input_ignore_vals = subset.get("input_ignore_vals", list())
-            valcols = subset["input_cols"]
-            output_hxltags = subset["output_hxltags"]
+            valcols = subset["input"]
+            output_hxltags = subset["output_hxl"]
             # Indices of list sorted by length
             sorted_len_indices = sorted(
                 range(len(valcols)),
@@ -467,12 +461,12 @@ class ConfigurableScraper(BaseScraper):
         header_to_hxltag = self.use_hxl(None, file_headers, iterator)
         if "source_url" not in self.datasetinfo:
             self.datasetinfo["source_url"] = self.datasetinfo["url"]
-        date = self.datasetinfo.get("date")
+        date = self.datasetinfo.get("source_date")
         if date:
             if isinstance(date, str):
-                self.datasetinfo["date"] = parse_date(date)
+                self.datasetinfo["source_date"] = parse_date(date)
         if not date or self.datasetinfo.get("force_date_today", False):
-            self.datasetinfo["date"] = self.today
+            self.datasetinfo["source_date"] = self.today
         self.rowparser = RowParser(
             self.name,
             self.countryiso3s,

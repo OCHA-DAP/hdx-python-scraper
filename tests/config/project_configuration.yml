@@ -21,7 +21,7 @@ json:
           key: "cumulative"
           filters:
             "#country+code": "{{countries_to_save}}"
-          hxltags:
+          hxl:
             - "#country+code"
             - "#country+name"
             - "#population"
@@ -32,7 +32,7 @@ json:
           filters:
             "#country+code":
               - "AFG"
-          hxltags:
+          hxl:
             - "#country+code"
             - "#country+name"
             - "#population"
@@ -42,7 +42,7 @@ json:
 
 additional_sources:
   - indicator: "#date+start+conflict"
-    date: "2022-02-24"
+    source_date: "2022-02-24"
     source: "Meduza"
     source_url: "https://meduza.io/en/news/2022/02/24/putin-announces-start-of-military-operation-in-eastern-ukraine"
 
@@ -58,37 +58,37 @@ scraper_national:
     sort:
       keys:
         - "Year"
-    adm_cols:
+    adm:
       - "Country Code"
     adm_exact: True
-    date_col: "Year"
+    date: "Year"
     date_type: "year"
-    input_cols:
+    input:
       - "Value"
-    output_cols:
+    output:
       - "Population"
-    output_hxltags:
+    output_hxl:
       - "#population"
   # only for testing dividing by population
   who_national:
     source: "WHO"
     url: "tests/fixtures/WHO-COVID-19-global-data.csv"
     format: "csv"
-    adm_cols:
+    adm:
       - "Country_code"
-    date_col: "Date_reported"
+    date: "Date_reported"
     date_type: "date"
-    use_date_from_date_col: True
-    input_cols:
+    use_date: True
+    input:
       - "Cumulative_cases"
       - "Cumulative_deaths"
-    process_cols:
+    process:
       - "number_format(Cumulative_cases / #population * 100000, format='%.2f')"
       - "number_format(Cumulative_deaths / #population * 100000, format='%.2f')"
-    output_cols:
+    output:
       - "CasesPer100000"
       - "DeathsPer100000"
-    output_hxltags:
+    output_hxl:
       - "#affected+infected+per100000"
       - "#affected+killed+per100000"
   # A fake one where we sum all values in cumulative column across dates which in practice makes no sense
@@ -96,25 +96,25 @@ scraper_national:
     source: "WHO"
     url: "tests/fixtures/WHO-COVID-19-global-data.csv"
     format: "csv"
-    adm_cols:
+    adm:
       - "Country_code"
-    date_col: "Date_reported"
+    date: "Date_reported"
     date_type: "date"
-    use_date_from_date_col: True
+    use_date: True
     subsets:
       - filter: "Date_reported == '2020-08-06'"
-        input_cols:
+        input:
           - "Cumulative_cases"
           - "Cumulative_deaths"
-        sum_cols:
+        sum:
           - formula: "number_format(Cumulative_cases / #population * 100000, format='%.2f')"
             mustbepopulated: True
           - formula: "number_format(Cumulative_deaths / #population * 100000, format='%.2f')"
             mustbepopulated: True
-        output_cols:
+        output:
           - "Cases2Per100000"
           - "Deaths2Per100000"
-        output_hxltags:
+        output_hxl:
           - "#affected+infected+2+per100000"
           - "#affected+killed+2+per100000"
   access:
@@ -139,7 +139,7 @@ scraper_national:
     sort:
       keys:
         - "#country+code"
-    input_transforms:
+    transform:
       "#access+visas+pct": "get_numeric_if_possible(#access+visas+pct)"
       "#access+travel+pct": "get_numeric_if_possible(#access+travel+pct)"
       "#activity+cerf+project+insecurity+pct": "get_numeric_if_possible(#activity+cerf+project+insecurity+pct)"
@@ -147,36 +147,36 @@ scraper_national:
       "#population+education": "get_numeric_if_possible(#population+education)"
   sadd:
     source: "SADD"
-    date: "2020-08-07"
+    source_date: "2020-08-07"
     url: "tests/fixtures/covid-19-sex-disaggregated-data.csv"
     format: "csv"
     external_filter:
       url: "https://github.com/mcarans/hdx-python-scraper/raw/main/tests/fixtures/sadd-countries-to-include.csv"
-      hxltags:
+      hxl:
         - "#country+code+v_iso2"
-    adm_cols:
+    adm:
       - "Country code"
-    input_cols:
+    input:
       - "Cases (% male)"
       - "Cases (% female)"
       - "Deaths (% male)"
       - "Deaths (% female)"
-    input_transforms:
+    transform:
       "Cases (% male)": "get_numeric_if_possible(Cases (% male))"
       "Cases (% female)": "get_numeric_if_possible(Cases (% female))"
       "Deaths (% male)": "get_numeric_if_possible(Deaths (% male))"
       "Deaths (% female)": "get_numeric_if_possible(Deaths (% female))"
-    process_cols:
+    process:
       - "number_format(Cases (% male))"
       - "number_format(Cases (% female))"
       - "number_format(Deaths (% male))"
       - "number_format(Deaths (% female))"
-    output_cols:
+    output:
       - "Cases (% male)"
       - "Cases (% female)"
       - "Deaths (% male)"
       - "Deaths (% female)"
-    output_hxltags:
+    output_hxl:
       - "#affected+infected+m+pct"
       - "#affected+f+infected+pct"
       - "#affected+killed+m+pct"
@@ -188,21 +188,21 @@ scraper_national:
     use_hxl: True
     external_filter:
       url: "https://github.com/OCHA-DAP/hdx-python-scraper/raw/main/tests/fixtures/COVID-19%20Vaccine%20Doses%20in%20HRP%20Countries%20-%20Data%20HXL.csv"
-      hxltags:
+      hxl:
        - "#country+code"
-    adm_cols:
+    adm:
       - "#country+code"
-    date_col: "#date"
+    date: "#date"
     date_type: "date"
-    input_cols:
+    input:
       - "#total+vaccinations"
-    process_cols:
+    process:
       - "#total+vaccinations"
       - "number_format((#total+vaccinations / 2) / #population)"
-    output_cols:
+    output:
       - "TotalDosesAdministered"
       - "PopulationCoverageAdministeredDoses"
-    output_hxltags:
+    output_hxl:
       - "#capacity+doses+administered+total"
       - "#capacity+doses+administered+coverage+pct"
   # for testing broken url
@@ -213,17 +213,17 @@ scraper_national:
     use_hxl: True
     external_filter:
       url: "https://github.com/OCHA-DAP/hdx-python-scraper/raw/main/tests/fixtures/COVID-19%20Vaccine%20Doses%20in%20HRP%20Countries%20-%20Data%20HXL.csv"
-      hxltags:
+      hxl:
        - "#country+code"
-    adm_cols:
+    adm:
       - "#country+code"
-    date_col: "#date"
+    date: "#date"
     date_type: "date"
-    input_cols:
+    input:
       - "#total+vaccinations"
-    output_cols:
+    output:
       - "TotalDosesAdministered"
-    output_hxltags:
+    output_hxl:
       - "#capacity+doses+administered+total"
   covidtests:
     source: "Our World in Data"
@@ -232,22 +232,22 @@ scraper_national:
     format: "xlsx"
     prefilter: "new_tests is not None and new_tests > 0"
     force_date_today: True
-    date_col: "date"
+    date: "date"
     date_type: "date"
-    use_date_from_date_col: True
-    adm_cols:
+    use_date: True
+    adm:
       - "iso_code"
-    input_cols:
+    input:
       - "new_tests"
       - "new_tests_per_thousand"
       - "new_tests_smoothed_per_thousand"
       - "positive_rate"
-    output_cols:
+    output:
       - "New Tests"
       - "New Tests Per Thousand"
       - "New Tests Per Thousand (7-day)"
       - "Positive Test Rate"
-    output_hxltags:
+    output_hxl:
       - "#affected+tested"
       - "#affected+tested+per1000"
       - "#affected+tested+avg+per1000"
@@ -257,19 +257,19 @@ scraper_national:
     url: "tests/fixtures/displacement_data.csv"
     format: "csv"
     use_hxl: True
-    date_col: "#date+year"
+    date: "#date+year"
     date_type: "year"
-    input_cols:
+    input:
       - "#affected+idps+ind+stock+conflict"
       - "#affected+idps+ind+stock+disaster"
-    input_transforms:
+    transform:
       "#affected+idps+ind+stock+conflict": "int(#affected+idps+ind+stock+conflict) if #affected+idps+ind+stock+conflict else 0"
       "#affected+idps+ind+stock+disaster": "int(#affected+idps+ind+stock+disaster) if #affected+idps+ind+stock+disaster else 0"
-    process_cols:
+    process:
       - "#affected+idps+ind+stock+conflict + #affected+idps+ind+stock+disaster"
-    output_cols:
+    output:
       - "TotalIDPs"
-    output_hxltags:
+    output_hxl:
       - "#affected+displaced"
   casualties:
     source: "OHCHR"
@@ -277,33 +277,47 @@ scraper_national:
     url: "tests/fixtures/Ukraine Key Figures.csv"
     format: "csv"
     headers: 2
-    date_col: "Date"
+    date: "Date"
     date_type: "date"
     ignore_future_date: False
     adm_single: "UKR"
-    input_cols:
+    input:
       - "Civilian casualities(OHCHR) - Killed"
       - "Civilian casualities(OHCHR) - Injured"
-    output_cols:
+    output:
       - "CiviliansKilled"
       - "CiviliansInjured"
-    output_hxltags:
+    output_hxl:
       - "#affected+killed"
       - "#affected+injured"
 
 unhcr_myanmar_idps:
   url: "tests/fixtures/unhcr_myanmar_idps.json"
 
+education_closures:
+    dataset: "global-school-closures-covid19"
+    resource: "School Closures"
+    url: "tests/fixtures/covid_impact_education.csv"
+    format: "csv"
+    source_date: "2020-10-01"
+
+education_enrolment:
+    dataset: "global-school-closures-covid19"
+    resource: "Enrollment data"
+    url: "tests/fixtures/countries-enrollment-data-uis-feb-22.xlsx"
+    format: "xlsx"
+    source_date: "2020-10-01"
+
 scraper_global:
   covax:
     source: "covax"
-    date: "2020-08-07"
+    source_date: "2020-08-07"
     url: "tests/fixtures/COVID-19 Vaccine Doses in HRP Countries - Data HXL.csv"
     format: "csv"
     use_hxl: True
-    adm_cols:
+    adm:
       - "#country+code"
-    input_cols:
+    input:
       - "#capacity+covax+total"
       - "#capacity+covax+delivered+doses"
       - "#capacity+others+delivered+doses"
@@ -313,7 +327,7 @@ scraper_global:
       - "#capacity+covax+azskbio+doses"
     input_ignore_vals:
       - "N/A"
-    input_transforms:
+    transform:
       "#capacity+covax+total": "get_numeric_if_possible(#capacity+covax+total) if #capacity+covax+total else 0"
       "#capacity+covax+delivered+doses": "get_numeric_if_possible(#capacity+covax+delivered+doses) if #capacity+covax+delivered+doses else 0"
       "#capacity+others+delivered+doses": "get_numeric_if_possible(#capacity+others+delivered+doses) if #capacity+others+delivered+doses else 0"
@@ -321,7 +335,7 @@ scraper_global:
       "#capacity+covax+pfizerbiontech+doses": "get_numeric_if_possible(#capacity+covax+pfizerbiontech+doses) if #capacity+covax+pfizerbiontech+doses else 0"
       "#capacity+covax+azsii+doses": "get_numeric_if_possible(#capacity+covax+azsii+doses) if #capacity+covax+azsii+doses else 0"
       "#capacity+covax+azskbio+doses": "get_numeric_if_possible(#capacity+covax+azskbio+doses) if #capacity+covax+azskbio+doses else 0"
-    sum_cols:
+    sum:
       - formula: "number_format(#capacity+covax+total, format='%.0f')"
         mustbepopulated: False
       - formula: "number_format(#capacity+covax+delivered+doses, format='%.0f')"
@@ -336,7 +350,7 @@ scraper_global:
         mustbepopulated: False
       - formula: "number_format(#capacity+covax+azskbio+doses, format='%.0f')"
         mustbepopulated: False
-    output_cols:
+    output:
       - "Covax Interim Forecast Doses"
       - "Covax Delivered Doses"
       - "Other Delivered Doses"
@@ -344,7 +358,7 @@ scraper_global:
       - "Covax Pfizer-BioNTech Doses"
       - "Covax Astrazeneca-SII Doses"
       - "Covax Astrazeneca-SKBio Doses"
-    output_hxltags:
+    output_hxl:
       - "#capacity+doses+forecast+covax"
       - "#capacity+doses+delivered+covax"
       - "#capacity+doses+delivered+others"
@@ -359,28 +373,28 @@ scraper_global:
     use_hxl: True
     external_filter:
       url: "https://github.com/OCHA-DAP/hdx-python-scraper/raw/main/tests/fixtures/COVID-19%20Vaccine%20Doses%20in%20HRP%20Countries%20-%20Data%20HXL.csv"
-      hxltags:
+      hxl:
        - "#country+code"
-    adm_cols:
+    adm:
       - "#country+code"
-    date_col: "#date"
+    date: "#date"
     date_type: "date"
     date_level: "national"
-    input_cols:
+    input:
       - "#total+vaccinations"
-    sum_cols:
+    sum:
       - formula: "number_format(#total+vaccinations, format='%.0f')"
         mustbepopulated: False
-    output_cols:
+    output:
       - "TotalDosesAdministered"
-    output_hxltags:
+    output_hxl:
       - "#capacity+doses+administered+total"
   cerf_global:
     dataset: "cerf-covid-19-allocations"
     url: "tests/fixtures/full_pfmb_allocations.csv"
     format: "csv"
     force_date_today: True
-    date_col: "AllocationYear"
+    date: "AllocationYear"
     date_type: "year"
     single_maxdate: True
     filter_cols:
@@ -388,172 +402,172 @@ scraper_global:
       - "GenderMarker"
     subsets:
       - filter: "FundType == 'CBPF'"
-        input_cols:
+        input:
           - "Budget"
-        input_transforms:
+        transform:
           Budget: "float(Budget)"
-        sum_cols:
+        sum:
           - formula: "Budget"
             mustbepopulated: False
-        output_cols:
+        output:
           - "CBPFFunding"
-        output_hxltags:
+        output_hxl:
           - "#value+cbpf+funding+total+usd"
       - filter: "FundType == 'CBPF' and GenderMarker == ''"
-        input_cols:
+        input:
           - "Budget"
-        input_transforms:
+        transform:
           Budget: "float(Budget)"
-        sum_cols:
+        sum:
           - formula: "Budget"
             mustbepopulated: False
-        output_cols:
+        output:
           - "CBPFFundingGMEmpty"
-        output_hxltags:
+        output_hxl:
           - "#value+cbpf+funding+gmempty+total+usd"
       - filter: "FundType == 'CBPF' and GenderMarker == '0'"
-        input_cols:
+        input:
           - "Budget"
-        input_transforms:
+        transform:
           Budget: "float(Budget)"
-        sum_cols:
+        sum:
           - formula: "Budget"
             mustbepopulated: False
-        output_cols:
+        output:
           - "CBPFFundingGM0"
-        output_hxltags:
+        output_hxl:
           - "#value+cbpf+funding+gm0+total+usd"
       - filter: "FundType == 'CBPF' and GenderMarker == '1'"
-        input_cols:
+        input:
           - "Budget"
-        input_transforms:
+        transform:
           Budget: "float(Budget)"
-        sum_cols:
+        sum:
           - formula: "Budget"
             mustbepopulated: False
-        output_cols:
+        output:
           - "CBPFFundingGM1"
-        output_hxltags:
+        output_hxl:
           - "#value+cbpf+funding+gm1+total+usd"
       - filter: "FundType == 'CBPF' and GenderMarker == '2'"
-        input_cols:
+        input:
           - "Budget"
-        input_transforms:
+        transform:
           Budget: "float(Budget)"
-        sum_cols:
+        sum:
           - formula: "Budget"
             mustbepopulated: False
-        output_cols:
+        output:
           - "CBPFFundingGM2"
-        output_hxltags:
+        output_hxl:
           - "#value+cbpf+funding+gm2+total+usd"
       - filter: "FundType == 'CBPF' and GenderMarker == '3'"
-        input_cols:
+        input:
           - "Budget"
-        input_transforms:
+        transform:
           Budget: "float(Budget)"
-        sum_cols:
+        sum:
           - formula: "Budget"
             mustbepopulated: False
-        output_cols:
+        output:
           - "CBPFFundingGM3"
-        output_hxltags:
+        output_hxl:
           - "#value+cbpf+funding+gm3+total+usd"
       - filter: "FundType == 'CBPF' and GenderMarker == '4'"
-        input_cols:
+        input:
           - "Budget"
-        input_transforms:
+        transform:
           Budget: "float(Budget)"
-        sum_cols:
+        sum:
           - formula: "Budget"
             mustbepopulated: False
-        output_cols:
+        output:
           - "CBPFFundingGM4"
-        output_hxltags:
+        output_hxl:
           - "#value+cbpf+funding+gm4+total+usd"
       - filter: "FundType == 'CERF'"
-        input_cols:
+        input:
           - "Budget"
-        input_transforms:
+        transform:
           Budget: "float(Budget)"
-        sum_cols:
+        sum:
           - formula: "Budget"
             mustbepopulated: False
-        output_cols:
+        output:
           - "CERFFunding"
-        output_hxltags:
+        output_hxl:
           - "#value+cerf+funding+total+usd"
       - filter: "FundType == 'CERF' and GenderMarker == ''"
-        input_cols:
+        input:
           - "Budget"
-        input_transforms:
+        transform:
           Budget: "float(Budget)"
-        sum_cols:
+        sum:
           - formula: "Budget"
             mustbepopulated: False
-        output_cols:
+        output:
           - "CERFFundingGMEmpty"
-        output_hxltags:
+        output_hxl:
           - "#value+cerf+funding+gmempty+total+usd"
       - filter: "FundType == 'CERF' and GenderMarker == '0'"
-        input_cols:
+        input:
           - "Budget"
-        input_transforms:
+        transform:
           Budget: "float(Budget)"
-        sum_cols:
+        sum:
           - formula: "Budget"
             mustbepopulated: False
-        output_cols:
+        output:
           - "CERFFundingGM0"
-        output_hxltags:
+        output_hxl:
           - "#value+cerf+funding+gm0+total+usd"
       - filter: "FundType == 'CERF' and GenderMarker == '1'"
-        input_cols:
+        input:
           - "Budget"
-        input_transforms:
+        transform:
           Budget: "float(Budget)"
-        sum_cols:
+        sum:
           - formula: "Budget"
             mustbepopulated: False
-        output_cols:
+        output:
           - "CERFFundingGM1"
-        output_hxltags:
+        output_hxl:
           - "#value+cerf+funding+gm1+total+usd"
       - filter: "FundType == 'CERF' and GenderMarker == '2'"
-        input_cols:
+        input:
           - "Budget"
-        input_transforms:
+        transform:
           Budget: "float(Budget)"
-        sum_cols:
+        sum:
           - formula: "Budget"
             mustbepopulated: False
-        output_cols:
+        output:
           - "CERFFundingGM2"
-        output_hxltags:
+        output_hxl:
           - "#value+cerf+funding+gm2+total+usd"
       - filter: "FundType == 'CERF' and GenderMarker == '3'"
-        input_cols:
+        input:
           - "Budget"
-        input_transforms:
+        transform:
           Budget: "float(Budget)"
-        sum_cols:
+        sum:
           - formula: "Budget"
             mustbepopulated: False
-        output_cols:
+        output:
           - "CERFFundingGM3"
-        output_hxltags:
+        output_hxl:
           - "#value+cerf+funding+gm3+total+usd"
       - filter: "FundType == 'CERF' and GenderMarker == '4'"
-        input_cols:
+        input:
           - "Budget"
-        input_transforms:
+        transform:
           Budget: "float(Budget)"
-        sum_cols:
+        sum:
           - formula: "Budget"
             mustbepopulated: False
-        output_cols:
+        output:
           - "CERFFundingGM4"
-        output_hxltags:
+        output_hxl:
           - "#value+cerf+funding+gm4+total+usd"
   # for testing broken url with subsets
   broken_cerf_url:
@@ -561,7 +575,7 @@ scraper_global:
     url: "NOTEXIST.csv"
     format: "csv"
     force_date_today: True
-    date_col: "AllocationYear"
+    date: "AllocationYear"
     date_type: "year"
     single_maxdate: True
     filter_cols:
@@ -569,172 +583,172 @@ scraper_global:
       - "GenderMarker"
     subsets:
       - filter: "FundType == 'CBPF'"
-        input_cols:
+        input:
           - "Budget"
-        input_transforms:
+        transform:
           Budget: "float(Budget)"
-        sum_cols:
+        sum:
           - formula: "Budget"
             mustbepopulated: False
-        output_cols:
+        output:
           - "CBPFFunding"
-        output_hxltags:
+        output_hxl:
           - "#value+cbpf+funding+total+usd"
       - filter: "FundType == 'CBPF' and GenderMarker == ''"
-        input_cols:
+        input:
           - "Budget"
-        input_transforms:
+        transform:
           Budget: "float(Budget)"
-        sum_cols:
+        sum:
           - formula: "Budget"
             mustbepopulated: False
-        output_cols:
+        output:
           - "CBPFFundingGMEmpty"
-        output_hxltags:
+        output_hxl:
           - "#value+cbpf+funding+gmempty+total+usd"
       - filter: "FundType == 'CBPF' and GenderMarker == '0'"
-        input_cols:
+        input:
           - "Budget"
-        input_transforms:
+        transform:
           Budget: "float(Budget)"
-        sum_cols:
+        sum:
           - formula: "Budget"
             mustbepopulated: False
-        output_cols:
+        output:
           - "CBPFFundingGM0"
-        output_hxltags:
+        output_hxl:
           - "#value+cbpf+funding+gm0+total+usd"
       - filter: "FundType == 'CBPF' and GenderMarker == '1'"
-        input_cols:
+        input:
           - "Budget"
-        input_transforms:
+        transform:
           Budget: "float(Budget)"
-        sum_cols:
+        sum:
           - formula: "Budget"
             mustbepopulated: False
-        output_cols:
+        output:
           - "CBPFFundingGM1"
-        output_hxltags:
+        output_hxl:
           - "#value+cbpf+funding+gm1+total+usd"
       - filter: "FundType == 'CBPF' and GenderMarker == '2'"
-        input_cols:
+        input:
           - "Budget"
-        input_transforms:
+        transform:
           Budget: "float(Budget)"
-        sum_cols:
+        sum:
           - formula: "Budget"
             mustbepopulated: False
-        output_cols:
+        output:
           - "CBPFFundingGM2"
-        output_hxltags:
+        output_hxl:
           - "#value+cbpf+funding+gm2+total+usd"
       - filter: "FundType == 'CBPF' and GenderMarker == '3'"
-        input_cols:
+        input:
           - "Budget"
-        input_transforms:
+        transform:
           Budget: "float(Budget)"
-        sum_cols:
+        sum:
           - formula: "Budget"
             mustbepopulated: False
-        output_cols:
+        output:
           - "CBPFFundingGM3"
-        output_hxltags:
+        output_hxl:
           - "#value+cbpf+funding+gm3+total+usd"
       - filter: "FundType == 'CBPF' and GenderMarker == '4'"
-        input_cols:
+        input:
           - "Budget"
-        input_transforms:
+        transform:
           Budget: "float(Budget)"
-        sum_cols:
+        sum:
           - formula: "Budget"
             mustbepopulated: False
-        output_cols:
+        output:
           - "CBPFFundingGM4"
-        output_hxltags:
+        output_hxl:
           - "#value+cbpf+funding+gm4+total+usd"
       - filter: "FundType == 'CERF'"
-        input_cols:
+        input:
           - "Budget"
-        input_transforms:
+        transform:
           Budget: "float(Budget)"
-        sum_cols:
+        sum:
           - formula: "Budget"
             mustbepopulated: False
-        output_cols:
+        output:
           - "CERFFunding"
-        output_hxltags:
+        output_hxl:
           - "#value+cerf+funding+total+usd"
       - filter: "FundType == 'CERF' and GenderMarker == ''"
-        input_cols:
+        input:
           - "Budget"
-        input_transforms:
+        transform:
           Budget: "float(Budget)"
-        sum_cols:
+        sum:
           - formula: "Budget"
             mustbepopulated: False
-        output_cols:
+        output:
           - "CERFFundingGMEmpty"
-        output_hxltags:
+        output_hxl:
           - "#value+cerf+funding+gmempty+total+usd"
       - filter: "FundType == 'CERF' and GenderMarker == '0'"
-        input_cols:
+        input:
           - "Budget"
-        input_transforms:
+        transform:
           Budget: "float(Budget)"
-        sum_cols:
+        sum:
           - formula: "Budget"
             mustbepopulated: False
-        output_cols:
+        output:
           - "CERFFundingGM0"
-        output_hxltags:
+        output_hxl:
           - "#value+cerf+funding+gm0+total+usd"
       - filter: "FundType == 'CERF' and GenderMarker == '1'"
-        input_cols:
+        input:
           - "Budget"
-        input_transforms:
+        transform:
           Budget: "float(Budget)"
-        sum_cols:
+        sum:
           - formula: "Budget"
             mustbepopulated: False
-        output_cols:
+        output:
           - "CERFFundingGM1"
-        output_hxltags:
+        output_hxl:
           - "#value+cerf+funding+gm1+total+usd"
       - filter: "FundType == 'CERF' and GenderMarker == '2'"
-        input_cols:
+        input:
           - "Budget"
-        input_transforms:
+        transform:
           Budget: "float(Budget)"
-        sum_cols:
+        sum:
           - formula: "Budget"
             mustbepopulated: False
-        output_cols:
+        output:
           - "CERFFundingGM2"
-        output_hxltags:
+        output_hxl:
           - "#value+cerf+funding+gm2+total+usd"
       - filter: "FundType == 'CERF' and GenderMarker == '3'"
-        input_cols:
+        input:
           - "Budget"
-        input_transforms:
+        transform:
           Budget: "float(Budget)"
-        sum_cols:
+        sum:
           - formula: "Budget"
             mustbepopulated: False
-        output_cols:
+        output:
           - "CERFFundingGM3"
-        output_hxltags:
+        output_hxl:
           - "#value+cerf+funding+gm3+total+usd"
       - filter: "FundType == 'CERF' and GenderMarker == '4'"
-        input_cols:
+        input:
           - "Budget"
-        input_transforms:
+        transform:
           Budget: "float(Budget)"
-        sum_cols:
+        sum:
           - formula: "Budget"
             mustbepopulated: False
-        output_cols:
+        output:
           - "CERFFundingGM4"
-        output_hxltags:
+        output_hxl:
           - "#value+cerf+funding+gm4+total+usd"
 
 
@@ -749,18 +763,18 @@ other:
     sort:
       keys:
         - "Year"
-    adm_cols:
+    adm:
       - "Country Code"
     adm_vals:
       - "WLD"
-    date_col: "Year"
+    date: "Year"
     date_type: "year"
-    input_cols:
+    input:
       - "Value"
     population_key: "global"
-    output_cols:
+    output:
       - "Population"
-    output_hxltags:
+    output_hxl:
       - "#population"
   gam_other:
     source: "UNICEF"
@@ -775,58 +789,58 @@ other:
         new: "Region Name"
       - original: "Region {{1}} Point Estimate"
         new: "Region Point Estimate"
-    adm_cols:
+    adm:
       - "ISO"
       - "Region Name"
     adm_vals:
       - ["AFG"]
       - ["AF09", "AF24"]
-    date_col: "Year*"
+    date: "Year*"
     date_type: "year"
-    input_cols:
+    input:
       - "Region Point Estimate"
-    output_cols:
+    output:
       - "Malnutrition Estimate"
-    output_hxltags:
+    output_hxl:
       - "#severity+malnutrition+num+subnational"
   ourworldindata_other:
     source: "Our World in Data"
     url: "tests/fixtures/ourworldindata_vaccinedoses.csv"
     format: "csv"
     use_hxl: True
-    adm_cols:
+    adm:
       - "#country+code"
     adm_vals:
       - "OWID_WRL"
-    date_col: "#date"
+    date: "#date"
     date_type: "date"
     date_level: "national"
-    input_cols:
+    input:
       - "#total+vaccinations"
-    output_cols:
+    output:
       - "TotalDosesAdministered"
-    output_hxltags:
+    output_hxl:
       - "#capacity+doses+administered+total"
   altworldindata:
     source: "Our World in Data"
     url: "tests/fixtures/ourworldindata_vaccinedoses.csv"
     format: "csv"
     use_hxl: True
-    prefilter: "#country+code == 'OWID_WRL'"
-    date_col: "#date"
-    date_type: "date"
     filter_cols:
       - "#country+code"
-    input_cols:
+    prefilter: "#country+code == 'OWID_WRL'"
+    date: "#date"
+    date_type: "date"
+    input:
       - "#total+vaccinations"
     population_key: "global"
-    process_cols:
+    process:
       - "#total+vaccinations"
       - "number_format((#total+vaccinations / 2) / #population)"
-    output_cols:
+    output:
       - "TotalDosesAdministered"
       - "PopulationCoverageAdministeredDoses"
-    output_hxltags:
+    output_hxl:
       - "#capacity+doses+administered+total"
       - "#capacity+doses+administered+coverage+pct"
 
@@ -844,16 +858,16 @@ scraper_subnational:
         new: "Region Name"
       - original: "Region {{1}} Point Estimate"
         new: "Region Point Estimate"
-    adm_cols:
+    adm:
       - "ISO"
       - "Region Name"
-    date_col: "Year*"
+    date: "Year*"
     date_type: "year"
-    input_cols:
+    input:
       - "Region Point Estimate"
-    output_cols:
+    output:
       - "Malnutrition Estimate"
-    output_hxltags:
+    output_hxl:
       - "#severity+malnutrition+num+subnational"
 
 # aggregation
@@ -877,8 +891,8 @@ aggregation_hxl:
     "#affected+infected+per100000":
       action: "mean"
     "#affected+infected+perpop":
-      header: "CasesPerPopulation"
-      hxltags:
+      output: "CasesPerPopulation"
+      input:
         - "#affected+infected+per100000"
       action: "eval"
       population_key: "global"
@@ -904,8 +918,8 @@ aggregation_nohxl:
     "CasesPer100000":
       action: "mean"
     "CasesPerPopulation":
-      hxltag: "#affected+infected+perpop"
-      headers:
+      output: "#affected+infected+perpop"
+      input:
         - "CasesPer100000"
       action: "eval"
       population_key: "global"

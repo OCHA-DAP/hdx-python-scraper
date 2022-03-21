@@ -294,7 +294,7 @@ class Runner:
         hxltags = set()
         sources = list()
         for sourceinfo in additional_sources:
-            date = sourceinfo.get("date")
+            date = sourceinfo.get("source_date")
             if date is None:
                 if sourceinfo.get("force_date_today", False):
                     date = self.today.strftime("%Y-%m-%d")
