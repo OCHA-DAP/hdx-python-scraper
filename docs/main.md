@@ -248,7 +248,7 @@ json can be saved as separate files.
               key: "cumulative"
               filters:
                 "#country+code": "{{countries_to_save}}"
-              hxl:
+              output:
                 - "#country+code"
                 - "#country+name"
                 - "#population"
@@ -259,7 +259,7 @@ json can be saved as separate files.
               filters:
                 "#country+code":
                   - "AFG"
-              hxl:
+              output:
                 - "#country+code"
                 - "#country+name"
                 - "#population"

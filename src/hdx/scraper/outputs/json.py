@@ -226,7 +226,7 @@ class JsonFile(BaseOutput):
                 key = f'{tabdetails["tab"]}{self.suffix}'
                 newjson = self.json.get(key)
                 filters = tabdetails.get("filters", dict())
-                hxltags = tabdetails.get("hxltags")
+                hxltags = tabdetails.get("output")
                 if (filters or hxltags or remove) and isinstance(
                     newjson, list
                 ):
