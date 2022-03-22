@@ -84,10 +84,11 @@ class Aggregator(BaseScraper):
                         break
                 if not exists:
                     continue
+                output = process_info["output"]
                 if use_hxl:
-                    headers = ((process_info["output"],), (header_or_hxltag,))
+                    headers = ((output,), (header_or_hxltag,))
                 else:
-                    headers = ((header_or_hxltag,), (process_info["output"],))
+                    headers = ((header_or_hxltag,), (output,))
                 scraper = cls(
                     name,
                     process_info,
@@ -106,14 +107,20 @@ class Aggregator(BaseScraper):
                         "rename", header_or_hxltag
                     )
                     if use_hxl:
+                        output = process_info.get(
+                            "output", input_headers[0][index]
+                        )
                         headers = (
-                            (input_headers[0][index],),
+                            (output,),
                             (header_or_hxltag,),
                         )
                     else:
+                        output = process_info.get(
+                            "output", input_headers[1][index]
+                        )
                         headers = (
                             (header_or_hxltag,),
-                            (input_headers[1][index],),
+                            (output,),
                         )
                     scraper = cls(
                         name,
