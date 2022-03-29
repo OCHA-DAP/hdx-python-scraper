@@ -4,6 +4,7 @@ from datetime import datetime
 from typing import Any, Dict, Iterator, List, Optional, Tuple
 
 from hdx.data.dataset import Dataset
+from hdx.data.resource import Resource
 from hdx.utilities.dateparse import parse_date
 from hdx.utilities.downloader import Download
 
@@ -70,7 +71,7 @@ def read_tabular(
 
 def read_hdx_metadata(
     datasetinfo: MutableMapping, today: Optional[datetime] = None
-) -> None:
+) -> Optional[Resource]:
     """Read metadata from HDX dataset and add to input dictionary
 
     Args:
@@ -78,10 +79,11 @@ def read_hdx_metadata(
         today (Optional[datetime]): Value to use for today. Defaults to None (datetime.now()).
 
     Returns:
-        None
+        Optional[Resource]: The resource if a url was not given
     """
     dataset_name = datasetinfo["dataset"]
     dataset = Dataset.read_from_hdx(dataset_name)
+    resource = None
     url = datasetinfo.get("url")
     if not url:
         resource_name = datasetinfo.get("resource")
@@ -109,6 +111,7 @@ def read_hdx_metadata(
         datasetinfo["source"] = dataset["dataset_source"]
     if "source_url" not in datasetinfo:
         datasetinfo["source_url"] = dataset.get_hdx_url()
+    return resource
 
 
 def read_hdx(
