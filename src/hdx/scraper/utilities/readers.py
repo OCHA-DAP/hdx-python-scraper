@@ -87,9 +87,9 @@ def read_hdx_metadata(
     url = datasetinfo.get("url")
     if not url:
         resource_name = datasetinfo.get("resource")
-        format = datasetinfo["format"]
+        format = datasetinfo["format"].lower()
         for resource in dataset.get_resources():
-            if resource["format"] == format.upper():
+            if resource["format"].lower() == format:
                 if resource_name and resource["name"] != resource_name:
                     continue
                 url = resource["url"]
