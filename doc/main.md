@@ -28,6 +28,9 @@ install with:
 
 ## Breaking Changes
 
+From 1.6.6, configuration fields for output JSON renamed to `additional_inputs`, 
+`output` and `additional_outputs`.
+
 From 1.6.0, major renaming of configuration fields, mostly dropping _cols eg. `input`
 instead of `input_cols`
 
@@ -229,19 +232,19 @@ scratch:
       test: "https://docs.google.com/spreadsheets/d/SPREADSHEET_KEY_TEST/edit"
       scratch: "https://docs.google.com/spreadsheets/d/SPREADSHEET_KEY_SCRATCH/edit"
 
-The json outputs are then specified. Under the key “additional”, subsets of the full 
-json can be saved as separate files.
+The json outputs are then specified. Under the key “additional_outputs”, subsets of the 
+full json can be saved as separate files.
 
     json:
-      additional_json:
+      additional_inputs:
         - name: "Other"
           source: "Some org"
           source_url: "https://data.humdata.org/organization/world-bank-group"
           format: "json"
           url: "https://raw.githubusercontent.com/mcarans/hdx-python-scraper/master/tests/fixtures/additional_json.json"
           jsonpath: "[*]"
-      filepath: "test_tabular_all.json"
-      additional:
+      output: "test_tabular_all.json"
+      additional_outputs:
         - filepath: "test_tabular_population.json"
           tabs:
             - tab: "national"

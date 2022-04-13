@@ -163,7 +163,7 @@ class JsonFile(BaseOutput):
             # isinstance(values, DataFrame)
             self.generate_json_from_df(tabname, values, hxltags)
 
-    def add_additional_json(
+    def add_additional(
         self, downloader: Download, today: Optional[datetime] = None
     ) -> None:
         """Download JSON files and add them under keys defined in the configuration
@@ -175,7 +175,7 @@ class JsonFile(BaseOutput):
         Returns:
             None
         """
-        for datasetinfo in self.configuration.get("additional_json", list()):
+        for datasetinfo in self.configuration.get("additional_inputs", list()):
             headers, iterator = read(downloader, datasetinfo, today=today)
             hxl_row = next(iterator)
             if not isinstance(hxl_row, dict):
@@ -202,7 +202,7 @@ class JsonFile(BaseOutput):
             List[str]: List of file paths
         """
         filepaths = list()
-        filepath = self.configuration["filepath"]
+        filepath = self.configuration["output"]
         if folder:
             filepath = join(folder, filepath)
         logger.info(f"Writing JSON to {filepath}")
@@ -210,7 +210,7 @@ class JsonFile(BaseOutput):
         filepaths.append(filepath)
         for kwarg in kwargs:
             exec(f"{kwarg}={kwargs[kwarg]}")
-        additional = self.configuration.get("additional", list())
+        additional = self.configuration.get("additional_outputs", list())
         for filedetails in additional:
             json = dict()
             remove = filedetails.get("remove")

@@ -26,7 +26,8 @@ class BaseOutput:
         hxltags: Optional[Dict] = None,
         **kwargs,
     ) -> None:
-        """Update tab with values
+        """Update tab with values. Classes that inherit from this one should
+        implement this method.
 
         Args:
             tabname (str): Tab to update
@@ -44,7 +45,7 @@ class BaseOutput:
 
         Args:
             key (str): Key to update
-            rows (List[Dict]): List of dictionaries
+            row (Dict): Row to add
 
         Returns:
             None
@@ -86,7 +87,7 @@ class BaseOutput:
         """
         return
 
-    def add_additional_json(
+    def add_additional(
         self, downloader: Download, today: Optional[datetime] = None
     ) -> None:
         """Download files and add them under keys defined in the configuration

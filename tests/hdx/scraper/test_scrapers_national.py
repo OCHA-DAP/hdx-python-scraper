@@ -500,7 +500,7 @@ class TestScrapersNational:
                 fallbacks_used=True,
             )
             assert errors_on_exit.errors == [
-                "Using fallbacks for broken_owd_url! Error: Getting tabular stream for NOTEXIST.csv failed!"
+                "Using fallbacks for broken_owd_url! Error: [scheme-error] The data source could not be successfully loaded: [Errno 2] No such file or directory: 'NOTEXIST.csv'"
             ]
 
             runner = Runner(
@@ -556,7 +556,7 @@ class TestScrapersNational:
                 ],
             )
             assert errors_on_exit.errors == [
-                "Using fallbacks for broken_owd_url! Error: Getting tabular stream for NOTEXIST.csv failed!"
+                "Using fallbacks for broken_owd_url! Error: [scheme-error] The data source could not be successfully loaded: [Errno 2] No such file or directory: 'NOTEXIST.csv'"
             ]
             runner = Runner(
                 ("AFG", "MMR", "PHL"),
@@ -584,6 +584,6 @@ class TestScrapersNational:
                 ],
             )
             assert errors_on_exit.errors == [
-                "Using fallbacks for broken_owd_url! Error: Getting tabular stream for NOTEXIST.csv failed!",
+                "Using fallbacks for broken_owd_url! Error: [scheme-error] The data source could not be successfully loaded: [Errno 2] No such file or directory: 'NOTEXIST.csv'",
                 "Not using UNHCR Myanmar IDPs override! Error: Setup of Streaming Download of http:///NOT EXIST failed!",
             ]

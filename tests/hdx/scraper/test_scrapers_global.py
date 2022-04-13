@@ -535,8 +535,7 @@ class TestScraperGlobal:
                 )
                 assert f"Using fallbacks for {name}!" in caplog.text
                 assert (
-                    "Getting tabular stream for NOTEXIST.csv failed!"
-                    in caplog.text
+                    "No such file or directory: 'NOTEXIST.csv'" in caplog.text
                 )
 
             name = "ourworldindata"
