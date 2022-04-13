@@ -618,7 +618,7 @@ positives which is very rare so is usually not needed. It populates the
         admin_exact: True
         date: "Year"
         date_type: "year"
-        date_condition: "Value != ''"
+        date_condition: "Value is not None"
         input:
           - "Value"
         output:
