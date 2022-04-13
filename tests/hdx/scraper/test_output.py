@@ -61,10 +61,10 @@ class TestOutput:
                 excelout.update_tab("national", output, hxltags=hxltags)
                 googleout.update_tab("national", output, hxltags=hxltags)
                 jsonout.update_tab("national", output, hxltags=hxltags)
-                noout.add_additional_json(
+                noout.add_additional(
                     downloader, today=parse_date("2020-10-01")
                 )
-                jsonout.add_additional_json(
+                jsonout.add_additional(
                     downloader, today=parse_date("2020-10-01")
                 )
                 noout.save()
@@ -108,7 +108,7 @@ class TestOutput:
                 excelout.update_tab("national", df, hxltags=hxltags)
                 googleout.update_tab("national", df, hxltags=hxltags)
                 jsonout.update_tab("national", df, hxltags=hxltags)
-                jsonout.add_additional_json(
+                jsonout.add_additional(
                     downloader, today=parse_date("2020-10-01")
                 )
                 filepaths = jsonout.save(tempdir, countries_to_save=["AFG"])

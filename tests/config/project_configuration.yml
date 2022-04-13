@@ -6,15 +6,15 @@ googlesheets:
   test: "https://docs.google.com/spreadsheets/d/1JOJUE853J3TFNYtBQgB8TOFNJdtfTzgqDVhaPK99q7A/edit"
 
 json:
-  additional_json:
+  additional_inputs:
     - name: "Other"
       source: "Some org"
       source_url: "https://data.humdata.org/organization/world-bank-group"
       format: "json"
       url: "https://raw.githubusercontent.com/OCHA-DAP/hdx-python-scraper/main/tests/fixtures/additional_json.json"
       jsonpath: "[*]"
-  filepath: "test_scraper_all.json"
-  additional:
+  output: "test_scraper_all.json"
+  additional_outputs:
     - filepath: "test_scraper_population.json"
       tabs:
         - tab: "national"
@@ -413,7 +413,7 @@ scraper_global:
           - "CBPFFunding"
         output_hxl:
           - "#value+cbpf+funding+total+usd"
-      - filter: "FundType == 'CBPF' and GenderMarker == ''"
+      - filter: "FundType == 'CBPF' and GenderMarker is None"
         input:
           - "Budget"
         transform:
@@ -497,7 +497,7 @@ scraper_global:
           - "CERFFunding"
         output_hxl:
           - "#value+cerf+funding+total+usd"
-      - filter: "FundType == 'CERF' and GenderMarker == ''"
+      - filter: "FundType == 'CERF' and GenderMarker is None"
         input:
           - "Budget"
         transform:
@@ -594,7 +594,7 @@ scraper_global:
           - "CBPFFunding"
         output_hxl:
           - "#value+cbpf+funding+total+usd"
-      - filter: "FundType == 'CBPF' and GenderMarker == ''"
+      - filter: "FundType == 'CBPF' and GenderMarker is None"
         input:
           - "Budget"
         transform:
@@ -678,7 +678,7 @@ scraper_global:
           - "CERFFunding"
         output_hxl:
           - "#value+cerf+funding+total+usd"
-      - filter: "FundType == 'CERF' and GenderMarker == ''"
+      - filter: "FundType == 'CERF' and GenderMarker is None"
         input:
           - "Budget"
         transform:
