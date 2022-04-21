@@ -8,6 +8,7 @@ from hdx.location.country import Country
 
 from hdx.scraper.base_scraper import BaseScraper
 from hdx.scraper.runner import Runner
+from hdx.scraper.utilities import string_params_to_dict
 from hdx.scraper.utilities.fallbacks import Fallbacks
 
 from . import bool_assert
@@ -37,8 +38,25 @@ def configuration(fixtures):
     )
     Country.countriesdata(use_live=False)
 
+    header_auths = "population:pop_12345,who_national:who_abc"
+    basic_auths = "access:YWNjXzEyMzQ1OmFjY19hYmM=,who2_national:d2hvX2RlZjp3aG9fMTIzNDU="
+    extra_params = (
+        "sadd:user=sadd_123&pass=sadd_abc,ourworldindata:auth=owid_abc"
+    )
+
+    header_auths = string_params_to_dict(header_auths)
+    basic_auths = string_params_to_dict(basic_auths)
+    extra_params = string_params_to_dict(extra_params)
     Runner.create_retrievers(
-        "", fixtures, "", save=False, use_saved=True, user_agent="test"
+        "",
+        fixtures,
+        "",
+        save=False,
+        use_saved=True,
+        user_agent="test",
+        header_auths=header_auths,
+        basic_auths=basic_auths,
+        extra_params=extra_params,
     )
     return Configuration.read()
 
