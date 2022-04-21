@@ -2,7 +2,6 @@ from copy import deepcopy
 
 from hdx.location.adminone import AdminOne
 from hdx.utilities.dateparse import parse_date
-from hdx.utilities.downloader import Download
 
 from hdx.scraper.base_scraper import BaseScraper
 from hdx.scraper.runner import Runner

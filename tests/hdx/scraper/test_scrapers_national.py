@@ -1,6 +1,5 @@
 from hdx.location.adminone import AdminOne
 from hdx.utilities.dateparse import parse_date
-from hdx.utilities.downloader import Download
 from hdx.utilities.errors_onexit import ErrorsOnExit
 
 from hdx.scraper.base_scraper import BaseScraper
