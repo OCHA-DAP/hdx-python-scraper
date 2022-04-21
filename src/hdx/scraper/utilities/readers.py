@@ -6,7 +6,7 @@ from typing import Any, Dict, Iterator, List, Optional, Tuple
 from hdx.data.dataset import Dataset
 from hdx.data.resource import Resource
 from hdx.utilities.dateparse import parse_date
-from hdx.utilities.downloader import Download
+from hdx.utilities.downloader import BaseDownload
 
 from . import get_date_from_dataset_date, match_template
 
@@ -33,12 +33,12 @@ def get_url(url: str, **kwargs: Any) -> str:
 
 
 def read_tabular(
-    downloader: Download, datasetinfo: MutableMapping, **kwargs: Any
+    downloader: BaseDownload, datasetinfo: MutableMapping, **kwargs: Any
 ) -> Tuple[List[str], Iterator[Dict]]:
     """Read data from tabular source eg. csv, xls, xlsx
 
     Args:
-        downloader (Download): Download object for downloading files
+        downloader (BaseDownload): Download object for downloading files
         datasetinfo (MutableMapping): Dictionary of information about dataset
         **kwargs: Variables to use when evaluating template arguments
 
@@ -116,14 +116,14 @@ def read_hdx_metadata(
 
 
 def read_hdx(
-    downloader: Download,
+    downloader: BaseDownload,
     datasetinfo: MutableMapping,
     today: Optional[datetime] = None,
 ) -> Tuple[List[str], Iterator[Dict]]:
     """Read data and metadata from HDX dataset
 
     Args:
-        downloader (Download): Download object for downloading files
+        downloader (BaseDownload): Download object for downloading files
         datasetinfo (MutableMapping): Dictionary of information about dataset
         **kwargs: Variables to use when evaluating template arguments
 
@@ -135,7 +135,7 @@ def read_hdx(
 
 
 def read(
-    downloader: Download,
+    downloader: BaseDownload,
     datasetinfo: MutableMapping,
     today: Optional[datetime] = None,
     **kwargs: Any,
@@ -143,7 +143,7 @@ def read(
     """Read data and metadata from HDX dataset
 
     Args:
-        downloader (Download): Download object for downloading files
+        downloader (BaseDownload): Download object for downloading files
         datasetinfo (MutableMapping): Dictionary of information about dataset
         today (Optional[datetime]): Value to use for today. Defaults to None (datetime.now()).
         **kwargs: Variables to use when evaluating template arguments in urls

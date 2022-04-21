@@ -51,7 +51,7 @@ scraper_national:
   population:
     source: "World Bank"
     source_url: "https://data.humdata.org/organization/world-bank-group"
-    url: "tests/fixtures/API_SP.POP.TOTL_DS2_en_excel_v2_1302508_LIST.xls"
+    url: "http://api.worldbank.org/v2/en/indicator/SP.POP.TOTL?downloadformat=excel&dataformat=list"
     format: "xls"
     sheet: "Data"
     headers: 3
@@ -297,14 +297,14 @@ unhcr_myanmar_idps:
 education_closures:
     dataset: "global-school-closures-covid19"
     resource: "School Closures"
-    url: "tests/fixtures/covid_impact_education.csv"
+    url: "https://data.humdata.org/dataset/6a41be98-75b9-4365-9ea3-e33d0dd2668b/resource/3b5baa74-c928-4cbc-adba-bf543c5d3050/download/covid_impact_education.csv"
     format: "csv"
     source_date: "2020-10-01"
 
 education_enrolment:
     dataset: "global-school-closures-covid19"
     resource: "Enrollment data"
-    url: "tests/fixtures/countries-enrollment-data-uis-feb-22.xlsx"
+    url: "https://data.humdata.org/dataset/6a41be98-75b9-4365-9ea3-e33d0dd2668b/resource/cdd903ea-d1c0-461e-8c6e-08feb102f9cb/download/countries-enrollment-data-uis-feb-22.xlsx"
     format: "xlsx"
     source_date: "2020-10-01"
 
@@ -756,7 +756,7 @@ other:
   population_other:
     source: "World Bank"
     source_url: "https://data.humdata.org/organization/world-bank-group"
-    url: "tests/fixtures/API_SP.POP.TOTL_DS2_en_excel_v2_1302508_LIST.xls"
+    url: "http://api.worldbank.org/v2/en/indicator/SP.POP.TOTL?downloadformat=excel&dataformat=list"
     format: "xls"
     sheet: "Data"
     headers: 3

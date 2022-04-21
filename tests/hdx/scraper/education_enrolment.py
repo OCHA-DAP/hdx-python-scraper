@@ -1,5 +1,6 @@
 import logging
 
+from hdx.utilities.retriever import Retrieve
 from hdx.utilities.text import get_fraction_str
 
 from hdx.scraper.base_scraper import BaseScraper
@@ -9,9 +10,7 @@ logger = logging.getLogger(__name__)
 
 
 class EducationEnrolment(BaseScraper):
-    def __init__(
-        self, datasetinfo, closures, countryiso3s, regionlookup, downloader
-    ):
+    def __init__(self, datasetinfo, closures, countryiso3s, regionlookup):
         super().__init__(
             "education_enrolment",
             datasetinfo,
@@ -43,11 +42,10 @@ class EducationEnrolment(BaseScraper):
         self.closures = closures
         self.countryiso3s = countryiso3s
         self.regionlookup = regionlookup
-        self.downloader = downloader
 
     def run(self) -> None:
         learners_headers, learners_iterator = read(
-            self.downloader, self.datasetinfo
+            Retrieve.get_retriever(self.name), self.datasetinfo
         )
         learners_012, learners_3, affected_learners = self.get_values(
             "national"

@@ -5,15 +5,22 @@ import pytest
 from hdx.api.configuration import Configuration
 from hdx.api.locations import Locations
 from hdx.location.country import Country
+from hdx.utilities.path import temp_dir
 
 from hdx.scraper.base_scraper import BaseScraper
+from hdx.scraper.runner import Runner
 from hdx.scraper.utilities.fallbacks import Fallbacks
 
 from . import bool_assert
 
 
 @pytest.fixture(scope="session")
-def configuration():
+def fixtures():
+    return join("tests", "fixtures")
+
+
+@pytest.fixture(scope="session")
+def configuration(fixtures):
     Configuration._create(
         hdx_read_only=True,
         hdx_site="prod",
@@ -30,12 +37,11 @@ def configuration():
         ]
     )
     Country.countriesdata(use_live=False)
+
+    Runner.create_retrievers(
+        "", fixtures, "", save=False, use_saved=True, user_agent="test"
+    )
     return Configuration.read()
-
-
-@pytest.fixture(scope="session")
-def fixtures():
-    return join("tests", "fixtures")
 
 
 @pytest.fixture(scope="session")

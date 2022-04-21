@@ -7,6 +7,16 @@ from hdx.data.dataset import Dataset
 template = re.compile("{{.*?}}")
 
 
+def string_params_to_dict(string: str) -> Dict[str, str]:
+    params = dict()
+    if not string:
+        params
+    for name_par in string.split(","):
+        name, par = name_par.strip().split(":")
+        params[name] = par.strip()
+    return params
+
+
 def match_template(input: str) -> Tuple[Optional[str], Optional[str]]:
     """Try to match {{XXX}} in input string
 

@@ -1,11 +1,14 @@
 import logging
 from datetime import datetime
-from typing import Dict, Iterable, List, Optional
+from typing import Any, Dict, Iterable, List, Optional
+from urllib.parse import parse_qsl
 
 from hdx.data.dataset import Dataset
 from hdx.location.adminone import AdminOne
 from hdx.utilities.downloader import Download
 from hdx.utilities.errors_onexit import ErrorsOnExit
+from hdx.utilities.retriever import Retrieve
+from hdx.utilities.typehint import ListTuple
 
 from .base_scraper import BaseScraper
 from .configurable.scraper import ConfigurableScraper
@@ -19,34 +22,94 @@ class Runner:
     """Runner class
 
     Args:
-        countryiso3s (List[str]): List of ISO3 country codes to process
+        countryiso3s (ListTuple[str]): List of ISO3 country codes to process
         adminone (AdminOne): AdminOne object from HDX Python Country library
-        downloader (Download): Download object for downloading files
-        basic_auths (Dict[str, str]): Basic authorisations dictionaries
         today (datetime): Value to use for today. Defaults to datetime.now().
         errors_on_exit (ErrorsOnExit): ErrorsOnExit object that logs errors on exit
-        scrapers_to_run (Optional[List[str]]): Scrapers to run. Defaults to None.
+        scrapers_to_run (Optional[ListTuple[str]]): Scrapers to run. Defaults to None.
     """
 
     def __init__(
         self,
-        countryiso3s: List[str],
+        countryiso3s: ListTuple[str],
         adminone: AdminOne,
-        downloader: Download,
-        basic_auths: Dict[str, str] = dict(),
         today: datetime = datetime.now(),
         errors_on_exit: Optional[ErrorsOnExit] = None,
-        scrapers_to_run: Optional[List[str]] = None,
+        scrapers_to_run: Optional[ListTuple[str]] = None,
     ):
         self.countryiso3s = countryiso3s
         self.adminone = adminone
-        self.downloader = downloader
-        self.basic_auths = basic_auths
         self.today = today
         self.errors_on_exit = errors_on_exit
-        self.scrapers_to_run = scrapers_to_run
+        if isinstance(scrapers_to_run, tuple):
+            scrapers_to_run = list(scrapers_to_run)
+        self.scrapers_to_run: Optional[List[str]] = scrapers_to_run
         self.scrapers = dict()
         self.scraper_names = list()
+
+    @staticmethod
+    def create_retrievers(
+        fallback_dir: str,
+        saved_dir: str,
+        temp_dir: str,
+        save: bool = False,
+        use_saved: bool = False,
+        ignore: ListTuple[str] = tuple(),
+        rate_limit: Optional[Dict] = {"calls": 1, "period": 0.1},
+        **kwargs: Any,
+    ):
+        """Generate a default retriever. Additional retrievers are generated if any of
+        header_auths, basic_auths or extra_params are populated. header_auths and
+        basic_auths are dictionaries of form {"scraper name": "auth", ...}. extra_params
+        is of form {"scraper name": {"key": "auth", ...}, ...}.
+
+        Args:
+            fallback_dir (str): Directory containing static fallback data
+            saved_dir (str): Directory to save or load downloaded data
+            temp_dir (str): Temporary directory for when data is not needed after downloading
+            save (bool): Whether to save downloaded data. Defaults to False.
+            use_saved (bool): Whether to use saved data. Defaults to False.
+            ignore (ListTuple[str]): Don't generate retrievers for these downloaders
+            rate_limit (Optional[Dict]): Rate limiting per host. Defaults to {"calls": 1, "period": 0.1}
+            **kwargs: See below and parameters of Download class in HDX Python Utilities
+            header_auths (Mapping[str, str]): Header authorisations
+            basic_auths (Mapping[str, str]): Basic authorisations
+            extra_params (Mapping[str, str]): Extra parameter authorisations
+
+        Returns:
+            None
+        """
+        if rate_limit:
+            kwargs["rate_limit"] = rate_limit
+        custom_configs = dict()
+        header_auths = kwargs.get("header_auths")
+        if header_auths is not None:
+            for name in header_auths:
+                custom_configs[name] = {
+                    "headers": {"Authorization": header_auths[name]}
+                }
+            del kwargs["header_auths"]
+        basic_auths = kwargs.get("basic_auths")
+        if basic_auths is not None:
+            for name in basic_auths:
+                custom_configs[name] = {"basic_auth": basic_auths[name]}
+            del kwargs["basic_auths"]
+        extra_params = kwargs.get("extra_params")
+        if extra_params is not None:
+            for name in extra_params:
+                custom_configs[name] = {
+                    "extra_params_dict": dict(parse_qsl(extra_params[name]))
+                }
+            del kwargs["extra_params"]
+        Download.generate_downloaders(custom_configs, **kwargs)
+        Retrieve.generate_retrievers(
+            fallback_dir,
+            saved_dir,
+            temp_dir,
+            save,
+            use_saved,
+            ignore,
+        )
 
     def add_custom(
         self, scraper: BaseScraper, add_to_run: bool = False
@@ -75,14 +138,6 @@ class Runner:
     def add_configurable(
         self, name, datasetinfo, level, level_name=None, suffix=None
     ) -> str:
-        basic_auth = self.basic_auths.get(name)
-        if basic_auth is None:
-            int_downloader = self.downloader
-        else:
-            int_downloader = Download(
-                basic_auth=basic_auth,
-                rate_limit={"calls": 1, "period": 0.1},
-            )
         if suffix:
             key = f"{name}{suffix}"
         else:
@@ -95,7 +150,6 @@ class Runner:
             level,
             self.countryiso3s,
             self.adminone,
-            int_downloader,
             level_name,
             self.today,
             self.errors_on_exit,
