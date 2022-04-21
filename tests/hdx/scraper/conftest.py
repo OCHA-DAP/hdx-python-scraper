@@ -7,7 +7,7 @@ from hdx.api.locations import Locations
 from hdx.location.country import Country
 
 from hdx.scraper.base_scraper import BaseScraper
-from hdx.scraper.runner import Runner
+from hdx.scraper.input import create_retrievers
 from hdx.scraper.utilities import string_params_to_dict
 from hdx.scraper.utilities.fallbacks import Fallbacks
 
@@ -47,7 +47,7 @@ def configuration(fixtures):
     header_auths = string_params_to_dict(header_auths)
     basic_auths = string_params_to_dict(basic_auths)
     extra_params = string_params_to_dict(extra_params)
-    Runner.create_retrievers(
+    create_retrievers(
         "",
         fixtures,
         "",
