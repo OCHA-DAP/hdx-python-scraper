@@ -2,7 +2,6 @@ import logging
 from typing import Dict
 
 from hdx.utilities.dateparse import default_date, parse_date
-from hdx.utilities.retriever import Retrieve
 
 from hdx.scraper.base_scraper import BaseScraper
 from hdx.scraper.utilities.readers import read
@@ -40,9 +39,8 @@ class EducationClosures(BaseScraper):
 
     def run(self) -> None:
         closures_headers, closures_iterator = read(
-            Retrieve.get_retriever(self.name),
+            self.get_retriever(),
             self.datasetinfo,
-            file_prefix=self.name,
         )
         closures = self.get_values("national")[0]
         closed_countries = self.get_values("regional")[0]

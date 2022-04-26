@@ -9,7 +9,6 @@ from hdx.utilities.dateparse import get_datetime_from_timestamp, parse_date
 from hdx.utilities.dictandlist import dict_of_lists_add
 from hdx.utilities.downloader import DownloadError
 from hdx.utilities.errors_onexit import ErrorsOnExit
-from hdx.utilities.retriever import Retrieve
 from hdx.utilities.text import (  # noqa: F401
     get_fraction_str,
     get_numeric_if_possible,
@@ -79,11 +78,9 @@ class ConfigurableScraper(BaseScraper):
         self.subsets = self.get_subsets_from_datasetinfo(datasetinfo)
         self.errors_on_exit: Optional[ErrorsOnExit] = errors_on_exit
         self.variables = kwargs
-        self.variables["file_prefix"] = name
         self.rowparser = None
         self.datasetinfo = copy.deepcopy(datasetinfo)
         self.use_hxl_called = False
-        self.retriever = Retrieve.get_retriever(name)
         headers = {self.level_name: (list(), list())}
         for subset in self.subsets:
             headers[self.level_name][0].extend(subset["output"])
@@ -93,7 +90,7 @@ class ConfigurableScraper(BaseScraper):
             use_hxl = self.datasetinfo.get("use_hxl", False)
             if use_hxl:
                 try:
-                    file_headers, iterator = self.get_iterator()
+                    file_headers, iterator = self.get_iterator(name)
                     self.use_hxl(headers, file_headers, iterator)
                 except DownloadError:
                     self.can_fallback = False
@@ -127,9 +124,9 @@ class ConfigurableScraper(BaseScraper):
             ]
         return subsets
 
-    def get_iterator(self):
+    def get_iterator(self, name):
         return read(
-            self.retriever,
+            self.get_retriever(name),
             self.datasetinfo,
             today=self.today,
             **self.variables,
@@ -454,7 +451,7 @@ class ConfigurableScraper(BaseScraper):
         Returns:
             None
         """
-        file_headers, iterator = self.get_iterator()
+        file_headers, iterator = self.get_iterator(self.name)
         header_to_hxltag = self.use_hxl(None, file_headers, iterator)
         if "source_url" not in self.datasetinfo:
             self.datasetinfo["source_url"] = self.datasetinfo["url"]
