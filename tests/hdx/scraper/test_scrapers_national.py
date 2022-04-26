@@ -11,7 +11,7 @@ from .unhcr_myanmar_idps import idps_post_run
 
 
 class TestScrapersNational:
-    def test_get_national(self, configuration, fallbacks):
+    def test_get_national_afg(self, configuration, fallbacks):
         BaseScraper.population_lookup = dict()
         today = parse_date("2020-10-01")
         adminone = AdminOne(configuration)
@@ -45,7 +45,7 @@ class TestScrapersNational:
             assert downloader.session.auth == expected
 
         assert_auth("access", ("acc_12345", "acc_abc"))
-        assert_auth("who2_national", ("who_def", "who_12345"))
+        assert_auth("who_national2", ("who_def", "who_12345"))
 
         def assert_params(name, expected):
             downloader = Retrieve.get_retriever(name).downloader
@@ -104,25 +104,25 @@ class TestScrapersNational:
                 "#affected+infected+per100000",
                 "2020-08-06",
                 "WHO",
-                "tests/fixtures/WHO-COVID-19-global-data.csv",
+                "https://covid19.who.int/WHO-COVID-19-global-data.csv",
             ),
             (
                 "#affected+killed+per100000",
                 "2020-08-06",
                 "WHO",
-                "tests/fixtures/WHO-COVID-19-global-data.csv",
+                "https://covid19.who.int/WHO-COVID-19-global-data.csv",
             ),
             (
                 "#affected+infected+2+per100000",
                 "2020-08-06",
                 "WHO",
-                "tests/fixtures/WHO-COVID-19-global-data.csv",
+                "https://covid19.who.int/WHO-COVID-19-global-data.csv",
             ),
             (
                 "#affected+killed+2+per100000",
                 "2020-08-06",
                 "WHO",
-                "tests/fixtures/WHO-COVID-19-global-data.csv",
+                "https://covid19.who.int/WHO-COVID-19-global-data.csv",
             ),
         ]
         runner.run(names)
@@ -133,7 +133,9 @@ class TestScrapersNational:
             headers,
             values,
             sources,
-            source_urls=["tests/fixtures/WHO-COVID-19-global-data.csv"],
+            source_urls=[
+                "https://covid19.who.int/WHO-COVID-19-global-data.csv"
+            ],
         )
 
         def passthrough_fn(x):
@@ -316,29 +318,35 @@ class TestScrapersNational:
                 "#affected+infected+m+pct",
                 "2020-08-07",
                 "SADD",
-                "tests/fixtures/covid-19-sex-disaggregated-data.csv",
+                "https://globalhealth5050.org/?_covid-data=dataset-fullvars&_extype=csv",
             ),
             (
                 "#affected+f+infected+pct",
                 "2020-08-07",
                 "SADD",
-                "tests/fixtures/covid-19-sex-disaggregated-data.csv",
+                "https://globalhealth5050.org/?_covid-data=dataset-fullvars&_extype=csv",
             ),
             (
                 "#affected+killed+m+pct",
                 "2020-08-07",
                 "SADD",
-                "tests/fixtures/covid-19-sex-disaggregated-data.csv",
+                "https://globalhealth5050.org/?_covid-data=dataset-fullvars&_extype=csv",
             ),
             (
                 "#affected+f+killed+pct",
                 "2020-08-07",
                 "SADD",
-                "tests/fixtures/covid-19-sex-disaggregated-data.csv",
+                "https://globalhealth5050.org/?_covid-data=dataset-fullvars&_extype=csv",
             ),
         ]
         run_check_scraper(name, runner, level, headers, values, sources)
 
+    def test_get_national_ukr(self, configuration, fallbacks):
+        BaseScraper.population_lookup = dict()
+        today = parse_date("2020-10-01")
+        adminone = AdminOne(configuration)
+        level = "national"
+        scraper_configuration = configuration[f"scraper_{level}"]
         runner = Runner(("UKR",), adminone, today)
         runner.add_configurables(scraper_configuration, level)
 
@@ -374,6 +382,12 @@ class TestScrapersNational:
             ],
         )
 
+    def test_get_national_afg_phl(self, configuration, fallbacks):
+        BaseScraper.population_lookup = {"AFG": 38041754}
+        today = parse_date("2020-10-01")
+        adminone = AdminOne(configuration)
+        level = "national"
+        scraper_configuration = configuration[f"scraper_{level}"]
         runner = Runner(("AFG", "PHL"), adminone, today)
         runner.add_configurables(scraper_configuration, level)
 
@@ -394,13 +408,13 @@ class TestScrapersNational:
                 "#capacity+doses+administered+total",
                 "2020-10-01",
                 "Our World in Data",
-                "tests/fixtures/ourworldindata_vaccinedoses.csv",
+                "https://proxy.hxlstandard.org/data.csv?tagger-match-all=on&tagger-01-header=location&tagger-01-tag=%23country%2Bname&tagger-02-header=iso_code&tagger-02-tag=%23country%2Bcode&tagger-03-header=date&tagger-03-tag=%23date&tagger-04-header=total_vaccinations&tagger-04-tag=%23total%2Bvaccinations&tagger-08-header=daily_vaccinations&tagger-08-tag=%23total%2Bvaccinations%2Bdaily&url=https%3A%2F%2Fraw.githubusercontent.com%2Fowid%2Fcovid-19-data%2Fmaster%2Fpublic%2Fdata%2Fvaccinations%2Fvaccinations.csv&header-row=1&dest=data_view",
             ),
             (
                 "#capacity+doses+administered+coverage+pct",
                 "2020-10-01",
                 "Our World in Data",
-                "tests/fixtures/ourworldindata_vaccinedoses.csv",
+                "https://proxy.hxlstandard.org/data.csv?tagger-match-all=on&tagger-01-header=location&tagger-01-tag=%23country%2Bname&tagger-02-header=iso_code&tagger-02-tag=%23country%2Bcode&tagger-03-header=date&tagger-03-tag=%23date&tagger-04-header=total_vaccinations&tagger-04-tag=%23total%2Bvaccinations&tagger-08-header=daily_vaccinations&tagger-08-tag=%23total%2Bvaccinations%2Bdaily&url=https%3A%2F%2Fraw.githubusercontent.com%2Fowid%2Fcovid-19-data%2Fmaster%2Fpublic%2Fdata%2Fvaccinations%2Fvaccinations.csv&header-row=1&dest=data_view",
             ),
         ]
         run_check_scraper(name, runner, level, headers, values, sources)
@@ -480,13 +494,13 @@ class TestScrapersNational:
                 "#capacity+doses+administered+total",
                 "2021-05-03",
                 "Our World in Data",
-                "tests/fixtures/ourworldindata_vaccinedoses.csv",
+                "https://proxy.hxlstandard.org/data.csv?tagger-match-all=on&tagger-01-header=location&tagger-01-tag=%23country%2Bname&tagger-02-header=iso_code&tagger-02-tag=%23country%2Bcode&tagger-03-header=date&tagger-03-tag=%23date&tagger-04-header=total_vaccinations&tagger-04-tag=%23total%2Bvaccinations&tagger-08-header=daily_vaccinations&tagger-08-tag=%23total%2Bvaccinations%2Bdaily&url=https%3A%2F%2Fraw.githubusercontent.com%2Fowid%2Fcovid-19-data%2Fmaster%2Fpublic%2Fdata%2Fvaccinations%2Fvaccinations.csv&header-row=1&dest=data_view",
             ),
             (
                 "#capacity+doses+administered+coverage+pct",
                 "2021-05-03",
                 "Our World in Data",
-                "tests/fixtures/ourworldindata_vaccinedoses.csv",
+                "https://proxy.hxlstandard.org/data.csv?tagger-match-all=on&tagger-01-header=location&tagger-01-tag=%23country%2Bname&tagger-02-header=iso_code&tagger-02-tag=%23country%2Bcode&tagger-03-header=date&tagger-03-tag=%23date&tagger-04-header=total_vaccinations&tagger-04-tag=%23total%2Bvaccinations&tagger-08-header=daily_vaccinations&tagger-08-tag=%23total%2Bvaccinations%2Bdaily&url=https%3A%2F%2Fraw.githubusercontent.com%2Fowid%2Fcovid-19-data%2Fmaster%2Fpublic%2Fdata%2Fvaccinations%2Fvaccinations.csv&header-row=1&dest=data_view",
             ),
         ]
         run_check_scraper(name, runner, level, headers, values, sources)
@@ -516,8 +530,16 @@ class TestScrapersNational:
             fallbacks_used=True,
         )
         assert errors_on_exit.errors == [
-            "Using fallbacks for broken_owd_url! Error: [scheme-error] The data source could not be successfully loaded: [Errno 2] No such file or directory: 'tests/fixtures/NOTEXIST.csv'"
+            "Using fallbacks for broken_owd_url! Error: [scheme-error] The data source could not be successfully loaded: [Errno 2] No such file or directory: 'tests/fixtures/broken_owd_url_notexist.csv'"
         ]
+
+    def test_get_national_afg_mmr_phl(self, configuration, fallbacks):
+        BaseScraper.population_lookup = dict()
+        today = parse_date("2021-05-03")
+        errors_on_exit = ErrorsOnExit()
+        adminone = AdminOne(configuration)
+        level = "national"
+        scraper_configuration = configuration[f"scraper_{level}"]
 
         runner = Runner(
             ("AFG", "MMR", "PHL"),
@@ -566,12 +588,10 @@ class TestScrapersNational:
             sources,
             source_urls=[
                 "https://data.humdata.org/dataset/idmc-internally-displaced-persons-idps",
-                "tests/fixtures/unhcr_myanmar_idps.json",
+                "https://data.unhcr.org/population/?widget_id=264111&geo_id=693&population_group=5407,4999",
             ],
         )
-        assert errors_on_exit.errors == [
-            "Using fallbacks for broken_owd_url! Error: [scheme-error] The data source could not be successfully loaded: [Errno 2] No such file or directory: 'tests/fixtures/NOTEXIST.csv'"
-        ]
+        assert errors_on_exit.errors == list()
         runner = Runner(
             ("AFG", "MMR", "PHL"),
             adminone,
@@ -596,6 +616,5 @@ class TestScrapersNational:
             ],
         )
         assert errors_on_exit.errors == [
-            "Using fallbacks for broken_owd_url! Error: [scheme-error] The data source could not be successfully loaded: [Errno 2] No such file or directory: 'tests/fixtures/NOTEXIST.csv'",
-            "Not using UNHCR Myanmar IDPs override! Error: [Errno 2] No such file or directory: 'tests/fixtures/NOT EXIST.json'",
+            "Not using UNHCR Myanmar IDPs override! Error: [Errno 2] No such file or directory: 'tests/fixtures/idps_override_not-exist.json'",
         ]

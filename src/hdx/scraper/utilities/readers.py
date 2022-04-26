@@ -119,6 +119,7 @@ def read_hdx(
     downloader: BaseDownload,
     datasetinfo: MutableMapping,
     today: Optional[datetime] = None,
+    **kwargs: Any,
 ) -> Tuple[List[str], Iterator[Dict]]:
     """Read data and metadata from HDX dataset
 
@@ -131,7 +132,7 @@ def read_hdx(
         Tuple[List[str],Iterator[Dict]]: Tuple (headers, iterator where each row is a dictionary)
     """
     read_hdx_metadata(datasetinfo, today=today)
-    return read_tabular(downloader, datasetinfo)
+    return read_tabular(downloader, datasetinfo, **kwargs)
 
 
 def read(
@@ -154,7 +155,9 @@ def read(
     format = datasetinfo["format"]
     if format in ["json", "csv", "xls", "xlsx"]:
         if "dataset" in datasetinfo:
-            headers, iterator = read_hdx(downloader, datasetinfo, today=today)
+            headers, iterator = read_hdx(
+                downloader, datasetinfo, today=today, **kwargs
+            )
         else:
             headers, iterator = read_tabular(downloader, datasetinfo, **kwargs)
     else:

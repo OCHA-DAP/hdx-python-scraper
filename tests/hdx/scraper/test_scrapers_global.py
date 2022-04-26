@@ -1,5 +1,6 @@
 import logging
 
+import pytest
 from hdx.location.adminone import AdminOne
 from hdx.utilities.dateparse import parse_date
 
@@ -10,7 +11,44 @@ from .conftest import check_scraper, run_check_scraper
 
 
 class TestScraperGlobal:
-    def test_get_global(self, caplog, configuration, fallbacks):
+    @pytest.fixture(scope="class")
+    def cerf_headers(self):
+        return (
+            [
+                "CBPFFunding",
+                "CBPFFundingGMEmpty",
+                "CBPFFundingGM0",
+                "CBPFFundingGM1",
+                "CBPFFundingGM2",
+                "CBPFFundingGM3",
+                "CBPFFundingGM4",
+                "CERFFunding",
+                "CERFFundingGMEmpty",
+                "CERFFundingGM0",
+                "CERFFundingGM1",
+                "CERFFundingGM2",
+                "CERFFundingGM3",
+                "CERFFundingGM4",
+            ],
+            [
+                "#value+cbpf+funding+total+usd",
+                "#value+cbpf+funding+gmempty+total+usd",
+                "#value+cbpf+funding+gm0+total+usd",
+                "#value+cbpf+funding+gm1+total+usd",
+                "#value+cbpf+funding+gm2+total+usd",
+                "#value+cbpf+funding+gm3+total+usd",
+                "#value+cbpf+funding+gm4+total+usd",
+                "#value+cerf+funding+total+usd",
+                "#value+cerf+funding+gmempty+total+usd",
+                "#value+cerf+funding+gm0+total+usd",
+                "#value+cerf+funding+gm1+total+usd",
+                "#value+cerf+funding+gm2+total+usd",
+                "#value+cerf+funding+gm3+total+usd",
+                "#value+cerf+funding+gm4+total+usd",
+            ],
+        )
+
+    def test_get_global_2020(self, configuration, cerf_headers):
         BaseScraper.population_lookup = dict()
         today = parse_date("2020-10-01")
         adminone = AdminOne(configuration)
@@ -63,43 +101,43 @@ class TestScraperGlobal:
                 "#capacity+doses+forecast+covax",
                 "2020-08-07",
                 "covax",
-                "tests/fixtures/COVID-19 Vaccine Doses in HRP Countries - Data HXL.csv",
+                "https://docs.google.com/spreadsheets/d/e/2PACX-1vTVzu79PPTfaA2syevOQfyRRjy63dJWitqu0fFbXIQCzoUn9K9TiMWMRvFGg1RBsnLmgYugzSEiAye2/pub?gid=992438980&single=true&output=csv",
             ),
             (
                 "#capacity+doses+delivered+covax",
                 "2020-08-07",
                 "covax",
-                "tests/fixtures/COVID-19 Vaccine Doses in HRP Countries - Data HXL.csv",
+                "https://docs.google.com/spreadsheets/d/e/2PACX-1vTVzu79PPTfaA2syevOQfyRRjy63dJWitqu0fFbXIQCzoUn9K9TiMWMRvFGg1RBsnLmgYugzSEiAye2/pub?gid=992438980&single=true&output=csv",
             ),
             (
                 "#capacity+doses+delivered+others",
                 "2020-08-07",
                 "covax",
-                "tests/fixtures/COVID-19 Vaccine Doses in HRP Countries - Data HXL.csv",
+                "https://docs.google.com/spreadsheets/d/e/2PACX-1vTVzu79PPTfaA2syevOQfyRRjy63dJWitqu0fFbXIQCzoUn9K9TiMWMRvFGg1RBsnLmgYugzSEiAye2/pub?gid=992438980&single=true&output=csv",
             ),
             (
                 "#capacity+doses+delivered+total",
                 "2020-08-07",
                 "covax",
-                "tests/fixtures/COVID-19 Vaccine Doses in HRP Countries - Data HXL.csv",
+                "https://docs.google.com/spreadsheets/d/e/2PACX-1vTVzu79PPTfaA2syevOQfyRRjy63dJWitqu0fFbXIQCzoUn9K9TiMWMRvFGg1RBsnLmgYugzSEiAye2/pub?gid=992438980&single=true&output=csv",
             ),
             (
                 "#capacity+doses+covax+pfizerbiontech",
                 "2020-08-07",
                 "covax",
-                "tests/fixtures/COVID-19 Vaccine Doses in HRP Countries - Data HXL.csv",
+                "https://docs.google.com/spreadsheets/d/e/2PACX-1vTVzu79PPTfaA2syevOQfyRRjy63dJWitqu0fFbXIQCzoUn9K9TiMWMRvFGg1RBsnLmgYugzSEiAye2/pub?gid=992438980&single=true&output=csv",
             ),
             (
                 "#capacity+doses+covax+astrazenecasii",
                 "2020-08-07",
                 "covax",
-                "tests/fixtures/COVID-19 Vaccine Doses in HRP Countries - Data HXL.csv",
+                "https://docs.google.com/spreadsheets/d/e/2PACX-1vTVzu79PPTfaA2syevOQfyRRjy63dJWitqu0fFbXIQCzoUn9K9TiMWMRvFGg1RBsnLmgYugzSEiAye2/pub?gid=992438980&single=true&output=csv",
             ),
             (
                 "#capacity+doses+covax+astrazenecaskbio",
                 "2020-08-07",
                 "covax",
-                "tests/fixtures/COVID-19 Vaccine Doses in HRP Countries - Data HXL.csv",
+                "https://docs.google.com/spreadsheets/d/e/2PACX-1vTVzu79PPTfaA2syevOQfyRRjy63dJWitqu0fFbXIQCzoUn9K9TiMWMRvFGg1RBsnLmgYugzSEiAye2/pub?gid=992438980&single=true&output=csv",
             ),
         ]
         runner.run_one(name)
@@ -141,40 +179,6 @@ class TestScraperGlobal:
         assert rows == expected_rows
         runner.set_not_run(name)
 
-        cerf_headers = (
-            [
-                "CBPFFunding",
-                "CBPFFundingGMEmpty",
-                "CBPFFundingGM0",
-                "CBPFFundingGM1",
-                "CBPFFundingGM2",
-                "CBPFFundingGM3",
-                "CBPFFundingGM4",
-                "CERFFunding",
-                "CERFFundingGMEmpty",
-                "CERFFundingGM0",
-                "CERFFundingGM1",
-                "CERFFundingGM2",
-                "CERFFundingGM3",
-                "CERFFundingGM4",
-            ],
-            [
-                "#value+cbpf+funding+total+usd",
-                "#value+cbpf+funding+gmempty+total+usd",
-                "#value+cbpf+funding+gm0+total+usd",
-                "#value+cbpf+funding+gm1+total+usd",
-                "#value+cbpf+funding+gm2+total+usd",
-                "#value+cbpf+funding+gm3+total+usd",
-                "#value+cbpf+funding+gm4+total+usd",
-                "#value+cerf+funding+total+usd",
-                "#value+cerf+funding+gmempty+total+usd",
-                "#value+cerf+funding+gm0+total+usd",
-                "#value+cerf+funding+gm1+total+usd",
-                "#value+cerf+funding+gm2+total+usd",
-                "#value+cerf+funding+gm3+total+usd",
-                "#value+cerf+funding+gm4+total+usd",
-            ],
-        )
         name = "cerf_global"
         headers = cerf_headers
         values = [
@@ -292,12 +296,20 @@ class TestScraperGlobal:
                 "#capacity+doses+administered+total",
                 "2020-10-01",
                 "Our World in Data",
-                "tests/fixtures/ourworldindata_vaccinedoses.csv",
+                "https://proxy.hxlstandard.org/data.csv?tagger-match-all=on&tagger-01-header=location&tagger-01-tag=%23country%2Bname&tagger-02-header=iso_code&tagger-02-tag=%23country%2Bcode&tagger-03-header=date&tagger-03-tag=%23date&tagger-04-header=total_vaccinations&tagger-04-tag=%23total%2Bvaccinations&tagger-08-header=daily_vaccinations&tagger-08-tag=%23total%2Bvaccinations%2Bdaily&url=https%3A%2F%2Fraw.githubusercontent.com%2Fowid%2Fcovid-19-data%2Fmaster%2Fpublic%2Fdata%2Fvaccinations%2Fvaccinations.csv&header-row=1&dest=data_view",
             )
         ]
         run_check_scraper(name, runner, level_name, headers, values, sources)
 
+    def test_get_global_2021(
+        self, cerf_headers, caplog, configuration, fallbacks
+    ):
+        BaseScraper.population_lookup = dict()
         today = parse_date("2021-05-03")
+        adminone = AdminOne(configuration)
+        level = "single"
+        level_name = "global"
+        scraper_configuration = configuration[f"scraper_{level_name}"]
         runner = Runner(configuration["HRPs"], adminone, today)
         runner.add_configurables(scraper_configuration, level, level_name)
         name = "cerf_global"
@@ -523,7 +535,7 @@ class TestScraperGlobal:
             )
             assert f"Using fallbacks for {name}!" in caplog.text
             assert (
-                "No such file or directory: 'tests/fixtures/NOTEXIST.csv'"
+                "No such file or directory: 'tests/fixtures/broken_cerf_url_notexist.csv'"
                 in caplog.text
             )
 
@@ -538,7 +550,7 @@ class TestScraperGlobal:
                 "#capacity+doses+administered+total",
                 "2021-05-03",
                 "Our World in Data",
-                "tests/fixtures/ourworldindata_vaccinedoses.csv",
+                "https://proxy.hxlstandard.org/data.csv?tagger-match-all=on&tagger-01-header=location&tagger-01-tag=%23country%2Bname&tagger-02-header=iso_code&tagger-02-tag=%23country%2Bcode&tagger-03-header=date&tagger-03-tag=%23date&tagger-04-header=total_vaccinations&tagger-04-tag=%23total%2Bvaccinations&tagger-08-header=daily_vaccinations&tagger-08-tag=%23total%2Bvaccinations%2Bdaily&url=https%3A%2F%2Fraw.githubusercontent.com%2Fowid%2Fcovid-19-data%2Fmaster%2Fpublic%2Fdata%2Fvaccinations%2Fvaccinations.csv&header-row=1&dest=data_view",
             )
         ]
         run_check_scraper(name, runner, level_name, headers, values, sources)
@@ -582,7 +594,7 @@ class TestScraperGlobal:
                 "#capacity+doses+administered+total",
                 "2021-05-03",
                 "Our World in Data",
-                "tests/fixtures/ourworldindata_vaccinedoses.csv",
+                "https://proxy.hxlstandard.org/data.csv?tagger-match-all=on&tagger-01-header=location&tagger-01-tag=%23country%2Bname&tagger-02-header=iso_code&tagger-02-tag=%23country%2Bcode&tagger-03-header=date&tagger-03-tag=%23date&tagger-04-header=total_vaccinations&tagger-04-tag=%23total%2Bvaccinations&tagger-08-header=daily_vaccinations&tagger-08-tag=%23total%2Bvaccinations%2Bdaily&url=https%3A%2F%2Fraw.githubusercontent.com%2Fowid%2Fcovid-19-data%2Fmaster%2Fpublic%2Fdata%2Fvaccinations%2Fvaccinations.csv&header-row=1&dest=data_view",
             )
         ]
         run_check_scraper(name, runner, level_name, headers, values, sources)
@@ -604,13 +616,13 @@ class TestScraperGlobal:
                 "#capacity+doses+administered+total",
                 "2021-05-03",
                 "Our World in Data",
-                "tests/fixtures/ourworldindata_vaccinedoses.csv",
+                "https://proxy.hxlstandard.org/data.csv?tagger-match-all=on&tagger-01-header=location&tagger-01-tag=%23country%2Bname&tagger-02-header=iso_code&tagger-02-tag=%23country%2Bcode&tagger-03-header=date&tagger-03-tag=%23date&tagger-04-header=total_vaccinations&tagger-04-tag=%23total%2Bvaccinations&tagger-08-header=daily_vaccinations&tagger-08-tag=%23total%2Bvaccinations%2Bdaily&url=https%3A%2F%2Fraw.githubusercontent.com%2Fowid%2Fcovid-19-data%2Fmaster%2Fpublic%2Fdata%2Fvaccinations%2Fvaccinations.csv&header-row=1&dest=data_view",
             ),
             (
                 "#capacity+doses+administered+coverage+pct",
                 "2021-05-03",
                 "Our World in Data",
-                "tests/fixtures/ourworldindata_vaccinedoses.csv",
+                "https://proxy.hxlstandard.org/data.csv?tagger-match-all=on&tagger-01-header=location&tagger-01-tag=%23country%2Bname&tagger-02-header=iso_code&tagger-02-tag=%23country%2Bcode&tagger-03-header=date&tagger-03-tag=%23date&tagger-04-header=total_vaccinations&tagger-04-tag=%23total%2Bvaccinations&tagger-08-header=daily_vaccinations&tagger-08-tag=%23total%2Bvaccinations%2Bdaily&url=https%3A%2F%2Fraw.githubusercontent.com%2Fowid%2Fcovid-19-data%2Fmaster%2Fpublic%2Fdata%2Fvaccinations%2Fvaccinations.csv&header-row=1&dest=data_view",
             ),
         ]
         run_check_scraper(name, runner, level_name, headers, values, sources)

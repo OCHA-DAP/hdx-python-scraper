@@ -66,7 +66,7 @@ class TestScrapersSubnational:
                 "#severity+malnutrition+num+subnational",
                 "2020-10-01",
                 "UNICEF",
-                "tests/fixtures/unicef_who_wb_global_expanded_databases_severe_wasting.xlsx",
+                "https://data.humdata.org/dataset/87b86e7d-e9b2-4922-a48e-1f10afd528e6/resource/eabba7e7-16d0-436c-a62c-df6edd03be7c/download/unicef_who_wb_global_expanded_databases_severe_wasting.xlsx",
             )
         ]
         run_check_scraper(name, runner, level, headers, values, sources)
@@ -84,7 +84,7 @@ class TestScrapersSubnational:
                 "#severity+malnutrition+num+subnational",
                 "2020-10-01",
                 "UNICEF",
-                "tests/fixtures/unicef_who_wb_global_expanded_databases_severe_wasting.xlsx",
+                "https://data.humdata.org/dataset/87b86e7d-e9b2-4922-a48e-1f10afd528e6/resource/eabba7e7-16d0-436c-a62c-df6edd03be7c/download/unicef_who_wb_global_expanded_databases_severe_wasting.xlsx",
             )
         ]
         run_check_scraper(name, runner, level, headers, values, sources)

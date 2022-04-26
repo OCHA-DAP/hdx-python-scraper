@@ -39,7 +39,7 @@ def configuration(fixtures):
     Country.countriesdata(use_live=False)
 
     header_auths = "population:pop_12345,who_national:who_abc"
-    basic_auths = "access:YWNjXzEyMzQ1OmFjY19hYmM=,who2_national:d2hvX2RlZjp3aG9fMTIzNDU="
+    basic_auths = "access:YWNjXzEyMzQ1OmFjY19hYmM=,who_national2:d2hvX2RlZjp3aG9fMTIzNDU="
     extra_params = (
         "sadd:user=sadd_123&pass=sadd_abc,ourworldindata:auth=owid_abc"
     )

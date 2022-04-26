@@ -16,7 +16,7 @@ class TestReaders:
                 "dataset": "sahel-humanitarian-needs-overview",
                 "format": "csv",
             }
-            headers, iterator = read(downloader, datasetinfo, a="b")
+            headers, iterator = read(downloader, datasetinfo, file_type="csv")
             assert headers == [
                 "Country",
                 "nutrition",

@@ -152,18 +152,18 @@ class TestScrapersAggregation:
                 "#affected+infected+per100000",
                 "2020-08-06",
                 "WHO",
-                "tests/fixtures/WHO-COVID-19-global-data.csv",
+                "https://covid19.who.int/WHO-COVID-19-global-data.csv",
             ),
             (
                 "#affected+killed+per100000",
                 "2020-08-06",
                 "WHO",
-                "tests/fixtures/WHO-COVID-19-global-data.csv",
+                "https://covid19.who.int/WHO-COVID-19-global-data.csv",
             ),
         ]
         source_urls = [
+            "https://covid19.who.int/WHO-COVID-19-global-data.csv",
             "https://data.humdata.org/organization/world-bank-group",
-            "tests/fixtures/WHO-COVID-19-global-data.csv",
         ]
         runner.run(names)
         check_scrapers(
@@ -358,18 +358,18 @@ class TestScrapersAggregation:
                 "#affected+infected+per100000",
                 "2020-08-06",
                 "WHO",
-                "tests/fixtures/WHO-COVID-19-global-data.csv",
+                "https://covid19.who.int/WHO-COVID-19-global-data.csv",
             ),
             (
                 "#affected+killed+per100000",
                 "2020-08-06",
                 "WHO",
-                "tests/fixtures/WHO-COVID-19-global-data.csv",
+                "https://covid19.who.int/WHO-COVID-19-global-data.csv",
             ),
         ]
         source_urls = [
+            "https://covid19.who.int/WHO-COVID-19-global-data.csv",
             "https://data.humdata.org/organization/world-bank-group",
-            "tests/fixtures/WHO-COVID-19-global-data.csv",
         ]
         runner.run(names)
         check_scrapers(

@@ -79,6 +79,7 @@ class ConfigurableScraper(BaseScraper):
         self.subsets = self.get_subsets_from_datasetinfo(datasetinfo)
         self.errors_on_exit: Optional[ErrorsOnExit] = errors_on_exit
         self.variables = kwargs
+        self.variables["file_prefix"] = name
         self.rowparser = None
         self.datasetinfo = copy.deepcopy(datasetinfo)
         self.use_hxl_called = False
