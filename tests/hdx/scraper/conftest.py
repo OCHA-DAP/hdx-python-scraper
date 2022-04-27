@@ -7,13 +7,20 @@ from hdx.api.locations import Locations
 from hdx.location.country import Country
 
 from hdx.scraper.base_scraper import BaseScraper
+from hdx.scraper.input import create_retrievers
+from hdx.scraper.utilities import string_params_to_dict
 from hdx.scraper.utilities.fallbacks import Fallbacks
 
 from . import bool_assert
 
 
 @pytest.fixture(scope="session")
-def configuration():
+def fixtures():
+    return join("tests", "fixtures")
+
+
+@pytest.fixture(scope="session")
+def configuration(fixtures):
     Configuration._create(
         hdx_read_only=True,
         hdx_site="prod",
@@ -30,12 +37,28 @@ def configuration():
         ]
     )
     Country.countriesdata(use_live=False)
+
+    header_auths = "population:pop_12345,who_national:who_abc"
+    basic_auths = "access:YWNjXzEyMzQ1OmFjY19hYmM=,who_national2:d2hvX2RlZjp3aG9fMTIzNDU="
+    extra_params = (
+        "sadd:user=sadd_123&pass=sadd_abc,ourworldindata:auth=owid_abc"
+    )
+
+    header_auths = string_params_to_dict(header_auths)
+    basic_auths = string_params_to_dict(basic_auths)
+    extra_params = string_params_to_dict(extra_params)
+    create_retrievers(
+        "",
+        fixtures,
+        "",
+        save=False,
+        use_saved=True,
+        user_agent="test",
+        header_auths=header_auths,
+        basic_auths=basic_auths,
+        extra_params=extra_params,
+    )
     return Configuration.read()
-
-
-@pytest.fixture(scope="session")
-def fixtures():
-    return join("tests", "fixtures")
 
 
 @pytest.fixture(scope="session")

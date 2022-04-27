@@ -1,11 +1,11 @@
 import logging
 from datetime import datetime
-from typing import Dict, Iterable, List, Optional
+from typing import Iterable, List, Optional
 
 from hdx.data.dataset import Dataset
 from hdx.location.adminone import AdminOne
-from hdx.utilities.downloader import Download
 from hdx.utilities.errors_onexit import ErrorsOnExit
+from hdx.utilities.typehint import ListTuple
 
 from .base_scraper import BaseScraper
 from .configurable.scraper import ConfigurableScraper
@@ -19,32 +19,28 @@ class Runner:
     """Runner class
 
     Args:
-        countryiso3s (List[str]): List of ISO3 country codes to process
+        countryiso3s (ListTuple[str]): List of ISO3 country codes to process
         adminone (AdminOne): AdminOne object from HDX Python Country library
-        downloader (Download): Download object for downloading files
-        basic_auths (Dict[str, str]): Basic authorisations dictionaries
         today (datetime): Value to use for today. Defaults to datetime.now().
         errors_on_exit (ErrorsOnExit): ErrorsOnExit object that logs errors on exit
-        scrapers_to_run (Optional[List[str]]): Scrapers to run. Defaults to None.
+        scrapers_to_run (Optional[ListTuple[str]]): Scrapers to run. Defaults to None.
     """
 
     def __init__(
         self,
-        countryiso3s: List[str],
+        countryiso3s: ListTuple[str],
         adminone: AdminOne,
-        downloader: Download,
-        basic_auths: Dict[str, str] = dict(),
         today: datetime = datetime.now(),
         errors_on_exit: Optional[ErrorsOnExit] = None,
-        scrapers_to_run: Optional[List[str]] = None,
+        scrapers_to_run: Optional[ListTuple[str]] = None,
     ):
         self.countryiso3s = countryiso3s
         self.adminone = adminone
-        self.downloader = downloader
-        self.basic_auths = basic_auths
         self.today = today
         self.errors_on_exit = errors_on_exit
-        self.scrapers_to_run = scrapers_to_run
+        if isinstance(scrapers_to_run, tuple):
+            scrapers_to_run = list(scrapers_to_run)
+        self.scrapers_to_run: Optional[List[str]] = scrapers_to_run
         self.scrapers = dict()
         self.scraper_names = list()
 
@@ -75,14 +71,6 @@ class Runner:
     def add_configurable(
         self, name, datasetinfo, level, level_name=None, suffix=None
     ) -> str:
-        basic_auth = self.basic_auths.get(name)
-        if basic_auth is None:
-            int_downloader = self.downloader
-        else:
-            int_downloader = Download(
-                basic_auth=basic_auth,
-                rate_limit={"calls": 1, "period": 0.1},
-            )
         if suffix:
             key = f"{name}{suffix}"
         else:
@@ -95,7 +83,6 @@ class Runner:
             level,
             self.countryiso3s,
             self.adminone,
-            int_downloader,
             level_name,
             self.today,
             self.errors_on_exit,

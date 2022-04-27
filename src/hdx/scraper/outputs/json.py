@@ -195,7 +195,7 @@ class JsonFile(BaseOutput):
         """Save JSON file and any addition subsets of that JSON defined in the additional configuration
 
         Args:
-            folder (Optional[str]): Key in JSON to update
+            folder (Optional[str]): Folder to save to. Defaults to None.
             **kwargs: Variables to use when evaluating template arguments
 
         Returns:

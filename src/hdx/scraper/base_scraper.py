@@ -2,6 +2,8 @@ from abc import ABC, abstractmethod
 from copy import deepcopy
 from typing import Dict, List, Optional, Tuple
 
+from hdx.utilities.retriever import Retrieve
+
 
 class BaseScraper(ABC):
     """Base scraper class for scrapers to inherit
@@ -34,6 +36,17 @@ class BaseScraper(ABC):
         self.has_run = False
         self.fallbacks_used = False
         self.source_urls = set()
+
+    def get_retriever(
+        self, name: Optional[str] = None, prefix: Optional[str] = None
+    ):
+        if not name:
+            name = self.name
+        retriever = Retrieve.get_retriever(name)
+        if not prefix:
+            prefix = name
+        retriever.prefix = prefix
+        return retriever
 
     def initialise_values_sources(self):
         self.values: Dict[str, Tuple] = {

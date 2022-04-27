@@ -7,7 +7,7 @@ import regex
 from hdx.location.adminone import AdminOne
 from hdx.utilities.dateparse import get_datetime_from_timestamp, parse_date
 from hdx.utilities.dictandlist import dict_of_lists_add
-from hdx.utilities.downloader import Download, DownloadError
+from hdx.utilities.downloader import DownloadError
 from hdx.utilities.errors_onexit import ErrorsOnExit
 from hdx.utilities.text import (  # noqa: F401
     get_fraction_str,
@@ -33,7 +33,6 @@ class ConfigurableScraper(BaseScraper):
         level (str): Can be national, subnational or single
         countryiso3s (List[str]): List of ISO3 country codes to process
         adminone (AdminOne): AdminOne object from HDX Python Country library
-        downloader (Download): Download object for downloading files
         level_name (Optional[str]): Customised level_name name. Defaults to None (level_name).
         today (datetime): Value to use for today. Defaults to datetime.now().
         errors_on_exit (Optional[ErrorsOnExit]): ErrorsOnExit object that logs errors on exit
@@ -58,7 +57,6 @@ class ConfigurableScraper(BaseScraper):
         level: str,
         countryiso3s: List[str],
         adminone: AdminOne,
-        downloader: Download,
         level_name: Optional[str] = None,
         today: datetime = datetime.now(),
         errors_on_exit: Optional[ErrorsOnExit] = None,
@@ -71,15 +69,14 @@ class ConfigurableScraper(BaseScraper):
         else:
             self.datelevel = datelevel
         if level_name is None:
-            self.level_name = level
+            self.level_name: str = level
         else:
-            self.level_name = level_name
+            self.level_name: str = level_name
         self.countryiso3s = countryiso3s
         self.adminone = adminone
-        self.downloader = downloader
         self.today = today
         self.subsets = self.get_subsets_from_datasetinfo(datasetinfo)
-        self.errors_on_exit = errors_on_exit
+        self.errors_on_exit: Optional[ErrorsOnExit] = errors_on_exit
         self.variables = kwargs
         self.rowparser = None
         self.datasetinfo = copy.deepcopy(datasetinfo)
@@ -93,7 +90,7 @@ class ConfigurableScraper(BaseScraper):
             use_hxl = self.datasetinfo.get("use_hxl", False)
             if use_hxl:
                 try:
-                    file_headers, iterator = self.get_iterator()
+                    file_headers, iterator = self.get_iterator(name)
                     self.use_hxl(headers, file_headers, iterator)
                 except DownloadError:
                     self.can_fallback = False
@@ -127,9 +124,9 @@ class ConfigurableScraper(BaseScraper):
             ]
         return subsets
 
-    def get_iterator(self):
+    def get_iterator(self, name):
         return read(
-            self.downloader,
+            self.get_retriever(name),
             self.datasetinfo,
             today=self.today,
             **self.variables,
@@ -248,17 +245,14 @@ class ConfigurableScraper(BaseScraper):
                 headers[self.level_name][1].extend(orig_hxltags)
         return header_to_hxltag
 
-    def run_scraper(
-        self,
-        iterator: Iterator[Dict],
-    ) -> List[Dict]:
+    def run_scraper(self, iterator: Iterator[Dict]) -> None:
         """Run one mini scraper given an iterator over the rows
 
         Args:
             iterator (Iterator[Dict]): Iterator over the rows
 
         Returns:
-            List[Dict]: Values
+            None
         """
 
         valuedicts = dict()
@@ -457,7 +451,7 @@ class ConfigurableScraper(BaseScraper):
         Returns:
             None
         """
-        file_headers, iterator = self.get_iterator()
+        file_headers, iterator = self.get_iterator(self.name)
         header_to_hxltag = self.use_hxl(None, file_headers, iterator)
         if "source_url" not in self.datasetinfo:
             self.datasetinfo["source_url"] = self.datasetinfo["url"]
