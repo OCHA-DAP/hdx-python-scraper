@@ -40,13 +40,13 @@ def configuration(fixtures):
 
     header_auths = "population:pop_12345,who_national:who_abc"
     basic_auths = "access:YWNjXzEyMzQ1OmFjY19hYmM=,who_national2:d2hvX2RlZjp3aG9fMTIzNDU="
-    extra_params = (
+    param_auths = (
         "sadd:user=sadd_123&pass=sadd_abc,ourworldindata:auth=owid_abc"
     )
 
     header_auths = string_params_to_dict(header_auths)
     basic_auths = string_params_to_dict(basic_auths)
-    extra_params = string_params_to_dict(extra_params)
+    param_auths = string_params_to_dict(param_auths)
     create_retrievers(
         "",
         fixtures,
@@ -56,7 +56,7 @@ def configuration(fixtures):
         user_agent="test",
         header_auths=header_auths,
         basic_auths=basic_auths,
-        extra_params=extra_params,
+        param_auths=param_auths,
     )
     return Configuration.read()
 

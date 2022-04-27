@@ -32,7 +32,7 @@ def create_retrievers(
         **kwargs: See below and parameters of Download class in HDX Python Utilities
         header_auths (Mapping[str, str]): Header authorisations
         basic_auths (Mapping[str, str]): Basic authorisations
-        extra_params (Mapping[str, str]): Extra parameter authorisations
+        param_auths (Mapping[str, str]): Extra parameter authorisations
 
     Returns:
         None
@@ -52,13 +52,13 @@ def create_retrievers(
         for name in basic_auths:
             custom_configs[name] = {"basic_auth": basic_auths[name]}
         del kwargs["basic_auths"]
-    extra_params = kwargs.get("extra_params")
-    if extra_params is not None:
-        for name in extra_params:
+    param_auths = kwargs.get("param_auths")
+    if param_auths is not None:
+        for name in param_auths:
             custom_configs[name] = {
-                "extra_params_dict": dict(parse_qsl(extra_params[name]))
+                "extra_params_dict": dict(parse_qsl(param_auths[name]))
             }
-        del kwargs["extra_params"]
+        del kwargs["param_auths"]
     Download.generate_downloaders(custom_configs, **kwargs)
     Retrieve.generate_retrievers(
         fallback_dir,
