@@ -187,7 +187,7 @@ scraper_national:
     format: "csv"
     use_hxl: True
     external_filter:
-      url: "https://github.com/OCHA-DAP/hdx-python-scraper/raw/main/tests/fixtures/COVID-19%20Vaccine%20Doses%20in%20HRP%20Countries%20-%20Data%20HXL.csv"
+      url: "https://github.com/OCHA-DAP/hdx-python-scraper/raw/main/tests/fixtures/covax_2pacx-1vtvzu79pptfaa2syevoqfyrrjy63djwitqu0ffbxiqczoun9k9timwmrvfgg1rbsnlmgyugzseiaye2-pub.csv"
       hxl:
        - "#country+code"
     admin:
