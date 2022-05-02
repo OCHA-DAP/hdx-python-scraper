@@ -12,6 +12,8 @@ from . import get_date_from_dataset_date, match_template
 
 logger = logging.getLogger(__name__)
 
+fixed_dataset_date = None
+
 
 def get_url(url: str, **kwargs: Any) -> str:
     """Get url from a string replacing any template arguments
@@ -105,9 +107,12 @@ def read_hdx_metadata(
         if isinstance(date, str):
             datasetinfo["source_date"] = parse_date(date)
     else:
-        datasetinfo["source_date"] = get_date_from_dataset_date(
-            dataset, today=today
-        )
+        if fixed_dataset_date:
+            datasetinfo["source_date"] = fixed_dataset_date
+        else:
+            datasetinfo["source_date"] = get_date_from_dataset_date(
+                dataset, today=today
+            )
     if "source" not in datasetinfo:
         datasetinfo["source"] = dataset["dataset_source"]
     if "source_url" not in datasetinfo:

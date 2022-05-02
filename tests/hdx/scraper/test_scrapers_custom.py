@@ -5,6 +5,7 @@ from hdx.utilities.dateparse import parse_date
 
 from hdx.scraper.base_scraper import BaseScraper
 from hdx.scraper.runner import Runner
+from hdx.scraper.utilities import readers
 
 from .conftest import check_scraper, check_scrapers
 from .education_closures import EducationClosures
@@ -16,6 +17,7 @@ class TestScrapersCustom:
         BaseScraper.population_lookup = dict()
         today_str = "2020-10-01"
         today = parse_date(today_str)
+        readers.fixed_dataset_date = today
         adminone = AdminOne(configuration)
         level = "national"
         countries = ("AFG",)
@@ -253,3 +255,4 @@ class TestScrapersCustom:
                 "https://data.humdata.org/dataset/global-school-closures-covid19",
             )
         ]
+        readers.fixed_dataset_date = None
