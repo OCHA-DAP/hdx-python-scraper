@@ -6,7 +6,7 @@ from hdx.scraper.outputs.json import JsonFile
 from hdx.scraper.outputs.update_tabs import update_subnational
 from hdx.scraper.runner import Runner
 
-from .conftest import check_scraper, run_check_scraper
+from .conftest import run_check_scraper
 
 
 class TestScrapersSubnational:

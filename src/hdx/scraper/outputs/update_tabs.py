@@ -102,9 +102,8 @@ def update_national(
     level="national",
     tab="national",
 ):
-    name_fn = lambda adm: Country.get_country_name_from_iso3(adm)
     headers = deepcopy(national_headers)
-    fns = [lambda adm: adm, name_fn]
+    fns = [lambda adm: adm, lambda adm: Country.get_country_name_from_iso3(adm)]
 
     if flag_countries:
         headers[0].append(flag_countries["header"])

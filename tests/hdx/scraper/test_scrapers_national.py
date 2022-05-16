@@ -8,7 +8,7 @@ from hdx.scraper.outputs.json import JsonFile
 from hdx.scraper.outputs.update_tabs import update_national
 from hdx.scraper.runner import Runner
 
-from .conftest import check_scrapers, run_check_scraper, run_check_scrapers
+from .conftest import run_check_scraper, run_check_scrapers
 from .unhcr_myanmar_idps import idps_post_run
 
 
