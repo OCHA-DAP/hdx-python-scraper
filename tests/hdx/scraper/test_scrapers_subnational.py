@@ -85,9 +85,9 @@ class TestScrapersSubnational:
         outputs = {"json": jsonout}
         update_subnational(
             runner,
-            (name,),
             adminone,
             outputs,
+            names=(name,),
         )
         assert jsonout.json[f"{level}_data"] == [
             {

@@ -28,11 +28,13 @@ def update_tab(outputs, name, data):
         output.update_tab(name, data)
 
 
-def get_allregions_rows(runner, names, overrides=dict(), level="allregions"):
+def get_allregions_rows(
+    runner, names=None, overrides=dict(), level="allregions"
+):
     return runner.get_rows(level, ("value",), names=names, overrides=overrides)
 
 
-def get_regional_rows(runner, names, regional, level="regional"):
+def get_regional_rows(runner, regional, names=None, level="regional"):
     return runner.get_rows(
         level, regional, regional_headers, (lambda adm: adm,), names=names
     )
@@ -93,9 +95,9 @@ def update_regional(
 
 def update_national(
     runner,
-    names,
     countries,
     outputs,
+    names=None,
     flag_countries=None,
     iso3_to_region=None,
     ignore_regions=tuple(),
@@ -103,7 +105,10 @@ def update_national(
     tab="national",
 ):
     headers = deepcopy(national_headers)
-    fns = [lambda adm: adm, lambda adm: Country.get_country_name_from_iso3(adm)]
+    fns = [
+        lambda adm: adm,
+        lambda adm: Country.get_country_name_from_iso3(adm),
+    ]
 
     if flag_countries:
         headers[0].append(flag_countries["header"])
@@ -132,7 +137,12 @@ def update_national(
 
 
 def update_subnational(
-    runner, names, adminone, outputs, level="subnational", tab="subnational"
+    runner,
+    adminone,
+    outputs,
+    names=None,
+    level="subnational",
+    tab="subnational",
 ):
     def get_country_name(adm):
         countryiso3 = adminone.pcode_to_iso3[adm]

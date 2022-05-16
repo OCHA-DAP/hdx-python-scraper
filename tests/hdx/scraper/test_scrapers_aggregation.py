@@ -231,12 +231,14 @@ class TestScrapersAggregation:
         )
         regional_names = runner.add_customs(scrapers, add_to_run=True)
         runner.run(regional_names)
-        regional_rows = get_regional_rows(runner, regional_names, regions)
+        regional_rows = get_regional_rows(
+            runner, regions, names=regional_names
+        )
         level = "allregions"
         mapping = {"global": level}
         allregions_rows = get_allregions_rows(
             runner,
-            names,
+            names=names,
             overrides={
                 names[0]: mapping,
                 names[1]: mapping,

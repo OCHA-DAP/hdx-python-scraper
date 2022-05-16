@@ -636,9 +636,9 @@ class TestScrapersNational:
         }
         update_national(
             runner,
-            scrapers,
             countries,
             outputs,
+            names=scrapers,
             flag_countries=flag_countries,
             iso3_to_region=iso3_to_region,
             ignore_regions=("Region6",),
