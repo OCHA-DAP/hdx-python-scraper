@@ -28,10 +28,12 @@ def update_tab(outputs, name, data):
         output.update_tab(name, data)
 
 
-def get_allregions_rows(
-    runner, names=None, overrides=dict(), level="allregions"
+def get_toplevel_rows(
+    runner, names=None, overrides=dict(), toplevel="allregions"
 ):
-    return runner.get_rows(level, ("value",), names=names, overrides=overrides)
+    return runner.get_rows(
+        toplevel, ("value",), names=names, overrides=overrides
+    )
 
 
 def get_regional_rows(runner, regional, names=None, level="regional"):
@@ -40,10 +42,39 @@ def get_regional_rows(runner, regional, names=None, level="regional"):
     )
 
 
+def update_toplevel(
+    outputs,
+    toplevel_rows,
+    tab="allregions",
+    regional_rows=tuple(),
+    regional_adm="ALL",
+    regional_hxltags=None,
+):
+    if not toplevel_rows:
+        toplevel_rows = [list(), list(), list()]
+    if regional_rows:
+        adm_header = regional_rows[1].index("#region+name")
+        rows_to_insert = (list(), list(), list())
+        for row in regional_rows[2:]:
+            if row[adm_header] == regional_adm:
+                for i, hxltag in enumerate(regional_rows[1]):
+                    if hxltag == "#region+name":
+                        continue
+                    if regional_hxltags and hxltag not in regional_hxltags:
+                        continue
+                    rows_to_insert[0].append(regional_rows[0][i])
+                    rows_to_insert[1].append(hxltag)
+                    rows_to_insert[2].append(row[i])
+        toplevel_rows[0] = rows_to_insert[0] + toplevel_rows[0]
+        toplevel_rows[1] = rows_to_insert[1] + toplevel_rows[1]
+        toplevel_rows[2] = rows_to_insert[2] + toplevel_rows[2]
+    update_tab(outputs, tab, toplevel_rows)
+
+
 def update_regional(
     outputs,
     regional_rows,
-    allregions_rows=tuple(),
+    toplevel_rows=tuple(),
     additional_allregions_headers=tuple(),
     tab="regional",
     toplevel="allregions",
@@ -52,12 +83,12 @@ def update_regional(
         return
     allregions_values = dict()
     allregions_hxltags = dict()
-    if allregions_rows:
-        for i, header in enumerate(allregions_rows[0]):
+    if toplevel_rows:
+        for i, header in enumerate(toplevel_rows[0]):
             if header in additional_allregions_headers:
-                allregions_values[header] = allregions_rows[2][i]
+                allregions_values[header] = toplevel_rows[2][i]
                 if header not in regional_rows[0]:
-                    allregions_hxltags[header] = allregions_rows[1][i]
+                    allregions_hxltags[header] = toplevel_rows[1][i]
     adm_header = regional_rows[1].index("#region+name")
     found_adm = False
 
