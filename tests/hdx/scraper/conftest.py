@@ -129,6 +129,7 @@ def run_check_scraper(
     population_lookup=None,
     fallbacks_used=False,
     source_urls=None,
+    set_not_run=True,
 ):
     runner.run_one(name)
     check_scraper(
@@ -142,7 +143,8 @@ def run_check_scraper(
         fallbacks_used,
         source_urls,
     )
-    runner.set_not_run(name)
+    if set_not_run:
+        runner.set_not_run(name)
 
 
 def run_check_scrapers(
@@ -155,6 +157,7 @@ def run_check_scrapers(
     population_lookup=None,
     fallbacks_used=False,
     source_urls=None,
+    set_not_run=True,
 ):
     runner.run(names)
     check_scrapers(
@@ -168,4 +171,5 @@ def run_check_scrapers(
         fallbacks_used,
         source_urls,
     )
-    runner.set_not_run_many(names)
+    if set_not_run:
+        runner.set_not_run_many(names)

@@ -3,9 +3,15 @@ from hdx.utilities.dateparse import parse_date
 
 from hdx.scraper.base_scraper import BaseScraper
 from hdx.scraper.configurable.aggregator import Aggregator
+from hdx.scraper.outputs.json import JsonFile
+from hdx.scraper.outputs.update_tabs import (
+    get_allregions_rows,
+    get_regional_rows,
+    update_regional,
+)
 from hdx.scraper.runner import Runner
 
-from .conftest import check_scrapers, run_check_scraper, run_check_scrapers
+from .conftest import run_check_scraper, run_check_scrapers
 
 
 class TestScrapersAggregation:
@@ -44,7 +50,8 @@ class TestScrapersAggregation:
             ],
         )
 
-        adm_aggregation = {"AFG": ("ROAP",), "MMR": ("ROAP",)}
+        regions = ("ROAP",)
+        adm_aggregation = {"AFG": regions, "MMR": regions}
 
         configuration_hxl = configuration["aggregation_hxl"]
         level = "regional"
@@ -165,8 +172,7 @@ class TestScrapersAggregation:
             "https://covid19.who.int/WHO-COVID-19-global-data.csv",
             "https://data.humdata.org/organization/world-bank-group",
         ]
-        runner.run(names)
-        check_scrapers(
+        run_check_scrapers(
             names,
             runner,
             level,
@@ -174,10 +180,11 @@ class TestScrapersAggregation:
             national_values,
             sources,
             source_urls=source_urls,
+            set_not_run=False,
         )
 
-        level = "regional"
-        aggregator_configuration = configuration_hxl["aggregation_global"]
+        level = "global"
+        aggregator_configuration = configuration_hxl[f"aggregation_{level}"]
         adm_aggregation = ("AFG", "PSE")
         scrapers = Aggregator.get_scrapers(
             aggregator_configuration,
@@ -188,9 +195,9 @@ class TestScrapersAggregation:
         )
         names = runner.add_customs(scrapers, add_to_run=True)
         assert names == [
-            "population_regional",
-            "affected_infected_per100000_regional",
-            "affected_infected_perpop_regional",
+            f"population_{level}",
+            f"affected_infected_per100000_{level}",
+            f"affected_infected_perpop_{level}",
         ]
         pop = 42727060
         headers = (
@@ -211,7 +218,51 @@ class TestScrapersAggregation:
             list(),
             population_lookup=national_values[0] | {"global": pop},
             source_urls=source_urls,
+            set_not_run=False,
         )
+
+        aggregator_configuration = configuration_hxl["aggregation_sum"]
+        scrapers = Aggregator.get_scrapers(
+            aggregator_configuration,
+            "national",
+            "regional",
+            {"AFG": regions, "PSE": ("somewhere",)},
+            runner,
+        )
+        regional_names = runner.add_customs(scrapers, add_to_run=True)
+        runner.run(regional_names)
+        regional_rows = get_regional_rows(runner, regional_names, regions)
+        level = "allregions"
+        mapping = {"global": level}
+        allregions_rows = get_allregions_rows(
+            runner,
+            names,
+            overrides={
+                names[0]: mapping,
+                names[1]: mapping,
+                names[2]: mapping,
+            },
+            level=level,
+        )
+        level = "regional"
+        jsonout = JsonFile(configuration["json"], [level])
+        outputs = {"json": jsonout}
+        update_regional(
+            outputs,
+            regional_rows,
+            allregions_rows,
+            additional_allregions_headers=allregions_rows[0],
+        )
+
+        assert jsonout.json[f"{level}_data"] == [
+            {"#population": "38041754", "#region+name": "ROAP"},
+            {
+                "#region+name": "allregions",
+                "#population": "42727060",
+                "#affected+infected+per100000": "229.71",
+                "#affected+infected+perpop": "0.5376",
+            },
+        ]
 
     def test_get_aggregation_nohxl(self, configuration, fallbacks):
         BaseScraper.population_lookup = dict()
@@ -371,8 +422,7 @@ class TestScrapersAggregation:
             "https://covid19.who.int/WHO-COVID-19-global-data.csv",
             "https://data.humdata.org/organization/world-bank-group",
         ]
-        runner.run(names)
-        check_scrapers(
+        run_check_scrapers(
             names,
             runner,
             level,
@@ -380,6 +430,7 @@ class TestScrapersAggregation:
             national_values,
             sources,
             source_urls=source_urls,
+            set_not_run=False,
         )
 
         level = "regional"
@@ -395,9 +446,9 @@ class TestScrapersAggregation:
         )
         names = runner.add_customs(scrapers, add_to_run=True)
         assert names == [
-            "population_regional",
-            "casesper100000_regional",
-            "casesperpopulation_regional",
+            f"population_{level}",
+            f"casesper100000_{level}",
+            f"casesperpopulation_{level}",
         ]
         pop = 42727060
         headers = (
@@ -416,6 +467,6 @@ class TestScrapersAggregation:
             headers,
             values,
             list(),
-            population_lookup=national_values[0] | {"global": pop},
+            population_lookup=national_values[0] | {"allregions": pop},
             source_urls=source_urls,
         )

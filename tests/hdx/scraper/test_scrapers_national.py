@@ -4,9 +4,11 @@ from hdx.utilities.errors_onexit import ErrorsOnExit
 from hdx.utilities.retriever import Retrieve
 
 from hdx.scraper.base_scraper import BaseScraper
+from hdx.scraper.outputs.json import JsonFile
+from hdx.scraper.outputs.update_tabs import update_national
 from hdx.scraper.runner import Runner
 
-from .conftest import check_scrapers, run_check_scraper
+from .conftest import check_scrapers, run_check_scraper, run_check_scrapers
 from .unhcr_myanmar_idps import idps_post_run
 
 
@@ -125,8 +127,7 @@ class TestScrapersNational:
                 "https://covid19.who.int/WHO-COVID-19-global-data.csv",
             ),
         ]
-        runner.run(names)
-        check_scrapers(
+        run_check_scrapers(
             names,
             runner,
             level,
@@ -136,6 +137,7 @@ class TestScrapersNational:
             source_urls=[
                 "https://covid19.who.int/WHO-COVID-19-global-data.csv"
             ],
+            set_not_run=False,
         )
 
         def passthrough_fn(x):
@@ -539,15 +541,16 @@ class TestScrapersNational:
         errors_on_exit = ErrorsOnExit()
         adminone = AdminOne(configuration)
         level = "national"
+        countries = ("AFG", "MMR", "PHL")
         scraper_configuration = configuration[f"scraper_{level}"]
 
         runner = Runner(
-            ("AFG", "MMR", "PHL"),
+            countries,
             adminone,
             today,
             errors_on_exit=errors_on_exit,
         )
-        runner.add_configurables(scraper_configuration, level)
+        scrapers = runner.add_configurables(scraper_configuration, level)
         name = "idps"
         headers = (
             ["TotalIDPs"],
@@ -617,4 +620,78 @@ class TestScrapersNational:
         )
         assert errors_on_exit.errors == [
             "Not using UNHCR Myanmar IDPs override! Error: [Errno 2] No such file or directory: 'tests/fixtures/idps_override_not-exist.json'",
+        ]
+        runner.run()
+        jsonout = JsonFile(configuration["json"], [level])
+        outputs = {"json": jsonout}
+        flag_countries = {
+            "header": "ishrp",
+            "hxltag": "#meta+ishrp",
+            "countries": ("AFG", "MMR"),
+        }
+        iso3_to_region = {
+            "AFG": ("Region1", "Region2"),
+            "PHL": ("Region3", "Region6"),
+            "MMR": ("Region3", "Region4"),
+        }
+        update_national(
+            runner,
+            scrapers,
+            countries,
+            outputs,
+            flag_countries=flag_countries,
+            iso3_to_region=iso3_to_region,
+            ignore_regions=("Region6",),
+        )
+        assert jsonout.json[f"{level}_data"] == [
+            {
+                "#access+travel+pct": "N/A",
+                "#access+visas+pct": "0.2",
+                "#activity+cbpf+project+insecurity+pct": "0.04",
+                "#activity+cerf+project+insecurity+pct": "0.5710000000000001",
+                "#affected+displaced": "4664000",
+                "#affected+f+infected+pct": "0.2956",
+                "#affected+f+killed+pct": "0.2502",
+                "#affected+infected+2+per100000": "96.99",
+                "#affected+infected+m+pct": "0.7044",
+                "#affected+infected+per100000": "96.99",
+                "#affected+killed+2+per100000": "3.41",
+                "#affected+killed+m+pct": "0.7498",
+                "#affected+killed+per100000": "3.41",
+                "#capacity+doses+administered+coverage+pct": "0.0032",
+                "#capacity+doses+administered+total": "230000",
+                "#country+code": "AFG",
+                "#country+name": "Afghanistan",
+                "#event+year+previous+num": "20",
+                "#event+year+previous+todate+num": "22",
+                "#event+year+todate+num": "2",
+                "#meta+ishrp": "Y",
+                "#population": "38041754",
+                "#population+education": "9979405",
+                "#region+name": "Region1|Region2",
+                "#service+name": "bivalent Oral Poliovirus",
+                "#status+name": "Postponed",
+            },
+            {
+                "#affected+displaced": "509600",
+                "#capacity+doses+administered+coverage+pct": "0.0096",
+                "#capacity+doses+administered+total": "1040000",
+                "#country+code": "MMR",
+                "#country+name": "Myanmar",
+                "#meta+ishrp": "Y",
+                "#population": "54045420",
+                "#region+name": "Region3|Region4",
+            },
+            {
+                "#affected+displaced": "298000",
+                "#affected+tested": "39407",
+                "#affected+tested+avg+per1000": "0.469",
+                "#affected+tested+per1000": "0.36",
+                "#affected+tested+positive+pct": "0.155",
+                "#country+code": "PHL",
+                "#country+name": "Philippines",
+                "#meta+ishrp": "N",
+                "#population": "108116615",
+                "#region+name": "Region3",
+            },
         ]

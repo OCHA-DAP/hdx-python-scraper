@@ -140,8 +140,15 @@ class TestScraperGlobal:
                 "https://docs.google.com/spreadsheets/d/e/2PACX-1vTVzu79PPTfaA2syevOQfyRRjy63dJWitqu0fFbXIQCzoUn9K9TiMWMRvFGg1RBsnLmgYugzSEiAye2/pub?gid=992438980&single=true&output=csv",
             ),
         ]
-        runner.run_one(name)
-        check_scraper(name, runner, level_name, headers, values, sources)
+        run_check_scraper(
+            name,
+            runner,
+            level_name,
+            headers,
+            values,
+            sources,
+            set_not_run=False,
+        )
         rows = runner.get_rows("global", ("value",))
         expected_rows = [
             [

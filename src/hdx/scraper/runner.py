@@ -233,7 +233,7 @@ class Runner:
                     output_level = level
                 if levels is not None and output_level not in levels:
                     continue
-                level_results = results.get(level)
+                level_results = results.get(output_level)
                 if level_results is None:
                     level_results = {
                         "headers": (list(), list()),

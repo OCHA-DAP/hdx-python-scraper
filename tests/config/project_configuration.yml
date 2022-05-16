@@ -912,7 +912,7 @@ aggregation_nohxl:
   aggregation_global:
     "Population":
       action: "sum"
-      population_key: "global"
+      population_key: "allregions"
     "CasesPer100000":
       action: "mean"
     "CasesPerPopulation":
@@ -920,9 +920,35 @@ aggregation_nohxl:
       input:
         - "CasesPer100000"
       action: "eval"
-      population_key: "global"
+      population_key: "allregions"
       formula: "number_format(CasesPer100000 * 100000 / #population)"
 
+timeseries:
+  casualties:
+    source: "OHCHR"
+    source_url: "https://data.humdata.org/dataset/ukraine-key-figures-2022"
+    dataset: "ukraine-who-does-what-where-3w"
+    url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQIdedbZz0ehRC0b4fsWiP14R7MdtU1mpmwAkuXUPElSah2AWCURKGALFDuHjvyJUL8vzZAt3R1B5qg/pub?gid=0&single=true&output=csv"
+    format: "csv"
+    headers: 2
+    date: "Date"
+    date_type: "date"
+    date_hxl: "#date"
+    input:
+      - "Civilian casualities(OHCHR) - Killed"
+      - "Civilian casualities(OHCHR) - Injured"
+    output:
+      - "CiviliansKilled"
+      - "CiviliansInjured"
+    output_hxl:
+      - "#affected+killed"
+      - "#affected+injured"
+
+copyfiles:
+  - dataset: "ukraine-border-crossings"
+    format: "xlsx"
+    filename: "my_output.xlsx"
+    hxltag: "#xlsx"
 
 HRPs:
   - AFG
