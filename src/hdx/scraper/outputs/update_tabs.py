@@ -75,31 +75,31 @@ def update_regional(
     outputs,
     regional_rows,
     toplevel_rows=tuple(),
-    additional_allregions_headers=tuple(),
+    additional_toplevel_headers=tuple(),
     tab="regional",
     toplevel="allregions",
 ):
     if not regional_rows:
         return
-    allregions_values = dict()
-    allregions_hxltags = dict()
+    toplevel_values = dict()
+    toplevel_hxltags = dict()
     if toplevel_rows:
         for i, header in enumerate(toplevel_rows[0]):
-            if header in additional_allregions_headers:
-                allregions_values[header] = toplevel_rows[2][i]
+            if header in additional_toplevel_headers:
+                toplevel_values[header] = toplevel_rows[2][i]
                 if header not in regional_rows[0]:
-                    allregions_hxltags[header] = toplevel_rows[1][i]
+                    toplevel_hxltags[header] = toplevel_rows[1][i]
     adm_header = regional_rows[1].index("#region+name")
     found_adm = False
 
     def add_value(row):
         for i, header in enumerate(regional_rows[0]):
-            value = allregions_values.get(header)
+            value = toplevel_values.get(header)
             if value is None:
                 continue
             row[i] = value
-        for header, hxltag in allregions_hxltags.items():
-            value = allregions_values.get(header)
+        for header, hxltag in toplevel_hxltags.items():
+            value = toplevel_values.get(header)
             if value is None:
                 continue
             regional_rows[0].append(header)

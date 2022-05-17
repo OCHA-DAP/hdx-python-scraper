@@ -158,7 +158,7 @@ class TestScrapersRegionalToplevel:
             outputs,
             regional_rows,
             allregions_rows,
-            additional_allregions_headers=allregions_rows[0],
+            additional_toplevel_headers=allregions_rows[0],
             tab=level,
             toplevel=toplevel,
         )
