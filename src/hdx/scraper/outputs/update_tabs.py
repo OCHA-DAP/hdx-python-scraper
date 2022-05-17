@@ -93,11 +93,13 @@ def update_regional(
     found_adm = False
 
     def add_value(row):
+        value_found = False
         for i, header in enumerate(regional_rows[0]):
             value = toplevel_values.get(header)
             if value is None:
                 continue
             row[i] = value
+            value_found = True
         for header, hxltag in toplevel_hxltags.items():
             value = toplevel_values.get(header)
             if value is None:
@@ -105,6 +107,8 @@ def update_regional(
             regional_rows[0].append(header)
             regional_rows[1].append(hxltag)
             row.append(value)
+            value_found = True
+        return value_found
 
     for row in regional_rows[2:]:
         if row[adm_header] == toplevel:
@@ -115,8 +119,8 @@ def update_regional(
         row = [toplevel]
         for _ in regional_rows[0][1:]:
             row.append(None)
-        add_value(row)
-        regional_rows.append(row)
+        if add_value(row):
+            regional_rows.append(row)
     length = len(regional_rows[0])
     for row in regional_rows[2:]:
         while len(row) < length:
