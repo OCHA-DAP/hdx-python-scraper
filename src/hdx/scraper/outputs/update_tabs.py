@@ -49,6 +49,7 @@ def update_toplevel(
     regional_rows=tuple(),
     regional_adm="ALL",
     regional_hxltags=None,
+    regional_first=False,
 ):
     if not toplevel_rows:
         toplevel_rows = [list(), list(), list()]
@@ -65,9 +66,14 @@ def update_toplevel(
                     rows_to_insert[0].append(regional_rows[0][i])
                     rows_to_insert[1].append(hxltag)
                     rows_to_insert[2].append(row[i])
-        toplevel_rows[0] = rows_to_insert[0] + toplevel_rows[0]
-        toplevel_rows[1] = rows_to_insert[1] + toplevel_rows[1]
-        toplevel_rows[2] = rows_to_insert[2] + toplevel_rows[2]
+        if regional_first:
+            toplevel_rows[0] = rows_to_insert[0] + toplevel_rows[0]
+            toplevel_rows[1] = rows_to_insert[1] + toplevel_rows[1]
+            toplevel_rows[2] = rows_to_insert[2] + toplevel_rows[2]
+        else:
+            toplevel_rows[0] += rows_to_insert[0]
+            toplevel_rows[1] += rows_to_insert[1]
+            toplevel_rows[2] += rows_to_insert[2]
     update_tab(outputs, tab, toplevel_rows)
 
 

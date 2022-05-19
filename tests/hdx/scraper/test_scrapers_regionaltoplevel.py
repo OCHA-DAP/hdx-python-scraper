@@ -185,6 +185,23 @@ class TestScrapersRegionalToplevel:
         )
         assert jsonout.json["allregions_data"] == [
             {
+                "#population": "42727060",
+                "#affected+infected+per100000": "229.71",
+                "#affected+infected+perpop": "0.5376",
+                "#mycolumn": "12345",
+            }
+        ]
+        jsonout.json["allregions_data"] = list()
+        update_toplevel(
+            outputs,
+            allregions_rows,
+            regional_rows=regional_rows,
+            regional_adm=toplevel,
+            regional_hxltags=["#mycolumn"],
+            regional_first=True,
+        )
+        assert jsonout.json["allregions_data"] == [
+            {
                 "#mycolumn": "12345",
                 "#population": "42727060",
                 "#affected+infected+per100000": "229.71",
