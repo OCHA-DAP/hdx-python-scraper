@@ -3,13 +3,6 @@ from hdx.utilities.dateparse import parse_date
 
 from hdx.scraper.base_scraper import BaseScraper
 from hdx.scraper.configurable.aggregator import Aggregator
-from hdx.scraper.outputs.json import JsonFile
-from hdx.scraper.outputs.update_tabs import (
-    get_regional_rows,
-    get_toplevel_rows,
-    update_regional,
-    update_toplevel,
-)
 from hdx.scraper.runner import Runner
 
 from .conftest import run_check_scrapers
