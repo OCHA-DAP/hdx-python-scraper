@@ -216,6 +216,33 @@ class Runner:
         if not names:
             names = self.scrapers.keys()
         results = dict()
+
+        def add_level_results(lvl, output_lvl, scrap, lvls_used):
+            nonlocal results
+
+            if level in lvls_used:
+                return
+            if levels is not None and output_lvl not in levels:
+                return
+            headers = scrap.headers.get(lvl)
+            if headers is None:
+                return
+            level_results = results.get(output_lvl)
+            if level_results is None:
+                level_results = {
+                    "headers": (list(), list()),
+                    "values": list(),
+                    "sources": list(),
+                    "fallbacks": list(),
+                }
+                results[output_lvl] = level_results
+            level_results["headers"][0].extend(headers[0])
+            level_results["headers"][1].extend(headers[1])
+            level_results["values"].extend(scrap.get_values(level))
+            level_results["sources"].extend(scrap.get_sources(level))
+            lvls_used.add(lvl)
+            lvls_used.add(output_lvl)
+
         for name in names:
             if self.scrapers_to_run and not any(
                 x in name for x in self.scrapers_to_run
@@ -225,27 +252,13 @@ class Runner:
             if has_run and not scraper.has_run:
                 continue
             override = overrides.get(name, dict())
-            for level, headers in scraper.headers.items():
-                level_override = override.get(level)
-                if level_override:
-                    output_level = level_override
-                else:
-                    output_level = level
-                if levels is not None and output_level not in levels:
-                    continue
-                level_results = results.get(output_level)
-                if level_results is None:
-                    level_results = {
-                        "headers": (list(), list()),
-                        "values": list(),
-                        "sources": list(),
-                        "fallbacks": list(),
-                    }
-                    results[output_level] = level_results
-                level_results["headers"][0].extend(headers[0])
-                level_results["headers"][1].extend(headers[1])
-                level_results["values"].extend(scraper.get_values(level))
-                level_results["sources"].extend(scraper.get_sources(level))
+            levels_used = set()
+            for level, output_level in override.items():
+                add_level_results(level, output_level, scraper, levels_used)
+
+            for level in scraper.headers:
+                add_level_results(level, level, scraper, levels_used)
+
         return results
 
     def get_rows(
