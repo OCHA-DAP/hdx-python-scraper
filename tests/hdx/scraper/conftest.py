@@ -5,11 +5,12 @@ import pytest
 from hdx.api.configuration import Configuration
 from hdx.api.locations import Locations
 from hdx.location.country import Country
+from hdx.utilities.dateparse import parse_date
 
 from hdx.scraper.base_scraper import BaseScraper
-from hdx.scraper.input import create_retrievers
 from hdx.scraper.utilities import string_params_to_dict
 from hdx.scraper.utilities.fallbacks import Fallbacks
+from hdx.scraper.utilities.reader import Read
 
 from . import bool_assert
 
@@ -47,17 +48,35 @@ def configuration(fixtures):
     header_auths = string_params_to_dict(header_auths)
     basic_auths = string_params_to_dict(basic_auths)
     param_auths = string_params_to_dict(param_auths)
-    create_retrievers(
-        "",
-        fixtures,
-        "",
-        save=False,
-        use_saved=True,
-        user_agent="test",
-        header_auths=header_auths,
-        basic_auths=basic_auths,
-        param_auths=param_auths,
-    )
+    today = parse_date("2020-10-01")
+    save = False
+    if save:
+        Read.create_readers(
+            "",
+            join(fixtures, "tmp"),
+            "",
+            save=True,
+            use_saved=False,
+            user_agent="test",
+            header_auths=header_auths,
+            basic_auths=basic_auths,
+            param_auths=param_auths,
+            today=today,
+        )
+    else:
+        Read.create_readers(
+            "",
+            fixtures,
+            "",
+            save=False,
+            use_saved=True,
+            user_agent="test",
+            header_auths=header_auths,
+            basic_auths=basic_auths,
+            param_auths=param_auths,
+            today=today,
+        )
+
     return Configuration.read()
 
 

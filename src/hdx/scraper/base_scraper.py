@@ -4,6 +4,8 @@ from typing import Dict, List, Optional, Tuple
 
 from hdx.utilities.retriever import Retrieve
 
+from hdx.scraper.utilities.reader import Read
+
 
 class BaseScraper(ABC):
     """Base scraper class for scrapers to inherit
@@ -37,16 +39,16 @@ class BaseScraper(ABC):
         self.fallbacks_used = False
         self.source_urls = set()
 
-    def get_retriever(
+    def get_reader(
         self, name: Optional[str] = None, prefix: Optional[str] = None
     ):
         if not name:
             name = self.name
-        retriever = Retrieve.get_retriever(name)
+        reader = Read.get_reader(name)
         if not prefix:
             prefix = name
-        retriever.prefix = prefix
-        return retriever
+        reader.prefix = prefix
+        return reader
 
     def initialise_values_sources(self):
         self.values: Dict[str, Tuple] = {

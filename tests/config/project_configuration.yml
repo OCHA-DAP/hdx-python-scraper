@@ -11,7 +11,7 @@ json:
       source: "Some org"
       source_url: "https://data.humdata.org/organization/world-bank-group"
       format: "json"
-      url: "https://raw.githubusercontent.com/OCHA-DAP/hdx-python-scraper/main/tests/fixtures/additional_json.json"
+      url: "https://github.com/additional-json.json"
       jsonpath: "[*]"
   output: "test_scraper_all.json"
   additional_outputs:

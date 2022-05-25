@@ -5,7 +5,6 @@ from hdx.utilities.dateparse import parse_date
 
 from hdx.scraper.base_scraper import BaseScraper
 from hdx.scraper.runner import Runner
-from hdx.scraper.utilities import readers
 
 from .conftest import check_scraper, check_scrapers
 from .education_closures import EducationClosures
@@ -15,9 +14,8 @@ from .education_enrolment import EducationEnrolment
 class TestScrapersCustom:
     def test_get_custom(self, configuration, fallbacks):
         BaseScraper.population_lookup = dict()
-        today_str = "2020-10-01"
-        today = parse_date(today_str)
-        readers.fixed_dataset_date = today
+        source_date = "2022-04-30"
+        today = parse_date("2020-10-01")
         adminone = AdminOne(configuration)
         level = "national"
         countries = ("AFG",)
@@ -39,7 +37,7 @@ class TestScrapersCustom:
         sources = [
             (
                 "#impact+type",
-                today_str,
+                source_date,
                 "UNESCO",
                 "https://data.humdata.org/dataset/global-school-closures-covid19",
             )
@@ -50,7 +48,7 @@ class TestScrapersCustom:
         sources = [
             (
                 "#status+country+closed",
-                today_str,
+                source_date,
                 "UNESCO",
                 "https://data.humdata.org/dataset/global-school-closures-covid19",
             )
@@ -84,7 +82,7 @@ class TestScrapersCustom:
             ),
             (
                 "#impact+type",
-                today_str,
+                source_date,
                 "UNESCO",
                 "https://data.humdata.org/dataset/global-school-closures-covid19",
             ),
@@ -181,19 +179,19 @@ class TestScrapersCustom:
         sources = [
             (
                 "#population+learners+pre_primary_to_secondary",
-                "2020-10-01",
+                "2022-04-30",
                 "UNESCO",
                 "https://data.humdata.org/dataset/global-school-closures-covid19",
             ),
             (
                 "#population+learners+tertiary",
-                "2020-10-01",
+                "2022-04-30",
                 "UNESCO",
                 "https://data.humdata.org/dataset/global-school-closures-covid19",
             ),
             (
                 "#affected+learners",
-                "2020-10-01",
+                "2022-04-30",
                 "UNESCO",
                 "https://data.humdata.org/dataset/global-school-closures-covid19",
             ),
@@ -207,13 +205,13 @@ class TestScrapersCustom:
         sources = [
             (
                 "#affected+learners",
-                "2020-10-01",
+                "2022-04-30",
                 "UNESCO",
                 "https://data.humdata.org/dataset/global-school-closures-covid19",
             ),
             (
                 "#affected+learners+pct",
-                "2020-10-01",
+                "2022-04-30",
                 "UNESCO",
                 "https://data.humdata.org/dataset/global-school-closures-covid19",
             ),
@@ -250,9 +248,8 @@ class TestScrapersCustom:
         assert sources == [
             (
                 "#lala",
-                "2020-10-01",
+                "2022-04-30",
                 "UNESCO",
                 "https://data.humdata.org/dataset/global-school-closures-covid19",
             )
         ]
-        readers.fixed_dataset_date = None

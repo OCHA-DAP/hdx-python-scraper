@@ -3,7 +3,6 @@ import logging
 from hdx.utilities.text import get_fraction_str
 
 from hdx.scraper.base_scraper import BaseScraper
-from hdx.scraper.utilities.readers import read
 
 logger = logging.getLogger(__name__)
 
@@ -43,8 +42,7 @@ class EducationEnrolment(BaseScraper):
         self.regionlookup = regionlookup
 
     def run(self) -> None:
-        learners_headers, learners_iterator = read(
-            self.get_retriever(),
+        learners_headers, learners_iterator = self.get_reader().read(
             self.datasetinfo,
         )
         learners_012, learners_3, affected_learners = self.get_values(
