@@ -4,7 +4,6 @@ from datetime import datetime
 from hdx.utilities.dateparse import parse_date
 
 from hdx.scraper.base_scraper import BaseScraper
-from hdx.scraper.utilities.readers import read
 
 logger = logging.getLogger(__name__)
 
@@ -16,13 +15,6 @@ class TimeSeries(BaseScraper):
         self.today = today
         self.outputs = outputs
 
-    def get_iterator(self):
-        return read(
-            self.get_retriever(),
-            self.datasetinfo,
-            today=self.today,
-        )
-
     def run(self):
         input = self.datasetinfo["input"]
         datecol = self.datasetinfo["date"]
@@ -33,7 +25,7 @@ class TimeSeries(BaseScraper):
             "output_hxl"
         ]
         rows = [headers, hxltags]
-        file_headers, iterator = self.get_iterator()
+        file_headers, iterator = self.get_reader().read(self.datasetinfo)
         for inrow in iterator:
             if isinstance(datecol, list):
                 dates = [str(inrow[x]) for x in datecol]

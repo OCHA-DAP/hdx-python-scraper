@@ -4,7 +4,6 @@ from typing import Dict
 from hdx.utilities.dateparse import default_date, parse_date
 
 from hdx.scraper.base_scraper import BaseScraper
-from hdx.scraper.utilities.readers import read
 
 logger = logging.getLogger(__name__)
 
@@ -38,8 +37,7 @@ class EducationClosures(BaseScraper):
         return fully_closed
 
     def run(self) -> None:
-        closures_headers, closures_iterator = read(
-            self.get_retriever(),
+        closures_headers, closures_iterator = self.get_reader().read(
             self.datasetinfo,
         )
         closures = self.get_values("national")[0]

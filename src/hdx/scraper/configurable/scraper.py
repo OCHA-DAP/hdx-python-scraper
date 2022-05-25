@@ -17,7 +17,6 @@ from hdx.utilities.text import (  # noqa: F401
 
 from ..base_scraper import BaseScraper
 from ..utilities import get_rowval
-from ..utilities.readers import read
 from .rowparser import RowParser
 
 logger = logging.getLogger(__name__)
@@ -125,10 +124,8 @@ class ConfigurableScraper(BaseScraper):
         return subsets
 
     def get_iterator(self, name):
-        return read(
-            self.get_retriever(name),
+        return self.get_reader(name).read(
             self.datasetinfo,
-            today=self.today,
             **self.variables,
         )
 

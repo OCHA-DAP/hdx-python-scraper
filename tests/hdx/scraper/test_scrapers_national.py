@@ -1,12 +1,12 @@
 from hdx.location.adminone import AdminOne
 from hdx.utilities.dateparse import parse_date
 from hdx.utilities.errors_onexit import ErrorsOnExit
-from hdx.utilities.retriever import Retrieve
 
 from hdx.scraper.base_scraper import BaseScraper
 from hdx.scraper.outputs.json import JsonFile
 from hdx.scraper.outputs.update_tabs import update_national
 from hdx.scraper.runner import Runner
+from hdx.scraper.utilities.reader import Read
 
 from .conftest import run_check_scraper, run_check_scrapers
 from .unhcr_myanmar_idps import idps_post_run
@@ -36,21 +36,21 @@ class TestScrapersNational:
         ]
 
         def assert_auth_header(name, expected):
-            downloader = Retrieve.get_retriever(name).downloader
+            downloader = Read.get_reader(name).downloader
             assert downloader.session.headers.get("Authorization") == expected
 
         assert_auth_header("population", "pop_12345")
         assert_auth_header("who_national", "who_abc")
 
         def assert_auth(name, expected):
-            downloader = Retrieve.get_retriever(name).downloader
+            downloader = Read.get_reader(name).downloader
             assert downloader.session.auth == expected
 
         assert_auth("access", ("acc_12345", "acc_abc"))
         assert_auth("who_national2", ("who_def", "who_12345"))
 
         def assert_params(name, expected):
-            downloader = Retrieve.get_retriever(name).downloader
+            downloader = Read.get_reader(name).downloader
             assert downloader.session.params == expected
 
         assert_params("sadd", {"user": "sadd_123", "pass": "sadd_abc"})

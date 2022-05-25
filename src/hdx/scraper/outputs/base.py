@@ -1,7 +1,4 @@
-from datetime import datetime
 from typing import Any, Dict, List, Optional, Union
-
-from hdx.utilities.downloader import Download
 
 try:
     from pandas import DataFrame
@@ -87,14 +84,8 @@ class BaseOutput:
         """
         return
 
-    def add_additional(
-        self, downloader: Download, today: Optional[datetime] = None
-    ) -> None:
+    def add_additional(self) -> None:
         """Download files and add them under keys defined in the configuration
-
-        Args:
-            downloader (Download): Download object for downloading
-            today (Optional[datetime]): Value to use for today. Defaults to None (datetime.now()).
 
         Returns:
             None

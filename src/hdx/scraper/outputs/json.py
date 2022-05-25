@@ -1,10 +1,8 @@
 import logging
-from datetime import datetime
 from os.path import join
 from typing import Any, Dict, List, Optional, Union
 
 from hdx.utilities.dictandlist import dict_of_lists_add
-from hdx.utilities.downloader import Download
 from hdx.utilities.saver import save_json
 
 from .base import BaseOutput
@@ -16,7 +14,7 @@ except ImportError:
 
 
 from ..utilities import match_template
-from ..utilities.readers import read
+from ..utilities.reader import Read
 
 logger = logging.getLogger(__name__)
 
@@ -163,20 +161,15 @@ class JsonFile(BaseOutput):
             # isinstance(values, DataFrame)
             self.generate_json_from_df(tabname, values, hxltags)
 
-    def add_additional(
-        self, downloader: Download, today: Optional[datetime] = None
-    ) -> None:
+    def add_additional(self) -> None:
         """Download JSON files and add them under keys defined in the configuration
-
-        Args:
-            downloader (Download): Download object for downloading JSON
-            today (Optional[datetime]): Value to use for today. Defaults to None (datetime.now()).
 
         Returns:
             None
         """
+        reader = Read.get_reader()
         for datasetinfo in self.configuration.get("additional_inputs", list()):
-            headers, iterator = read(downloader, datasetinfo, today=today)
+            headers, iterator = reader.read(datasetinfo)
             hxl_row = next(iterator)
             if not isinstance(hxl_row, dict):
                 hxl_row = hxl_row.value
