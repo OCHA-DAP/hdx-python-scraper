@@ -29,9 +29,7 @@ class TestOutput:
             tabs = configuration["tabs"]
             sheetname = list(tabs.values())[0]
             noout = BaseOutput(tabs)
-            excelout = ExcelFile(
-                join(tempdir, "test_output.xlsx"), tabs, tabs
-            )
+            excelout = ExcelFile(join(tempdir, "test_output.xlsx"), tabs, tabs)
             gsheet_auth = getenv("GSHEET_AUTH")
             if not gsheet_auth:
                 raise ValueError("No gsheet authorisation supplied!")
