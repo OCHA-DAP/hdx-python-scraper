@@ -5,7 +5,6 @@ from os.path import join
 import numpy as np
 import pandas
 import pytest
-from hdx.utilities.dateparse import parse_date
 from hdx.utilities.downloader import Download
 from hdx.utilities.path import temp_dir
 

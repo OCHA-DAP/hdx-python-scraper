@@ -2,8 +2,6 @@ from abc import ABC, abstractmethod
 from copy import deepcopy
 from typing import Dict, List, Optional, Tuple
 
-from hdx.utilities.retriever import Retrieve
-
 from hdx.scraper.utilities.reader import Read
 
 
