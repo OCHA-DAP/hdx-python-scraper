@@ -192,16 +192,14 @@ class Read(Retrieve):
             **kwargs,
         )
 
-    def read_hdx_metadata(
-        self, datasetinfo: MutableMapping
-    ) -> Optional[Resource]:
-        """Read metadata from HDX dataset and add to input dictionary
+    def read_dataset(self, datasetinfo: MutableMapping) -> Dataset:
+        """Read HDX dataset
 
         Args:
             datasetinfo (MutableMapping): Dictionary of information about dataset
 
         Returns:
-            Optional[Resource]: The resource if a url was not given
+            Dataset: The dataset that was read
         """
         dataset_name = datasetinfo["dataset"]
         saved_path = join(self.saved_dir, f"{dataset_name}.json")
@@ -213,6 +211,20 @@ class Read(Retrieve):
             if self.save:
                 logger.info(f"Saving dataset {dataset_name} in {saved_path}")
                 dataset.save_to_json(saved_path)
+        return dataset
+
+    def read_hdx_metadata(
+        self, datasetinfo: MutableMapping
+    ) -> Optional[Resource]:
+        """Read metadata from HDX dataset and add to input dictionary
+
+        Args:
+            datasetinfo (MutableMapping): Dictionary of information about dataset
+
+        Returns:
+            Optional[Resource]: The resource if a url was not given
+        """
+        dataset = self.read_dataset(datasetinfo)
         resource = None
         url = datasetinfo.get("url")
         if not url:
@@ -226,7 +238,7 @@ class Read(Retrieve):
                     break
             if not url:
                 raise ValueError(
-                    f"Cannot find {format} resource in {dataset_name}!"
+                    f"Cannot find {format} resource in {datasetinfo['dataset']}!"
                 )
             datasetinfo["url"] = url
         date = datasetinfo.get("source_date")
