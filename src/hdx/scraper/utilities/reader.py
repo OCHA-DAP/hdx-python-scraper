@@ -16,8 +16,6 @@ from . import get_date_from_dataset_date, match_template
 
 logger = logging.getLogger(__name__)
 
-fixed_dataset_date = None
-
 
 class Read(Retrieve):
     """Read data from tabular source eg. csv, xls, xlsx
@@ -195,13 +193,12 @@ class Read(Retrieve):
         )
 
     def read_hdx_metadata(
-        self, datasetinfo: MutableMapping, today: Optional[datetime] = None
+        self, datasetinfo: MutableMapping
     ) -> Optional[Resource]:
         """Read metadata from HDX dataset and add to input dictionary
 
         Args:
             datasetinfo (MutableMapping): Dictionary of information about dataset
-            today (Optional[datetime]): Value to use for today. Defaults to None (datetime.now()).
 
         Returns:
             Optional[Resource]: The resource if a url was not given
@@ -237,12 +234,9 @@ class Read(Retrieve):
             if isinstance(date, str):
                 datasetinfo["source_date"] = parse_date(date)
         else:
-            if fixed_dataset_date:
-                datasetinfo["source_date"] = fixed_dataset_date
-            else:
-                datasetinfo["source_date"] = get_date_from_dataset_date(
-                    dataset, today=today
-                )
+            datasetinfo["source_date"] = get_date_from_dataset_date(
+                dataset, today=self.today
+            )
         if "source" not in datasetinfo:
             datasetinfo["source"] = dataset["dataset_source"]
         if "source_url" not in datasetinfo:
