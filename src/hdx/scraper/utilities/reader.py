@@ -192,16 +192,15 @@ class Read(Retrieve):
             **kwargs,
         )
 
-    def read_dataset(self, datasetinfo: MutableMapping) -> Dataset:
+    def read_dataset(self, dataset_name: str) -> Dataset:
         """Read HDX dataset
 
         Args:
-            datasetinfo (MutableMapping): Dictionary of information about dataset
+            dataset_name (str): Dataset name
 
         Returns:
             Dataset: The dataset that was read
         """
-        dataset_name = datasetinfo["dataset"]
         saved_path = join(self.saved_dir, f"{dataset_name}.json")
         if self.use_saved:
             logger.info(f"Using saved dataset {dataset_name} in {saved_path}")
@@ -224,7 +223,8 @@ class Read(Retrieve):
         Returns:
             Optional[Resource]: The resource if a url was not given
         """
-        dataset = self.read_dataset(datasetinfo)
+        dataset_name = datasetinfo["dataset"]
+        dataset = self.read_dataset(dataset_name)
         resource = None
         url = datasetinfo.get("url")
         if not url:
@@ -238,7 +238,7 @@ class Read(Retrieve):
                     break
             if not url:
                 raise ValueError(
-                    f"Cannot find {format} resource in {datasetinfo['dataset']}!"
+                    f"Cannot find {format} resource in {dataset_name}!"
                 )
             datasetinfo["url"] = url
         date = datasetinfo.get("source_date")
