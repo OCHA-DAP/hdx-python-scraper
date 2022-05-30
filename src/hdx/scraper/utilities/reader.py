@@ -156,6 +156,28 @@ class Read(Retrieve):
             url = url.replace(template_string, replace_string)
         return url
 
+    def clone(self, downloader: Download) -> "Read":
+        """Clone a given reader but use the given downloader
+
+        Args:
+            downloader (Download): Downloader to use
+
+        Returns:
+            Read: Cloned reader
+
+        """
+        return Read(
+            downloader,
+            fallback_dir=self.fallback_dir,
+            saved_dir=self.saved_dir,
+            temp_dir=self.temp_dir,
+            save=self.save,
+            use_saved=self.use_saved,
+            prefix=self.prefix,
+            delete=False,
+            today=self.today,
+        )
+
     def read_tabular(
         self, datasetinfo: MutableMapping, **kwargs: Any
     ) -> Tuple[List[str], Iterator[Dict]]:

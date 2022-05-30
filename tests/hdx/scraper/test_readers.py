@@ -1,11 +1,31 @@
 from datetime import datetime
 
 import pytest
+from hdx.utilities.dateparse import parse_date
+from hdx.utilities.downloader import Download
 
 from hdx.scraper.utilities.reader import Read
 
 
 class TestReaders:
+    def test_clone(self):
+        with Download(user_agent="test") as downloader:
+            with Read(
+                downloader,
+                "fallback_dir",
+                "saved_dir",
+                "temp_dir",
+                save=False,
+                use_saved=False,
+                prefix="population",
+                today=parse_date("2021-02-01"),
+            ) as reader:
+                clone_reader = reader.clone(downloader)
+                for property, value in vars(reader).items():
+                    if property == "downloader":
+                        continue
+                    assert getattr(clone_reader, property) == value
+
     def test_read(self, configuration):
         url = Read.get_url("http://{{var}}", var="hello")
         assert url == "http://hello"
