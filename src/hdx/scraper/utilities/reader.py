@@ -10,6 +10,7 @@ from hdx.data.resource import Resource
 from hdx.utilities.dateparse import parse_date
 from hdx.utilities.downloader import Download
 from hdx.utilities.retriever import Retrieve
+from hdx.utilities.saver import save_json
 from hdx.utilities.typehint import ListTuple
 
 from . import get_date_from_dataset_date, match_template
@@ -214,14 +215,14 @@ class Read(Retrieve):
             **kwargs,
         )
 
-    def read_dataset(self, dataset_name: str) -> Dataset:
+    def read_dataset(self, dataset_name: str) -> Optional[Dataset]:
         """Read HDX dataset
 
         Args:
             dataset_name (str): Dataset name
 
         Returns:
-            Dataset: The dataset that was read
+            Optional[Dataset]: The dataset that was read or None
         """
         saved_path = join(self.saved_dir, f"{dataset_name}.json")
         if self.use_saved:
@@ -231,7 +232,10 @@ class Read(Retrieve):
             dataset = Dataset.read_from_hdx(dataset_name)
             if self.save:
                 logger.info(f"Saving dataset {dataset_name} in {saved_path}")
-                dataset.save_to_json(saved_path)
+                if dataset is None:
+                    save_json(None, saved_path)
+                else:
+                    dataset.save_to_json(saved_path)
         return dataset
 
     def read_hdx_metadata(

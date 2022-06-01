@@ -1,8 +1,10 @@
 from datetime import datetime
 
 import pytest
+from hdx.data.dataset import Dataset
 from hdx.utilities.dateparse import parse_date
 from hdx.utilities.downloader import Download
+from hdx.utilities.path import temp_dir
 
 from hdx.scraper.utilities.reader import Read
 
@@ -25,6 +27,51 @@ class TestReaders:
                     if property == "downloader":
                         continue
                     assert getattr(clone_reader, property) == value
+
+    def test_read_dataset(self, configuration, monkeypatch):
+        def test_read_from_hdx(dataset_name):
+            if dataset_name == "None":
+                return None
+            return Dataset({"name": dataset_name})
+
+        with temp_dir("TestReader") as temp_folder:
+            with Download(user_agent="test") as downloader:
+                with Read(
+                    downloader,
+                    temp_folder,
+                    temp_folder,
+                    temp_folder,
+                    save=True,
+                    use_saved=False,
+                    prefix="test",
+                    today=parse_date("2021-02-01"),
+                ) as reader:
+                    monkeypatch.setattr(
+                        Dataset, "read_from_hdx", test_read_from_hdx
+                    )
+                    dataset_name = "Test Dataset"
+                    dataset = reader.read_dataset(dataset_name)
+                    assert dataset["name"] == dataset_name
+                    dataset_name = "None"
+                    dataset = reader.read_dataset(dataset_name)
+                    assert dataset is None
+                    monkeypatch.delattr(Dataset, "read_from_hdx")
+                with Read(
+                    downloader,
+                    temp_folder,
+                    temp_folder,
+                    temp_folder,
+                    save=False,
+                    use_saved=True,
+                    prefix="test",
+                    today=parse_date("2021-02-01"),
+                ) as reader:
+                    dataset_name = "Test Dataset"
+                    dataset = reader.read_dataset(dataset_name)
+                    assert dataset["name"] == dataset_name
+                    dataset_name = "None"
+                    dataset = reader.read_dataset(dataset_name)
+                    assert dataset is None
 
     def test_read(self, configuration):
         url = Read.get_url("http://{{var}}", var="hello")
