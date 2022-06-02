@@ -245,12 +245,11 @@ class Read(Retrieve):
         self, identifier: str, resource: Resource, data_type: str
     ) -> Optional[hxl.Dataset]:
         try:
-            filename = slugify(
-                f"{identifier}_{resource['name']}", separator="_"
-            )
+            filename = f"{identifier}_{resource['name'].lower()}"
             file_type = f".{resource.get_file_type()}"
-            if not filename.endswith(file_type):
-                filename = f"{filename}{file_type}"
+            if filename.endswith(file_type):
+                filename = filename[: -len(file_type)]
+            filename = f"{slugify(filename, separator='_')}{file_type}"
             url = _munge_url(resource["url"])
             path = self.download_file(url, filename=filename)
             data = hxl.data(path, allow_local=True).cache()
