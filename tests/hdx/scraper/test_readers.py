@@ -2,6 +2,7 @@ from datetime import datetime
 
 import pytest
 from hdx.data.dataset import Dataset
+from hdx.data.resource import Resource
 from hdx.utilities.dateparse import parse_date
 from hdx.utilities.downloader import Download
 from hdx.utilities.path import temp_dir
@@ -32,10 +33,20 @@ class TestReaders:
         def test_read_from_hdx(dataset_name):
             if dataset_name == "None":
                 return None
-            return Dataset({"name": dataset_name})
+            dataset = Dataset({"name": dataset_name})
+            resource = Resource(
+                {
+                    "name": "test",
+                    "url": "https://docs.google.com/spreadsheets/d/1NjSI2LaS3SqbgYc0HdD8oIb7lofGtiHgoKKATCpwVdY/edit#gid=1088874596",
+                }
+            )
+            resource.set_file_type("csv")
+            dataset.add_update_resource(resource)
+            return dataset
 
         with temp_dir("TestReader") as temp_folder:
             with Download(user_agent="test") as downloader:
+                munged_url = "https://docs.google.com/spreadsheets/d/1NjSI2LaS3SqbgYc0HdD8oIb7lofGtiHgoKKATCpwVdY/export?format=csv&gid=1088874596"
                 with Read(
                     downloader,
                     temp_folder,
@@ -49,12 +60,13 @@ class TestReaders:
                     monkeypatch.setattr(
                         Dataset, "read_from_hdx", test_read_from_hdx
                     )
-                    dataset_name = "Test Dataset"
-                    dataset = reader.read_dataset(dataset_name)
-                    assert dataset["name"] == dataset_name
                     dataset_name = "None"
                     dataset = reader.read_dataset(dataset_name)
                     assert dataset is None
+                    dataset_name = "Test Dataset"
+                    dataset = reader.read_dataset(dataset_name)
+                    assert dataset["name"] == dataset_name
+                    assert dataset.get_resource()["url"] == munged_url
                     monkeypatch.delattr(Dataset, "read_from_hdx")
                 with Read(
                     downloader,
@@ -66,12 +78,44 @@ class TestReaders:
                     prefix="test",
                     today=parse_date("2021-02-01"),
                 ) as reader:
-                    dataset_name = "Test Dataset"
-                    dataset = reader.read_dataset(dataset_name)
-                    assert dataset["name"] == dataset_name
                     dataset_name = "None"
                     dataset = reader.read_dataset(dataset_name)
                     assert dataset is None
+                    dataset_name = "Test Dataset"
+                    dataset = reader.read_dataset(dataset_name)
+                    assert dataset["name"] == dataset_name
+                    assert dataset.get_resource()["url"] == munged_url
+
+    def test_read_hxl_resource(self, fixtures):
+        with temp_dir("TestReader") as temp_folder:
+            with Download(user_agent="test") as downloader:
+                with Read(
+                    downloader,
+                    temp_folder,
+                    fixtures,
+                    temp_folder,
+                    save=False,
+                    use_saved=True,
+                    prefix="whowhatwhere",
+                    today=parse_date("2021-02-01"),
+                ) as reader:
+                    resource = Resource(
+                        {
+                            "name": "3w data",
+                            "url": "https://docs.google.com/spreadsheets/d/1NjSI2LaS3SqbgYc0HdD8oIb7lofGtiHgoKKATCpwVdY/edit#gid=1088874596",
+                        }
+                    )
+                    resource.set_file_type("csv")
+                    data = reader.read_hxl_resource("AFG", resource, "3w data")
+                    assert len(data.headers) == 15
+                    data = reader.read_hxl_resource(
+                        "notags", resource, "3w data"
+                    )
+                    assert data is None
+                    with pytest.raises(FileNotFoundError):
+                        reader.read_hxl_resource(
+                            "not exist", resource, "3w data"
+                        )
 
     def test_read(self, configuration):
         url = Read.get_url("http://{{var}}", var="hello")

@@ -5,6 +5,7 @@ from os.path import join
 from typing import Any, Dict, Iterator, List, Optional, Tuple
 from urllib.parse import parse_qsl
 
+import hxl
 from hdx.data.dataset import Dataset
 from hdx.data.resource import Resource
 from hdx.utilities.dateparse import parse_date
@@ -12,6 +13,8 @@ from hdx.utilities.downloader import Download
 from hdx.utilities.retriever import Retrieve
 from hdx.utilities.saver import save_json
 from hdx.utilities.typehint import ListTuple
+from hxl.input import _munge_url
+from slugify import slugify
 
 from . import get_date_from_dataset_date, match_template
 
@@ -235,8 +238,32 @@ class Read(Retrieve):
                 if dataset is None:
                     save_json(None, saved_path)
                 else:
-                    dataset.save_to_json(saved_path)
+                    dataset.save_to_json(saved_path, follow_urls=True)
         return dataset
+
+    def read_hxl_resource(
+        self, identifier: str, resource: Resource, data_type: str
+    ) -> Optional[hxl.Dataset]:
+        try:
+            filename = (
+                f"{identifier}_{slugify(resource['name'], separator='_')}"
+            )
+            file_type = f".{resource.get_file_type()}"
+            if not filename.endswith(file_type):
+                filename = f"{filename}{file_type}"
+            url = _munge_url(resource["url"])
+            path = self.download_file(url, filename=filename)
+            data = hxl.data(path, allow_local=True).cache()
+            data.display_tags
+            return data
+        except hxl.HXLException:
+            logger.warning(
+                f"Could not process {data_type} for {identifier}. Maybe there are no HXL tags?"
+            )
+            return None
+        except Exception:
+            logger.exception(f"Error reading {data_type} for {identifier}!")
+            raise
 
     def read_hdx_metadata(
         self, datasetinfo: MutableMapping
