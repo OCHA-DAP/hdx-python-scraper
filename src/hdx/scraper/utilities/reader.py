@@ -245,8 +245,8 @@ class Read(Retrieve):
         self, identifier: str, resource: Resource, data_type: str
     ) -> Optional[hxl.Dataset]:
         try:
-            filename = (
-                f"{identifier}_{slugify(resource['name'], separator='_')}"
+            filename = slugify(
+                f"{identifier}_{resource['name']}", separator="_"
             )
             file_type = f".{resource.get_file_type()}"
             if not filename.endswith(file_type):
