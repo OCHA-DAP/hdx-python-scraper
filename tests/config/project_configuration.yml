@@ -868,6 +868,24 @@ scraper_subnational:
     output_hxl:
       - "#severity+malnutrition+num+subnational"
 
+# region lookup
+regional:
+  dataset: "unocha-office-locations"
+  format: "xlsx"
+  iso3_header: "ISO3"
+  region_header: "Regional_office"
+  toplevel_region: "GHO"
+
+regional_ignore:
+  dataset: "unocha-office-locations"
+  format: "xlsx"
+  iso3_header: "ISO3"
+  region_header: "Regional_office"
+  toplevel_region: "GHO"
+  ignore:
+    - "ROCCA"
+    - "HRPs"
+
 # aggregation
 aggregation_hxl:
   aggregation_sum:
@@ -949,6 +967,71 @@ copyfiles:
     format: "xlsx"
     filename: "my_output.xlsx"
     hxltag: "#xlsx"
+
+gho:
+  - ABW
+  - AFG
+  - AGO
+  - ARG
+  - BDI
+  - BFA
+  - BGD
+  - BOL
+  - BRA
+  - CAF
+  - CHL
+  - CMR
+  - COD
+  - COG
+  - COL
+  - CRI
+  - CUW
+  - DJI
+  - DOM
+  - ECU
+  - EGY
+  - ETH
+  - GTM
+  - GUY
+  - HND
+  - HTI
+  - IRN
+  - IRQ
+  - JOR
+  - KEN
+  - LBN
+  - LBY
+  - MDG
+  - MEX
+  - MLI
+  - MMR
+  - MOZ
+  - NER
+  - NGA
+  - PAK
+  - PAN
+  - PER
+  - PRY
+  - PSE
+  - RWA
+  - SDN
+  - SLV
+  - SOM
+  - SSD
+  - SYR
+  - TCD
+  - TJK
+  - TKM
+  - TTO
+  - TUR
+  - TZA
+  - UGA
+  - UKR
+  - URY
+  - UZB
+  - VEN
+  - YEM
+  - ZMB
 
 HRPs:
   - AFG
