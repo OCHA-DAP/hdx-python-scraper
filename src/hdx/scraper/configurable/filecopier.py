@@ -1,6 +1,6 @@
 import logging
 from os.path import join
-from shutil import move
+from shutil import copy2
 
 from slugify import slugify
 
@@ -17,10 +17,11 @@ class FileCopier(BaseScraper):
         self.folder = folder
 
     def run(self):
-        resource = self.get_reader().read_hdx_metadata(self.datasetinfo)
-        url, path = resource.download()
+        reader = self.get_reader("hdx")
+        resource = reader.read_hdx_metadata(self.datasetinfo)
+        url, path = reader.read_resource(self.name, resource)
         logger.info(f"Downloading {url} to {path}")
-        move(path, join(self.folder, self.datasetinfo["filename"]))
+        copy2(path, join(self.folder, self.datasetinfo["filename"]))
 
     def add_sources(self):
         self.add_hxltag_source("FileCopier", self.datasetinfo["hxltag"])

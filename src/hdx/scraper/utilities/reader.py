@@ -73,10 +73,10 @@ class Read(Retrieve):
         today: Optional[datetime] = None,
         **kwargs: Any,
     ):
-        """Generate a default reader. Additional readers are generated if any of
-        header_auths, basic_auths or extra_params are populated. header_auths and
-        basic_auths are dictionaries of form {"scraper name": "auth", ...}. extra_params
-        is of form {"scraper name": {"key": "auth", ...}, ...}.
+        """Generate a default reader and an HDX reader. Additional readers are generated
+        if any of header_auths, basic_auths or extra_params are populated. header_auths
+        and basic_auths are dictionaries of form {"scraper name": "auth", ...}.
+        extra_params is of form {"scraper name": {"key": "auth", ...}, ...}.
 
         Args:
             fallback_dir (str): Directory containing static fallback data
@@ -88,6 +88,7 @@ class Read(Retrieve):
             rate_limit (Optional[Dict]): Rate limiting per host. Defaults to {"calls": 1, "period": 0.1}
             today (Optional[datetime]): Value to use for today. Defaults to None (datetime.now()).
             **kwargs: See below and parameters of Download class in HDX Python Utilities
+            hdx_auth (str): HDX API key
             header_auths (Mapping[str, str]): Header authorisations
             basic_auths (Mapping[str, str]): Basic authorisations
             param_auths (Mapping[str, str]): Extra parameter authorisations
@@ -98,6 +99,10 @@ class Read(Retrieve):
         if rate_limit:
             kwargs["rate_limit"] = rate_limit
         custom_configs = dict()
+        hdx_auth = kwargs.get("hdx_auth")
+        if hdx_auth:
+            custom_configs["hdx"] = {"headers": {"Authorization": hdx_auth}}
+            del kwargs["hdx_auth"]
         header_auths = kwargs.get("header_auths")
         if header_auths is not None:
             for name in header_auths:
@@ -241,17 +246,21 @@ class Read(Retrieve):
                     dataset.save_to_json(saved_path, follow_urls=True)
         return dataset
 
+    def read_resource(self, identifier: str, resource: Resource):
+        filename = f"{identifier}_{resource['name'].lower()}"
+        file_type = f".{resource.get_file_type()}"
+        if filename.endswith(file_type):
+            filename = filename[: -len(file_type)]
+        filename = f"{slugify(filename, separator='_')}{file_type}"
+        url = _munge_url(resource["url"])
+        path = self.download_file(url, filename=filename)
+        return url, path
+
     def read_hxl_resource(
         self, identifier: str, resource: Resource, data_type: str
     ) -> Optional[hxl.Dataset]:
         try:
-            filename = f"{identifier}_{resource['name'].lower()}"
-            file_type = f".{resource.get_file_type()}"
-            if filename.endswith(file_type):
-                filename = filename[: -len(file_type)]
-            filename = f"{slugify(filename, separator='_')}{file_type}"
-            url = _munge_url(resource["url"])
-            path = self.download_file(url, filename=filename)
+            _, path = self.read_resource(identifier, resource)
             data = hxl.data(path, allow_local=True).cache()
             data.display_tags
             return data

@@ -1,6 +1,6 @@
 import re
 from datetime import datetime
-from typing import Any, Dict, Optional, Tuple, Union
+from typing import Any, Dict, Optional, Tuple
 
 from hdx.data.dataset import Dataset
 
@@ -58,19 +58,17 @@ def get_rowval(row: Dict, valcol: str) -> Any:
 
 
 def get_date_from_dataset_date(
-    dataset: Union[Dataset, str], today: Optional[datetime] = None
+    dataset: Dataset, today: Optional[datetime] = None
 ) -> Optional[datetime]:
     """Return the date or end date of a dataset
 
     Args:
-        dataset (Union[Dataset, str]): Dataset object or name or id of dataset
+        dataset (Dataset): Dataset object
         today (Optional[datetime]): Date to use for today. Defaults to None (datetime.now())
 
     Returns:
         Optional[datetime]: Date or end date of a dataset
     """
-    if isinstance(dataset, str):
-        dataset = Dataset.read_from_hdx(dataset)
     if today is None:
         date_info = dataset.get_date_of_dataset()
     else:
@@ -79,12 +77,12 @@ def get_date_from_dataset_date(
 
 
 def get_isodate_from_dataset_date(
-    dataset: Union[Dataset, str], today: Optional[datetime] = None
+    dataset: Dataset, today: Optional[datetime] = None
 ) -> Optional[str]:
     """Return the date or end date of a dataset as an iso formatted date
 
     Args:
-        dataset (Union[Dataset, str]): Dataset object or name or id of dataset
+        dataset (Dataset): Dataset object
         today (Optional[datetime]): Date to use for today. Defaults to None (datetime.now())
 
     Returns:

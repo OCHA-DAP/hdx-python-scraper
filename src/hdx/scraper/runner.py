@@ -2,7 +2,6 @@ import logging
 from datetime import datetime
 from typing import Iterable, List, Optional
 
-from hdx.data.dataset import Dataset
 from hdx.location.adminone import AdminOne
 from hdx.utilities.errors_onexit import ErrorsOnExit
 from hdx.utilities.typehint import ListTuple
@@ -11,6 +10,7 @@ from .base_scraper import BaseScraper
 from .configurable.scraper import ConfigurableScraper
 from .utilities import get_isodate_from_dataset_date
 from .utilities.fallbacks import Fallbacks
+from .utilities.reader import Read
 
 logger = logging.getLogger(__name__)
 
@@ -293,6 +293,7 @@ class Runner:
             names = self.scrapers.keys()
         hxltags = set()
         sources = list()
+        reader = Read.get_reader()
         for sourceinfo in additional_sources:
             date = sourceinfo.get("source_date")
             if date is None:
@@ -302,7 +303,7 @@ class Runner:
             source_url = sourceinfo.get("source_url")
             dataset_name = sourceinfo.get("dataset")
             if dataset_name:
-                dataset = Dataset.read_from_hdx(dataset_name)
+                dataset = reader.read_dataset(dataset_name)
                 if date is None:
                     date = get_isodate_from_dataset_date(
                         dataset, today=self.today
