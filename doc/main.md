@@ -28,6 +28,10 @@ install with:
 
 ## Breaking Changes
 
+From 1.7.5, new Read class to use instead of Retrieve class
+
+From 1.6.7, retrievers are generated up front
+
 From 1.6.6, configuration fields for output JSON renamed to `additional_inputs`, 
 `output` and `additional_outputs`.
 
@@ -44,15 +48,31 @@ A full project showing how the scraper framework is used in a real world scenari
 It is very helpful to look at that project to see a full working setup that demonstrates
 usage of many of the features of this library.
 
+## Input and Processing Setup
+
 The library is set up broadly as follows:
 
+    with temp_dir() as temp_folder:
         today = parse_date("2020-10-01")
+        Read.create_readers(
+            temp_folder,
+            "saved_data",
+            temp_folder,
+            save,
+            use_saved,
+            hdx_auth=configuration.get_api_key(),
+            header_auths=header_auths,
+            basic_auths=basic_auths,
+            param_auths=param_auths,
+            today=today,
+        )
+        ...
         adminone = AdminOne(configuration)
         Fallbacks.add(json_path)
-        runner = Runner(("AFG",), adminone, downloader, dict(), today)
+        runner = Runner(("AFG",), adminone, today)
         keys = runner.add_configurables(scraper_configuration, "national")
         education_closures = EducationClosures(
-            datasetinfo, today, countries, region, downloader
+            datasetinfo, today, countries, region
         )
         runner.add_custom(education_closures)
         runner.run(prioritise_scrapers=("population_national", "population_subnational"))
@@ -62,7 +82,30 @@ The library is set up broadly as follows:
         assert results["sources"] == [("#population", "2020-10-01", "World Bank", "https://..."), ...]
         
 
-## AdminOne Class
+### Read Class
+
+The Read class is a utility for reading metadata and data from websites and APIs with
+the ability to set up authorisations up front with Read objects held in a dictionary 
+for subsequent use. Read objects can save copies of the data being downloaded or read 
+from pre-saved data for tests. 
+
+The first parameter is the location of fallback data (if available). The second 
+specifies to where data should be saved if desired. The third parameter is the path of
+a temporary folder. If the downloaded data should be saved, the fourth optional 
+parameter `save` should be True. If a test is being run against pre-saved data, the fifth 
+optional parameter `use_saved` should be True.
+
+Additional readers are generated if any of header_auths, basic_auths or extra_params 
+are populated. header_auths and basic_auths are dictionaries of form 
+`{"scraper name": "auth", ...}`. extra_params is of form 
+`{"scraper name": {"key": "auth", ...}, ...}`.
+
+Scrapers that inherit from `BaseScraper` can call the method `get_reader(SCRAPER_NAME)`
+to obtain the Read object associated with the supplied `SCRAPER_NAME`. If no special
+authorisations are needed for the website the scraper accesses, then the default Read
+object is returned.
+
+### AdminOne Class
 
 More about the AdminOne class can be found in the 
 [HDX Python Country](https://github.com/OCHA-DAP/hdx-python-country) library. Briefly, 
@@ -110,7 +153,7 @@ automatic admin1 name matching to pcode.
       - "nord"
     ...
 
-## Runner Class
+### Runner Class
 
 The Runner constructor takes various parameters. 
 
@@ -118,23 +161,27 @@ The first parameter is a list of country iso3s.
 
 The second is an AdminOne object. 
 
-The third parameter Runner takes is an object of class Download from the 
-[HDX Python Utilities](https://github.com/OCHA-DAP/hdx-python-utilities) library. This
-class simplifies and standardises common downloading operations.
-
-The fourth parameter is an optional  list of basic authorisations, with each being a 
-base64 encoded username:password. 
-
-The fifth is the datetime you want to use for "today". If you pass None, it will use the 
+The third is the datetime you want to use for "today". If you pass None, it will use the 
 current datetime.
 
-The sixth is an optional object of class ErrorsOnExit from the 
+The fourth is an optional object of class ErrorsOnExit from the 
 [HDX Python Utilities](https://github.com/OCHA-DAP/hdx-python-utilities) library. This
 class collects and outputs errors on exit.
 
 The last optional parameter is a list of scrapers to run.
 
-## Fallbacks
+The method `add_configurables` is used to add scrapers that are configured from a YAML 
+configuration. The method `add_custom` is used to add a custom scraper and `add_customs`
+for multiple custom scrapers - these are scrapers written in Python that inherit the 
+`BaseScraper` class.
+
+It is possible to add a post run step to a scraper that has been set up using:
+
+    runner.add_post_run("SCRAPER_NAME", function_to_call)
+
+Scrapers are run using the `run` method and results obtained using `get_results`.
+
+### Fallbacks
 
 Fallbacks can be defined which are used for example when there is a network issue. This
 is done using the `Fallbacks.add()` call. This can only be done if there is a JSON 
@@ -165,7 +212,7 @@ default is:
         "subnational": "#adm1+code",
     }
 
-## Output
+## Output Setup
 
 Output can go to Excel, Google Sheets and/or a JSON file. This can be set up similarly
 to the example below:
@@ -177,33 +224,30 @@ to the example below:
     ...
     update_subnational(runner, scraper_names, adminone, outputs)
 
-The `update_subnational` function is defined as follows:
+There are standard functions for updating level data in `update_tabs.py` including 
+`update_toplevel` ("global" for example), `update_regional`, `update_national`, 
+`update_subnational` and `update_sources`.
 
-    subnational_headers = (
-        ("iso3", "countryname", "adm1_pcode", "adm1_name"),
-        ("#country+code", "#country+name", "#adm1+code", "#adm1+name"),)
+`update_national` is set up as follows:
 
-    def update_tab(outputs, name, data):
-        logger.info(f"Updating tab: {name}")
-        for output in outputs.values():
-            output.update_tab(name, data)
+    flag_countries = {
+        "header": "ishrp",
+        "hxltag": "#meta+ishrp",
+        "countries": hrp_countries,
+    }
+    update_national(
+        runner,
+        gho_countries,
+        outputs,
+        names=national_names,
+        flag_countries=flag_countries,
+        iso3_to_region=RegionLookup.iso3_to_regions["GHO"],
+        ignore_regions=("GHO",),
+    )
 
-    def update_subnational(runner, names, adminone, outputs):
-        def get_country_name(adm):
-            countryiso3 = adminone.pcode_to_iso3[adm]
-            return Country.get_country_name_from_iso3(countryiso3)
-    
-        fns = (
-            lambda adm: adminone.pcode_to_iso3[adm],
-            get_country_name,
-            lambda adm: adm,
-            lambda adm: adminone.pcode_to_name[adm],
-        )
-        rows = runner.get_rows(
-            "subnational", adminone.pcodes, subnational_headers, fns, names=names
-        )
-        if rows:
-            update_tab(outputs, "subnational", rows)
+The first parameter is the Runner object. The second is a list of country ISO 3 codes.
+The third is a dictionary of outputs such as to Google Sheets, Excel or JSON. The
+fourth optional parameter is the name of the scrapers to include. 
 
 ## Configuration File
 
@@ -960,3 +1004,160 @@ we can specify `single_maxdate` as shown below:
             output_hxl:
               - "#value+cbpf+funding+gm0+total+usd"
            ...
+
+## Other Configurable Scrapers
+
+Some other configurable scrapers are provided for specific tasks. 
+
+### Time Series Scraper
+
+This scraper reads and outputs time series data. One or more instances can be set up as 
+follows:
+
+    scrapers = TimeSeries.get_scrapers(configuration["timeseries"], today, outputs)
+    runner.add_customs(scrapers)
+
+The scrapers are configured in a YAML configuration like the following:
+
+      casualties:
+        source: "OHCHR"
+        source_url: "https://data.humdata.org/dataset/ukraine-key-figures-2022"
+        dataset: "ukraine-who-does-what-where-3w"
+        url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQIdedbZz0ehRC0b4fsWiP14R7MdtU1mpmwAkuXUPElSah2AWCURKGALFDuHjvyJUL8vzZAt3R1B5qg/pub?gid=0&single=true&output=csv"
+        format: "csv"
+        headers: 2
+        date: "Date"
+        date_type: "date"
+        date_hxl: "#date"
+        input:
+          - "Civilian casualities(OHCHR) - Killed"
+          - "Civilian casualities(OHCHR) - Injured"
+        output:
+          - "CiviliansKilled"
+          - "CiviliansInjured"
+        output_hxl:
+          - "#affected+killed"
+          - "#affected+injured"
+
+This reads from the given url looking for the date column given by `date`. The given
+`input` columns are output along with the date using the column names given by `output`
+and the HXL hashtags given by `output_hxl`.
+
+### Aggregator
+
+The aggregator scraper is used for aggregating data from other scrapers. One or more are
+set up as shown below:
+
+    regional_scrapers_gho = Aggregator.get_scrapers(
+        regional_configuration["aggregate_gho"],
+        "national",
+        "regional",
+        RegionLookup.iso3_to_regions["GHO"],
+        runner,
+    )
+    regional_names_gho = runner.add_customs(regional_scrapers_gho, add_to_run=True)
+
+The first parameter points to a YAML configuration which is outlined below. The second
+is the level of the input scraper data to be aggregated. The third is the level of the 
+aggregated output data. The fourth is a mapping from admin units of the input level to
+admin units of the output level and the last is the Runner object that was set up with
+the input scrapers.
+
+      aggregate_gho:
+        "#population":
+          action: "sum"
+        "#affected+infected":
+          action: "sum"
+        ...
+        "#value+funding+hrp+required+usd":
+          output: "RequiredFunding"
+          action: "sum"
+        "#value+funding+hrp+total+usd":
+          output: "Funding"
+          action: "sum"
+        "#value+funding+hrp+pct":
+          output: "PercentFunded"
+          action: "eval"
+          formula: "get_fraction_str(#value+funding+hrp+total+usd, #value+funding+hrp+required+usd) if #value+funding+hrp+total+usd is not None and #value+funding+hrp+required+usd is not None else ''"
+        "#access+visas+pct":
+          action: "mean"
+        "#access+travel+pct":
+          action: "mean"
+        ...
+        "#affected+food+ipc+p3plus+num":
+          output: "FoodInsecurityP3+"
+          action: "sum"
+          input:
+            - "#affected+ch+food+p3plus+num"
+            - "#affected+food+ipc+p3plus+num"
+
+The configuration lists input HXL tags along with what sort of aggregation will be 
+performed ("sum", "mean" or "eval" under `action`). "eval" allows combining already
+aggregated columns together. Where input comes from multiple columns, these can be 
+defined with `input` and the output column name with `output`.
+
+### File Copier Scraper
+
+The file copier is a simple scraper that copies files from HDX datasets. One or more is 
+set up as follows:
+
+    filecopiers = FileCopier.get_scrapers(configuration["copyfiles"])
+
+The YAML configuration looks as follows:
+
+    copyfiles:
+      - dataset: "ukraine-border-crossings"
+        format: "geojson"
+        filename: "UKR_Border_Crossings.geojson"
+        hxltag: "#geojson"
+      - dataset: "ukraine-hostilities"
+        format: "geojson"
+        filename: "UKR_Hostilities.geojson"
+        hxltag: "#event+loc"
+
+The `dataset` from which to copy is specified along with the `format` of the resource to 
+be copied. The output `filename` is given along with a `hxltag` that is used in the
+reporting of sources (with source information taken from the HDX dataset).
+
+## Other Utilities
+
+### Region Lookup
+
+A class is provided that allows creating lookups from ISO 3 country codes to regions. 
+It is set up like this:
+
+    RegionLookup.load(regional_configuration, gho_countries, {"HRPs": hrp_countries})
+
+The configuration comes from a YAML file shown below. The second parameter is a list of
+countries. The third is a dictionary containing additional regions.
+
+    regional:
+      dataset: "unocha-office-locations"
+      format: "xlsx"
+      iso3_header: "ISO3"
+      region_header: "Regional_office"
+      toplevel_region: "GHO"
+      ignore:
+        - "NO COVERAGE"
+
+The configuration above reads from a `dataset` from HDX, looking for a resource of 
+`format` "xlsx". In that file, it uses columns specified by `iso3_header` and
+`regional_header`. Regions in the `ignore` list are not included. The `toplevel_region`
+is what is used as the key for the dictionary that is provided in 
+`RegionLookup.iso3_to_regions` which allows one to many mappings from countries to 
+regions. There is also `RegionLookup.iso3_to_region` which assumes a one to one mapping.
+Where the third parameter is provided to `RegionLookup.load`, each key value pair 
+is a mapping from a region name to a set of countries in that region and is added to the
+data loaded from the dataset. In addtion, additional keys are created in 
+`RegionLookup.iso3_to_regions` for each key in the third parameter.  
+
+# Real World Usage
+
+This framework has been used to power the data behind a few visualisations. It can be 
+helpful to examine these to see the framework being used in a complete setup. 
+
+The project [here](https://github.com/OCHA-DAP/hdx-scraper-covid-viz) provides data for 
+the [Covid Data Explorer](https://data.humdata.org/visualization/covid19-humanitarian-operations/).
+
+The project [here](https://github.com/OCHA-DAP/hdx-scraper-ukraine-viz) provides data for 
+the [Ukraine Data Explorer](https://data.humdata.org/visualization/ukraine-humanitarian-operations/).
