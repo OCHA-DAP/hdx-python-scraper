@@ -11,7 +11,6 @@ from hdx.scraper.outputs.update_tabs import (
     update_toplevel,
 )
 from hdx.scraper.runner import Runner
-
 from .conftest import run_check_scrapers
 
 
@@ -158,7 +157,7 @@ class TestScrapersRegionalToplevel:
             outputs,
             regional_rows,
             allregions_rows,
-            additional_toplevel_headers=allregions_rows[0],
+            toplevel_hxltags=allregions_rows[1],
             tab=level,
             toplevel=toplevel,
         )

@@ -17,9 +17,8 @@ This library is part of the
 humanitarian related data, please upload your datasets to HDX.
 
 The code for the library is [here](https://github.com/OCHA-DAP/hdx-python-scraper).
-The library has detailed API documentation which can be found in the menu on the left 
-and starts 
-[here](https://hdx-python-scraper.readthedocs.io/en/latest/api-documentation/source-readers). 
+The library has detailed, but currently outdated API documentation which can be found 
+in the menu at the top. 
 
 To use the optional functions for outputting data from Pandas to JSON, Excel etc., 
 install with:
@@ -27,6 +26,8 @@ install with:
     pip install hdx-python-scraper[pandas]
 
 ## Breaking Changes
+
+From 1.8.3, changes to update_sources and update_regional
 
 From 1.7.5, new Read class to use instead of Retrieve class
 
@@ -39,7 +40,6 @@ From 1.6.0, major renaming of configuration fields, mostly dropping _cols eg. `i
 instead of `input_cols`
 
 From 1.4.4, significant refactor that adds custom scraper support and a runner class.
-API documentation still needs updating.
 
 # Scraper Framework Configuration
 
@@ -81,6 +81,8 @@ The library is set up broadly as follows:
         assert results["values"] == [{"AFG": 38041754, "PSE": ...}, {"AFG": 123, "PSE": ...}, ...]
         assert results["sources"] == [("#population", "2020-10-01", "World Bank", "https://..."), ...]
         
+The framework is configured by passing in a configuration. Typically this will come from 
+a YAML file such as `config/project_configuration.yml`.
 
 ### Read Class
 
@@ -109,7 +111,7 @@ object is returned.
 
 More about the AdminOne class can be found in the 
 [HDX Python Country](https://github.com/OCHA-DAP/hdx-python-country) library. Briefly, 
-that class accepts a configuration as follows:
+that class accepts a configuration (which is shown below in YAML syntax) as follows:
 
 `country_name_mappings` defines the country name overrides we use (ie. where we deviate 
 from the names in the OCHA countries and territories file).
@@ -212,144 +214,11 @@ default is:
         "subnational": "#adm1+code",
     }
 
-## Output Setup
+## Scrapers
 
-Output can go to Excel, Google Sheets and/or a JSON file. This can be set up similarly
-to the example below:
+### Custom Scrapers
 
-    excelout = ExcelFile(excel_path, tabs, updatetabs)
-    gsheets = GoogleSheets(gsheet_config, gsheet_auth, updatesheets, tabs, updatetabs)
-    jsonout = JsonFile(json_config, updatetabs)
-    outputs = {"gsheets": gsheets, "excel": excelout, "json": jsonout}
-    ...
-    update_subnational(runner, scraper_names, adminone, outputs)
-
-There are standard functions for updating level data in `update_tabs.py` including 
-`update_toplevel` ("global" for example), `update_regional`, `update_national`, 
-`update_subnational` and `update_sources`.
-
-`update_national` is set up as follows:
-
-    flag_countries = {
-        "header": "ishrp",
-        "hxltag": "#meta+ishrp",
-        "countries": hrp_countries,
-    }
-    update_national(
-        runner,
-        gho_countries,
-        outputs,
-        names=national_names,
-        flag_countries=flag_countries,
-        iso3_to_region=RegionLookup.iso3_to_regions["GHO"],
-        ignore_regions=("GHO",),
-    )
-
-The first parameter is the Runner object. The second is a list of country ISO 3 codes.
-The third is a dictionary of outputs such as to Google Sheets, Excel or JSON. The
-fourth optional parameter is the name of the scrapers to include. 
-
-## Configuration File
-
-The framework is configured by passing in a configuration. Typically this will come from 
-a yaml file such as `config/project_configuration.yml`.
-
-### Output Specification
-
-The configuration should have a mapping from the internal dictionaries to the tabs in 
-the spreadsheet or keys in the JSON output file(s):
-
-    tabs:
-      world: "WorldData"
-      regional: "RegionalData"
-      national: "NationalData"
-      subnational: "SubnationalData"
-      covid_series: "CovidSeries"
-      covid_trend: "CovidTrend"
-      sources: "Sources"
-
-Then the location of Google spreadsheets are defined, for prod (production), test and 
-scratch:
-
-    googlesheets:
-      prod: "https://docs.google.com/spreadsheets/d/SPREADSHEET_KEY_PROD/edit"
-      test: "https://docs.google.com/spreadsheets/d/SPREADSHEET_KEY_TEST/edit"
-      scratch: "https://docs.google.com/spreadsheets/d/SPREADSHEET_KEY_SCRATCH/edit"
-
-The json outputs are then specified. Under the key “additional_outputs”, subsets of the 
-full json can be saved as separate files.
-
-    json:
-      additional_inputs:
-        - name: "Other"
-          source: "Some org"
-          source_url: "https://data.humdata.org/organization/world-bank-group"
-          format: "json"
-          url: "https://raw.githubusercontent.com/mcarans/hdx-python-scraper/master/tests/fixtures/additional_json.json"
-          jsonpath: "[*]"
-      output: "test_tabular_all.json"
-      additional_outputs:
-        - filepath: "test_tabular_population.json"
-          tabs:
-            - tab: "national"
-              key: "cumulative"
-              filters:
-                "#country+code": "{{countries_to_save}}"
-              output:
-                - "#country+code"
-                - "#country+name"
-                - "#population"
-        - filepath: "test_tabular_population_2.json"
-          tabs:
-            - tab: "national"
-              key: "cumulative"
-              filters:
-                "#country+code":
-                  - "AFG"
-              output:
-                - "#country+code"
-                - "#country+name"
-                - "#population"
-        - filepath: "test_tabular_other.json"
-          remove:
-            - "national"
-
-### Sources
-
-Next comes any additional sources. This allows additional HXL hashtags to be associated 
-with a dataset date, source and url. In the ones below, the metadata is either specified 
-or obtained from datasets on HDX.
-
-    additional_sources:
-      - indicator: "#date+start+conflict"
-        source_date: "2022-02-24"
-        source: "Meduza"
-        source_url: "https://meduza.io/en/news/2022/02/24/putin-announces-start-of-military-operation-in-eastern-ukraine"
-      - indicator: "#food-prices"
-        dataset: "wfp-food-prices"
-      - indicator: "#vaccination-campaigns"
-        dataset: "immunization-campaigns-impacted"
-
-Sources can be obtained by calling `get_sources` with or without the optional
-`additional_sources` parameter:
-
-    runner.get_sources(additional_sources=[...])
-
-### Configurable Scrapers
-
-scraper_tabname defines a set of configurable scrapers that use the framework and 
-produce data for the tab tabname which typically coresponds to a level like national or 
-subnational eg.
-
-    scraper_national:
-    …
-
-More details on this can be seen later in the [examples of configurable scrapers](https://hdx-python-scraper.readthedocs.io/en/latest/#examples-of-configurable-scrapers).
-
-## Custom Scrapers
-
-It is also possible to define custom scrapers that are not driven by configuration.
-These must inherit 
+It is possible to define custom scrapers written in Python which must inherit 
 [BaseScraper](https://github.com/OCHA-DAP/hdx-python-scraper/blob/main/src/hdx/scraper/base_scraper.py), 
 calling its constructor and providing a `run` method. Other methods where a default 
 implementation has been provided can be overridden such as `add_sources` and 
@@ -386,22 +255,14 @@ The structure is broadly as follows:
 An example of a custom scraper can be seen 
 [here](https://github.com/OCHA-DAP/hdx-python-scraper/blob/main/tests/hdx/scraper/education_closures.py).
 
-## Population Data
+### Configurable Scrapers
 
-Population data is treated as a special class of data. By default, configurable and 
-custom scrapers detect population data by looking for the output HXL hash tag 
-`#population` and add it to a dictionary `population_lookup` that is a variable of the
-`BaseScraper` class and hence accessible to all scrapers.
+scraper_tabname in the configuration YAML defines a set of configurable scrapers that 
+use the framework and produce data for the tab tabname which typically corresponds to a 
+level like national or subnational eg.
 
-For configurable scrapers where columns are evaluated (rather than assigned), it is 
-possible to use `#population` and the appropriate population value for the 
-administrative unit will be substituted automatically. Where output is a single value,
-for example where working on global data, then `population_key` must be specified both
-for any configurable scraper that outputs a single population value and for any
-configurable scraper that needs that single population value. `population_key` defines
-what key will be used with `population_lookup`.
-
-## Examples of Configurable Scrapers
+    scraper_national:
+    …
 
 It is helpful to look at a few example configurable scrapers to see how they are 
 configured:
@@ -1004,6 +865,270 @@ we can specify `single_maxdate` as shown below:
             output_hxl:
               - "#value+cbpf+funding+gm0+total+usd"
            ...
+
+## Population Data
+
+Population data is treated as a special class of data. By default, configurable and 
+custom scrapers detect population data by looking for the output HXL hashtag 
+`#population` and add it to a dictionary `population_lookup` that is a variable of the
+`BaseScraper` class and hence accessible to all scrapers.
+
+For configurable scrapers where columns are evaluated (rather than assigned), it is 
+possible to use `#population` and the appropriate population value for the 
+administrative unit will be substituted automatically. Where output is a single value,
+for example where working on global data, then `population_key` must be specified both
+for any configurable scraper that outputs a single population value and for any
+configurable scraper that needs that single population value. `population_key` defines
+what key will be used with `population_lookup`.
+
+## Output Specification and Setup
+
+The YAML configuration should have a mapping from the internal dictionaries to the tabs 
+in the spreadsheet / keys in the JSON output file(s):
+
+    tabs:
+      world: "WorldData"
+      regional: "RegionalData"
+      national: "NationalData"
+      subnational: "SubnationalData"
+      covid_series: "CovidSeries"
+      covid_trend: "CovidTrend"
+      sources: "Sources"
+
+Then the location of Google spreadsheets are defined, for prod (production), test and 
+scratch:
+
+    googlesheets:
+      prod: "https://docs.google.com/spreadsheets/d/SPREADSHEET_KEY_PROD/edit"
+      test: "https://docs.google.com/spreadsheets/d/SPREADSHEET_KEY_TEST/edit"
+      scratch: "https://docs.google.com/spreadsheets/d/SPREADSHEET_KEY_SCRATCH/edit"
+
+The json outputs are then specified:
+
+    json:
+      additional_inputs:
+        - name: "Other"
+          source: "Some org"
+          source_url: "https://data.humdata.org/organization/world-bank-group"
+          format: "json"
+          url: "https://raw.githubusercontent.com/mcarans/hdx-python-scraper/master/tests/fixtures/additional_json.json"
+          jsonpath: "[*]"
+      output: "test_tabular_all.json"
+      additional_outputs:
+        - filepath: "test_tabular_population.json"
+          tabs:
+            - tab: "national"
+              key: "cumulative"
+              filters:
+                "#country+code": "{{countries_to_save}}"
+              output:
+                - "#country+code"
+                - "#country+name"
+                - "#population"
+        - filepath: "test_tabular_population_2.json"
+          tabs:
+            - tab: "national"
+              key: "cumulative"
+              filters:
+                "#country+code":
+                  - "AFG"
+              output:
+                - "#country+code"
+                - "#country+name"
+                - "#population"
+        - filepath: "test_tabular_other.json"
+          remove:
+            - "national"
+
+The key `additional_inputs` defines JSON files to be downloaded and added to the JSON 
+under the appropriate key (eg. `Other` in the example configuration above). Source
+information is added as well. 
+
+The key `output` contains the path of the output JSON file. 
+
+Under the key `additional_outputs`, subsets of the full JSON output can be saved as 
+separate files. For each additional output, `filepath` defines the path of the output 
+cut down JSON file. A subset of each input `tab` in `tabs` is output under `key`. 
+`filters` can be applied for example to restrict to a set of country codes which can be 
+given in the configuration or passed in as variables to the `save` call (see below).
+The HXL hashtags to be outputted (ie. the columns) are defined under `output`. If 
+`remove` is supplied instead of `tabs` then all of the data in the full JSON file is
+outputted except for the tabs defined under `remove`.
+
+The code to go with the configuration is as follows: 
+
+    excelout = ExcelFile(excel_path, tabs, updatetabs)
+    gsheets = GoogleSheets(gsheet_config, gsheet_auth, updatesheets, tabs, updatetabs)
+    jsonout = JsonFile(json_config, updatetabs)
+    outputs = {"gsheets": gsheets, "excel": excelout, "json": jsonout}
+    ...
+    update_subnational(runner, scraper_names, adminone, outputs)
+    ...
+    excelout.save()
+    filepaths = jsonout.save(tempdir, countries_to_save=["AFG"])
+
+Output from the scrapers can go to Excel, Google Sheets and/or a JSON file. 
+
+There are standard functions for updating level data in `update_tabs.py` including 
+`update_toplevel` ("global" for example), `update_regional`, `update_national` and 
+`update_subnational`.
+
+`update_national` is set up as follows:
+
+    flag_countries = {
+        "header": "ishrp",
+        "hxltag": "#meta+ishrp",
+        "countries": hrp_countries,
+    }
+    update_national(
+        runner,
+        gho_countries,
+        outputs,
+        names=national_names,
+        flag_countries=flag_countries,
+        iso3_to_region=RegionLookup.iso3_to_regions["GHO"],
+        ignore_regions=("GHO",),
+        level="national",
+        tab="national",
+    )
+
+The first parameter is the Runner object. The second is a list of country ISO 3 codes.
+The third is a dictionary of outputs such as to Google Sheets, Excel or JSON. The
+fourth optional parameter is the `names` of the scrapers to include. The fifth optional
+parameter, `flag_countries`, is a dictionary where the "header" and "hxltag" keys define 
+an additional column to output which can contain "Y" or "N" depending upon whether the 
+country is one of those defined in the key "countries". The sixth optional parameter,
+`iso3_to_region`, is a dictionary which maps from ISO 3 country code to a set of regions 
+and it will result in an additional column (with header "Region" and HXL hashtag 
+"#region+name") in which regions are listed separated by "|". The seventh optional 
+`ignore_regions` parameter defines a list of regions that should not be output in the 
+"Region" column. The eighth parameter `level` defaults to "national" and is the key to
+use when obtaining the results of the scrapers. The last parameter is the `tab` to
+update and defaults to "national".
+
+`update_subnational` is used as follows:
+
+    update_subnational(
+        runner, 
+        adminone, 
+        outputs, 
+        names=subnational_names,
+        level="subnational",
+        tab="subnational",
+    )
+
+The first parameter is the Runner object. The second is an AdminOne object (described 
+earlier). The third is a dictionary of outputs such as to Google Sheets, Excel or JSON. 
+The fourth optional parameter is the `names` of the scrapers to include. The parameter 
+`level` defaults to "subnational" and is the key to use when obtaining the results of 
+the scrapers. The last parameter is the `tab` to update and defaults to "subnational".
+
+`update_toplevel` and `update_regional` require the output from two other functions.
+
+    regional_rows = get_regional_rows(
+        runner,
+        RegionLookup.regions + ["global"],
+        names=regional_names,
+        level="regional",
+    )
+    global_rows = get_toplevel_rows(
+        runner,
+        names=global_names,
+        overrides={"who_covid": {"gho": "global"}},
+        toplevel="global",
+    )
+
+The first parameter of `get_regional_rows` is the Runner object. The second is a list
+of regions. The third optional parameter is the `names` of the scrapers to include. The 
+parameter `level` defaults to "regional" and is the key to use when obtaining the 
+results of the scrapers.
+
+The first parameter of `get_toplevel_rows` is the Runner object. The second optional 
+parameter is the `names` of the scrapers to include. The optional parameter `overrides`
+defines levels to get for specific scrapers, for example for "who_covid", output the
+data for the level "gho" as "global". The last parameter `toplevel` defaults to 
+"allregions" and is the key to use when obtaining the results of the scrapers.
+
+    update_regional(
+        outputs,
+        regional_rows,
+        toplevel_rows=global_rows,
+        toplevel_hxltags=additional_global_hxltags,
+        toplevel="global",
+    )
+
+    update_toplevel(
+        outputs,
+        global_rows,
+        tab="world",
+        regional_rows=regional_rows,
+        regional_adm="GHO",
+        regional_hxltags=configuration["regional"]["global"],
+        regional_first=False,
+    )
+
+The first parameter of `update_regional` is a dictionary of outputs such as to Google 
+Sheets, Excel or JSON. The second is the regional rows obtained from 
+`get_regional_rows`. The third optional parameter is the `toplevel_rows` obtained from 
+`get_toplevel_rows`. The fourth optional parameter, `toplevel_hxltags` specifies top 
+level data to include. It will correspond to one row in the regional output. The last 
+parameter `toplevel` defaults to "allregions" and is used as the region name.
+
+The first parameter of `update_toplevel` is a dictionary of outputs such as to Google 
+Sheets, Excel or JSON. The second is the `toplevel_rows` obtained from 
+`get_toplevel_rows`. The third optional parameter is the `tab` to update and defaults to
+"allregions". The fourth optional parameter is the `regional_rows` (obtained from
+`get_regional_rows`) from which data for the admin given by the sixth optional parameter 
+`regional_adm` is extracted. The specific regional columns to include is given by the 
+seventh optional parameter `regional_hxltags`. The last parameter `regional_first` which 
+defaults to `False` specifies whether columns from regional data are put in front of 
+columns from top level data.
+
+### Sources
+
+There is an `update_sources` function to update source information and it is set up as 
+follows:
+
+    update_sources(
+        runner,
+        outputs,
+        additional_sources=configuration["additional_sources"],
+        names=names,
+        secondary_runner=None,
+        custom_sources=(get_report_source(configuration),),
+        tab="sources",
+    )
+
+The first parameter is the Runner object. The second is a dictionary of outputs such as 
+to Google Sheets, Excel or JSON. The third optional parameter `additional_sources`
+enables additional sources to be declared according to a specification eg. from YAML:
+
+    additional_sources:
+      - indicator: "#food-prices"
+        dataset: "global-wfp-food-prices"
+      - indicator: "#affected+food+p3plus+num"
+        source: "Multiple sources"
+        force_date_today: True
+        source_url: "https://data.humdata.org/search?q=(name:ipc-country-data%20OR%20name:cadre-harmonise)"
+
+This allows additional HXL hashtags to be associated with a dataset date, source and 
+url. The metadata for "#food-prices" is obtained from a dataset on HDX, while for
+"#affected+food+p3plus+num", it is all specified. 
+
+The fourth optional `names` parameter allows the specific scrapers for which sources are 
+to be output to be chosen by name. The fifth optional parameter `secondary_runner` 
+allows a second Runner object to be supplied and the sources from the scrapers 
+associated with that Runner object to be included. The sixth optional parameter 
+`custom_sources` allows sources that have been obtained for example from a function call
+to be added directly without any processing or changes to them. They should be in the 
+form: (HXL tag, source date, source, source url). The last parameter is the `tab` to 
+update and defaults to "sources".
+
+For more fine-grained control, it is also possible to obtain sources by calling 
+`get_sources` on a Runner object with or without the optional `additional_sources` 
+parameter:
+
+    runner.get_sources(additional_sources=[...])
 
 ## Other Configurable Scrapers
 

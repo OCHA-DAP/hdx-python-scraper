@@ -81,33 +81,33 @@ def update_regional(
     outputs,
     regional_rows,
     toplevel_rows=tuple(),
-    additional_toplevel_headers=tuple(),
+    toplevel_hxltags=tuple(),
     tab="regional",
     toplevel="allregions",
 ):
     if not regional_rows:
         return
     toplevel_values = dict()
-    toplevel_hxltags = dict()
+    toplevel_headers = dict()
     if toplevel_rows:
-        for i, header in enumerate(toplevel_rows[0]):
-            if header in additional_toplevel_headers:
-                toplevel_values[header] = toplevel_rows[2][i]
-                if header not in regional_rows[0]:
-                    toplevel_hxltags[header] = toplevel_rows[1][i]
+        for i, hxltag in enumerate(toplevel_rows[1]):
+            if hxltag in toplevel_hxltags:
+                toplevel_values[hxltag] = toplevel_rows[2][i]
+                if hxltag not in regional_rows[1]:
+                    toplevel_headers[hxltag] = toplevel_rows[0][i]
     adm_header = regional_rows[1].index("#region+name")
     found_adm = False
 
     def add_value(row):
         value_found = False
-        for i, header in enumerate(regional_rows[0]):
-            value = toplevel_values.get(header)
+        for i, hxltag in enumerate(regional_rows[1]):
+            value = toplevel_values.get(hxltag)
             if value is None:
                 continue
             row[i] = value
             value_found = True
-        for header, hxltag in toplevel_hxltags.items():
-            value = toplevel_values.get(header)
+        for hxltag, header in toplevel_headers.items():
+            value = toplevel_values.get(hxltag)
             if value is None:
                 continue
             regional_rows[0].append(header)
@@ -203,18 +203,19 @@ def update_subnational(
 
 def update_sources(
     runner,
-    configuration,
     outputs,
+    additional_sources=tuple(),
     names=None,
     secondary_runner=None,
-    additional_sources=list(),
+    custom_sources=list(),
     tab="sources",
 ):
     sources = runner.get_sources(
-        names=names, additional_sources=configuration["additional_sources"]
+        names=names,
+        additional_sources=additional_sources,
     )
     if secondary_runner:
         secondary_sources = secondary_runner.get_sources()
         sources.extend(secondary_sources)
-    sources.extend(additional_sources)
+    sources.extend(custom_sources)
     update_tab(outputs, tab, list(sources_headers) + sources)
