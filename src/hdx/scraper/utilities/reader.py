@@ -13,7 +13,7 @@ from hdx.utilities.downloader import Download
 from hdx.utilities.retriever import Retrieve
 from hdx.utilities.saver import save_json
 from hdx.utilities.typehint import ListTuple
-from hxl.input import InputOptions, _munge_url
+from hxl.input import InputOptions, munge_url
 from slugify import slugify
 
 from . import get_date_from_dataset_date, match_template
@@ -252,7 +252,7 @@ class Read(Retrieve):
         if filename.endswith(file_type):
             filename = filename[: -len(file_type)]
         filename = f"{slugify(filename, separator='_')}{file_type}"
-        url = _munge_url(resource["url"], InputOptions())
+        url = munge_url(resource["url"], InputOptions())
         path = self.download_file(url, filename=filename)
         return url, path
 

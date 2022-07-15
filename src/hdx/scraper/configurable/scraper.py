@@ -96,8 +96,11 @@ class ConfigurableScraper(BaseScraper):
         self.setup(name, headers)
 
     @staticmethod
-    def get_subsets_from_datasetinfo(datasetinfo) -> List[Dict]:
+    def get_subsets_from_datasetinfo(datasetinfo: Dict) -> List[Dict]:
         """Get subsets from dataset information
+
+        Args:
+            datasetinfo (Dict): Information about dataset
 
         Returns:
             List[Dict]: List of subsets
@@ -123,16 +126,22 @@ class ConfigurableScraper(BaseScraper):
             ]
         return subsets
 
-    def get_iterator(self, name):
+    def get_iterator(self, name: str) -> Tuple[List[str], Iterator[Dict]]:
+        """Get subsets from dataset information
+
+        Args:
+            name (str): Name of scraper
+
+        Returns:
+            Tuple[List[str],Iterator[Dict]]: Tuple (headers, iterator where each row is a dictionary)
+        """
         return self.get_reader(name).read(
             self.datasetinfo,
             **self.variables,
         )
 
-    def add_sources(
-        self,
-    ) -> List[Tuple]:
-        """Get source for each HXL hashtag
+    def add_sources(self) -> List[Tuple]:
+        """Add source for each HXL hashtag
 
         Returns:
             List[Tuple]: List of (hxltag, date, source, source url)
@@ -155,10 +164,23 @@ class ConfigurableScraper(BaseScraper):
         self.datasetinfo["source_date"] = date
         return super().add_sources()
 
-    def add_population(self):
+    def add_population(self) -> None:
+        """Add population
+
+        Returns:
+            None
+        """
         return
 
-    def read_hxl(self, iterator):
+    def read_hxl(self, iterator: Iterator[Dict]) -> Dict[str, str]:
+        """Read HXL tags if use_hxl is True and return the mapping as a dictionary.
+
+        Args:
+            iterator (Iterator[Dict]): Iterator where each row is a dictionary
+
+        Returns:
+            Dict[str,str]: Dictionary mapping from headers to HXL hash tags
+        """
         use_hxl = self.datasetinfo.get("use_hxl", False)
         if not use_hxl:
             return None
