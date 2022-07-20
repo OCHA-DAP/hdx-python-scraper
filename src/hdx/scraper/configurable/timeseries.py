@@ -3,7 +3,7 @@ from datetime import datetime
 
 from hdx.utilities.dateparse import parse_date
 
-from hdx.scraper.base_scraper import BaseScraper
+from ..base_scraper import BaseScraper
 
 logger = logging.getLogger(__name__)
 

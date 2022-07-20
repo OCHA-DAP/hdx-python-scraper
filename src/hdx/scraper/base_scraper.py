@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from copy import deepcopy
 from typing import Dict, List, Optional, Tuple
 
-from hdx.scraper.utilities.reader import Read
+from .utilities.reader import Read
 
 
 class BaseScraper(ABC):

@@ -15,16 +15,17 @@ from hdx.utilities.text import (  # noqa: F401
     number_format,
 )
 
+from .rowparser import RowParser
 from ..base_scraper import BaseScraper
 from ..utilities import get_rowval
-from .rowparser import RowParser
 
 logger = logging.getLogger(__name__)
 
 
 class ConfigurableScraper(BaseScraper):
-    """Runs one mini scraper given dataset information and returns headers, values and
-    sources.
+    """Each configurable scraper is configured from dataset information that can come
+    from a YAML file for example. When run, it works out headers and values. It also
+    overrides add_sources where sources are compiled and returned.
 
     Args:
         name (str): Name of scraper
@@ -32,7 +33,7 @@ class ConfigurableScraper(BaseScraper):
         level (str): Can be national, subnational or single
         countryiso3s (List[str]): List of ISO3 country codes to process
         adminone (AdminOne): AdminOne object from HDX Python Country library
-        level_name (Optional[str]): Customised level_name name. Defaults to None (level_name).
+        level_name (Optional[str]): Customised level_name name. Defaults to None (level).
         today (datetime): Value to use for today. Defaults to datetime.now().
         errors_on_exit (Optional[ErrorsOnExit]): ErrorsOnExit object that logs errors on exit
         **kwargs: Variables to use when evaluating template arguments in urls
@@ -127,7 +128,7 @@ class ConfigurableScraper(BaseScraper):
         return subsets
 
     def get_iterator(self, name: str) -> Tuple[List[str], Iterator[Dict]]:
-        """Get subsets from dataset information
+        """Get the iterator from the preconfigured reader for the given scraper name
 
         Args:
             name (str): Name of scraper
@@ -165,7 +166,7 @@ class ConfigurableScraper(BaseScraper):
         return super().add_sources()
 
     def add_population(self) -> None:
-        """Add population
+        """Add population (handled elsewhere so overridden to do nothing)
 
         Returns:
             None
@@ -192,9 +193,9 @@ class ConfigurableScraper(BaseScraper):
     def use_hxl(
         self, headers, file_headers: List[str], iterator: Iterator[Dict]
     ) -> Optional[Dict]:
-        """If the mini scraper configuration defines that HXL is used (use_hxl is True),
-        then read the mapping from headers to HXL hash tags. Since each row is a
-        dictionary from header to value, the HXL row will be a dictionary from header
+        """If the configurable scraper configuration defines that HXL is used (use_hxl
+        is True), then read the mapping from headers to HXL hash tags. Since each row is
+        a dictionary from header to value, the HXL row will be a dictionary from header
         to HXL hashtag. Label #country and #adm1 columns as admin columns. If the
         input columns to use are not specified, use all that have HXL hashtags. If the
         output column headers or hashtags are not specified, use the ones from the
@@ -265,7 +266,7 @@ class ConfigurableScraper(BaseScraper):
         return header_to_hxltag
 
     def run_scraper(self, iterator: Iterator[Dict]) -> None:
-        """Run one mini scraper given an iterator over the rows
+        """Run one configurable scraper given an iterator over the rows
 
         Args:
             iterator (Iterator[Dict]): Iterator over the rows
@@ -465,7 +466,7 @@ class ConfigurableScraper(BaseScraper):
                     values_pos += 1
 
     def run(self) -> None:
-        """Runs one mini scraper given dataset information
+        """Runs one configurable scraper given dataset information
 
         Returns:
             None

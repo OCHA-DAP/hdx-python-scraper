@@ -1,6 +1,6 @@
 import logging
 from datetime import datetime
-from typing import Iterable, List, Optional
+from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple
 
 from hdx.location.adminone import AdminOne
 from hdx.utilities.errors_onexit import ErrorsOnExit
@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 
 class Runner:
-    """Runner class
+    """The Runner class is the means by which scrapers are set up and run
 
     Args:
         countryiso3s (ListTuple[str]): List of ISO3 country codes to process
@@ -47,6 +47,15 @@ class Runner:
     def add_custom(
         self, scraper: BaseScraper, add_to_run: bool = False
     ) -> str:
+        """Add custom scrapers that inherit BaseScraper
+
+        Args:
+            scraper (BaseScraper): The scraper to add
+            add_to_run (bool): Whetehr to include the scraper in the next run
+
+        Returns:
+            str: scraper name
+        """
         scraper_name = scraper.name
         self.scrapers[scraper_name] = scraper
         if scraper_name not in self.scraper_names:
@@ -63,14 +72,40 @@ class Runner:
     def add_customs(
         self, scrapers: Iterable[BaseScraper], add_to_run: bool = False
     ) -> List[str]:
+        """Add multiple custom scrapers that inherit BaseScraper
+
+        Args:
+            scrapers (Iterable[BaseScraper]): The scrapers to add
+            add_to_run (bool): Whether to include the scrapers in the next run
+
+        Returns:
+            str: scraper name
+        """
         scraper_names = list()
         for scraper in scrapers:
             scraper_names.append(self.add_custom(scraper, add_to_run))
         return scraper_names
 
     def add_configurable(
-        self, name, datasetinfo, level, level_name=None, suffix=None
+        self,
+        name: str,
+        datasetinfo: Dict,
+        level: str,
+        level_name: Optional[str] = None,
+        suffix: Optional[str] = None,
     ) -> str:
+        """Add configurable scraper to the run
+
+        Args:
+            name (str): Name of scraper
+            datasetinfo (Dict): Information about dataset
+            level (str): Can be national, subnational or single
+            level_name (Optional[str]): Customised level_name name. Defaults to None (level_name).
+            suffix (Optional[str]): Suffix to add to the scraper name
+
+        Returns:
+            str: scraper name (including suffix if set)
+        """
         if suffix:
             key = f"{name}{suffix}"
         else:
@@ -90,8 +125,23 @@ class Runner:
         return key
 
     def add_configurables(
-        self, configuration, level, level_name=None, suffix=None
+        self,
+        configuration: Dict,
+        level: str,
+        level_name: Optional[str] = None,
+        suffix: Optional[str] = None,
     ) -> List[str]:
+        """Add multiple configurable scrapers to the run
+
+        Args:
+            configuration (Dict): Mapping from scraper name to information about datasets
+            level (str): Can be national, subnational or single
+            level_name (Optional[str]): Customised level_name name. Defaults to None (level_name).
+            suffix (Optional[str]): Suffix to add to the scraper name
+
+        Returns:
+            str: scraper name (including suffix if set)
+        """
         keys = list()
         for name in configuration:
             datasetinfo = configuration[name]
@@ -102,36 +152,99 @@ class Runner:
             )
         return keys
 
-    def prioritise_scrapers(self, scraper_names):
+    def prioritise_scrapers(self, scraper_names: ListTuple[str]) -> None:
+        """Set certain scrapers to run first
+
+        Args:
+            scraper_names (ListTuple[str]): Names of scrapers to run first
+
+        Returns:
+            None
+        """
         for scraper_name in reversed(scraper_names):
             if scraper_name in self.scraper_names:
                 self.scraper_names.remove(scraper_name)
                 self.scraper_names.insert(0, scraper_name)
 
-    def get_scraper_names(self):
+    def get_scraper_names(self) -> List[str]:
+        """Get names of scrapers
+
+        Returns:
+            List[str]: Names of scrapers
+        """
         return self.scraper_names
 
-    def get_scraper(self, name):
+    def get_scraper(self, name: str) -> BaseScraper:
+        """Get scraper given name
+
+        Args:
+            name (str): Name of scraper
+
+        Returns:
+            Optional[BaseScraper]: Scraper or None if there is no scraper with given name
+        """
         return self.scrapers.get(name)
 
-    def get_scraper_exception(self, name):
+    def get_scraper_exception(self, name: str) -> BaseScraper:
+        """Get scraper given name. Throws exception if there is no scraper with the
+        given name.
+
+        Args:
+            name (str): Name of scraper
+
+        Returns:
+            BaseScraper: Scraper
+        """
         scraper = self.get_scraper(name)
         if not scraper:
             raise ValueError(f"No such scraper {name}!")
         return scraper
 
-    def add_instance_variables(self, name, **kwargs):
+    def add_instance_variables(self, name: str, **kwargs: Any) -> None:
+        """Add instance variables to scraper instance given scraper name
+
+        Args:
+            name (str): Name of scraper
+            **kwargs: Instance name value pairs to add to scraper instance
+
+        Returns:
+            None
+        """
         scraper = self.get_scraper_exception(name)
         for key, value in kwargs.items():
             setattr(scraper, key, value)
 
-    def add_post_run(self, name, fn):
+    def add_post_run(
+        self, name: str, fn: Callable[[BaseScraper], None]
+    ) -> None:
+        """Add post run instance method to scraper instance given scraper name. The
+        function should have one parameter. Since it is being added as an instance
+        method to the scraper instance, that parameter will be self and hence is of
+        type BaseScraper. The function does not need to return anything.
+
+        Args:
+            name (str): Name of scraper
+            fn (Callable[[BaseScraper], None]): Function to call post run
+
+        Returns:
+            None
+        """
         scraper = self.get_scraper_exception(name)
         scraper.post_run = lambda: fn(scraper)
 
-    def run_one(self, name, run_again=False):
+    def run_one(self, name: str, force_run: bool = False) -> bool:
+        """Run scraper with given name, adding sources and population to global
+        dictionary. If scraper run fails and fallbacks have been set up, use them.
+
+        Args:
+            name (str): Name of scraper
+            force_run (bool): Force run even if scraper marked as already run
+
+        Returns:
+            bool: Return True if scraper was run, False if not
+        """
         scraper = self.get_scraper_exception(name)
-        if scraper.has_run is False or run_again:
+        if scraper.has_run is False or force_run:
             try:
                 scraper.run()
                 scraper.add_sources()
@@ -157,33 +270,101 @@ class Runner:
                 scraper.run_after_fallbacks()
             scraper.has_run = True
             scraper.post_run()
+            return True
+        return False
 
-    def run_scraper(self, name, run_again=False):
+    def run_scraper(self, name: str, force_run: bool = False) -> bool:
+        """Check scraper with given name is in the list of scrapers to run. If it isn't,
+         return False, otherwise run it (including force running scrapers that have
+         already run if force_run is True), adding sources and population to global
+         dictionary. If scraper run fails and fallbacks have been set up, use them.
+
+        Args:
+            name (str): Name of scraper
+            force_run (bool): Force run even if scraper marked as already run
+
+        Returns:
+            bool: Return True if scraper was run, False if not
+        """
         if self.scrapers_to_run and not any(
             x in name for x in self.scrapers_to_run
         ):
             return False
         logger.info(f"Running {name}")
-        self.run_one(name, run_again)
-        return True
+        return self.run_one(name, force_run)
 
     def run(
-        self, what_to_run=None, run_again=False, prioritise_scrapers=tuple()
-    ):
-        self.prioritise_scrapers(prioritise_scrapers)
+        self,
+        what_to_run: Optional[Iterable[str]] = None,
+        force_run: bool = False,
+        prioritise_scrapers: Optional[ListTuple[str]] = None,
+    ) -> None:
+        """Run scrapers limiting to those in what_to_run if given (including force
+        running scrapers that have already run if force_run is True), adding sources
+        and population to global dictionary. Scrapers given by prioritise_scrapers
+        are run first. If scraper run fails and fallbacks have been set up, use them.
+
+        Args:
+            what_to_run (Optional[Iterable[str]]): Run only these scrapers. Defaults to None (run all).
+            force_run (bool): Force run even if any scraper marked as already run
+            prioritise_scrapers (Optional[ListTuple[str]]): Scrapers to run first. Defaults to None.
+
+        Returns:
+            None
+        """
+        if prioritise_scrapers:
+            self.prioritise_scrapers(prioritise_scrapers)
         for name in self.scraper_names:
             if what_to_run and name not in what_to_run:
                 continue
-            self.run_scraper(name, run_again)
+            self.run_scraper(name, force_run)
 
-    def set_not_run(self, name):
+    def set_not_run(self, name: str) -> None:
+        """Set scraper given by name as not run
+
+        Args:
+            name (str): Name of scraper
+
+        Returns:
+            None
+        """
         self.get_scraper(name).has_run = False
 
-    def set_not_run_many(self, names):
+    def set_not_run_many(self, names: Iterable[str]) -> None:
+        """Set scrapers given by names as not run
+
+        Args:
+            names (Iterable[str]): Names of scraper
+
+        Returns:
+            None
+        """
         for name in names:
             self.get_scraper(name).has_run = False
 
-    def get_headers(self, names=None, levels=None, headers=None, hxltags=None):
+    def get_headers(
+        self,
+        names: Optional[ListTuple[str]] = None,
+        levels: Optional[Iterable[str]] = None,
+        headers: Optional[Iterable[str]] = None,
+        hxltags: Optional[Iterable[str]] = None,
+    ) -> Dict[Tuple]:
+        """Get the headers for scrapers limiting to those in names if given and
+        limiting further to those that have been set in the constructor if previously
+        given. All levels will be obtained unless the levels parameter (which can
+        contain levels like national, subnational or single) is passed. The dictionary
+        returned can be limited to given headers or hxltags.
+
+        Args:
+            names (Optional[ListTuple[str]]): Names of scraper
+            levels (Optional[Iterable[str]]): Levels to get like national, subnational or single
+            headers (Optional[Iterable[str]]): Headers to get
+            hxltags (Optional[Iterable[str]]): HXL hashtags to get
+
+
+        Returns:
+            Dict[Tuple]: Dictionary that maps each level to (list of headers, list of hxltags)
+        """
         if not names:
             names = self.scrapers.keys()
         results = dict()
@@ -211,8 +392,34 @@ class Runner:
         return results
 
     def get_results(
-        self, names=None, levels=None, overrides=dict(), has_run=True
-    ):
+        self,
+        names: Optional[ListTuple[str]] = None,
+        levels: Optional[ListTuple[str]] = None,
+        overrides: Dict[Dict] = dict(),
+        has_run=True,
+    ) -> Dict[Dict]:
+        """Get the results (headers, values and sources) for scrapers limiting to those
+        in names if given and limiting further to those that have been set in the
+        constructor if previously given. All levels will be obtained unless the levels
+        parameter (which can contain levels like national, subnational or single) is
+        passed. Sometimes it may be necessary to map alternative level names to levels
+        and this can be done using overrides. It is a dictionary with keys being scraper
+        names and values being dictionaries which map level names to output levels. By
+        default only scrapers marked as having run are returned unless has_run is set to
+        False. The results dictionary has keys for each output level and values which
+        are dictionaries with keys headers, values, sources and fallbacks. Headers is
+        a tuple of (column headers, hxl hashtags). Values, sources and fallbacks are all
+        lists.
+
+        Args:
+            names (Optional[ListTuple[str]]): Names of scraper
+            levels (Optional[Iterable[str]]): Levels to get like national, subnational or single
+            overrides (Dict[Dict]): Dictionary mapping scrapers to level mappings. Defaults to dict().
+            has_run (bool): Only get results for scrapers marked as having run. Defaults to True.
+
+        Returns:
+            Dict[Dict]: Results dictionary that maps each level to headers, values, sources, fallbacks.
+        """
         if not names:
             names = self.scrapers.keys()
         results = dict()

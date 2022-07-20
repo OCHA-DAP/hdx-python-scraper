@@ -11,12 +11,20 @@ from hdx.utilities.text import (  # noqa: F401
 )
 from slugify import slugify
 
-from hdx.scraper.base_scraper import BaseScraper
+from ..base_scraper import BaseScraper
 
 logger = logging.getLogger(__name__)
 
 
 class Aggregator(BaseScraper):
+    """Runs one aggregator given dataset information and returns headers, values and
+    sources.
+
+    Args:
+        name (str): Name of scraper
+        datasetinfo (Dict): Information about dataset
+    """
+
     def __init__(
         self,
         name: str,

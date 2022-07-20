@@ -4,7 +4,7 @@ from shutil import copy2
 
 from slugify import slugify
 
-from hdx.scraper.base_scraper import BaseScraper
+from ..base_scraper import BaseScraper
 
 logger = logging.getLogger(__name__)
 
