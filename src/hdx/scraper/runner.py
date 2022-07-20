@@ -477,6 +477,23 @@ class Runner:
         names=None,
         overrides=dict(),
     ):
+        """Get rows for a given level limiting to those in names if given. Rows include
+        header row, HXL hashtag row and value rows, one for each adm in the given adms
+        parameter. Additional columns can be included by specifying headers and
+        rows_fns
+        . Sometimes it may be necessary to map alternative level names to levels
+        and this can be done using overrides. It is a dictionary with keys being scraper
+        names and values being dictionaries which map level names to output levels.
+
+        Args:
+            names (Optional[ListTuple[str]]): Names of scraper
+            levels (Optional[Iterable[str]]): Levels to get like national, subnational or single
+            overrides (Dict[Dict]): Dictionary mapping scrapers to level mappings. Defaults to dict().
+            has_run (bool): Only get results for scrapers marked as having run. Defaults to True.
+
+        Returns:
+            Dict[Dict]: Results dictionary that maps each level to headers, values, sources, fallbacks.
+        """
         results = self.get_results(names, [level], overrides=overrides).get(
             level
         )
