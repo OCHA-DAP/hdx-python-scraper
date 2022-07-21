@@ -412,7 +412,7 @@ class Runner:
         lists.
 
         Args:
-            names (Optional[ListTuple[str]]): Names of scraper
+            names (Optional[ListTuple[str]]): Names of scrapers
             levels (Optional[Iterable[str]]): Levels to get like national, subnational or single
             overrides (Dict[Dict]): Dictionary mapping scrapers to level mappings. Defaults to dict().
             has_run (bool): Only get results for scrapers marked as having run. Defaults to True.
@@ -470,26 +470,29 @@ class Runner:
 
     def get_rows(
         self,
-        level,
-        adms,
-        headers=(tuple(), tuple()),
-        row_fns=tuple(),
-        names=None,
-        overrides=dict(),
+        level: str,
+        adms: ListTuple[str],
+        headers: ListTuple[ListTuple] = (tuple(), tuple()),
+        row_fns: ListTuple[Callable[[str], str]] = tuple(),
+        names: Optional[ListTuple[str]] = None,
+        overrides: Dict[Dict] = dict(),
     ):
         """Get rows for a given level limiting to those in names if given. Rows include
-        header row, HXL hashtag row and value rows, one for each adm in the given adms
-        parameter. Additional columns can be included by specifying headers and
-        rows_fns
-        . Sometimes it may be necessary to map alternative level names to levels
-        and this can be done using overrides. It is a dictionary with keys being scraper
-        names and values being dictionaries which map level names to output levels.
+        header row, HXL hashtag row and value rows, one for each admin unit specified
+        in the adms parameter. Additional columns can be included by specifying headers
+        and row_fns. Headers are of the form (list of headers, list of HXL hashtags).
+        row_fns are functions that accept an admin unit and return a string. Sometimes
+        it may be necessary to map alternative level names to levels and this can be
+        done using overrides. It is a dictionary with keys being scraper names and
+        values being dictionaries which map level names to output levels.
 
         Args:
-            names (Optional[ListTuple[str]]): Names of scraper
-            levels (Optional[Iterable[str]]): Levels to get like national, subnational or single
+            level (str): Level to get like national, subnational or single
+            adms (ListTuple[str]): Admin units
+            headers (ListTuple[ListTuple]): Additional headers in the form (list of headers, list of HXL hashtags)
+            row_fns (ListTuple[Callable[[str], str]]): Functions to populate additional columns
+            names (Optional[ListTuple[str]]): Names of scrapers
             overrides (Dict[Dict]): Dictionary mapping scrapers to level mappings. Defaults to dict().
-            has_run (bool): Only get results for scrapers marked as having run. Defaults to True.
 
         Returns:
             Dict[Dict]: Results dictionary that maps each level to headers, values, sources, fallbacks.
@@ -512,7 +515,26 @@ class Runner:
                 rows.append(row)
         return rows
 
-    def get_sources(self, names=None, levels=None, additional_sources=tuple()):
+    def get_sources(
+        self,
+        names: Optional[ListTuple[str]] = None,
+        levels: Optional[Iterable[str]] = None,
+        additional_sources: ListTuple[str] = tuple(),
+    ):
+        """Get sources limiting to those in names if given. All levels will be obtained
+        unless the levels parameter (which can contain levels like national, subnational
+        or single) is passed. Additional sources can be added. Each is a dictionary
+        with indicator (specified with HXL hash tag), dataset or source and source_url
+        as well as the source_date or whether to force_date_today.
+
+        Args:
+            names (Optional[ListTuple[str]]): Names of scrapers
+            levels (Optional[Iterable[str]]): Levels to get like national, subnational or single
+            additional_sources (ListTuple[Dict]): Additional sources to add
+
+        Returns:
+            List[Tuple]: Sources in form (indicator, date, source, source_url)
+        """
         if not names:
             names = self.scrapers.keys()
         hxltags = set()
@@ -558,7 +580,15 @@ class Runner:
                     sources.append(source)
         return sources
 
-    def get_source_urls(self, names=None):
+    def get_source_urls(self, names: Optional[ListTuple[str]] = None):
+        """Get source urls limiting to those in names if given.
+
+        Args:
+            names (Optional[ListTuple[str]]): Names of scrapers
+
+        Returns:
+            List[str]: List of source urls
+        """
         source_urls = set()
         if not names:
             names = self.scrapers.keys()
