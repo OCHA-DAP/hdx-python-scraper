@@ -15,9 +15,9 @@ from hdx.utilities.text import (  # noqa: F401
     number_format,
 )
 
-from .rowparser import RowParser
 from ..base_scraper import BaseScraper
 from ..utilities import get_rowval
+from .rowparser import RowParser
 
 logger = logging.getLogger(__name__)
 
