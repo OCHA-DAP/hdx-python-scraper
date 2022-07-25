@@ -1,5 +1,5 @@
 import logging
-from typing import List, Tuple
+from typing import Dict, List, Tuple
 
 from hdx.utilities.loader import LoadError, load_json
 
@@ -7,6 +7,8 @@ logger = logging.getLogger(__name__)
 
 
 class Fallbacks:
+    """Provide fallbacks if data download fails"""
+
     fallbacks = None
     default_levels_mapping = {
         "global": "global_data",
@@ -24,11 +26,38 @@ class Fallbacks:
     @classmethod
     def add(
         cls,
-        fallbacks_path,
-        levels_mapping=default_levels_mapping,
-        sources_key="sources",
-        admin_name_mapping=default_admin_name_mapping,
-    ):
+        fallbacks_path: str,
+        levels_mapping: Dict[str, str] = default_levels_mapping,
+        sources_key: str = "sources",
+        admin_name_mapping: Dict[str, str] = default_admin_name_mapping,
+    ) -> None:
+        """
+        Add fallbacks from a given JSON fallbacks_path (which will usually be the
+        previous run). Map the keys in the file to levels, use the given sources_key
+        for sources and use the given HXL hashtags for different admin levels. The
+        defaults are:
+            default_levels_mapping = {
+                "global": "global_data",
+                "regional": "regional_data",
+                "national": "national_data",
+                "subnational": "subnational_data",
+            }
+            default_admin_name_mapping = {
+                "global": "value",
+                "regional": "#region+name",
+                "national": "#country+code",
+                "subnational": "#adm1+code",
+            }
+
+        Args:
+            fallbacks_path (str): Path to JSON fallbacks file
+            levels_mapping (Dict[str,str]): Map keys from file to levels. Defaults in description.
+            sources_key (str): Key to use for sources. Defaults to "sources".
+            admin_name_mapping: HXL hashtags for different admin levels. Defaults in description.
+
+        Returns:
+            None
+        """
         try:
             fallback_data = load_json(fallbacks_path)
             fallback_sources = fallback_data[sources_key]
@@ -50,7 +79,19 @@ class Fallbacks:
             cls.fallbacks = None
 
     @classmethod
-    def exist(cls):
+    def exist(cls) -> None:
+        """
+        Returns fallbacks if they exist
+
+        Args:
+            fallbacks_path (str): Path to JSON fallbacks file
+            levels_mapping (Dict[str,str]): Map keys from file to levels. Defaults in description.
+            sources_key (str): Key to use for sources. Defaults to "sources".
+            admin_name_mapping: HXL hashtags for different admin levels. Defaults in description.
+
+        Returns:
+            None
+        """
         return cls.fallbacks is not None
 
     @classmethod
