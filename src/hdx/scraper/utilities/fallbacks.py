@@ -30,7 +30,7 @@ class Fallbacks:
         levels_mapping: Dict[str, str] = default_levels_mapping,
         sources_key: str = "sources",
         admin_name_mapping: Dict[str, str] = default_admin_name_mapping,
-    ):
+    ) -> None:
         """
         Add fallbacks from a given JSON fallbacks_path (which will usually be the
         previous run). Map the keys in the file to levels, use the given sources_key
@@ -79,7 +79,7 @@ class Fallbacks:
             cls.fallbacks = None
 
     @classmethod
-    def exist(cls):
+    def exist(cls) -> None:
         """
         Returns fallbacks if they exist
 

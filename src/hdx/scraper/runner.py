@@ -348,7 +348,7 @@ class Runner:
         levels: Optional[Iterable[str]] = None,
         headers: Optional[Iterable[str]] = None,
         hxltags: Optional[Iterable[str]] = None,
-    ) -> Dict[Tuple]:
+    ) -> Dict[str, Tuple]:
         """Get the headers for scrapers limiting to those in names if given and
         limiting further to those that have been set in the constructor if previously
         given. All levels will be obtained unless the levels parameter (which can
@@ -363,7 +363,7 @@ class Runner:
 
 
         Returns:
-            Dict[Tuple]: Dictionary that maps each level to (list of headers, list of hxltags)
+            Dict[str, Tuple]: Dictionary that maps each level to (list of headers, list of hxltags)
         """
         if not names:
             names = self.scrapers.keys()
@@ -395,9 +395,9 @@ class Runner:
         self,
         names: Optional[ListTuple[str]] = None,
         levels: Optional[ListTuple[str]] = None,
-        overrides: Dict[Dict] = dict(),
+        overrides: Dict[str, Dict] = dict(),
         has_run=True,
-    ) -> Dict[Dict]:
+    ) -> Dict[str, Dict]:
         """Get the results (headers, values and sources) for scrapers limiting to those
         in names if given and limiting further to those that have been set in the
         constructor if previously given. All levels will be obtained unless the levels
@@ -414,11 +414,11 @@ class Runner:
         Args:
             names (Optional[ListTuple[str]]): Names of scrapers
             levels (Optional[Iterable[str]]): Levels to get like national, subnational or single
-            overrides (Dict[Dict]): Dictionary mapping scrapers to level mappings. Defaults to dict().
+            overrides (Dict[str, Dict]): Dictionary mapping scrapers to level mappings. Defaults to dict().
             has_run (bool): Only get results for scrapers marked as having run. Defaults to True.
 
         Returns:
-            Dict[Dict]: Results dictionary that maps each level to headers, values, sources, fallbacks.
+            Dict[str, Dict]: Results dictionary that maps each level to headers, values, sources, fallbacks.
         """
         if not names:
             names = self.scrapers.keys()
@@ -475,8 +475,8 @@ class Runner:
         headers: ListTuple[ListTuple] = (tuple(), tuple()),
         row_fns: ListTuple[Callable[[str], str]] = tuple(),
         names: Optional[ListTuple[str]] = None,
-        overrides: Dict[Dict] = dict(),
-    ):
+        overrides: Dict[str, Dict] = dict(),
+    ) -> List[List]:
         """Get rows for a given level limiting to those in names if given. Rows include
         header row, HXL hashtag row and value rows, one for each admin unit specified
         in the adms parameter. Additional columns can be included by specifying headers
@@ -492,10 +492,10 @@ class Runner:
             headers (ListTuple[ListTuple]): Additional headers in the form (list of headers, list of HXL hashtags)
             row_fns (ListTuple[Callable[[str], str]]): Functions to populate additional columns
             names (Optional[ListTuple[str]]): Names of scrapers
-            overrides (Dict[Dict]): Dictionary mapping scrapers to level mappings. Defaults to dict().
+            overrides (Dict[str, Dict]): Dictionary mapping scrapers to level mappings. Defaults to dict().
 
         Returns:
-            Dict[Dict]: Results dictionary that maps each level to headers, values, sources, fallbacks.
+            List[List]: Rows for a given level
         """
         results = self.get_results(names, [level], overrides=overrides).get(
             level
@@ -520,7 +520,7 @@ class Runner:
         names: Optional[ListTuple[str]] = None,
         levels: Optional[Iterable[str]] = None,
         additional_sources: ListTuple[str] = tuple(),
-    ):
+    ) -> List[Tuple]:
         """Get sources limiting to those in names if given. All levels will be obtained
         unless the levels parameter (which can contain levels like national, subnational
         or single) is passed. Additional sources can be added. Each is a dictionary
@@ -580,7 +580,9 @@ class Runner:
                     sources.append(source)
         return sources
 
-    def get_source_urls(self, names: Optional[ListTuple[str]] = None):
+    def get_source_urls(
+        self, names: Optional[ListTuple[str]] = None
+    ) -> List[str]:
         """Get source urls limiting to those in names if given.
 
         Args:
