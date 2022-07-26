@@ -217,7 +217,7 @@ class BaseScraper(ABC):
                     try:
                         valint = int(value)
                         self.population_lookup[key] = valint
-                    except ValueError:
+                    except (TypeError, ValueError):
                         pass
 
     @abstractmethod
