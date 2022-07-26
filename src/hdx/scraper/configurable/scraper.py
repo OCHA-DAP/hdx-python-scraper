@@ -141,11 +141,11 @@ class ConfigurableScraper(BaseScraper):
             **self.variables,
         )
 
-    def add_sources(self) -> List[Tuple]:
+    def add_sources(self) -> None:
         """Add source for each HXL hashtag
 
         Returns:
-            List[Tuple]: List of (hxltag, date, source, source url)
+            None
         """
         date = self.datasetinfo.get("source_date")
         use_date_from_date_col = self.datasetinfo.get("use_date", False)
@@ -163,24 +163,17 @@ class ConfigurableScraper(BaseScraper):
             else:
                 raise ValueError("No date type specified!")
         self.datasetinfo["source_date"] = date
-        return super().add_sources()
+        super().add_sources()
 
-    def add_population(self) -> None:
-        """Add population (handled elsewhere so overridden to do nothing)
-
-        Returns:
-            None
-        """
-        return
-
-    def read_hxl(self, iterator: Iterator[Dict]) -> Dict[str, str]:
-        """Read HXL tags if use_hxl is True and return the mapping as a dictionary.
+    def read_hxl(self, iterator: Iterator[Dict]) -> Optional[Dict[str, str]]:
+        """Read HXL tags if use_hxl is True and return the mapping as a dictionary. If
+        use_hxl if False, return None.
 
         Args:
             iterator (Iterator[Dict]): Iterator where each row is a dictionary
 
         Returns:
-            Dict[str,str]: Dictionary mapping from headers to HXL hash tags
+            Optional[Dict[str, str]]: Dictionary mapping from headers to HXL hash tags or None
         """
         use_hxl = self.datasetinfo.get("use_hxl", False)
         if not use_hxl:
@@ -329,22 +322,12 @@ class ConfigurableScraper(BaseScraper):
             sum_cols = subset.get("sum")
             input_ignore_vals = subset.get("input_ignore_vals", list())
             valcols = subset["input"]
-            output_hxltags = subset["output_hxl"]
             # Indices of list sorted by length
             sorted_len_indices = sorted(
                 range(len(valcols)),
                 key=lambda k: len(valcols[k]),
                 reverse=True,
             )
-
-            def add_population(index, adm, value):
-                if not value:
-                    return
-                if output_hxltags[index] == "#population":
-                    if population_key is None:
-                        self.population_lookup[adm] = value
-                    else:
-                        self.population_lookup[population_key] = value
 
             if process_cols:
 
@@ -407,7 +390,6 @@ class ConfigurableScraper(BaseScraper):
                         else:
                             value = ""
                         values[values_pos][adm] = value
-                        add_population(i, adm, value)
                     values_pos += 1
             elif sum_cols:
                 for ind, sum_col in enumerate(sum_cols):
@@ -455,14 +437,12 @@ class ConfigurableScraper(BaseScraper):
                         except (ValueError, TypeError, KeyError):
                             val = ""
                         values[values_pos][adm] = val
-                        add_population(ind, adm, val)
                     values_pos += 1
             else:
                 for i, valdict in enumerate(valdicts):
                     for adm in valdict:
                         value = valdict[adm]
                         values[values_pos][adm] = value
-                        add_population(i, adm, value)
                     values_pos += 1
 
     def run(self) -> None:
