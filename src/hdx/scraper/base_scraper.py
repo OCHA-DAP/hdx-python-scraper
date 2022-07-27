@@ -114,7 +114,6 @@ class BaseScraper(ABC):
 
         Returns:
             None
-
         """
         source = self.datasetinfo["source"]
         if isinstance(source, str):
@@ -209,11 +208,16 @@ class BaseScraper(ABC):
             except ValueError:
                 population_index = None
             if population_index is not None:
-                for key, value in self.values[level][population_index].items():
+                values = self.values[level][population_index]
+                if len(values) == 1 and "value" in values:
+                    values = ((level, values["value"]),)
+                else:
+                    values = values.items()
+                for key, value in values:
                     try:
                         valint = int(value)
                         self.population_lookup[key] = valint
-                    except ValueError:
+                    except (TypeError, ValueError):
                         pass
 
     @abstractmethod
