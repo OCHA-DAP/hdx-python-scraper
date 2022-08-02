@@ -17,11 +17,9 @@ class TestScrapersTimeSeries:
         name = "timeseries_casualties"
         jsonout = JsonFile(configuration["json"], [name])
         outputs = {"json": jsonout}
-        scrapers = TimeSeries.get_scrapers(
-            configuration["timeseries"], today, outputs
+        scraper_names = runner.add_timeseries_scrapers(
+            configuration["timeseries"], outputs
         )
-        runner.add_customs(scrapers)
-        scraper_names = runner.add_customs(scrapers, add_to_run=True)
         assert scraper_names == [name]
         runner.run()
         assert jsonout.json[f"{name}_data"] == [

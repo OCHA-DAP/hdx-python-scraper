@@ -25,10 +25,3 @@ class FileCopier(BaseScraper):
 
     def add_sources(self):
         self.add_hxltag_source("FileCopier", self.datasetinfo["hxltag"])
-
-    @classmethod
-    def get_scrapers(cls, configuration, folder=""):
-        scrapers = list()
-        for datasetinfo in configuration:
-            scrapers.append(cls(datasetinfo, folder))
-        return scrapers

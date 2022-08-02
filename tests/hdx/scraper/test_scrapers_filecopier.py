@@ -26,10 +26,9 @@ class TestScrapersFileCopier:
             iso3s = ("AFG", "MMR")
             today = parse_date("2020-10-01")
             runner = Runner(iso3s, adminone, today)
-            scrapers = FileCopier.get_scrapers(
+            scraper_names = runner.add_filecopiers(
                 configuration["copyfiles"], temp_folder
             )
-            scraper_names = runner.add_customs(scrapers, add_to_run=True)
             name = "filecopier_xlsx"
             assert scraper_names == [name]
             runner.run()

@@ -54,10 +54,3 @@ class TimeSeries(BaseScraper):
     def add_sources(self):
         for hxltag in self.datasetinfo["output_hxl"]:
             self.add_hxltag_source(self.name, hxltag)
-
-    @classmethod
-    def get_scrapers(cls, configuration, today, outputs):
-        scrapers = list()
-        for name, datasetinfo in configuration.items():
-            scrapers.append(cls(name, datasetinfo, today, outputs))
-        return scrapers

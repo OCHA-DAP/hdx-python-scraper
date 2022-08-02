@@ -30,7 +30,7 @@ class BaseScraper(ABC):
 
         Args:
             name (str): Name of scraper
-            headers: Dict[str, Tuple]: Headers to be oytput at each level_name
+            headers (Dict[str, Tuple]): Headers to be output at each level_name
 
         Returns:
              None

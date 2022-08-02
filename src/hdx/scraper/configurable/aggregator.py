@@ -1,7 +1,7 @@
 import copy
 import logging
 import sys
-from typing import Dict, List, Tuple, Union
+from typing import Dict, List, Optional, Tuple, Union
 
 from hdx.utilities.dictandlist import dict_of_lists_add
 from hdx.utilities.text import (  # noqa: F401
@@ -9,6 +9,7 @@ from hdx.utilities.text import (  # noqa: F401
     get_numeric_if_possible,
     number_format,
 )
+from hdx.utilities.typehint import ListTuple
 from slugify import slugify
 
 from ..base_scraper import BaseScraper
@@ -17,12 +18,24 @@ logger = logging.getLogger(__name__)
 
 
 class Aggregator(BaseScraper):
-    """Runs one aggregator given dataset information and returns headers, values and
-    sources.
+    """Each aggregator is configured from dataset information that can come
+    from a YAML file for example. When run, it works out headers and aggregated values.
+    The mapping from input admins to aggregated output admins adm_aggregation
+    is of form: {"AFG": ("ROAP",), "MMR": ("ROAP",)}. If the mapping is to the top
+    level, then it is a list of input admins like: ("AFG", "MMR"). The input_values
+    are a mapping from headers (if use_hxl is False) or HXL tags (if use_hxl is True)
+    to column values expressed as a dictionary mapping from input admin to value. If
+    any formulae require the result of other aggregators, these can be passed in using
+    the aggregation_scrapers parameter.
+
 
     Args:
-        name (str): Name of scraper
+        use_hxl (bool): Whether to map from headers or from HXL tags
+        header_or_hxltag (str): Column header or HXL hashtag depending on use_hxl
         datasetinfo (Dict): Information about dataset
+        adm_aggregation (Union[Dict, ListTuple]): Mapping from input admins to aggregated output admins
+        input_values (Dict[str, Dict]): Mapping from headers or HXL tags to column values
+        aggregation_scrapers (List["Aggregator"]): Other aggregations needed. Defaults to list().
     """
 
     def __init__(
@@ -30,121 +43,106 @@ class Aggregator(BaseScraper):
         name: str,
         datasetinfo: Dict,
         headers: Dict[str, Tuple],
-        adm_aggregation: Union[Dict, List],
-        input_values: Dict,
-        aggregation_scrapers: [List[BaseScraper]],
+        adm_aggregation: Union[Dict, ListTuple],
+        input_values: Dict[str, Dict],
         use_hxl: bool,
+        aggregation_scrapers: List["Aggregator"] = list(),
     ):
         super().__init__(name, datasetinfo, headers)
-        self.adm_aggregation = adm_aggregation
+        if isinstance(adm_aggregation, dict):
+            self.adm_aggregation: Dict[str, Tuple] = adm_aggregation
+        else:
+            self.adm_aggregation: Dict[str, Tuple] = {
+                x: ("value",) for x in adm_aggregation
+            }
+
         self.input_values = input_values
-        self.aggregation_scrapers = aggregation_scrapers
         self.use_hxl = use_hxl
+        self.aggregation_scrapers = aggregation_scrapers
 
     @classmethod
-    def get_scrapers(
+    def get_scraper(
         cls,
-        configuration,
-        input_level,
-        output_level,
-        adm_aggregation,
-        runner,
-        use_hxl=True,
-    ):
-        input_results = runner.get_results(levels=input_level, has_run=False)
-        aggregation_scrapers = list()
-        if not input_results:
-            return aggregation_scrapers
+        use_hxl: bool,
+        header_or_hxltag: str,
+        datasetinfo: Dict,
+        input_level: str,
+        output_level: str,
+        adm_aggregation: Union[Dict, ListTuple],
+        input_headers: Tuple[List, List],
+        input_values: Dict[str, Dict],
+        aggregation_scrapers: List["Aggregator"] = list(),
+    ) -> Optional["Aggregator"]:
+        """Runs one aggregator given dataset information and returns headers, values and
+        sources. The mapping from input admins to aggregated output admins
+        adm_aggregation is of form: {"AFG": ("ROAP",), "MMR": ("ROAP",)}. If the mapping
+        is to the top level, then it is a list of input admins like: ("AFG", "MMR").
+        The input_values are a mapping from headers or HXL tags to column values
+        expressed as a dictionary mapping from input admin to value.
+
+        Args:
+            use_hxl (bool): Whether to map from headers or from HXL tags
+            header_or_hxltag (str): Column header or HXL hashtag depending on use_hxl
+            datasetinfo (Dict): Information about dataset
+            adm_aggregation (Union[Dict, ListTuple]): Mapping from input admins to aggregated output admins
+            input_values (Dict[str, Dict]): Mapping from headers or HXL tags to column values
+            aggregation_scrapers (List["Aggregator"]): Other aggregations needed. Defaults to list().
+
+        Returns:
+            Optional["Aggregator"]: The aggregation scraper or None if it couldn't be created
+        """
         if use_hxl:
             main_index = 1
             header_or_hxltag_str = "hxltag"
         else:
             main_index = 0
             header_or_hxltag_str = "header"
-        input_results = input_results[input_level]
-        input_headers = input_results["headers"]
-        input_vals = input_results["values"]
-        input_values = dict()
-        for index, input_header_or_hxltag in enumerate(
-            input_headers[main_index]
-        ):
-            input_values[input_header_or_hxltag] = input_vals[index]
-        if not isinstance(adm_aggregation, dict):
-            adm_aggregation = {x: ("value",) for x in adm_aggregation}
-        for header_or_hxltag, process_info in configuration.items():
-            process_info = copy.deepcopy(process_info)
-            name = f"{slugify(header_or_hxltag.lower(), separator='_')}_{output_level}"
-            config_headers_or_hxltags = process_info.get("input")
-            if config_headers_or_hxltags:
-                exists = True
-                for i, config_header_or_hxltag in enumerate(
-                    config_headers_or_hxltags
-                ):
-                    try:
-                        input_headers[main_index].index(
-                            config_header_or_hxltag
-                        )
-                    except ValueError:
-                        logger.error(
-                            f"{output_level} {header_or_hxltag_str} {header_or_hxltag} not found in {input_level} input!"
-                        )
-                        exists = False
-                        break
-                if not exists:
-                    continue
-                output = process_info["output"]
-                if use_hxl:
-                    headers = ((output,), (header_or_hxltag,))
-                else:
-                    headers = ((header_or_hxltag,), (output,))
-                scraper = cls(
-                    name,
-                    process_info,
-                    {output_level: headers},
-                    adm_aggregation,
-                    input_values,
-                    aggregation_scrapers,
-                    use_hxl,
-                )
-                aggregation_scrapers.append(scraper)
-            else:
+        name = f"{slugify(header_or_hxltag.lower(), separator='_')}_{output_level}"
+        config_headers_or_hxltags = datasetinfo.get("input")
+        if config_headers_or_hxltags:
+            exists = True
+            for i, config_header_or_hxltag in enumerate(
+                config_headers_or_hxltags
+            ):
                 try:
-                    index = input_headers[main_index].index(header_or_hxltag)
-                    process_info["input"] = (header_or_hxltag,)
-                    header_or_hxltag = process_info.get(
-                        "rename", header_or_hxltag
-                    )
-                    if use_hxl:
-                        output = process_info.get(
-                            "output", input_headers[0][index]
-                        )
-                        headers = (
-                            (output,),
-                            (header_or_hxltag,),
-                        )
-                    else:
-                        output = process_info.get(
-                            "output", input_headers[1][index]
-                        )
-                        headers = (
-                            (header_or_hxltag,),
-                            (output,),
-                        )
-                    scraper = cls(
-                        name,
-                        process_info,
-                        {output_level: headers},
-                        adm_aggregation,
-                        input_values,
-                        aggregation_scrapers,
-                        use_hxl,
-                    )
-                    aggregation_scrapers.append(scraper)
+                    input_headers[main_index].index(config_header_or_hxltag)
                 except ValueError:
                     logger.error(
                         f"{output_level} {header_or_hxltag_str} {header_or_hxltag} not found in {input_level} input!"
                     )
-        return aggregation_scrapers
+                    exists = False
+                    break
+            if not exists:
+                return None
+            output = datasetinfo["output"]
+        else:
+            datasetinfo = copy.deepcopy(datasetinfo)
+            try:
+                index = input_headers[main_index].index(header_or_hxltag)
+                datasetinfo["input"] = (header_or_hxltag,)
+                header_or_hxltag = datasetinfo.get("rename", header_or_hxltag)
+                if use_hxl:
+                    output = datasetinfo.get("output", input_headers[0][index])
+                else:
+                    output = datasetinfo.get("output", input_headers[1][index])
+            except ValueError:
+                logger.error(
+                    f"{output_level} {header_or_hxltag_str} {header_or_hxltag} not found in {input_level} input!"
+                )
+                return None
+        if use_hxl:
+            headers = ((output,), (header_or_hxltag,))
+        else:
+            headers = ((header_or_hxltag,), (output,))
+        return cls(
+            name,
+            datasetinfo,
+            {output_level: headers},
+            adm_aggregation,
+            input_values,
+            use_hxl,
+            aggregation_scrapers,
+        )
 
     @staticmethod
     def get_float_or_int(valuestr):
@@ -293,6 +291,7 @@ class Aggregator(BaseScraper):
                         found_adms.add(key)
                         dict_of_lists_add(output_values, output_adm, value)
         self.process(output_level, output_headers[1][0], output_values)
+        self.aggregation_scrapers.append(self)
 
     def add_sources(self):
         pass
