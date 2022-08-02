@@ -90,6 +90,7 @@ class TestScrapersRegionalToplevel:
         aggregator_configuration = configuration_hxl[f"aggregation_{level}"]
         adm_aggregation = ("AFG", "PSE")
         names = runner.add_aggregators(
+            True,
             aggregator_configuration,
             "national",
             level,
@@ -125,6 +126,7 @@ class TestScrapersRegionalToplevel:
         regions = ("ROAP",)
         aggregator_configuration = configuration_hxl["aggregation_sum"]
         regional_names = runner.add_aggregators(
+            True,
             aggregator_configuration,
             "national",
             "regional",
