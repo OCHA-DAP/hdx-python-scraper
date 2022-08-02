@@ -10,7 +10,6 @@ from ..runner import Runner
 from .base import BaseOutput
 
 try:
-    import numpy
     from pandas import DataFrame
 except ImportError:
     DataFrame = None

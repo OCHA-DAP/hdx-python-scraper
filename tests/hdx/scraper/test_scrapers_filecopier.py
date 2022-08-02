@@ -6,7 +6,6 @@ from hdx.utilities.dateparse import parse_date
 from hdx.utilities.path import temp_dir
 
 from hdx.scraper.base_scraper import BaseScraper
-from hdx.scraper.configurable.filecopier import FileCopier
 from hdx.scraper.runner import Runner
 
 
