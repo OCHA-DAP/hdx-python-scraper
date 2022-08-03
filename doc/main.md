@@ -1302,14 +1302,19 @@ countries. The third is a dictionary containing additional regions.
 
 The configuration above reads from a `dataset` from HDX, looking for a resource of 
 `format` "xlsx". In that file, it uses columns specified by `iso3_header` and
-`regional_header`. Regions in the `ignore` list are not included. The `toplevel_region`
-is what is used as the key for the dictionary that is provided in 
-`RegionLookup.iso3_to_regions` which allows one to many mappings from countries to 
-regions. There is also `RegionLookup.iso3_to_region` which assumes a one to one mapping.
-Where the third parameter is provided to `RegionLookup.load`, each key value pair 
-is a mapping from a region name to a set of countries in that region and is added to the
-data loaded from the dataset. In addtion, additional keys are created in 
-`RegionLookup.iso3_to_regions` for each key in the third parameter.  
+`regional_header`. Regions in the `ignore` list are not included. A country can map to 
+not only what is specified in the dataset but also to `toplevel_region` (eg. GHO) which 
+covers all countries given by the second parameter of the `load` call (eg. 
+gho_countries) and to one or more additional regions given in the optional third 
+parameter (eg. "HRPs"). For the third parameter, each key value pair is a mapping from a 
+region name to a list of countries in that region. 
+
+RegionLookup provides class variables `regions` (list of regions) and `iso3_to_region` 
+(one-to-one mapping from country ISO3 code to region name based purely on the dataset 
+read from the configuration). It also provides `iso3_to_regions` which is a one-to-many 
+mapping from country ISO3 code to multiple region names which will include the 
+`toplevel_region` and additional regions specified in the third parameter. 
+
 
 # Real World Usage
 

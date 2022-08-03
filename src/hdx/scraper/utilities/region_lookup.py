@@ -10,6 +10,9 @@ logger = logging.getLogger(__name__)
 
 
 class RegionLookup:
+    """Provide list of regions and mappings from country ISO3 code to region names.
+    """
+
     iso3_to_region = dict()
     iso3_to_regions = dict()
     regions = None
@@ -19,8 +22,23 @@ class RegionLookup:
         cls,
         region_config: Dict,
         countryiso3s: ListTuple[str],
-        additional_regions: Dict[str, ListTuple],
-    ):
+        additional_regions: Dict[str, ListTuple] = dict(),
+    ) -> None:
+        """Read in region information and provide regions (list of regions) and
+        iso3_to_region (one-to-one mapping from country ISO3 code to region name). It
+        also provides iso3_to_regions which is a one-to-many mapping from country ISO3
+        code to multiple region names. The possibility of multiple region names arises
+        due to the addition of toplevel_region which is defined in the region_config
+        and additional_regions which are of the form: {"HRPs": hrp_countries, ...}.
+        Hence, a country can map to not only what is specified in the dataset given in
+        region_config but also to toplevel_region (eg. GHO) which covers all countries
+        given by countryiso3s and to one or more additional_regions.
+
+        Args:
+            region_config (Dict): Region configuration
+            countryiso3s (ListTuple[str]): List of country ISO3 codes
+            additional_regions (Dict[str, ListTuple]): Region to ISO3s. Defaults to dict().
+        """
         _, iterator = Read.get_reader().read_hdx(
             region_config,
             file_prefix="regions",
