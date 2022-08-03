@@ -8,7 +8,7 @@ from hdx.utilities.typehint import ListTuple
 
 from .base_scraper import BaseScraper
 from .configurable.aggregator import Aggregator
-from .configurable.filecopier import FileCopier
+from .configurable.resource_downloader import ResourceDownloader
 from .configurable.scraper import ConfigurableScraper
 from .configurable.timeseries import TimeSeries
 from .outputs.base import BaseOutput
@@ -164,7 +164,6 @@ class Runner:
         Args:
             name (str): Name of scraper
             datasetinfo (Dict): Information about dataset
-            configuration (Dict): Mapping from scraper name to information about datasets
             outputs (Dict[str, BaseOutput]): Mapping from names to output objects
 
         Returns:
@@ -193,37 +192,7 @@ class Runner:
             )
         return keys
 
-    def add_filecopier(self, datasetinfo: Dict, folder: str = "") -> str:
-        """Add file copier to the run
-
-        Args:
-            datasetinfo (Dict): Information about dataset
-            configuration (Dict): Mapping from scraper name to information about datasets
-            folder (str): Folder to which to download. Defaults to "".
-
-        Returns:
-            str: scraper name (including suffix if set)
-        """
-        return self.add_custom(FileCopier(datasetinfo, folder))
-
-    def add_filecopiers(
-        self, configuration: Dict, folder: str = ""
-    ) -> List[str]:
-        """Add multiple file copiers to the run
-
-        Args:
-            configuration (Dict): Mapping from scraper name to information about datasets
-            folder (str): Folder to which to download. Defaults to "".
-
-        Returns:
-            List[str]: scraper names (including suffix if set)
-        """
-        keys = list()
-        for datasetinfo in configuration:
-            keys.append(self.add_filecopier(datasetinfo, folder))
-        return keys
-
-    def add_aggregator_scraper(
+    def create_aggregator(
         self,
         use_hxl: bool,
         header_or_hxltag: str,
@@ -235,13 +204,14 @@ class Runner:
         overrides: Dict[str, Dict] = dict(),
         aggregation_scrapers: List["Aggregator"] = list(),
     ) -> Optional["Aggregator"]:
-        """Add aggregator to the run
+        """Create aggregator
 
         Args:
             use_hxl (bool): Whether keys should be HXL hashtags or column headers
-            configuration (Dict): Mapping from scraper name to information about datasets
+            header_or_hxltag (str): Column header or HXL hashtag depending on use_hxl
+            datasetinfo (Dict): Information about dataset
             input_level (str): Input level to aggregate like national or subnational
-            output_level (str): Output aggregated data at level like regional
+            output_level (str): Output level of aggregated data like regional
             adm_aggregation (Union[Dict, List]): Mapping from input admins to aggregated output admins
             names (Optional[ListTuple[str]]): Names of scrapers. Defaults to None.
             overrides (Dict[str, Dict]): Dictionary mapping scrapers to level mappings. Defaults to dict().
@@ -279,13 +249,17 @@ class Runner:
         overrides: Dict[str, Dict] = dict(),
         aggregation_scrapers: List["Aggregator"] = list(),
     ) -> Optional[str]:
-        """Add aggregator to the run
+        """Add aggregator to the run. The mapping from input admins to aggregated output
+        admins adm_aggregation is of form: {"AFG": ("ROAP",), "MMR": ("ROAP",)}. If the
+        mapping is to the top level, then it is a list of input admins like:
+        ("AFG", "MMR").
 
         Args:
             use_hxl (bool): Whether keys should be HXL hashtags or column headers
-            configuration (Dict): Mapping from scraper name to information about datasets
+            header_or_hxltag (str): Column header or HXL hashtag depending on use_hxl
+            datasetinfo (Dict): Information about dataset
             input_level (str): Input level to aggregate like national or subnational
-            output_level (str): Output aggregated data at level like regional
+            output_level (str): Output level of aggregated data like regional
             adm_aggregation (Union[Dict, List]): Mapping from input admins to aggregated output admins
             names (Optional[ListTuple[str]]): Names of scrapers. Defaults to None.
             overrides (Dict[str, Dict]): Dictionary mapping scrapers to level mappings. Defaults to dict().
@@ -294,7 +268,7 @@ class Runner:
         Returns:
             Optional[str]: scraper name (including suffix if set) or None
         """
-        scraper = self.add_aggregator_scraper(
+        scraper = self.create_aggregator(
             use_hxl,
             header_or_hxltag,
             datasetinfo,
@@ -319,13 +293,16 @@ class Runner:
         names: Optional[ListTuple[str]] = None,
         overrides: Dict[str, Dict] = dict(),
     ) -> List[str]:
-        """Add multiple file copiers to the run
+        """Add multiple aggregators to the run. The mapping from input admins to
+        aggregated output admins adm_aggregation is of form:
+        {"AFG": ("ROAP",), "MMR": ("ROAP",)}. If the mapping is to the top level, then
+        it is a list of input admins like: ("AFG", "MMR").
 
         Args:
             use_hxl (bool): Whether keys should be HXL hashtags or column headers
             configuration (Dict): Mapping from scraper name to information about datasets
             input_level (str): Input level to aggregate like national or subnational
-            output_level (str): Output aggregated data at level like regional
+            output_level (str): Output level of aggregated data like regional
             adm_aggregation (Union[Dict, ListTuple]): Mapping from input admins to aggregated output admins
             names (Optional[ListTuple[str]]): Names of scrapers
             overrides (Dict[str, Dict]): Dictionary mapping scrapers to level mappings. Defaults to dict().
@@ -335,7 +312,7 @@ class Runner:
         """
         scrapers = list()
         for header_or_hxltag, datasetinfo in configuration.items():
-            scraper = self.add_aggregator_scraper(
+            scraper = self.create_aggregator(
                 use_hxl,
                 header_or_hxltag,
                 datasetinfo,
@@ -349,6 +326,37 @@ class Runner:
             if scraper:
                 scrapers.append(scraper)
         return self.add_customs(scrapers)
+
+    def add_resource_downloader(
+        self, datasetinfo: Dict, folder: str = ""
+    ) -> str:
+        """Add resource downloader to the run
+
+        Args:
+            datasetinfo (Dict): Information about dataset
+            folder (str): Folder to which to download. Defaults to "".
+
+        Returns:
+            str: scraper name (including suffix if set)
+        """
+        return self.add_custom(ResourceDownloader(datasetinfo, folder))
+
+    def add_resource_downloaders(
+        self, configuration: Dict, folder: str = ""
+    ) -> List[str]:
+        """Add multiple resource downloaders to the run
+
+        Args:
+            configuration (Dict): Mapping from scraper name to information about datasets
+            folder (str): Folder to which to download. Defaults to "".
+
+        Returns:
+            List[str]: scraper names (including suffix if set)
+        """
+        keys = list()
+        for datasetinfo in configuration:
+            keys.append(self.add_resource_downloader(datasetinfo, folder))
+        return keys
 
     def prioritise_scrapers(self, scraper_names: ListTuple[str]) -> None:
         """Set certain scrapers to run first

@@ -246,7 +246,20 @@ class Read(Retrieve):
                     dataset.save_to_json(saved_path, follow_urls=True)
         return dataset
 
-    def read_resource(self, identifier: str, resource: Resource):
+    def download_resource(
+        self, identifier: str, resource: Resource
+    ) -> Tuple[str, str]:
+        """Download HDX resource os a file and return the url downloaded and the path
+        of the file. The identifier is information to identify what called
+        this function and is used to prefix the filename of the file.
+
+        Args:
+            identifier (str): Information to identify caller
+            resource (Resource): HDX resource
+
+        Returns:
+            Tuple[str, str]: (URL that was downloaded, path to downloaded file)
+        """
         filename = f"{identifier}_{resource['name'].lower()}"
         file_type = f".{resource.get_file_type()}"
         if filename.endswith(file_type):
@@ -259,8 +272,20 @@ class Read(Retrieve):
     def read_hxl_resource(
         self, identifier: str, resource: Resource, data_type: str
     ) -> Optional[hxl.Dataset]:
+        """Read HDX resource as a HXL dataset. The identifier is information to identify
+        what called this function and is used to prefix the filename of the file and for
+        logging.
+
+        Args:
+            identifier (str): Information to identify caller
+            resource (Resource): HDX resource
+            data_type (str): Description of the type of data for logging
+
+        Returns:
+            Optional[hxl.Dataset]: HXL dataset or None
+        """
         try:
-            _, path = self.read_resource(identifier, resource)
+            _, path = self.download_resource(identifier, resource)
             data = hxl.data(path, InputOptions(allow_local=True)).cache()
             data.display_tags
             return data

@@ -251,11 +251,32 @@ The structure is broadly as follows:
             output_national = self.get_values("national")[0]
             ...
 
+As can be seen above, headers take the form of a mapping from a level such as "national" 
+to a tuple of column headers and HXL hashtags. Values are populated by the scraper as it
+runs and are of the form below where each dictionary would represent one column in the
+output:
+
+        {"national": ({"AFG": 1.2, "PSE": 1.4}, {"AFG": 123, "PSE": 241}, ...})}
+
+Sources are also populated and take the form below where each tuple includes the source 
+HXL hashtag, source date, source and source url:
+
+        {"national": [("#food-prices", "2022-07-15", "WFP", "https://data.humdata.org/dataset/global-wfp-food-prices"), ...]
+
+The code earlier would go on to populate the dictionary `output_national` which is one
+dictionary in values representing one column. It is a mapping from national admin names 
+(ie. countries) to values. `output_regional` would also be populated. It is a mapping 
+from regions to values. In this case, since national and regional each have only one 
+header and HXL hashtag, there is only one dictionary to populate for each. 
 
 An example of a custom scraper can be seen 
 [here](https://github.com/OCHA-DAP/hdx-python-scraper/blob/main/tests/hdx/scraper/education_closures.py).
 
 ### Configurable Scrapers
+
+Configurable scrapers take their configuration from a dictionary usually provided
+by reading from a YAML file. They use that information to work out headers, values and
+sources which can be later used to populate an output such as a Google Sheet.
 
 scraper_tabname in the configuration YAML defines a set of configurable scrapers that 
 use the framework and produce data for the tab tabname which typically corresponds to a 
@@ -533,7 +554,8 @@ positives which is very rare so is usually not needed. It populates the
 
 The configurable scraper below which is intended to produce global data pulls out only 
 the "WLD" value from the input data. It populates the `population_lookup` dictionary of
-`BaseScraper` using the key `global`.
+`BaseScraper` using the key `global` taken from `population_key` which must be defined 
+at the top level not in a subset.
 
         source: "World Bank"
         source_url: "https://data.humdata.org/organization/world-bank-group"
@@ -811,7 +833,8 @@ using "OWID_WRL" in the "#country+code" field:
 This filtering for "OWID_WRL" can be more simply achieved by using a prefilter as in the
 below example. This configurable scraper also outputs a calculated column using
 `process`. That column is evaluated using population data from `population_lookup` 
-of `BaseScraper` using the key `global`.
+of `BaseScraper` using the key `global` taken from `population_key` which must be 
+defined in the subset not at the top level. 
 
       ourworldindata:
         source: "Our World in Data"
@@ -871,7 +894,10 @@ we can specify `single_maxdate` as shown below:
 Population data is treated as a special class of data. By default, configurable and 
 custom scrapers detect population data by looking for the output HXL hashtag 
 `#population` and add it to a dictionary `population_lookup` that is a variable of the
-`BaseScraper` class and hence accessible to all scrapers.
+`BaseScraper` class and hence accessible to all scrapers. For most data, the admin 
+names will be taken from the data. For top level data, the admin name is taken from the 
+level name unless `population_key` is defined in which case the value in there will be 
+used instead. 
 
 For configurable scrapers where columns are evaluated (rather than assigned), it is 
 possible to use `#population` and the appropriate population value for the 
@@ -880,6 +906,10 @@ for example where working on global data, then `population_key` must be specifie
 for any configurable scraper that outputs a single population value and for any
 configurable scraper that needs that single population value. `population_key` defines
 what key will be used with `population_lookup`.
+
+When using subsets, the rule is when reading from`population_lookup`, define 
+`population_key` in the subset and when writing to it, define `population_key` at the 
+top level of the configuration.
 
 ## Output Specification and Setup
 
@@ -1139,10 +1169,12 @@ Some other configurable scrapers are provided for specific tasks.
 This scraper reads and outputs time series data. One or more instances can be set up as 
 follows:
 
-    scrapers = TimeSeries.get_scrapers(configuration["timeseries"], today, outputs)
+    scrapers = runner.add_timeseries_scrapers(configuration["timeseries"], outputs)
     runner.add_customs(scrapers)
 
-The scrapers are configured in a YAML configuration like the following:
+The first parameter defines the YAML configuration where the scrapers are configured as
+shown below. The second is a dictionary where the values are objects that inherit from
+`BaseOutput` and which serve to send output somewhere like Google Sheets.
 
       casualties:
         source: "OHCHR"
@@ -1173,20 +1205,22 @@ and the HXL hashtags given by `output_hxl`.
 The aggregator scraper is used for aggregating data from other scrapers. One or more are
 set up as shown below:
 
-    regional_scrapers_gho = Aggregator.get_scrapers(
+    regional_scrapers_gho = runner.add_aggregators(
+        True,
         regional_configuration["aggregate_gho"],
         "national",
         "regional",
         RegionLookup.iso3_to_regions["GHO"],
-        runner,
     )
     regional_names_gho = runner.add_customs(regional_scrapers_gho, add_to_run=True)
 
-The first parameter points to a YAML configuration which is outlined below. The second
-is the level of the input scraper data to be aggregated. The third is the level of the 
-aggregated output data. The fourth is a mapping from admin units of the input level to
-admin units of the output level and the last is the Runner object that was set up with
-the input scrapers.
+The first parameter is whether to use columns headers (False) or HXL hash tags (True).
+The second points to a YAML configuration which is outlined below. The third is the 
+level of the input scraper data to be aggregated (like national). The fourth is the 
+level of the aggregated output data (like regional). The fifth is a mapping from admin 
+units of the input level to admin units of the output level of form: 
+`{"AFG": ("ROAP",), "MMR": ("ROAP",)}`. If the mapping is to the top level, then it is 
+a list of input admins like: `("AFG", "MMR")`.
 
       aggregate_gho:
         "#population":
@@ -1221,16 +1255,17 @@ performed ("sum", "mean" or "eval" under `action`). "eval" allows combining alre
 aggregated columns together. Where input comes from multiple columns, these can be 
 defined with `input` and the output column name with `output`.
 
-### File Copier Scraper
+### Resource Downloader
 
-The file copier is a simple scraper that copies files from HDX datasets. One or more is 
-set up as follows:
+The resource downloader is a simple scraper that downloads resources from HDX datasets. 
+One or more is set up as follows:
 
-    filecopiers = FileCopier.get_scrapers(configuration["copyfiles"])
+    res_dlds = runner.add_resourcedownloaders(configuration["copyfiles"], folder)
 
-The YAML configuration looks as follows:
+The first parameter is a YAML configuration shown below. The second is the folder to 
+which to download (which defaults to "").
 
-    copyfiles:
+    download_resources:
       - dataset: "ukraine-border-crossings"
         format: "geojson"
         filename: "UKR_Border_Crossings.geojson"

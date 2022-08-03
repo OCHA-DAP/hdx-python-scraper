@@ -962,7 +962,7 @@ timeseries:
       - "#affected+killed"
       - "#affected+injured"
 
-copyfiles:
+download_resources:
   - dataset: "ukraine-border-crossings"
     format: "xlsx"
     filename: "my_output.xlsx"

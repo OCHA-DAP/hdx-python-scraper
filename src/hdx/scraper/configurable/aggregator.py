@@ -1,7 +1,7 @@
 import copy
 import logging
 import sys
-from typing import Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 from hdx.utilities.dictandlist import dict_of_lists_add
 from hdx.utilities.text import (  # noqa: F401
@@ -73,7 +73,7 @@ class Aggregator(BaseScraper):
         input_values: Dict[str, Dict],
         aggregation_scrapers: List["Aggregator"] = list(),
     ) -> Optional["Aggregator"]:
-        """Runs one aggregator given dataset information and returns headers, values and
+        """Gets one aggregator given dataset information and returns headers, values and
         sources. The mapping from input admins to aggregated output admins
         adm_aggregation is of form: {"AFG": ("ROAP",), "MMR": ("ROAP",)}. If the mapping
         is to the top level, then it is a list of input admins like: ("AFG", "MMR").
@@ -85,6 +85,7 @@ class Aggregator(BaseScraper):
             header_or_hxltag (str): Column header or HXL hashtag depending on use_hxl
             datasetinfo (Dict): Information about dataset
             adm_aggregation (Union[Dict, ListTuple]): Mapping from input admins to aggregated output admins
+            input_headers (Tuple[List, List]): Column headers and HXL hashtags
             input_values (Dict[str, Dict]): Mapping from headers or HXL tags to column values
             aggregation_scrapers (List["Aggregator"]): Other aggregations needed. Defaults to list().
 
@@ -145,7 +146,15 @@ class Aggregator(BaseScraper):
         )
 
     @staticmethod
-    def get_float_or_int(valuestr):
+    def get_float_or_int(valuestr: str) -> Union[float, int, None]:
+        """Convert value string to float, int or None
+
+        Args:
+            valuestr (str): Value string
+
+        Returns:
+            Union[float, int, None]: Converted value
+        """
         if not valuestr or valuestr == "N/A":
             return None
         if "." in valuestr:
@@ -154,11 +163,21 @@ class Aggregator(BaseScraper):
             return int(valuestr)
 
     @classmethod
-    def get_numeric(cls, valuestr):
-        if isinstance(valuestr, str):
+    def get_numeric(cls, valueinput: Any) -> Union[str, float, int]:
+        """Convert value input to float or int. Values in pipe separated strings are
+        summed. If any values in a pipe separated string are empty, an empty string is
+        returned.
+
+        Args:
+            valueinput (Any): Value string
+
+        Returns:
+            Union[str, float, int]: Converted value
+        """
+        if isinstance(valueinput, str):
             total = 0
             hasvalues = False
-            for value in valuestr.split("|"):
+            for value in valueinput.split("|"):
                 value = cls.get_float_or_int(value)
                 if value:
                     hasvalues = True
@@ -166,20 +185,18 @@ class Aggregator(BaseScraper):
             if hasvalues is False:
                 return ""
             return total
-        return valuestr
+        return valueinput
 
-    def process(self, output_level: str, output_hxltag, output_values):
-        population_key = self.datasetinfo.get("population_key")
+    def process(self, output_level: str, output_values: Dict) -> None:
+        """Perform aggregation putting results in output_values
 
-        def add_population(adm, value):
-            if not value:
-                return
-            if output_hxltag == "#population":
-                if population_key is None:
-                    self.population_lookup[adm] = value
-                else:
-                    self.population_lookup[population_key] = value
+        Args:
+            output_level (str): Output level of aggregated data like regional
+            output_values (Dict): Mapping from admin name to value
 
+        Returns:
+            None
+        """
         action = self.datasetinfo["action"]
         if action == "sum" or action == "mean":
             for output_adm, valuelist in output_values.items():
@@ -216,7 +233,6 @@ class Aggregator(BaseScraper):
                     )
                 else:
                     output_values[output_adm] = total
-                    add_population(output_adm, total)
         elif action == "range":
             for output_adm, valuelist in output_values.items():
                 min = sys.maxsize
@@ -238,6 +254,7 @@ class Aggregator(BaseScraper):
                     output_values[output_adm] = f"{str(min)}-{str(max)}"
         elif action == "eval":
             formula = self.datasetinfo["formula"]
+            population_key = self.datasetinfo.get("population_key")
             if population_key is None:
                 population_str = "self.population_lookup[output_adm]"
             else:
@@ -268,11 +285,14 @@ class Aggregator(BaseScraper):
                 toeval = toeval.replace(arbitrary_string, population_str)
                 total = eval(toeval)
                 output_values[output_adm] = total
-                add_population(output_adm, total)
 
-    def run(self):
+    def run(self) -> None:
+        """Runs one aggregator given dataset information
+
+        Returns:
+            None
+        """
         output_level = next(iter(self.headers.keys()))
-        output_headers = self.get_headers(output_level)
         output_valdicts = self.get_values(output_level)
         output_values = output_valdicts[0]
         input_valdicts = list()
@@ -290,11 +310,14 @@ class Aggregator(BaseScraper):
                     if value is not None:
                         found_adms.add(key)
                         dict_of_lists_add(output_values, output_adm, value)
-        self.process(output_level, output_headers[1][0], output_values)
+        self.process(output_level, output_values)
         self.aggregation_scrapers.append(self)
 
-    def add_sources(self):
-        pass
+    def add_sources(self) -> None:
+        """There is no need to add any sources since the disaggregated values should
+        already have sources
 
-    def add_population(self):
-        pass
+        Returns:
+            None
+        """
+        return None
