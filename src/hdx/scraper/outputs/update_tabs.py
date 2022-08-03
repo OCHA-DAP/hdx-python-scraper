@@ -347,7 +347,7 @@ def update_sources(
     additional_sources: ListTuple[str] = tuple(),
     names: Optional[ListTuple[str]] = None,
     secondary_runner: Optional[Runner] = None,
-    custom_sources: List[Tuple] = list(),
+    custom_sources: ListTuple[Tuple] = list(),
     tab: str = "sources",
 ) -> None:
     """Update the sources tab (or key in JSON) in the outputs for scrapers limiting to
@@ -362,7 +362,7 @@ def update_sources(
         additional_sources (ListTuple[Dict]): Additional sources to add
         names (Optional[ListTuple[str]]): Names of scrapers. Defaults to None.
         secondary_runner (Optional[Runner]): Secondary Runner object. Defaults to None.
-        custom_sources (List[Tuple]): Custom sources to add
+        custom_sources (ListTuple[Tuple]): Custom sources to add
         tab (str): Name of tab (key in JSON) to update. Defaults to "sources".
 
     Returns:
