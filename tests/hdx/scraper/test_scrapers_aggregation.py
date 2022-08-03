@@ -57,6 +57,7 @@ class TestScrapersAggregation:
             "national",
             level,
             adm_aggregation,
+            force_add_to_run=True,
         )
         name = "population_regional"
         assert names == [name]
@@ -80,6 +81,7 @@ class TestScrapersAggregation:
             "national",
             level,
             adm_aggregation,
+            force_add_to_run=True,
         )
 
         level = "regional"
@@ -102,6 +104,7 @@ class TestScrapersAggregation:
             "national",
             level,
             adm_aggregation,
+            force_add_to_run=True,
         )
 
         level = "regional"
@@ -184,6 +187,7 @@ class TestScrapersAggregation:
             "national",
             level,
             adm_aggregation,
+            force_add_to_run=True,
         )
         assert names == [
             f"population_{level}",
@@ -258,6 +262,7 @@ class TestScrapersAggregation:
             "national",
             level,
             adm_aggregation,
+            force_add_to_run=True,
         )
         name = "population_regional"
         assert names == [name]
@@ -281,6 +286,7 @@ class TestScrapersAggregation:
             "national",
             level,
             adm_aggregation,
+            force_add_to_run=True,
         )
 
         level = "regional"
@@ -303,6 +309,7 @@ class TestScrapersAggregation:
             "national",
             level,
             adm_aggregation,
+            force_add_to_run=True,
         )
 
         level = "regional"
@@ -385,6 +392,7 @@ class TestScrapersAggregation:
             "national",
             level,
             adm_aggregation,
+            force_add_to_run=True,
         )
         assert names == [
             f"population_{level}",

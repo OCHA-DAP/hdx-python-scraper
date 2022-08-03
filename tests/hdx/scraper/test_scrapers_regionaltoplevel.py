@@ -95,6 +95,7 @@ class TestScrapersRegionalToplevel:
             "national",
             level,
             adm_aggregation,
+            force_add_to_run=True,
         )
         assert names == [
             f"population_{level}",
@@ -131,6 +132,7 @@ class TestScrapersRegionalToplevel:
             "national",
             "regional",
             {"AFG": regions, "PSE": ("somewhere",)},
+            force_add_to_run=True,
         )
         runner.run(regional_names)
         regional_rows = get_regional_rows(

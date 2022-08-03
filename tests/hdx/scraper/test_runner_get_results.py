@@ -88,6 +88,7 @@ class TestRunnerGetResults:
             "national",
             level,
             adm_aggregation,
+            force_add_to_run=True,
         )
         assert names == [
             f"population_{level}",
@@ -124,6 +125,7 @@ class TestRunnerGetResults:
             "national",
             "regional",
             {"AFG": regions, "PSE": ("somewhere",)},
+            force_add_to_run=True,
         )
         runner.run(regional_names)
         results = runner.get_results()
