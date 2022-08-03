@@ -27,6 +27,9 @@ install with:
 
 ## Breaking Changes
 
+From 1.8.7, FileCopier -> ResourceDownloader, get_scrapers calls in Aggregator,
+ResourceDownloader and TimeSeries -> Runner.addXXX, read_resource -> download_resource
+
 From 1.8.3, changes to update_sources and update_regional
 
 From 1.7.5, new Read class to use instead of Retrieve class
