@@ -266,7 +266,7 @@ class Runner:
             Optional["Aggregator"]: scraper or None
         """
         input_headers, input_values = self.get_values_by_header(
-            input_level, names, overrides, use_hxl
+            input_level, names, overrides, False, use_hxl
         )
         if not input_headers:
             return None
@@ -692,7 +692,7 @@ class Runner:
         lists.
 
         Args:
-            names (Optional[ListTuple[str]]): Names of scrapers
+            names (Optional[ListTuple[str]]): Names of scrapers. Defaults to None (all scrapers).
             levels (Optional[Iterable[str]]): Levels to get like national, subnational or single
             overrides (Dict[str, Dict]): Dictionary mapping scrapers to level mappings. Defaults to dict().
             has_run (bool): Only get results for scrapers marked as having run. Defaults to True.
@@ -771,7 +771,7 @@ class Runner:
             adms (ListTuple[str]): Admin units
             headers (ListTuple[ListTuple]): Additional headers in the form (list of headers, list of HXL hashtags)
             row_fns (ListTuple[Callable[[str], str]]): Functions to populate additional columns
-            names (Optional[ListTuple[str]]): Names of scrapers
+            names (Optional[ListTuple[str]]): Names of scrapers. Defaults to None (all scrapers).
             overrides (Dict[str, Dict]): Dictionary mapping scrapers to level mappings. Defaults to dict().
 
         Returns:
@@ -800,7 +800,8 @@ class Runner:
         level: str,
         names: Optional[ListTuple[str]] = None,
         overrides: Dict[str, Dict] = dict(),
-        use_hxl: bool = False,
+        has_run: bool = True,
+        use_hxl: bool = True,
     ) -> Tuple[Tuple, Dict]:
         """Get mapping from headers to values for a given level for scrapers limiting
         to those in names if given. Keys will be headers if use_hxl is False or HXL
@@ -811,16 +812,17 @@ class Runner:
 
         Args:
             level (str): Level to get like national, subnational or single
-            names (Optional[ListTuple[str]]): Names of scrapers
+            names (Optional[ListTuple[str]]): Names of scrapers. Defaults to None (all scrapers).
             overrides (Dict[str, Dict]): Dictionary mapping scrapers to level mappings. Defaults to dict().
-            use_hxl (bool): Whether keys should be HXL hashtags or column headers. Defaults to False.
+            has_run (bool): Only get results for scrapers marked as having run. Defaults to True.
+            use_hxl (bool): Whether keys should be HXL hashtags or column headers. Defaults to True.
 
         Returns:
             Tuple[Tuple, Dict]: Tuple of (results headers, mapping from headers to values)
         """
-        results = self.get_results(names, [level], overrides=overrides).get(
-            level
-        )
+        results = self.get_results(
+            names, [level], overrides=overrides, has_run=has_run
+        ).get(level)
         headers = None
         values = dict()
         if results:
