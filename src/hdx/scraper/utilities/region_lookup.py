@@ -10,8 +10,7 @@ logger = logging.getLogger(__name__)
 
 
 class RegionLookup:
-    """Provide list of regions and mappings from country ISO3 code to region names.
-    """
+    """Provide list of regions and mappings from country ISO3 code to region names."""
 
     iso3_to_region = dict()
     iso3_to_regions = dict()
