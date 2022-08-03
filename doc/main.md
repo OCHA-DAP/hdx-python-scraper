@@ -28,7 +28,8 @@ install with:
 ## Breaking Changes
 
 From 1.8.7, FileCopier -> ResourceDownloader, get_scrapers calls in Aggregator,
-ResourceDownloader and TimeSeries -> Runner.addXXX, read_resource -> download_resource
+ResourceDownloader and TimeSeries -> Runner.addXXX, read_resource -> download_resource,
+add_to_run -> force_add_to_run
 
 From 1.8.3, changes to update_sources and update_regional
 
@@ -178,7 +179,9 @@ The last optional parameter is a list of scrapers to run.
 The method `add_configurables` is used to add scrapers that are configured from a YAML 
 configuration. The method `add_custom` is used to add a custom scraper and `add_customs`
 for multiple custom scrapers - these are scrapers written in Python that inherit the 
-`BaseScraper` class.
+`BaseScraper` class. If running specific scrapers rather than all, and you want to force 
+the inclusion of the scraper in the run regardless of the specific scrapers given, the 
+parameter `force_add_to_run` should be set to True.
 
 It is possible to add a post run step to a scraper that has been set up using:
 
@@ -1165,15 +1168,17 @@ parameter:
 
 ## Other Configurable Scrapers
 
-Some other configurable scrapers are provided for specific tasks. 
+Some other configurable scrapers are provided for specific tasks. If running specific 
+scrapers rather than all, and you want to force the inclusion of the scraper in the run 
+regardless of the specific scrapers given, the final parameter `force_add_to_run` in the
+`add_*` call of the Runner object should be set to True. 
 
 ### Time Series Scraper
 
 This scraper reads and outputs time series data. One or more instances can be set up as 
 follows:
 
-    scrapers = runner.add_timeseries_scrapers(configuration["timeseries"], outputs)
-    runner.add_customs(scrapers)
+    runner.add_timeseries_scrapers(configuration["timeseries"], outputs)
 
 The first parameter defines the YAML configuration where the scrapers are configured as
 shown below. The second is a dictionary where the values are objects that inherit from
@@ -1208,14 +1213,14 @@ and the HXL hashtags given by `output_hxl`.
 The aggregator scraper is used for aggregating data from other scrapers. One or more are
 set up as shown below:
 
-    regional_scrapers_gho = runner.add_aggregators(
+    regional_names_gho = runner.add_aggregators(
         True,
         regional_configuration["aggregate_gho"],
         "national",
         "regional",
         RegionLookup.iso3_to_regions["GHO"],
+        force_add_to_run=True
     )
-    regional_names_gho = runner.add_customs(regional_scrapers_gho, add_to_run=True)
 
 The first parameter is whether to use columns headers (False) or HXL hash tags (True).
 The second points to a YAML configuration which is outlined below. The third is the 

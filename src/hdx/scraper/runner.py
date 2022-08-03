@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 
 
 class Runner:
-    """The Runner class is the means by which scrapers are set up and run
+    """The Runner class is the means by which scrapers are set up and run.
 
     Args:
         countryiso3s (ListTuple[str]): List of ISO3 country codes to process
@@ -49,13 +49,16 @@ class Runner:
         self.scraper_names = list()
 
     def add_custom(
-        self, scraper: BaseScraper, add_to_run: bool = False
+        self, scraper: BaseScraper, force_add_to_run: bool = False
     ) -> str:
-        """Add custom scrapers that inherit BaseScraper
+        """Add custom scrapers that inherit BaseScraper. If running specific scrapers
+        rather than all, and you want to force the inclusion of the scraper in the run
+        regardless of the specific scrapers given, the parameter force_add_to_run
+        should be set to True.
 
         Args:
             scraper (BaseScraper): The scraper to add
-            add_to_run (bool): Whetehr to include the scraper in the next run
+            force_add_to_run (bool): Whether to force include the scraper in the next run
 
         Returns:
             str: scraper name
@@ -65,7 +68,7 @@ class Runner:
         if scraper_name not in self.scraper_names:
             self.scraper_names.append(scraper_name)
         if (
-            add_to_run
+            force_add_to_run
             and self.scrapers_to_run is not None
             and scraper_name not in self.scrapers_to_run
         ):
@@ -74,20 +77,23 @@ class Runner:
         return scraper_name
 
     def add_customs(
-        self, scrapers: Iterable[BaseScraper], add_to_run: bool = False
+        self, scrapers: Iterable[BaseScraper], force_add_to_run: bool = False
     ) -> List[str]:
-        """Add multiple custom scrapers that inherit BaseScraper
+        """Add multiple custom scrapers that inherit BaseScraper. If running specific
+        scrapers rather than all, and you want to force the inclusion of the scraper in
+        the run regardless of the specific scrapers given, the parameter
+        force_add_to_run should be set to True.
 
         Args:
             scrapers (Iterable[BaseScraper]): The scrapers to add
-            add_to_run (bool): Whether to include the scrapers in the next run
+            force_add_to_run (bool): Whether to force include the scraper in the next run
 
         Returns:
             str: scraper name
         """
         scraper_names = list()
         for scraper in scrapers:
-            scraper_names.append(self.add_custom(scraper, add_to_run))
+            scraper_names.append(self.add_custom(scraper, force_add_to_run))
         return scraper_names
 
     def add_configurable(
@@ -97,8 +103,12 @@ class Runner:
         level: str,
         level_name: Optional[str] = None,
         suffix: Optional[str] = None,
+        force_add_to_run: bool = False,
     ) -> str:
-        """Add configurable scraper to the run
+        """Add configurable scraper to the run. If running specific scrapers rather than
+        all, and you want to force the inclusion of the scraper in the run regardless of
+        the specific scrapers given, the parameter force_add_to_run should be set to
+        True.
 
         Args:
             name (str): Name of scraper
@@ -106,17 +116,16 @@ class Runner:
             level (str): Can be national, subnational or single
             level_name (Optional[str]): Customised level_name name. Defaults to None (level_name).
             suffix (Optional[str]): Suffix to add to the scraper name
+            force_add_to_run (bool): Whether to force include the scraper in the next run
 
         Returns:
             str: scraper name (including suffix if set)
         """
         if suffix:
-            key = f"{name}{suffix}"
+            scraper_name = f"{name}{suffix}"
         else:
-            key = name
-        if key not in self.scraper_names:
-            self.scraper_names.append(key)
-        self.scrapers[key] = ConfigurableScraper(
+            scraper_name = name
+        self.scrapers[scraper_name] = ConfigurableScraper(
             name,
             datasetinfo,
             level,
@@ -126,7 +135,15 @@ class Runner:
             self.today,
             self.errors_on_exit,
         )
-        return key
+        if scraper_name not in self.scraper_names:
+            self.scraper_names.append(scraper_name)
+        if (
+            force_add_to_run
+            and self.scrapers_to_run is not None
+            and scraper_name not in self.scrapers_to_run
+        ):
+            self.scrapers_to_run.append(scraper_name)
+        return scraper_name
 
     def add_configurables(
         self,
@@ -134,14 +151,19 @@ class Runner:
         level: str,
         level_name: Optional[str] = None,
         suffix: Optional[str] = None,
+        force_add_to_run: bool = False,
     ) -> List[str]:
-        """Add multiple configurable scrapers to the run
+        """Add multiple configurable scrapers to the run. If running specific scrapers
+        rather than all, and you want to force the inclusion of the scraper in the run
+        regardless of the specific scrapers given, the parameter force_add_to_run
+        should be set to True.
 
         Args:
             configuration (Dict): Mapping from scraper name to information about datasets
             level (str): Can be national, subnational or single
             level_name (Optional[str]): Customised level_name name. Defaults to None (level_name).
             suffix (Optional[str]): Suffix to add to the scraper name
+            force_add_to_run (bool): Whether to force include the scraper in the next run
 
         Returns:
             List[str]: scraper names (including suffix if set)
@@ -151,36 +173,57 @@ class Runner:
             datasetinfo = configuration[name]
             keys.append(
                 self.add_configurable(
-                    name, datasetinfo, level, level_name, suffix
+                    name,
+                    datasetinfo,
+                    level,
+                    level_name,
+                    suffix,
+                    force_add_to_run,
                 )
             )
         return keys
 
     def add_timeseries_scraper(
-        self, name: str, datasetinfo: Dict, outputs: Dict[str, BaseOutput]
+        self,
+        name: str,
+        datasetinfo: Dict,
+        outputs: Dict[str, BaseOutput],
+        force_add_to_run: bool = False,
     ) -> str:
-        """Add time series scraper to the run
+        """Add time series scraper to the run. If running specific scrapers rather than
+        all, and you want to force the inclusion of the scraper in the run regardless of
+        the specific scrapers given, the parameter force_add_to_run should be set to
+        True.
 
         Args:
             name (str): Name of scraper
             datasetinfo (Dict): Information about dataset
             outputs (Dict[str, BaseOutput]): Mapping from names to output objects
+            force_add_to_run (bool): Whether to force include the scraper in the next run
 
         Returns:
             str: scraper name (including suffix if set)
         """
         return self.add_custom(
-            TimeSeries(name, datasetinfo, self.today, outputs)
+            TimeSeries(name, datasetinfo, self.today, outputs),
+            force_add_to_run,
         )
 
     def add_timeseries_scrapers(
-        self, configuration: Dict, outputs: Dict[str, BaseOutput]
+        self,
+        configuration: Dict,
+        outputs: Dict[str, BaseOutput],
+        force_add_to_run: bool = False,
     ) -> List[str]:
-        """Add multiple time series scrapers to the run
+        """Add multiple time series scrapers to the run. If running specific scrapers
+        rather than all, and you want to force the inclusion of the scraper in the run
+        regardless of the specific scrapers given, the parameter force_add_to_run should
+        be set to True.
 
         Args:
             configuration (Dict): Mapping from scraper name to information about datasets
             outputs (Dict[str, BaseOutput]): Mapping from names to output objects
+            force_add_to_run (bool): Whether to force include the scraper in the next run
 
         Returns:
             List[str]: scraper names (including suffix if set)
@@ -188,7 +231,9 @@ class Runner:
         keys = list()
         for name, datasetinfo in configuration.items():
             keys.append(
-                self.add_timeseries_scraper(name, datasetinfo, outputs)
+                self.add_timeseries_scraper(
+                    name, datasetinfo, outputs, force_add_to_run
+                )
             )
         return keys
 
@@ -248,11 +293,14 @@ class Runner:
         names: Optional[ListTuple[str]] = None,
         overrides: Dict[str, Dict] = dict(),
         aggregation_scrapers: List["Aggregator"] = list(),
+        force_add_to_run: bool = False,
     ) -> Optional[str]:
         """Add aggregator to the run. The mapping from input admins to aggregated output
         admins adm_aggregation is of form: {"AFG": ("ROAP",), "MMR": ("ROAP",)}. If the
         mapping is to the top level, then it is a list of input admins like:
-        ("AFG", "MMR").
+        ("AFG", "MMR"). If running specific scrapers rather than all, and you want to
+        force the inclusion of the scraper in the run regardless of the specific
+        scrapers given, the parameter force_add_to_run should be set to True.
 
         Args:
             use_hxl (bool): Whether keys should be HXL hashtags or column headers
@@ -264,6 +312,7 @@ class Runner:
             names (Optional[ListTuple[str]]): Names of scrapers. Defaults to None.
             overrides (Dict[str, Dict]): Dictionary mapping scrapers to level mappings. Defaults to dict().
             aggregation_scrapers (List["Aggregator"]): Other aggregations needed. Defaults to list().
+            force_add_to_run (bool): Whether to force include the scraper in the next run
 
         Returns:
             Optional[str]: scraper name (including suffix if set) or None
@@ -281,7 +330,7 @@ class Runner:
         )
         if not scraper:
             return None
-        return self.add_custom(scraper)
+        return self.add_custom(scraper, force_add_to_run)
 
     def add_aggregators(
         self,
@@ -292,11 +341,15 @@ class Runner:
         adm_aggregation: Union[Dict, ListTuple],
         names: Optional[ListTuple[str]] = None,
         overrides: Dict[str, Dict] = dict(),
+        force_add_to_run: bool = False,
     ) -> List[str]:
         """Add multiple aggregators to the run. The mapping from input admins to
         aggregated output admins adm_aggregation is of form:
         {"AFG": ("ROAP",), "MMR": ("ROAP",)}. If the mapping is to the top level, then
-        it is a list of input admins like: ("AFG", "MMR").
+        it is a list of input admins like: ("AFG", "MMR"). If running specific scrapers
+        rather than all, and you want to force the inclusion of the scraper in the run
+        regardless of the specific scrapers given, the parameter force_add_to_run should
+        be set to True.
 
         Args:
             use_hxl (bool): Whether keys should be HXL hashtags or column headers
@@ -306,6 +359,7 @@ class Runner:
             adm_aggregation (Union[Dict, ListTuple]): Mapping from input admins to aggregated output admins
             names (Optional[ListTuple[str]]): Names of scrapers
             overrides (Dict[str, Dict]): Dictionary mapping scrapers to level mappings. Defaults to dict().
+            force_add_to_run (bool): Whether to force include the scraper in the next run
 
         Returns:
             List[str]: scraper names (including suffix if set)
@@ -325,37 +379,57 @@ class Runner:
             )
             if scraper:
                 scrapers.append(scraper)
-        return self.add_customs(scrapers)
+        return self.add_customs(scrapers, force_add_to_run)
 
     def add_resource_downloader(
-        self, datasetinfo: Dict, folder: str = ""
+        self,
+        datasetinfo: Dict,
+        folder: str = "",
+        force_add_to_run: bool = False,
     ) -> str:
-        """Add resource downloader to the run
+        """Add resource downloader to the run. If running specific scrapers rather than
+        all, and you want to force the inclusion of the scraper in the run regardless of
+        the specific scrapers given, the parameter force_add_to_run should be set to
+        True.
 
         Args:
             datasetinfo (Dict): Information about dataset
             folder (str): Folder to which to download. Defaults to "".
+            force_add_to_run (bool): Whether to force include the scraper in the next run
 
         Returns:
             str: scraper name (including suffix if set)
         """
-        return self.add_custom(ResourceDownloader(datasetinfo, folder))
+        return self.add_custom(
+            ResourceDownloader(datasetinfo, folder), force_add_to_run
+        )
 
     def add_resource_downloaders(
-        self, configuration: Dict, folder: str = ""
+        self,
+        configuration: Dict,
+        folder: str = "",
+        force_add_to_run: bool = False,
     ) -> List[str]:
-        """Add multiple resource downloaders to the run
+        """Add multiple resource downloaders to the run. If running specific scrapers
+        rather than all, and you want to force the inclusion of the scraper in the run
+        regardless of the specific scrapers given, the parameter force_add_to_run should
+        be set to True.
 
         Args:
             configuration (Dict): Mapping from scraper name to information about datasets
             folder (str): Folder to which to download. Defaults to "".
+            force_add_to_run (bool): Whether to force include the scraper in the next run
 
         Returns:
             List[str]: scraper names (including suffix if set)
         """
         keys = list()
         for datasetinfo in configuration:
-            keys.append(self.add_resource_downloader(datasetinfo, folder))
+            keys.append(
+                self.add_resource_downloader(
+                    datasetinfo, folder, force_add_to_run
+                )
+            )
         return keys
 
     def prioritise_scrapers(self, scraper_names: ListTuple[str]) -> None:
