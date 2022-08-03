@@ -142,7 +142,15 @@ class RowParser:
                         self.filters, header, row.get("#country+code")
                     )
 
-    def get_filter_str_for_eval(self, filter):
+    def get_filter_str_for_eval(self, filter: str) -> str:
+        """Replace filter string variables with columns in row of data
+
+        Args:
+            filter (str): Filter string
+
+        Returns:
+            str: Filter string with variables replaced
+        """
         if self.filter_cols:
             for col in self.filter_cols:
                 filter = filter.replace(col, f"row['{col}']")
@@ -161,6 +169,7 @@ class RowParser:
 
         Args:
             iterator (Iterator[Dict]): Input data
+
         Returns:
             Iterator[Dict]: Input data with prefilter applied if specified and sorted if specified or deemed necessary
         """

@@ -2,7 +2,6 @@ from hdx.location.adminone import AdminOne
 from hdx.utilities.dateparse import parse_date
 
 from hdx.scraper.base_scraper import BaseScraper
-from hdx.scraper.configurable.aggregator import Aggregator
 from hdx.scraper.runner import Runner
 
 from .conftest import run_check_scraper, run_check_scrapers
@@ -31,6 +30,9 @@ class TestScrapersAggregation:
                 "https://data.humdata.org/organization/world-bank-group",
             )
         ]
+        source_urls = [
+            "https://data.humdata.org/organization/world-bank-group"
+        ]
         run_check_scraper(
             name,
             runner,
@@ -39,9 +41,8 @@ class TestScrapersAggregation:
             national_values,
             sources,
             population_lookup=national_values[0],
-            source_urls=[
-                "https://data.humdata.org/organization/world-bank-group"
-            ],
+            source_urls=source_urls,
+            set_not_run=False,
         )
 
         regions = ("ROAP",)
@@ -50,16 +51,15 @@ class TestScrapersAggregation:
         configuration_hxl = configuration["aggregation_hxl"]
         level = "regional"
         aggregator_configuration = configuration_hxl["aggregation_sum"]
-        scrapers = Aggregator.get_scrapers(
+        names = runner.add_aggregators(
+            True,
             aggregator_configuration,
             "national",
             level,
             adm_aggregation,
-            runner,
         )
-        scraper_names = runner.add_customs(scrapers, add_to_run=True)
         name = "population_regional"
-        assert scraper_names == [name]
+        assert names == [name]
 
         values = [{"ROAP": 92087174}]
         run_check_scraper(
@@ -70,18 +70,17 @@ class TestScrapersAggregation:
             values,
             list(),
             population_lookup=national_values[0] | values[0],
-            source_urls=list(),
+            source_urls=source_urls,
         )
 
         aggregator_configuration = configuration_hxl["aggregation_mean"]
-        scrapers = Aggregator.get_scrapers(
+        runner.add_aggregators(
+            True,
             aggregator_configuration,
             "national",
             level,
             adm_aggregation,
-            runner,
         )
-        runner.add_customs(scrapers, add_to_run=True)
 
         level = "regional"
         values = [{"ROAP": 46043587}]
@@ -93,18 +92,17 @@ class TestScrapersAggregation:
             values,
             list(),
             population_lookup=national_values[0] | values[0],
-            source_urls=list(),
+            source_urls=source_urls,
         )
 
         aggregator_configuration = configuration_hxl["aggregation_range"]
-        scrapers = Aggregator.get_scrapers(
+        runner.add_aggregators(
+            True,
             aggregator_configuration,
             "national",
             level,
             adm_aggregation,
-            runner,
         )
-        runner.add_customs(scrapers, add_to_run=True)
 
         level = "regional"
         values = [{"ROAP": "38041754-54045420"}]
@@ -115,7 +113,7 @@ class TestScrapersAggregation:
             headers,
             values,
             list(),
-            source_urls=list(),
+            source_urls=source_urls,
         )
 
         level = "national"
@@ -174,19 +172,19 @@ class TestScrapersAggregation:
             national_values,
             sources,
             source_urls=source_urls,
+            set_not_run=False,
         )
 
         level = "global"
         aggregator_configuration = configuration_hxl[f"aggregation_{level}"]
         adm_aggregation = ("AFG", "PSE")
-        scrapers = Aggregator.get_scrapers(
+        names = runner.add_aggregators(
+            True,
             aggregator_configuration,
             "national",
             level,
             adm_aggregation,
-            runner,
         )
-        names = runner.add_customs(scrapers, add_to_run=True)
         assert names == [
             f"population_{level}",
             f"affected_infected_per100000_{level}",
@@ -210,7 +208,7 @@ class TestScrapersAggregation:
             values,
             list(),
             population_lookup=national_values[0] | {"global": pop},
-            source_urls=list(),
+            source_urls=source_urls,
         )
 
     def test_get_aggregation_nohxl(self, configuration, fallbacks):
@@ -235,6 +233,9 @@ class TestScrapersAggregation:
                 "https://data.humdata.org/organization/world-bank-group",
             )
         ]
+        source_urls = [
+            "https://data.humdata.org/organization/world-bank-group"
+        ]
         run_check_scraper(
             name,
             runner,
@@ -243,26 +244,23 @@ class TestScrapersAggregation:
             national_values,
             sources,
             population_lookup=national_values[0],
-            source_urls=[
-                "https://data.humdata.org/organization/world-bank-group"
-            ],
+            source_urls=source_urls,
+            set_not_run=False,
         )
 
         adm_aggregation = {"AFG": ("ROAP",), "MMR": ("ROAP",)}
 
         level = "regional"
         aggregator_configuration = configuration_nohxl["aggregation_sum"]
-        scrapers = Aggregator.get_scrapers(
+        names = runner.add_aggregators(
+            False,
             aggregator_configuration,
             "national",
             level,
             adm_aggregation,
-            runner,
-            use_hxl=False,
         )
-        scraper_names = runner.add_customs(scrapers, add_to_run=True)
         name = "population_regional"
-        assert scraper_names == [name]
+        assert names == [name]
 
         values = [{"ROAP": 92087174}]
         run_check_scraper(
@@ -273,19 +271,17 @@ class TestScrapersAggregation:
             values,
             list(),
             population_lookup=national_values[0] | values[0],
-            source_urls=list(),
+            source_urls=source_urls,
         )
 
         aggregator_configuration = configuration_nohxl["aggregation_mean"]
-        scrapers = Aggregator.get_scrapers(
+        runner.add_aggregators(
+            False,
             aggregator_configuration,
             "national",
             level,
             adm_aggregation,
-            runner,
-            use_hxl=False,
         )
-        runner.add_customs(scrapers, add_to_run=True)
 
         level = "regional"
         values = [{"ROAP": 46043587}]
@@ -297,19 +293,17 @@ class TestScrapersAggregation:
             values,
             list(),
             population_lookup=national_values[0] | values[0],
-            source_urls=list(),
+            source_urls=source_urls,
         )
 
         aggregator_configuration = configuration_nohxl["aggregation_range"]
-        scrapers = Aggregator.get_scrapers(
+        runner.add_aggregators(
+            False,
             aggregator_configuration,
             "national",
             level,
             adm_aggregation,
-            runner,
-            use_hxl=False,
         )
-        runner.add_customs(scrapers, add_to_run=True)
 
         level = "regional"
         values = [{"ROAP": "38041754-54045420"}]
@@ -320,7 +314,7 @@ class TestScrapersAggregation:
             headers,
             values,
             list(),
-            source_urls=list(),
+            source_urls=source_urls,
         )
 
         level = "national"
@@ -385,15 +379,13 @@ class TestScrapersAggregation:
         level = "regional"
         aggregator_configuration = configuration_nohxl["aggregation_global"]
         adm_aggregation = ("AFG", "PSE")
-        scrapers = Aggregator.get_scrapers(
+        names = runner.add_aggregators(
+            False,
             aggregator_configuration,
             "national",
             level,
             adm_aggregation,
-            runner,
-            use_hxl=False,
         )
-        names = runner.add_customs(scrapers, add_to_run=True)
         assert names == [
             f"population_{level}",
             f"casesper100000_{level}",

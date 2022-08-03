@@ -1,21 +1,47 @@
 import logging
 from datetime import datetime
+from typing import Dict
 
 from hdx.utilities.dateparse import parse_date
 
 from ..base_scraper import BaseScraper
+from ..outputs.base import BaseOutput
 
 logger = logging.getLogger(__name__)
 
 
 class TimeSeries(BaseScraper):
-    def __init__(self, name, datasetinfo, today, outputs):
+    """Each time series scraper is configured from dataset information that can come
+    from a YAML file for example. When run, it populates the given outputs with
+    time series data. It also overrides add_sources where sources are compiled and
+    returned.
+
+    Args:
+        name (str): Name of scraper
+        datasetinfo (Dict): Information about dataset
+        today (datetime): Value to use for today. Defaults to datetime.now().
+        outputs (Dict[str, BaseOutput]): Mapping from names to output objects
+    """
+
+    def __init__(
+        self,
+        name: str,
+        datasetinfo: Dict,
+        today,
+        outputs: Dict[str, BaseOutput],
+    ):
         # Time series only outputs to separate tabs
         super().__init__(f"timeseries_{name}", datasetinfo, dict())
         self.today = today
         self.outputs = outputs
 
-    def run(self):
+    def run(self) -> None:
+        """Runs one time series scraper given dataset information and outputs to
+        whatever outputs were specified in the constructor
+
+        Returns:
+            None
+        """
         input = self.datasetinfo["input"]
         datecol = self.datasetinfo["date"]
         datetype = self.datasetinfo["date_type"]
@@ -51,13 +77,11 @@ class TimeSeries(BaseScraper):
         for output in self.outputs.values():
             output.update_tab(self.name, rows)
 
-    def add_sources(self):
+    def add_sources(self) -> None:
+        """Add source for each HXL hashtag
+
+        Returns:
+            None
+        """
         for hxltag in self.datasetinfo["output_hxl"]:
             self.add_hxltag_source(self.name, hxltag)
-
-    @classmethod
-    def get_scrapers(cls, configuration, today, outputs):
-        scrapers = list()
-        for name, datasetinfo in configuration.items():
-            scrapers.append(cls(name, datasetinfo, today, outputs))
-        return scrapers

@@ -30,7 +30,7 @@ class BaseScraper(ABC):
 
         Args:
             name (str): Name of scraper
-            headers: Dict[str, Tuple]: Headers to be oytput at each level_name
+            headers (Dict[str, Tuple]): Headers to be output at each level_name
 
         Returns:
              None
@@ -41,6 +41,7 @@ class BaseScraper(ABC):
         self.has_run = False
         self.fallbacks_used = False
         self.source_urls = set()
+        self.population_key = None
 
     def initialise_values_sources(self) -> None:
         """
@@ -210,7 +211,12 @@ class BaseScraper(ABC):
             if population_index is not None:
                 values = self.values[level][population_index]
                 if len(values) == 1 and "value" in values:
-                    values = ((level, values["value"]),)
+                    values = (
+                        (
+                            self.datasetinfo.get("population_key") or level,
+                            values["value"],
+                        ),
+                    )
                 else:
                     values = values.items()
                 for key, value in values:

@@ -2,7 +2,6 @@ from hdx.location.adminone import AdminOne
 from hdx.utilities.dateparse import parse_date
 
 from hdx.scraper.base_scraper import BaseScraper
-from hdx.scraper.configurable.aggregator import Aggregator
 from hdx.scraper.runner import Runner
 
 from .conftest import run_check_scrapers
@@ -83,14 +82,13 @@ class TestRunnerGetResults:
         configuration_hxl = configuration["aggregation_hxl"]
         aggregator_configuration = configuration_hxl[f"aggregation_{level}"]
         adm_aggregation = ("AFG", "PSE")
-        scrapers = Aggregator.get_scrapers(
+        names = runner.add_aggregators(
+            True,
             aggregator_configuration,
             "national",
             level,
             adm_aggregation,
-            runner,
         )
-        names = runner.add_customs(scrapers, add_to_run=True)
         assert names == [
             f"population_{level}",
             f"affected_infected_per100000_{level}",
@@ -120,14 +118,13 @@ class TestRunnerGetResults:
 
         regions = ("ROAP",)
         aggregator_configuration = configuration_hxl["aggregation_sum"]
-        scrapers = Aggregator.get_scrapers(
+        regional_names = runner.add_aggregators(
+            True,
             aggregator_configuration,
             "national",
             "regional",
             {"AFG": regions, "PSE": ("somewhere",)},
-            runner,
         )
-        regional_names = runner.add_customs(scrapers, add_to_run=True)
         runner.run(regional_names)
         results = runner.get_results()
         assert results == {

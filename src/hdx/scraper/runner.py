@@ -1,13 +1,17 @@
 import logging
 from datetime import datetime
-from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple
+from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple, Union
 
 from hdx.location.adminone import AdminOne
 from hdx.utilities.errors_onexit import ErrorsOnExit
 from hdx.utilities.typehint import ListTuple
 
 from .base_scraper import BaseScraper
+from .configurable.aggregator import Aggregator
+from .configurable.resource_downloader import ResourceDownloader
 from .configurable.scraper import ConfigurableScraper
+from .configurable.timeseries import TimeSeries
+from .outputs.base import BaseOutput
 from .utilities import get_isodate_from_dataset_date
 from .utilities.fallbacks import Fallbacks
 from .utilities.reader import Read
@@ -140,7 +144,7 @@ class Runner:
             suffix (Optional[str]): Suffix to add to the scraper name
 
         Returns:
-            str: scraper name (including suffix if set)
+            List[str]: scraper names (including suffix if set)
         """
         keys = list()
         for name in configuration:
@@ -150,6 +154,208 @@ class Runner:
                     name, datasetinfo, level, level_name, suffix
                 )
             )
+        return keys
+
+    def add_timeseries_scraper(
+        self, name: str, datasetinfo: Dict, outputs: Dict[str, BaseOutput]
+    ) -> str:
+        """Add time series scraper to the run
+
+        Args:
+            name (str): Name of scraper
+            datasetinfo (Dict): Information about dataset
+            outputs (Dict[str, BaseOutput]): Mapping from names to output objects
+
+        Returns:
+            str: scraper name (including suffix if set)
+        """
+        return self.add_custom(
+            TimeSeries(name, datasetinfo, self.today, outputs)
+        )
+
+    def add_timeseries_scrapers(
+        self, configuration: Dict, outputs: Dict[str, BaseOutput]
+    ) -> List[str]:
+        """Add multiple time series scrapers to the run
+
+        Args:
+            configuration (Dict): Mapping from scraper name to information about datasets
+            outputs (Dict[str, BaseOutput]): Mapping from names to output objects
+
+        Returns:
+            List[str]: scraper names (including suffix if set)
+        """
+        keys = list()
+        for name, datasetinfo in configuration.items():
+            keys.append(
+                self.add_timeseries_scraper(name, datasetinfo, outputs)
+            )
+        return keys
+
+    def create_aggregator(
+        self,
+        use_hxl: bool,
+        header_or_hxltag: str,
+        datasetinfo: Dict,
+        input_level: str,
+        output_level: str,
+        adm_aggregation: Union[Dict, List],
+        names: Optional[ListTuple[str]] = None,
+        overrides: Dict[str, Dict] = dict(),
+        aggregation_scrapers: List["Aggregator"] = list(),
+    ) -> Optional["Aggregator"]:
+        """Create aggregator
+
+        Args:
+            use_hxl (bool): Whether keys should be HXL hashtags or column headers
+            header_or_hxltag (str): Column header or HXL hashtag depending on use_hxl
+            datasetinfo (Dict): Information about dataset
+            input_level (str): Input level to aggregate like national or subnational
+            output_level (str): Output level of aggregated data like regional
+            adm_aggregation (Union[Dict, List]): Mapping from input admins to aggregated output admins
+            names (Optional[ListTuple[str]]): Names of scrapers. Defaults to None.
+            overrides (Dict[str, Dict]): Dictionary mapping scrapers to level mappings. Defaults to dict().
+            aggregation_scrapers (List["Aggregator"]): Other aggregations needed. Defaults to list().
+
+        Returns:
+            Optional["Aggregator"]: scraper or None
+        """
+        input_headers, input_values = self.get_values_by_header(
+            input_level, names, overrides, use_hxl
+        )
+        if not input_headers:
+            return None
+        return Aggregator.get_scraper(
+            use_hxl,
+            header_or_hxltag,
+            datasetinfo,
+            input_level,
+            output_level,
+            adm_aggregation,
+            input_headers,
+            input_values,
+            aggregation_scrapers,
+        )
+
+    def add_aggregator(
+        self,
+        use_hxl: bool,
+        header_or_hxltag: str,
+        datasetinfo: Dict,
+        input_level: str,
+        output_level: str,
+        adm_aggregation: Union[Dict, List],
+        names: Optional[ListTuple[str]] = None,
+        overrides: Dict[str, Dict] = dict(),
+        aggregation_scrapers: List["Aggregator"] = list(),
+    ) -> Optional[str]:
+        """Add aggregator to the run. The mapping from input admins to aggregated output
+        admins adm_aggregation is of form: {"AFG": ("ROAP",), "MMR": ("ROAP",)}. If the
+        mapping is to the top level, then it is a list of input admins like:
+        ("AFG", "MMR").
+
+        Args:
+            use_hxl (bool): Whether keys should be HXL hashtags or column headers
+            header_or_hxltag (str): Column header or HXL hashtag depending on use_hxl
+            datasetinfo (Dict): Information about dataset
+            input_level (str): Input level to aggregate like national or subnational
+            output_level (str): Output level of aggregated data like regional
+            adm_aggregation (Union[Dict, List]): Mapping from input admins to aggregated output admins
+            names (Optional[ListTuple[str]]): Names of scrapers. Defaults to None.
+            overrides (Dict[str, Dict]): Dictionary mapping scrapers to level mappings. Defaults to dict().
+            aggregation_scrapers (List["Aggregator"]): Other aggregations needed. Defaults to list().
+
+        Returns:
+            Optional[str]: scraper name (including suffix if set) or None
+        """
+        scraper = self.create_aggregator(
+            use_hxl,
+            header_or_hxltag,
+            datasetinfo,
+            input_level,
+            output_level,
+            adm_aggregation,
+            names,
+            overrides,
+            aggregation_scrapers,
+        )
+        if not scraper:
+            return None
+        return self.add_custom(scraper)
+
+    def add_aggregators(
+        self,
+        use_hxl: bool,
+        configuration: Dict,
+        input_level: str,
+        output_level: str,
+        adm_aggregation: Union[Dict, ListTuple],
+        names: Optional[ListTuple[str]] = None,
+        overrides: Dict[str, Dict] = dict(),
+    ) -> List[str]:
+        """Add multiple aggregators to the run. The mapping from input admins to
+        aggregated output admins adm_aggregation is of form:
+        {"AFG": ("ROAP",), "MMR": ("ROAP",)}. If the mapping is to the top level, then
+        it is a list of input admins like: ("AFG", "MMR").
+
+        Args:
+            use_hxl (bool): Whether keys should be HXL hashtags or column headers
+            configuration (Dict): Mapping from scraper name to information about datasets
+            input_level (str): Input level to aggregate like national or subnational
+            output_level (str): Output level of aggregated data like regional
+            adm_aggregation (Union[Dict, ListTuple]): Mapping from input admins to aggregated output admins
+            names (Optional[ListTuple[str]]): Names of scrapers
+            overrides (Dict[str, Dict]): Dictionary mapping scrapers to level mappings. Defaults to dict().
+
+        Returns:
+            List[str]: scraper names (including suffix if set)
+        """
+        scrapers = list()
+        for header_or_hxltag, datasetinfo in configuration.items():
+            scraper = self.create_aggregator(
+                use_hxl,
+                header_or_hxltag,
+                datasetinfo,
+                input_level,
+                output_level,
+                adm_aggregation,
+                names,
+                overrides,
+                scrapers,
+            )
+            if scraper:
+                scrapers.append(scraper)
+        return self.add_customs(scrapers)
+
+    def add_resource_downloader(
+        self, datasetinfo: Dict, folder: str = ""
+    ) -> str:
+        """Add resource downloader to the run
+
+        Args:
+            datasetinfo (Dict): Information about dataset
+            folder (str): Folder to which to download. Defaults to "".
+
+        Returns:
+            str: scraper name (including suffix if set)
+        """
+        return self.add_custom(ResourceDownloader(datasetinfo, folder))
+
+    def add_resource_downloaders(
+        self, configuration: Dict, folder: str = ""
+    ) -> List[str]:
+        """Add multiple resource downloaders to the run
+
+        Args:
+            configuration (Dict): Mapping from scraper name to information about datasets
+            folder (str): Folder to which to download. Defaults to "".
+
+        Returns:
+            List[str]: scraper names (including suffix if set)
+        """
+        keys = list()
+        for datasetinfo in configuration:
+            keys.append(self.add_resource_downloader(datasetinfo, folder))
         return keys
 
     def prioritise_scrapers(self, scraper_names: ListTuple[str]) -> None:
@@ -477,14 +683,14 @@ class Runner:
         names: Optional[ListTuple[str]] = None,
         overrides: Dict[str, Dict] = dict(),
     ) -> List[List]:
-        """Get rows for a given level limiting to those in names if given. Rows include
-        header row, HXL hashtag row and value rows, one for each admin unit specified
-        in the adms parameter. Additional columns can be included by specifying headers
-        and row_fns. Headers are of the form (list of headers, list of HXL hashtags).
-        row_fns are functions that accept an admin unit and return a string. Sometimes
-        it may be necessary to map alternative level names to levels and this can be
-        done using overrides. It is a dictionary with keys being scraper names and
-        values being dictionaries which map level names to output levels.
+        """Get rows for a given level for scrapers limiting to those in names if given.
+        Rows include header row, HXL hashtag row and value rows, one for each admin unit
+        specified in the adms parameter. Additional columns can be included by specifying
+        headers and row_fns. Headers are of the form (list of headers, list of HXL
+        hashtags). row_fns are functions that accept an admin unit and return a string.
+        Sometimes it may be necessary to map alternative level names to levels and this
+        can be done using overrides. It is a dictionary with keys being scraper names
+        and values being dictionaries which map level names to output levels.
 
         Args:
             level (str): Level to get like national, subnational or single
@@ -515,17 +721,56 @@ class Runner:
                 rows.append(row)
         return rows
 
+    def get_values_by_header(
+        self,
+        level: str,
+        names: Optional[ListTuple[str]] = None,
+        overrides: Dict[str, Dict] = dict(),
+        use_hxl: bool = False,
+    ) -> Tuple[Tuple, Dict]:
+        """Get mapping from headers to values for a given level for scrapers limiting
+        to those in names if given. Keys will be headers if use_hxl is False or HXL
+        hashtags if use_hxl is True. Sometimes it may be necessary to map alternative
+        level names to levels and this can be done using overrides. It is a dictionary
+        with keys being scraper names and values being dictionaries which map level
+        names to output levels.
+
+        Args:
+            level (str): Level to get like national, subnational or single
+            names (Optional[ListTuple[str]]): Names of scrapers
+            overrides (Dict[str, Dict]): Dictionary mapping scrapers to level mappings. Defaults to dict().
+            use_hxl (bool): Whether keys should be HXL hashtags or column headers. Defaults to False.
+
+        Returns:
+            Tuple[Tuple, Dict]: Tuple of (results headers, mapping from headers to values)
+        """
+        results = self.get_results(names, [level], overrides=overrides).get(
+            level
+        )
+        headers = None
+        values = dict()
+        if results:
+            if use_hxl:
+                main_index = 1
+            else:
+                main_index = 0
+            headers = results["headers"]
+            vals = results["values"]
+            for index, header_or_hxltag in enumerate(headers[main_index]):
+                values[header_or_hxltag] = vals[index]
+        return headers, values
+
     def get_sources(
         self,
         names: Optional[ListTuple[str]] = None,
         levels: Optional[Iterable[str]] = None,
         additional_sources: ListTuple[str] = tuple(),
     ) -> List[Tuple]:
-        """Get sources limiting to those in names if given. All levels will be obtained
-        unless the levels parameter (which can contain levels like national, subnational
-        or single) is passed. Additional sources can be added. Each is a dictionary
-        with indicator (specified with HXL hash tag), dataset or source and source_url
-        as well as the source_date or whether to force_date_today.
+        """Get sources for scrapers limiting to those in names if given. All levels will
+        be obtained unless the levels parameter (which can contain levels like national,
+        subnational or single) is passed. Additional sources can be added. Each is a
+        dictionary with indicator (specified with HXL hash tag), dataset or source and
+        source_url as well as the source_date or whether to force_date_today.
 
         Args:
             names (Optional[ListTuple[str]]): Names of scrapers
@@ -583,7 +828,7 @@ class Runner:
     def get_source_urls(
         self, names: Optional[ListTuple[str]] = None
     ) -> List[str]:
-        """Get source urls limiting to those in names if given.
+        """Get source urls for scrapers limiting to those in names if given.
 
         Args:
             names (Optional[ListTuple[str]]): Names of scrapers
