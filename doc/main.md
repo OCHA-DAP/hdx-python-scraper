@@ -866,10 +866,15 @@ defined in the subset not at the top level.
           - "#capacity+doses+administered+coverage+pct"
 
 If columns need to be summed and the latest date chosen overall not per admin unit, then 
-we can specify `single_maxdate` as shown below:
+we can specify `single_maxdate` as shown below. Also in this example, the source
+information for CBPF is taken from a different dataset to CERF even though the data url
+remains the same:
 
       cerf_global:
-        dataset: "cerf-covid-19-allocations"
+        dataset:
+          "#value+cbpf+funding+total+usd": "cbpf-allocations-and-contributions"
+          ...
+          default_dataset: "cerf-covid-19-allocations"
         url: "tests/fixtures/full_pfmb_allocations.csv"
         format: "csv"
         force_date_today: True

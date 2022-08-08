@@ -6,7 +6,6 @@ from hdx.utilities.dateparse import parse_date
 
 from hdx.scraper.base_scraper import BaseScraper
 from hdx.scraper.runner import Runner
-from hdx.scraper.utilities.reader import Read
 
 from .conftest import run_check_scraper
 
