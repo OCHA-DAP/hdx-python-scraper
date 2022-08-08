@@ -309,37 +309,87 @@ class Read(Retrieve):
         Returns:
             Optional[Resource]: The resource if a url was not given
         """
-        dataset_name = datasetinfo["dataset"]
-        dataset = self.read_dataset(dataset_name)
-        resource = None
-        url = datasetinfo.get("url")
-        if not url:
-            resource_name = datasetinfo.get("resource")
-            format = datasetinfo["format"].lower()
-            for resource in dataset.get_resources():
-                if resource["format"].lower() == format:
-                    if resource_name and resource["name"] != resource_name:
-                        continue
-                    url = resource["url"]
-                    break
+        dataset_nameinfo = datasetinfo["dataset"]
+        source_date = datasetinfo.get("source_date")
+        if source_date:
+            if isinstance(source_date, str):
+                datasetinfo["source_date"] = parse_date(source_date)
+            elif isinstance(source_date, dict):
+                for key, value in source_date.items():
+                    if isinstance(value, str):
+                        source_date[key] = parse_date(value)
+        if isinstance(dataset_nameinfo, str):
+            dataset = self.read_dataset(dataset_nameinfo)
+            resource = None
+            url = datasetinfo.get("url")
             if not url:
-                raise ValueError(
-                    f"Cannot find {format} resource in {dataset_name}!"
+                resource_name = datasetinfo.get("resource")
+                format = datasetinfo["format"].lower()
+                for resource in dataset.get_resources():
+                    if resource["format"].lower() == format:
+                        if resource_name and resource["name"] != resource_name:
+                            continue
+                        url = resource["url"]
+                        break
+                if not url:
+                    raise ValueError(
+                        f"Cannot find {format} resource in {dataset_nameinfo}!"
+                    )
+                datasetinfo["url"] = url
+            if "source_date" not in datasetinfo:
+                datasetinfo["source_date"] = get_date_from_dataset_date(
+                    dataset, today=self.today
                 )
-            datasetinfo["url"] = url
-        date = datasetinfo.get("source_date")
-        if date:
-            if isinstance(date, str):
-                datasetinfo["source_date"] = parse_date(date)
+            if "source" not in datasetinfo:
+                datasetinfo["source"] = dataset["dataset_source"]
+            if "source_url" not in datasetinfo:
+                datasetinfo["source_url"] = dataset.get_hdx_url()
+            return resource
+        if "source_date" not in datasetinfo:
+            source_date = dict()
         else:
-            datasetinfo["source_date"] = get_date_from_dataset_date(
-                dataset, today=self.today
-            )
+            source_date = None
         if "source" not in datasetinfo:
-            datasetinfo["source"] = dataset["dataset_source"]
+            source = dict()
+        else:
+            source = None
         if "source_url" not in datasetinfo:
-            datasetinfo["source_url"] = dataset.get_hdx_url()
-        return resource
+            source_url = dict()
+        else:
+            source_url = None
+        datasets = dict()
+        for hxltag, dataset_name in dataset_nameinfo.items():
+            dataset = datasets.get(dataset_name)
+            if not dataset:
+                dataset = self.read_dataset(dataset_name)
+                datasets[dataset_name] = dataset
+            if source_date is not None:
+                if hxltag == "default_dataset":
+                    key = "default_date"
+                else:
+                    key = hxltag
+                source_date[key] = get_date_from_dataset_date(
+                    dataset, today=self.today
+                )
+            if source is not None:
+                if hxltag == "default_dataset":
+                    key = "default_source"
+                else:
+                    key = hxltag
+                source[key] = dataset["dataset_source"]
+            if source_url is not None:
+                if hxltag == "default_dataset":
+                    key = "default_url"
+                else:
+                    key = hxltag
+                source_url[key] = dataset.get_hdx_url()
+        if source_date is not None:
+            datasetinfo["source_date"] = source_date
+        if source is not None:
+            datasetinfo["source"] = source
+        if source_url is not None:
+            datasetinfo["source_url"] = source_url
+        return None
 
     def read_hdx(
         self,

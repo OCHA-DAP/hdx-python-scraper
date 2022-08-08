@@ -455,18 +455,26 @@ class ConfigurableScraper(BaseScraper):
         header_to_hxltag = self.use_hxl(None, file_headers, iterator)
         if "source_url" not in self.datasetinfo:
             self.datasetinfo["source_url"] = self.datasetinfo["url"]
-        date = self.datasetinfo.get("source_date")
-        if date:
-            if isinstance(date, str):
-                self.datasetinfo["source_date"] = parse_date(date)
-        if not date or self.datasetinfo.get("force_date_today", False):
-            self.datasetinfo["source_date"] = self.today
+        source_date = self.datasetinfo.get("source_date")
+        if source_date:
+            if isinstance(source_date, str):
+                source_date = parse_date(source_date)
+                self.datasetinfo["source_date"] = source_date
+            elif isinstance(source_date, dict):
+                for key, value in source_date.items():
+                    if isinstance(value, str):
+                        source_date[key] = parse_date(value)
+                source_date = source_date["default_date"]
+        if not source_date or self.datasetinfo.get("force_date_today", False):
+            source_date = self.today
+            self.datasetinfo["source_date"] = source_date
         self.rowparser = RowParser(
             self.name,
             self.countryiso3s,
             self.adminone,
             self.level,
             self.datelevel,
+            source_date,
             self.datasetinfo,
             file_headers,
             header_to_hxltag,

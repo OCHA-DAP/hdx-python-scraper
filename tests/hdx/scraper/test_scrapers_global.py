@@ -6,6 +6,7 @@ from hdx.utilities.dateparse import parse_date
 
 from hdx.scraper.base_scraper import BaseScraper
 from hdx.scraper.runner import Runner
+from hdx.scraper.utilities.reader import Read
 
 from .conftest import run_check_scraper
 
@@ -64,6 +65,7 @@ class TestScraperGlobal:
             "ourworldindata",
             "cerf_global",
             "broken_cerf_url",
+            "cerf2_global",
         ]
 
         name = "covax"
@@ -207,86 +209,86 @@ class TestScraperGlobal:
         sources = [
             (
                 "#value+cbpf+funding+total+usd",
-                "2020-10-01",
-                "CERF and CBPF",
-                "https://data.humdata.org/dataset/cerf-covid-19-allocations",
+                "2020-09-29",
+                "CBPF",
+                "https://data.humdata.org/dataset/cbpf-allocations-and-contributions",
             ),
             (
                 "#value+cbpf+funding+gmempty+total+usd",
-                "2020-10-01",
-                "CERF and CBPF",
-                "https://data.humdata.org/dataset/cerf-covid-19-allocations",
+                "2020-09-29",
+                "CBPF",
+                "https://data.humdata.org/dataset/cbpf-allocations-and-contributions",
             ),
             (
                 "#value+cbpf+funding+gm0+total+usd",
-                "2020-10-01",
-                "CERF and CBPF",
-                "https://data.humdata.org/dataset/cerf-covid-19-allocations",
+                "2020-09-29",
+                "CBPF",
+                "https://data.humdata.org/dataset/cbpf-allocations-and-contributions",
             ),
             (
                 "#value+cbpf+funding+gm1+total+usd",
-                "2020-10-01",
-                "CERF and CBPF",
-                "https://data.humdata.org/dataset/cerf-covid-19-allocations",
+                "2020-09-29",
+                "CBPF",
+                "https://data.humdata.org/dataset/cbpf-allocations-and-contributions",
             ),
             (
                 "#value+cbpf+funding+gm2+total+usd",
-                "2020-10-01",
-                "CERF and CBPF",
-                "https://data.humdata.org/dataset/cerf-covid-19-allocations",
+                "2020-09-29",
+                "CBPF",
+                "https://data.humdata.org/dataset/cbpf-allocations-and-contributions",
             ),
             (
                 "#value+cbpf+funding+gm3+total+usd",
-                "2020-10-01",
-                "CERF and CBPF",
-                "https://data.humdata.org/dataset/cerf-covid-19-allocations",
+                "2020-09-29",
+                "CBPF",
+                "https://data.humdata.org/dataset/cbpf-allocations-and-contributions",
             ),
             (
                 "#value+cbpf+funding+gm4+total+usd",
-                "2020-10-01",
-                "CERF and CBPF",
-                "https://data.humdata.org/dataset/cerf-covid-19-allocations",
+                "2020-09-29",
+                "CBPF",
+                "https://data.humdata.org/dataset/cbpf-allocations-and-contributions",
             ),
             (
                 "#value+cerf+funding+total+usd",
-                "2020-10-01",
-                "CERF and CBPF",
+                "2020-09-30",
+                "CERF",
                 "https://data.humdata.org/dataset/cerf-covid-19-allocations",
             ),
             (
                 "#value+cerf+funding+gmempty+total+usd",
-                "2020-10-01",
-                "CERF and CBPF",
+                "2020-09-30",
+                "CERF",
                 "https://data.humdata.org/dataset/cerf-covid-19-allocations",
             ),
             (
                 "#value+cerf+funding+gm0+total+usd",
-                "2020-10-01",
-                "CERF and CBPF",
+                "2020-09-30",
+                "CERF",
                 "https://data.humdata.org/dataset/cerf-covid-19-allocations",
             ),
             (
                 "#value+cerf+funding+gm1+total+usd",
-                "2020-10-01",
-                "CERF and CBPF",
+                "2020-09-30",
+                "CERF",
                 "https://data.humdata.org/dataset/cerf-covid-19-allocations",
             ),
             (
                 "#value+cerf+funding+gm2+total+usd",
-                "2020-10-01",
-                "CERF and CBPF",
+                "2020-09-30",
+                "CERF",
                 "https://data.humdata.org/dataset/cerf-covid-19-allocations",
             ),
             (
                 "#value+cerf+funding+gm3+total+usd",
-                "2020-10-01",
-                "CERF and CBPF",
+                "2020-09-30",
+                "CERF",
                 "https://data.humdata.org/dataset/cerf-covid-19-allocations",
             ),
             (
                 "#value+cerf+funding+gm4+total+usd",
-                "2020-10-01",
-                "CERF and CBPF",
+                "2020-09-30",
+                "CERF",
                 "https://data.humdata.org/dataset/cerf-covid-19-allocations",
             ),
         ]
@@ -309,7 +311,7 @@ class TestScraperGlobal:
         run_check_scraper(name, runner, level_name, headers, values, sources)
 
     def test_get_global_2021(
-        self, cerf_headers, caplog, configuration, fallbacks
+        self, cerf_headers, caplog, configuration, fallbacks, fixtures
     ):
         BaseScraper.population_lookup = dict()
         today = parse_date("2021-05-03")
@@ -319,107 +321,26 @@ class TestScraperGlobal:
         scraper_configuration = configuration[f"scraper_{level_name}"]
         runner = Runner(configuration["HRPs"], adminone, today)
         runner.add_configurables(scraper_configuration, level, level_name)
-        name = "cerf_global"
-        headers = cerf_headers
+        name = "cerf2_global"
+        headers = (
+            [cerf_headers[0][0], cerf_headers[0][7]],
+            [cerf_headers[1][0], cerf_headers[1][7]],
+        )
         values = [
             {"value": 7811774.670000001},
-            {"value": 7811774.670000001},
-            {},
-            {},
-            {},
-            {},
-            {},
             {"value": 89298919.0},
-            {"value": 6747034.0},
-            {},
-            {"value": 2549855.0},
-            {"value": 10552572.0},
-            {"value": 26098816.0},
-            {"value": 43350642.0},
         ]
         sources = [
             (
                 "#value+cbpf+funding+total+usd",
-                "2021-05-03",
-                "CERF and CBPF",
-                "https://data.humdata.org/dataset/cerf-covid-19-allocations",
-            ),
-            (
-                "#value+cbpf+funding+gmempty+total+usd",
-                "2021-05-03",
-                "CERF and CBPF",
-                "https://data.humdata.org/dataset/cerf-covid-19-allocations",
-            ),
-            (
-                "#value+cbpf+funding+gm0+total+usd",
-                "2021-05-03",
-                "CERF and CBPF",
-                "https://data.humdata.org/dataset/cerf-covid-19-allocations",
-            ),
-            (
-                "#value+cbpf+funding+gm1+total+usd",
-                "2021-05-03",
-                "CERF and CBPF",
-                "https://data.humdata.org/dataset/cerf-covid-19-allocations",
-            ),
-            (
-                "#value+cbpf+funding+gm2+total+usd",
-                "2021-05-03",
-                "CERF and CBPF",
-                "https://data.humdata.org/dataset/cerf-covid-19-allocations",
-            ),
-            (
-                "#value+cbpf+funding+gm3+total+usd",
-                "2021-05-03",
-                "CERF and CBPF",
-                "https://data.humdata.org/dataset/cerf-covid-19-allocations",
-            ),
-            (
-                "#value+cbpf+funding+gm4+total+usd",
-                "2021-05-03",
-                "CERF and CBPF",
-                "https://data.humdata.org/dataset/cerf-covid-19-allocations",
+                "2021-05-02",
+                "CBPF",
+                "https://data.humdata.org/dataset/cbpf-allocations-and-contributions",
             ),
             (
                 "#value+cerf+funding+total+usd",
-                "2021-05-03",
-                "CERF and CBPF",
-                "https://data.humdata.org/dataset/cerf-covid-19-allocations",
-            ),
-            (
-                "#value+cerf+funding+gmempty+total+usd",
-                "2021-05-03",
-                "CERF and CBPF",
-                "https://data.humdata.org/dataset/cerf-covid-19-allocations",
-            ),
-            (
-                "#value+cerf+funding+gm0+total+usd",
-                "2021-05-03",
-                "CERF and CBPF",
-                "https://data.humdata.org/dataset/cerf-covid-19-allocations",
-            ),
-            (
-                "#value+cerf+funding+gm1+total+usd",
-                "2021-05-03",
-                "CERF and CBPF",
-                "https://data.humdata.org/dataset/cerf-covid-19-allocations",
-            ),
-            (
-                "#value+cerf+funding+gm2+total+usd",
-                "2021-05-03",
-                "CERF and CBPF",
-                "https://data.humdata.org/dataset/cerf-covid-19-allocations",
-            ),
-            (
-                "#value+cerf+funding+gm3+total+usd",
-                "2021-05-03",
-                "CERF and CBPF",
-                "https://data.humdata.org/dataset/cerf-covid-19-allocations",
-            ),
-            (
-                "#value+cerf+funding+gm4+total+usd",
-                "2021-05-03",
-                "CERF and CBPF",
+                "2021-05-01",
+                "CERF",
                 "https://data.humdata.org/dataset/cerf-covid-19-allocations",
             ),
         ]

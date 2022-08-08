@@ -24,6 +24,7 @@ class RowParser:
         adminone (AdminOne): AdminOne object from HDX Python Country library that handles processing of admin level_type 1
         level (str): Can be national, subnational or single
         datelevel (str): Can be global, regional, national, subnational
+        source_date (datetime): Source date
         datasetinfo (Dict): Dictionary of information about dataset
         headers (List[str]): Row headers
         header_to_hxltag (Optional[Dict[str, str]]): Mapping from headers to HXL hashtags or None
@@ -38,6 +39,7 @@ class RowParser:
         adminone: AdminOne,
         level: str,
         datelevel: str,
+        source_date: datetime,
         datasetinfo: Dict,
         headers: List[str],
         header_to_hxltag: Optional[Dict[str, str]],
@@ -64,7 +66,7 @@ class RowParser:
         self.name = name
         self.level = get_level(level)
         self.datelevel = get_level(datelevel)
-        self.today = datasetinfo["source_date"]
+        self.source_date = source_date
         self.sort = datasetinfo.get("sort")
         self.stop_row = datasetinfo.get("stop_row")
         self.datecol = datasetinfo.get("date")
@@ -340,11 +342,11 @@ class RowParser:
                 if not isinstance(date, datetime):
                     date = parse_date(date)
                 date = date.replace(tzinfo=None)
-                if date > self.today and self.ignore_future_date:
+                if date > self.source_date and self.ignore_future_date:
                     return None, None
             elif self.datetype == "year":
                 date = int(date)
-                if date > self.today.year and self.ignore_future_date:
+                if date > self.source_date.year and self.ignore_future_date:
                     return None, None
             else:
                 date = int(date)

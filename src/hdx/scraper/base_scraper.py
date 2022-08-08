@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from copy import deepcopy
+from datetime import datetime
 from typing import Dict, List, Optional, Set, Tuple
 
 from .utilities.reader import Read
@@ -122,14 +123,16 @@ class BaseScraper(ABC):
         source_url = self.datasetinfo["source_url"]
         if isinstance(source_url, str):
             source_url = {"default_url": source_url}
-
-        date = self.datasetinfo["source_date"].strftime("%Y-%m-%d")
-
+        date = self.datasetinfo["source_date"]
+        if isinstance(date, datetime):
+            date = {"default_date": date}
         for level in self.headers:
             self.sources[level] = [
                 (
                     hxltag,
-                    date,
+                    date.get(hxltag, date["default_date"]).strftime(
+                        "%Y-%m-%d"
+                    ),
                     source.get(hxltag, source["default_source"]),
                     source_url.get(hxltag, source_url["default_url"]),
                 )

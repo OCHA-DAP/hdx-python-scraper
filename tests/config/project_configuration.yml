@@ -388,10 +388,17 @@ scraper_global:
     output_hxl:
       - "#capacity+doses+administered+total"
   cerf_global:
-    dataset: "cerf-covid-19-allocations"
+    dataset:
+      "#value+cbpf+funding+total+usd": "cbpf-allocations-and-contributions"
+      "#value+cbpf+funding+gmempty+total+usd": "cbpf-allocations-and-contributions"
+      "#value+cbpf+funding+gm0+total+usd": "cbpf-allocations-and-contributions"
+      "#value+cbpf+funding+gm1+total+usd": "cbpf-allocations-and-contributions"
+      "#value+cbpf+funding+gm2+total+usd": "cbpf-allocations-and-contributions"
+      "#value+cbpf+funding+gm3+total+usd": "cbpf-allocations-and-contributions"
+      "#value+cbpf+funding+gm4+total+usd": "cbpf-allocations-and-contributions"
+      default_dataset: "cerf-covid-19-allocations"
     url: "https://cbpfgms.github.io/pfbi-data/download/full_pfmb_allocations.csv"
     format: "csv"
-    force_date_today: True
     date: "AllocationYear"
     date_type: "year"
     single_maxdate: True
@@ -748,6 +755,43 @@ scraper_global:
           - "CERFFundingGM4"
         output_hxl:
           - "#value+cerf+funding+gm4+total+usd"
+  cerf2_global:
+    dataset:
+      "#value+cbpf+funding+total+usd": "cbpf2-allocations-and-contributions"
+      default_dataset: "cerf2-covid-19-allocations"
+    url: "https://cbpfgms.github.io/pfbi-data/download/full_pfmb_allocations.csv"
+    format: "csv"
+    date: "AllocationYear"
+    date_type: "year"
+    single_maxdate: True
+    filter_cols:
+      - "FundType"
+      - "GenderMarker"
+    subsets:
+      - filter: "FundType == 'CBPF'"
+        input:
+          - "Budget"
+        transform:
+          Budget: "float(Budget)"
+        sum:
+          - formula: "Budget"
+            mustbepopulated: False
+        output:
+          - "CBPFFunding"
+        output_hxl:
+          - "#value+cbpf+funding+total+usd"
+      - filter: "FundType == 'CERF'"
+        input:
+          - "Budget"
+        transform:
+          Budget: "float(Budget)"
+        sum:
+          - formula: "Budget"
+            mustbepopulated: False
+        output:
+          - "CERFFunding"
+        output_hxl:
+          - "#value+cerf+funding+total+usd"
 
 
 other:
