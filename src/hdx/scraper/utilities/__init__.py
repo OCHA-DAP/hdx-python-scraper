@@ -64,7 +64,7 @@ def get_date_from_dataset_date(
 
     Args:
         dataset (Dataset): Dataset object
-        today (Optional[datetime]): Date to use for today. Defaults to None (datetime.now())
+        today (Optional[datetime]): Date to use for today. Defaults to None (datetime.utcnow)
 
     Returns:
         Optional[datetime]: Date or end date of a dataset
@@ -83,7 +83,7 @@ def get_isodate_from_dataset_date(
 
     Args:
         dataset (Dataset): Dataset object
-        today (Optional[datetime]): Date to use for today. Defaults to None (datetime.now())
+        today (Optional[datetime]): Date to use for today. Defaults to None (datetime.utcnow)
 
     Returns:
         Optional[str]: Date or end date of a dataset

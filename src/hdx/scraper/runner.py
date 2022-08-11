@@ -25,7 +25,7 @@ class Runner:
     Args:
         countryiso3s (ListTuple[str]): List of ISO3 country codes to process
         adminone (AdminOne): AdminOne object from HDX Python Country library
-        today (datetime): Value to use for today. Defaults to datetime.now().
+        today (datetime): Value to use for today. Defaults to datetime.utcnow().
         errors_on_exit (ErrorsOnExit): ErrorsOnExit object that logs errors on exit
         scrapers_to_run (Optional[ListTuple[str]]): Scrapers to run. Defaults to None.
     """
@@ -34,7 +34,7 @@ class Runner:
         self,
         countryiso3s: ListTuple[str],
         adminone: AdminOne,
-        today: datetime = datetime.now(),
+        today: datetime = datetime.utcnow(),
         errors_on_exit: Optional[ErrorsOnExit] = None,
         scrapers_to_run: Optional[ListTuple[str]] = None,
     ):
@@ -205,7 +205,7 @@ class Runner:
             str: scraper name (including suffix if set)
         """
         return self.add_custom(
-            TimeSeries(name, datasetinfo, self.today, outputs),
+            TimeSeries(name, datasetinfo, outputs, self.today),
             force_add_to_run,
         )
 

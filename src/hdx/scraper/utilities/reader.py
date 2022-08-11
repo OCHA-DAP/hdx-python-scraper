@@ -33,7 +33,7 @@ class Read(Retrieve):
         use_saved (bool): Whether to use saved data. Defaults to False.
         prefix (str): Prefix to add to filenames. Defaults to "".
         delete (bool): Whether to delete saved_dir if save is True. Defaults to True.
-        today (Optional[datetime]): Value to use for today. Defaults to None (datetime.now()).
+        today (Optional[datetime]): Value to use for today. Defaults to None (datetime.utcnow).
     """
 
     def __init__(
@@ -86,7 +86,7 @@ class Read(Retrieve):
             use_saved (bool): Whether to use saved data. Defaults to False.
             ignore (ListTuple[str]): Don't generate retrievers for these downloaders
             rate_limit (Optional[Dict]): Rate limiting per host. Defaults to {"calls": 1, "period": 0.1}
-            today (Optional[datetime]): Value to use for today. Defaults to None (datetime.now()).
+            today (Optional[datetime]): Value to use for today. Defaults to None (datetime.utcnow).
             **kwargs: See below and parameters of Download class in HDX Python Utilities
             hdx_auth (str): HDX API key
             header_auths (Mapping[str, str]): Header authorisations

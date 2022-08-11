@@ -19,21 +19,21 @@ class TimeSeries(BaseScraper):
     Args:
         name (str): Name of scraper
         datasetinfo (Dict): Information about dataset
-        today (datetime): Value to use for today. Defaults to datetime.now().
         outputs (Dict[str, BaseOutput]): Mapping from names to output objects
+        today (datetime): Value to use for today. Defaults to datetime.utcnow().
     """
 
     def __init__(
         self,
         name: str,
         datasetinfo: Dict,
-        today,
         outputs: Dict[str, BaseOutput],
+        today: datetime = datetime.utcnow(),
     ):
         # Time series only outputs to separate tabs
         super().__init__(f"timeseries_{name}", datasetinfo, dict())
-        self.today = today
         self.outputs = outputs
+        self.today = today
 
     def run(self) -> None:
         """Runs one time series scraper given dataset information and outputs to

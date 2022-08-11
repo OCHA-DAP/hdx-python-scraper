@@ -34,7 +34,7 @@ class ConfigurableScraper(BaseScraper):
         countryiso3s (List[str]): List of ISO3 country codes to process
         adminone (AdminOne): AdminOne object from HDX Python Country library
         level_name (Optional[str]): Customised level_name name. Defaults to None (level).
-        today (datetime): Value to use for today. Defaults to datetime.now().
+        today (datetime): Value to use for today. Defaults to datetime.utcnow().
         errors_on_exit (Optional[ErrorsOnExit]): ErrorsOnExit object that logs errors on exit
         **kwargs: Variables to use when evaluating template arguments in urls
     """
@@ -58,7 +58,7 @@ class ConfigurableScraper(BaseScraper):
         countryiso3s: List[str],
         adminone: AdminOne,
         level_name: Optional[str] = None,
-        today: datetime = datetime.now(),
+        today: datetime = datetime.utcnow(),
         errors_on_exit: Optional[ErrorsOnExit] = None,
         **kwargs: Any,
     ):
