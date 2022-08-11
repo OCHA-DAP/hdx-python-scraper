@@ -61,7 +61,6 @@ class TimeSeries(BaseScraper):
             if datetype == "date":
                 if not isinstance(date, datetime):
                     date = parse_date(date)
-                date = date.replace(tzinfo=None)
                 if date > self.today and ignore_future_date:
                     continue
                 date = date.strftime("%Y-%m-%d")

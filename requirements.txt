@@ -1,4 +1,4 @@
-hdx-python-api==5.8.1
+hdx-python-api==5.8.2
 gspread==5.4.0
 pandas==1.4.3
 regex==2022.7.25

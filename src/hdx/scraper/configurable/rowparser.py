@@ -341,7 +341,6 @@ class RowParser:
             if self.datetype == "date":
                 if not isinstance(date, datetime):
                     date = parse_date(date)
-                date = date.replace(tzinfo=None)
                 if date > self.source_date and self.ignore_future_date:
                     return None, None
             elif self.datetype == "year":

@@ -27,6 +27,9 @@ install with:
 
 ## Breaking Changes
 
+From 1.8.9, date handling uses timezone aware dates instead of naive dates and defaults
+to UTC
+
 From 1.8.7, FileCopier -> ResourceDownloader, get_scrapers calls in Aggregator,
 ResourceDownloader and TimeSeries -> Runner.addXXX, read_resource -> download_resource,
 add_to_run -> force_add_to_run

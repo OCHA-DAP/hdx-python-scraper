@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 
 import pytest
 from hdx.data.dataset import Dataset
@@ -151,7 +151,7 @@ class TestReaders:
             "Targeted 2017": "             _",
             "% targeted": "0",
         }
-        date = datetime(2016, 9, 1, 23, 59, 59)
+        date = datetime(2016, 9, 1, 23, 59, 59, tzinfo=timezone.utc)
         assert datasetinfo == {
             "name": "test",
             "dataset": "sahel-humanitarian-needs-overview",
