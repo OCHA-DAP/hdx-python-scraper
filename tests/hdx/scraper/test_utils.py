@@ -1,6 +1,5 @@
-from datetime import datetime
-
 from hdx.data.dataset import Dataset
+from hdx.utilities.dateparse import now_utc
 
 from hdx.scraper.utilities import (
     get_isodate_from_dataset_date,
@@ -21,5 +20,5 @@ class TestUtils:
                 "dataset_date": "[2022-01-11T02:24:08.241 TO 2022-01-11T02:24:08.241]"
             }
         )
-        result = get_isodate_from_dataset_date(dataset, datetime.now())
+        result = get_isodate_from_dataset_date(dataset, now_utc())
         assert result == "2022-01-11"

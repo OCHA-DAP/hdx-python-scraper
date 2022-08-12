@@ -5,7 +5,11 @@ from typing import Any, Dict, Iterator, List, Optional, Tuple
 
 import regex
 from hdx.location.adminone import AdminOne
-from hdx.utilities.dateparse import get_datetime_from_timestamp, parse_date
+from hdx.utilities.dateparse import (
+    get_datetime_from_timestamp,
+    now_utc,
+    parse_date,
+)
 from hdx.utilities.dictandlist import dict_of_lists_add
 from hdx.utilities.downloader import DownloadError
 from hdx.utilities.errors_onexit import ErrorsOnExit
@@ -34,7 +38,7 @@ class ConfigurableScraper(BaseScraper):
         countryiso3s (List[str]): List of ISO3 country codes to process
         adminone (AdminOne): AdminOne object from HDX Python Country library
         level_name (Optional[str]): Customised level_name name. Defaults to None (level).
-        today (datetime): Value to use for today. Defaults to datetime.utcnow().
+        today (datetime): Value to use for today. Defaults to now_utc().
         errors_on_exit (Optional[ErrorsOnExit]): ErrorsOnExit object that logs errors on exit
         **kwargs: Variables to use when evaluating template arguments in urls
     """
@@ -58,7 +62,7 @@ class ConfigurableScraper(BaseScraper):
         countryiso3s: List[str],
         adminone: AdminOne,
         level_name: Optional[str] = None,
-        today: datetime = datetime.utcnow(),
+        today: datetime = now_utc(),
         errors_on_exit: Optional[ErrorsOnExit] = None,
         **kwargs: Any,
     ):

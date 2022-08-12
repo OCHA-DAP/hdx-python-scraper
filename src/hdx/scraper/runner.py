@@ -3,6 +3,7 @@ from datetime import datetime
 from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple, Union
 
 from hdx.location.adminone import AdminOne
+from hdx.utilities.dateparse import now_utc
 from hdx.utilities.errors_onexit import ErrorsOnExit
 from hdx.utilities.typehint import ListTuple
 
@@ -25,7 +26,7 @@ class Runner:
     Args:
         countryiso3s (ListTuple[str]): List of ISO3 country codes to process
         adminone (AdminOne): AdminOne object from HDX Python Country library
-        today (datetime): Value to use for today. Defaults to datetime.utcnow().
+        today (datetime): Value to use for today. Defaults to now_utc().
         errors_on_exit (ErrorsOnExit): ErrorsOnExit object that logs errors on exit
         scrapers_to_run (Optional[ListTuple[str]]): Scrapers to run. Defaults to None.
     """
@@ -34,7 +35,7 @@ class Runner:
         self,
         countryiso3s: ListTuple[str],
         adminone: AdminOne,
-        today: datetime = datetime.utcnow(),
+        today: datetime = now_utc(),
         errors_on_exit: Optional[ErrorsOnExit] = None,
         scrapers_to_run: Optional[ListTuple[str]] = None,
     ):
