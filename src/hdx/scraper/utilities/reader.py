@@ -297,9 +297,7 @@ class Read(Retrieve):
             logger.exception(f"Error reading {data_type} for {identifier}!")
             raise
 
-    def read_hdx_metadata(
-        self, datasetinfo: Dict
-    ) -> Optional[Resource]:
+    def read_hdx_metadata(self, datasetinfo: Dict) -> Optional[Resource]:
         """Read metadata from HDX dataset and add to input dictionary
 
         Args:
