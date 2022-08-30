@@ -1,5 +1,4 @@
 import logging
-from collections.abc import MutableMapping
 from datetime import datetime
 from os.path import join
 from typing import Any, Dict, Iterator, List, Optional, Tuple
@@ -188,12 +187,12 @@ class Read(Retrieve):
         )
 
     def read_tabular(
-        self, datasetinfo: MutableMapping, **kwargs: Any
+        self, datasetinfo: Dict, **kwargs: Any
     ) -> Tuple[List[str], Iterator[Dict]]:
         """Read data from tabular source eg. csv, xls, xlsx
 
         Args:
-            datasetinfo (MutableMapping): Dictionary of information about dataset
+            datasetinfo (Dict): Dictionary of information about dataset
             **kwargs: Variables to use when evaluating template arguments
 
         Returns:
@@ -299,12 +298,12 @@ class Read(Retrieve):
             raise
 
     def read_hdx_metadata(
-        self, datasetinfo: MutableMapping
+        self, datasetinfo: Dict
     ) -> Optional[Resource]:
         """Read metadata from HDX dataset and add to input dictionary
 
         Args:
-            datasetinfo (MutableMapping): Dictionary of information about dataset
+            datasetinfo (Dict): Dictionary of information about dataset
 
         Returns:
             Optional[Resource]: The resource if a url was not given
@@ -393,13 +392,13 @@ class Read(Retrieve):
 
     def read_hdx(
         self,
-        datasetinfo: MutableMapping,
+        datasetinfo: Dict,
         **kwargs: Any,
     ) -> Tuple[List[str], Iterator[Dict]]:
         """Read data and metadata from HDX dataset
 
         Args:
-            datasetinfo (MutableMapping): Dictionary of information about dataset
+            datasetinfo (Dict): Dictionary of information about dataset
             **kwargs: Variables to use when evaluating template arguments
 
         Returns:
@@ -410,13 +409,13 @@ class Read(Retrieve):
 
     def read(
         self,
-        datasetinfo: MutableMapping,
+        datasetinfo: Dict,
         **kwargs: Any,
     ) -> Tuple[List[str], Iterator[Dict]]:
         """Read data and metadata from HDX dataset
 
         Args:
-            datasetinfo (MutableMapping): Dictionary of information about dataset
+            datasetinfo (Dict): Dictionary of information about dataset
             **kwargs: Variables to use when evaluating template arguments in urls
 
         Returns:
