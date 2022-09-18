@@ -1,4 +1,3 @@
-from hdx.location.adminone import AdminOne
 from hdx.utilities.dateparse import parse_date
 
 from hdx.scraper.base_scraper import BaseScraper
@@ -9,10 +8,9 @@ from hdx.scraper.runner import Runner
 class TestScrapersTimeSeries:
     def test_timeseries(self, configuration):
         BaseScraper.population_lookup = dict()
-        adminone = AdminOne(configuration)
         iso3s = ("AFG", "MMR")
         today = parse_date("2022-03-06")
-        runner = Runner(iso3s, adminone, today)
+        runner = Runner(iso3s, today)
         name = "timeseries_casualties"
         jsonout = JsonFile(configuration["json"], [name])
         outputs = {"json": jsonout}

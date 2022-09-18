@@ -2,7 +2,7 @@ import logging
 from copy import deepcopy
 from typing import Dict, List, Optional, Tuple, Union
 
-from hdx.location.adminone import AdminOne
+from hdx.location.adminlevel import AdminLevel
 from hdx.location.country import Country
 from hdx.utilities.typehint import ListTuple
 
@@ -21,10 +21,24 @@ national_headers = (
     ["iso3", "countryname"],
     ["#country+code", "#country+name"],
 )
-subnational_headers = (
-    ("iso3", "countryname", "adm1_pcode", "adm1_name"),
-    ("#country+code", "#country+name", "#adm1+code", "#adm1+name"),
-)
+subnational_headers = {
+    1: (
+        ("iso3", "countryname", "adm1_pcode", "adm1_name"),
+        ("#country+code", "#country+name", "#adm1+code", "#adm1+name"),
+    ),
+    2: (
+        ("iso3", "countryname", "adm2_pcode", "adm2_name"),
+        ("#country+code", "#country+name", "#adm2+code", "#adm2+name"),
+    ),
+    3: (
+        ("iso3", "countryname", "adm3_pcode", "adm3_name"),
+        ("#country+code", "#country+name", "#adm3+code", "#adm3+name"),
+    ),
+    4: (
+        ("iso3", "countryname", "adm4_pcode", "adm4_name"),
+        ("#country+code", "#country+name", "#adm4+code", "#adm4+name"),
+    ),
+}
 sources_headers = (
     ("Indicator", "Date", "Source", "Url"),
     ("#indicator+name", "#date", "#meta+source", "#meta+url"),
@@ -304,7 +318,7 @@ def update_national(
 
 def update_subnational(
     runner: Runner,
-    adminone: AdminOne,
+    adminlevel: AdminLevel,
     outputs: Dict[str, BaseOutput],
     names: Optional[ListTuple[str]] = None,
     level: str = "subnational",
@@ -315,7 +329,7 @@ def update_subnational(
 
     Args:
         runner (Runner): Runner object
-        adminone (AdminOne): AdminOne object
+        adminlevel (AdminLevel): AdminLevel object from HDX Python Country library
         outputs (Dict[str, BaseOutput]): Mapping from names to output objects
         names (Optional[ListTuple[str]]): Names of scrapers. Defaults to None.
         level (str): Name of subnational level. Defaults to "subnational".
@@ -326,17 +340,21 @@ def update_subnational(
     """
 
     def get_country_name(adm):
-        countryiso3 = adminone.pcode_to_iso3[adm]
+        countryiso3 = adminlevel.pcode_to_iso3[adm]
         return Country.get_country_name_from_iso3(countryiso3)
 
     fns = (
-        lambda adm: adminone.pcode_to_iso3[adm],
+        lambda adm: adminlevel.pcode_to_iso3[adm],
         get_country_name,
         lambda adm: adm,
-        lambda adm: adminone.pcode_to_name[adm],
+        lambda adm: adminlevel.pcode_to_name[adm],
     )
     rows = runner.get_rows(
-        level, adminone.pcodes, subnational_headers, fns, names=names
+        level,
+        adminlevel.pcodes,
+        subnational_headers[adminlevel.get_admin_level()],
+        fns,
+        names=names,
     )
     update_tab(outputs, tab, rows)
 

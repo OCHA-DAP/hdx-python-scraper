@@ -1,4 +1,4 @@
-from hdx.location.adminone import AdminOne
+from hdx.location.adminlevel import AdminLevel
 from hdx.utilities.dateparse import parse_date
 
 from hdx.scraper.base_scraper import BaseScraper
@@ -13,11 +13,13 @@ class TestScrapersSubnational:
     def test_get_subnational(self, configuration):
         BaseScraper.population_lookup = dict()
         today = parse_date("2020-10-01")
-        adminone = AdminOne(configuration)
+        adminlevel = AdminLevel(configuration)
         level = "subnational"
         scraper_configuration = configuration[f"scraper_{level}"]
-        runner = Runner(("AFG",), adminone, today)
-        keys = runner.add_configurables(scraper_configuration, level)
+        runner = Runner(("AFG",), today)
+        keys = runner.add_configurables(
+            scraper_configuration, level, adminlevel=adminlevel
+        )
         assert keys == ["gam"]
 
         name = "gam"
@@ -85,7 +87,7 @@ class TestScrapersSubnational:
         outputs = {"json": jsonout}
         update_subnational(
             runner,
-            adminone,
+            adminlevel,
             outputs,
             names=(name,),
         )
@@ -331,7 +333,9 @@ class TestScrapersSubnational:
         ]
 
         scraper_configuration = configuration["other"]
-        runner.add_configurables(scraper_configuration, level)
+        runner.add_configurables(
+            scraper_configuration, level, adminlevel=adminlevel
+        )
         name = "gam_other"
         headers = (
             ["Malnutrition Estimate"],

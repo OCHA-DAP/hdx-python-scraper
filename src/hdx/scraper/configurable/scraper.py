@@ -4,7 +4,7 @@ from datetime import datetime
 from typing import Any, Dict, Iterator, List, Optional, Tuple
 
 import regex
-from hdx.location.adminone import AdminOne
+from hdx.location.adminlevel import AdminLevel
 from hdx.utilities.dateparse import (
     get_datetime_from_timestamp,
     now_utc,
@@ -29,14 +29,15 @@ logger = logging.getLogger(__name__)
 class ConfigurableScraper(BaseScraper):
     """Each configurable scraper is configured from dataset information that can come
     from a YAML file for example. When run, it works out headers and values. It also
-    overrides add_sources where sources are compiled and returned.
+    overrides add_sources where sources are compiled and returned. If dealing with
+    subnational data, adminlevel must be supplied.
 
     Args:
         name (str): Name of scraper
         datasetinfo (Dict): Information about dataset
         level (str): Can be national, subnational or single
         countryiso3s (List[str]): List of ISO3 country codes to process
-        adminone (AdminOne): AdminOne object from HDX Python Country library
+        adminlevel (Optional[AdminLevel]): AdminLevel object from HDX Python Country. Defaults to None.
         level_name (Optional[str]): Customised level_name name. Defaults to None (level).
         today (datetime): Value to use for today. Defaults to now_utc().
         errors_on_exit (Optional[ErrorsOnExit]): ErrorsOnExit object that logs errors on exit
@@ -60,7 +61,7 @@ class ConfigurableScraper(BaseScraper):
         datasetinfo: Dict,
         level: str,
         countryiso3s: List[str],
-        adminone: AdminOne,
+        adminlevel: Optional[AdminLevel] = None,
         level_name: Optional[str] = None,
         today: datetime = now_utc(),
         errors_on_exit: Optional[ErrorsOnExit] = None,
@@ -77,7 +78,7 @@ class ConfigurableScraper(BaseScraper):
         else:
             self.level_name: str = level_name
         self.countryiso3s = countryiso3s
-        self.adminone = adminone
+        self.adminlevel = adminlevel
         self.today = today
         self.subsets = self.get_subsets_from_datasetinfo(datasetinfo)
         self.errors_on_exit: Optional[ErrorsOnExit] = errors_on_exit
@@ -475,7 +476,7 @@ class ConfigurableScraper(BaseScraper):
         self.rowparser = RowParser(
             self.name,
             self.countryiso3s,
-            self.adminone,
+            self.adminlevel,
             self.level,
             self.datelevel,
             source_date,

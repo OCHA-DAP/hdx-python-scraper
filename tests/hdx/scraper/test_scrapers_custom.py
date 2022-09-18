@@ -1,6 +1,5 @@
 from copy import deepcopy
 
-from hdx.location.adminone import AdminOne
 from hdx.utilities.dateparse import parse_date
 
 from hdx.scraper.base_scraper import BaseScraper
@@ -16,7 +15,6 @@ class TestScrapersCustom:
         BaseScraper.population_lookup = dict()
         source_date = "2022-04-30"
         today = parse_date("2020-10-01")
-        adminone = AdminOne(configuration)
         level = "national"
         countries = ("AFG",)
 
@@ -24,7 +22,7 @@ class TestScrapersCustom:
             iso3_to_region_and_hrp = {"AFG": ("ROAP",)}
 
         region = Region()
-        runner = Runner(("AFG",), adminone, today)
+        runner = Runner(("AFG",), today)
         datasetinfo = configuration["education_closures"]
         education_closures = EducationClosures(
             datasetinfo, today, countries, region
@@ -108,7 +106,7 @@ class TestScrapersCustom:
             "https://data.humdata.org/organization/world-bank-group",
         ]
 
-        runner = Runner(("AFG",), adminone, today)
+        runner = Runner(("AFG",), today)
         datasetinfo = deepcopy(datasetinfo)
         datasetinfo["url"] = "NOTEXIST.csv"
         education_closures = EducationClosures(

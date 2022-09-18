@@ -5,7 +5,7 @@ from operator import itemgetter
 from typing import Dict, Generator, Iterator, List, Optional, Tuple
 
 import hxl
-from hdx.location.adminone import AdminOne
+from hdx.location.adminlevel import AdminLevel
 from hdx.location.country import Country
 from hdx.utilities.dateparse import parse_date
 from hdx.utilities.dictandlist import dict_of_lists_add
@@ -21,7 +21,7 @@ class RowParser:
     Args:
         name (str): Name of scraper
         countryiso3s (List[str]): List of ISO3 country codes to process
-        adminone (AdminOne): AdminOne object from HDX Python Country library that handles processing of admin level_type 1
+        adminlevel (Optional[AdminLevel]): AdminLevel object from HDX Python Country library
         level (str): Can be national, subnational or single
         datelevel (str): Can be global, regional, national, subnational
         source_date (datetime): Source date
@@ -36,7 +36,7 @@ class RowParser:
         self,
         name: str,
         countryiso3s: List[str],
-        adminone: AdminOne,
+        adminlevel: Optional[AdminLevel],
         level: str,
         datelevel: str,
         source_date: datetime,
@@ -81,7 +81,7 @@ class RowParser:
         self.maxdate = date
         self.single_maxdate = datasetinfo.get("single_maxdate", False)
         self.ignore_future_date = datasetinfo.get("ignore_future_date", True)
-        self.adminone = adminone
+        self.adminlevel = adminlevel
         self.admcols = datasetinfo.get("admin", list())
         self.admexact = datasetinfo.get("admin_exact", False)
         self.admsingle = datasetinfo.get("admin_single", None)
@@ -94,13 +94,22 @@ class RowParser:
             prefilter = self.get_filter_str_for_eval(prefilter)
         self.prefilter = prefilter
         adms = datasetinfo.get("admin_filter")
-        if adms is None:
-            self.adms = [countryiso3s, self.adminone.pcodes]
-        else:
-            if self.datelevel == 1:
-                self.adms = adms
+        if adminlevel:
+            if adms is None:
+                self.adms = [countryiso3s, adminlevel.pcodes]
             else:
-                self.adms = [adms, self.adminone.pcodes]
+                if self.datelevel == 1:
+                    self.adms = adms
+                else:
+                    self.adms = [adms, adminlevel.pcodes]
+        else:
+            if adms is None:
+                self.adms = [countryiso3s]
+            else:
+                if self.datelevel == 1:
+                    self.adms = adms
+                else:
+                    self.adms = [adms]
         if self.datelevel is None:
             self.maxdates = {i: date for i, _ in enumerate(subsets)}
         else:
@@ -303,7 +312,7 @@ class RowParser:
                 if i == 0:
                     adms[i], exact = Country.get_iso3_country_code_fuzzy(adm)
                 elif i == 1:
-                    adms[i], exact = self.adminone.get_pcode(
+                    adms[i], exact = self.adminlevel.get_pcode(
                         adms[0], adm, self.name
                     )
                 if adms[i] not in self.adms[i]:

@@ -1106,7 +1106,7 @@ HRPs:
   - YEM
   - ZWE
 
-admin1_info:
+admin_info:
   - {pcode: AF01, name: Kabul, iso2: AF, iso3: AFG, country: Afghanistan}
   - {pcode: AF02, name: Kapisa, iso2: AF, iso3: AFG, country: Afghanistan}
   - {pcode: AF03, name: Parwan, iso2: AF, iso3: AFG, country: Afghanistan}

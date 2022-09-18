@@ -1,4 +1,3 @@
-from hdx.location.adminone import AdminOne
 from hdx.utilities.dateparse import parse_date
 from hdx.utilities.errors_onexit import ErrorsOnExit
 
@@ -16,11 +15,10 @@ class TestScrapersNational:
     def test_get_national_afg(self, configuration, fallbacks):
         BaseScraper.population_lookup = dict()
         today = parse_date("2020-10-01")
-        adminone = AdminOne(configuration)
         level = "national"
         scraper_configuration = configuration[f"scraper_{level}"]
         iso3s = ("AFG",)
-        runner = Runner(iso3s, adminone, today)
+        runner = Runner(iso3s, today)
         keys = runner.add_configurables(scraper_configuration, level)
         assert keys == [
             "population",
@@ -346,10 +344,9 @@ class TestScrapersNational:
     def test_get_national_ukr(self, configuration, fallbacks):
         BaseScraper.population_lookup = dict()
         today = parse_date("2020-10-01")
-        adminone = AdminOne(configuration)
         level = "national"
         scraper_configuration = configuration[f"scraper_{level}"]
-        runner = Runner(("UKR",), adminone, today)
+        runner = Runner(("UKR",), today)
         runner.add_configurables(scraper_configuration, level)
 
         name = "casualties"
@@ -387,10 +384,9 @@ class TestScrapersNational:
     def test_get_national_afg_phl(self, configuration, fallbacks):
         BaseScraper.population_lookup = {"AFG": 38041754}
         today = parse_date("2020-10-01")
-        adminone = AdminOne(configuration)
         level = "national"
         scraper_configuration = configuration[f"scraper_{level}"]
-        runner = Runner(("AFG", "PHL"), adminone, today)
+        runner = Runner(("AFG", "PHL"), today)
         runner.add_configurables(scraper_configuration, level)
 
         name = "ourworldindata"
@@ -474,7 +470,6 @@ class TestScrapersNational:
         errors_on_exit = ErrorsOnExit()
         runner = Runner(
             ("AFG", "PHL"),
-            adminone,
             today,
             errors_on_exit=errors_on_exit,
         )
@@ -539,14 +534,12 @@ class TestScrapersNational:
         BaseScraper.population_lookup = dict()
         today = parse_date("2021-05-03")
         errors_on_exit = ErrorsOnExit()
-        adminone = AdminOne(configuration)
         level = "national"
         countries = ("AFG", "MMR", "PHL")
         scraper_configuration = configuration[f"scraper_{level}"]
 
         runner = Runner(
             countries,
-            adminone,
             today,
             errors_on_exit=errors_on_exit,
         )
@@ -597,7 +590,6 @@ class TestScrapersNational:
         assert errors_on_exit.errors == list()
         runner = Runner(
             ("AFG", "MMR", "PHL"),
-            adminone,
             today,
             errors_on_exit=errors_on_exit,
         )

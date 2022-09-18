@@ -1,7 +1,6 @@
 from os.path import exists, join
 
 import pytest
-from hdx.location.adminone import AdminOne
 from hdx.utilities.dateparse import parse_date
 from hdx.utilities.path import temp_dir
 
@@ -21,10 +20,9 @@ class TestScrapersResourceDownloader:
             delete_on_failure=False,
         ) as temp_folder:
             BaseScraper.population_lookup = dict()
-            adminone = AdminOne(configuration)
             iso3s = ("AFG", "MMR")
             today = parse_date("2020-10-01")
-            runner = Runner(iso3s, adminone, today)
+            runner = Runner(iso3s, today)
             scraper_names = runner.add_resource_downloaders(
                 configuration["download_resources"], temp_folder
             )

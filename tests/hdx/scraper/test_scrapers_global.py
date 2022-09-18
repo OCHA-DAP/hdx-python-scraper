@@ -1,7 +1,6 @@
 import logging
 
 import pytest
-from hdx.location.adminone import AdminOne
 from hdx.utilities.dateparse import parse_date
 
 from hdx.scraper.base_scraper import BaseScraper
@@ -51,13 +50,12 @@ class TestScraperGlobal:
     def test_get_global_2020(self, configuration, cerf_headers):
         BaseScraper.population_lookup = dict()
         today = parse_date("2020-10-01")
-        adminone = AdminOne(configuration)
         level = "single"
         level_name = "global"
         scraper_configuration = configuration[f"scraper_{level_name}"]
-        runner = Runner(configuration["HRPs"], adminone, today)
+        runner = Runner(configuration["HRPs"], today)
         keys = runner.add_configurables(
-            scraper_configuration, level, level_name
+            scraper_configuration, level, level_name=level_name
         )
         assert keys == [
             "covax",
@@ -314,12 +312,13 @@ class TestScraperGlobal:
     ):
         BaseScraper.population_lookup = dict()
         today = parse_date("2021-05-03")
-        adminone = AdminOne(configuration)
         level = "single"
         level_name = "global"
         scraper_configuration = configuration[f"scraper_{level_name}"]
-        runner = Runner(configuration["HRPs"], adminone, today)
-        runner.add_configurables(scraper_configuration, level, level_name)
+        runner = Runner(configuration["HRPs"], today)
+        runner.add_configurables(
+            scraper_configuration, level, level_name=level_name
+        )
         name = "cerf2_global"
         headers = (
             [cerf_headers[0][0], cerf_headers[0][7]],
@@ -483,7 +482,9 @@ class TestScraperGlobal:
         run_check_scraper(name, runner, level_name, headers, values, sources)
 
         scraper_configuration = configuration["other"]
-        runner.add_configurables(scraper_configuration, level, level_name)
+        runner.add_configurables(
+            scraper_configuration, level, level_name=level_name
+        )
         name = "population_other"
         headers = (
             ["Population"],

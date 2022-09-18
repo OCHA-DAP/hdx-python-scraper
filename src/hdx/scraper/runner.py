@@ -2,7 +2,7 @@ import logging
 from datetime import datetime
 from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple, Union
 
-from hdx.location.adminone import AdminOne
+from hdx.location.adminlevel import AdminLevel
 from hdx.utilities.dateparse import now_utc
 from hdx.utilities.errors_onexit import ErrorsOnExit
 from hdx.utilities.typehint import ListTuple
@@ -25,7 +25,6 @@ class Runner:
 
     Args:
         countryiso3s (ListTuple[str]): List of ISO3 country codes to process
-        adminone (AdminOne): AdminOne object from HDX Python Country library
         today (datetime): Value to use for today. Defaults to now_utc().
         errors_on_exit (ErrorsOnExit): ErrorsOnExit object that logs errors on exit
         scrapers_to_run (Optional[ListTuple[str]]): Scrapers to run. Defaults to None.
@@ -34,13 +33,11 @@ class Runner:
     def __init__(
         self,
         countryiso3s: ListTuple[str],
-        adminone: AdminOne,
         today: datetime = now_utc(),
         errors_on_exit: Optional[ErrorsOnExit] = None,
         scrapers_to_run: Optional[ListTuple[str]] = None,
     ):
         self.countryiso3s = countryiso3s
-        self.adminone = adminone
         self.today = today
         self.errors_on_exit = errors_on_exit
         if isinstance(scrapers_to_run, tuple):
@@ -102,6 +99,7 @@ class Runner:
         name: str,
         datasetinfo: Dict,
         level: str,
+        adminlevel: Optional[AdminLevel] = None,
         level_name: Optional[str] = None,
         suffix: Optional[str] = None,
         force_add_to_run: bool = False,
@@ -115,6 +113,7 @@ class Runner:
             name (str): Name of scraper
             datasetinfo (Dict): Information about dataset
             level (str): Can be national, subnational or single
+            adminlevel (Optional[AdminLevel]): AdminLevel object from HDX Python Country. Defaults to None.
             level_name (Optional[str]): Customised level_name name. Defaults to None (level_name).
             suffix (Optional[str]): Suffix to add to the scraper name
             force_add_to_run (bool): Whether to force include the scraper in the next run
@@ -131,7 +130,7 @@ class Runner:
             datasetinfo,
             level,
             self.countryiso3s,
-            self.adminone,
+            adminlevel,
             level_name,
             self.today,
             self.errors_on_exit,
@@ -150,6 +149,7 @@ class Runner:
         self,
         configuration: Dict,
         level: str,
+        adminlevel: Optional[AdminLevel] = None,
         level_name: Optional[str] = None,
         suffix: Optional[str] = None,
         force_add_to_run: bool = False,
@@ -162,6 +162,7 @@ class Runner:
         Args:
             configuration (Dict): Mapping from scraper name to information about datasets
             level (str): Can be national, subnational or single
+            adminlevel (Optional[AdminLevel]): AdminLevel object from HDX Python Country. Defaults to None.
             level_name (Optional[str]): Customised level_name name. Defaults to None (level_name).
             suffix (Optional[str]): Suffix to add to the scraper name
             force_add_to_run (bool): Whether to force include the scraper in the next run
@@ -177,6 +178,7 @@ class Runner:
                     name,
                     datasetinfo,
                     level,
+                    adminlevel,
                     level_name,
                     suffix,
                     force_add_to_run,

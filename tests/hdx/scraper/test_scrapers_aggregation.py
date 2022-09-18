@@ -1,4 +1,3 @@
-from hdx.location.adminone import AdminOne
 from hdx.utilities.dateparse import parse_date
 
 from hdx.scraper.base_scraper import BaseScraper
@@ -11,12 +10,11 @@ class TestScrapersAggregation:
     def test_get_aggregation_hxl(self, configuration, fallbacks):
         BaseScraper.population_lookup = dict()
         today = parse_date("2020-10-01")
-        adminone = AdminOne(configuration)
 
         level = "national"
         scraper_configuration = configuration[f"scraper_{level}"]
         iso3s = ("AFG", "MMR")
-        runner = Runner(iso3s, adminone, today)
+        runner = Runner(iso3s, today)
         runner.add_configurables(scraper_configuration, level)
 
         name = "population"
@@ -122,7 +120,7 @@ class TestScrapersAggregation:
         level = "national"
         BaseScraper.population_lookup = dict()
         iso3s = ("AFG", "PSE")
-        runner = Runner(iso3s, adminone, today)
+        runner = Runner(iso3s, today)
         runner.add_configurables(scraper_configuration, level)
 
         names = ("population", "who_national")
@@ -218,12 +216,11 @@ class TestScrapersAggregation:
     def test_get_aggregation_nohxl(self, configuration, fallbacks):
         BaseScraper.population_lookup = dict()
         today = parse_date("2020-10-01")
-        adminone = AdminOne(configuration)
         level = "national"
         configuration_nohxl = configuration["aggregation_nohxl"]
         scraper_configuration = configuration[f"scraper_{level}"]
         iso3s = ("AFG", "MMR")
-        runner = Runner(iso3s, adminone, today)
+        runner = Runner(iso3s, today)
         runner.add_configurables(scraper_configuration, level)
 
         name = "population"
@@ -327,7 +324,7 @@ class TestScrapersAggregation:
         level = "national"
         BaseScraper.population_lookup = dict()
         iso3s = ("AFG", "PSE")
-        runner = Runner(iso3s, adminone, today)
+        runner = Runner(iso3s, today)
         runner.add_configurables(scraper_configuration, level)
 
         names = ("population", "who_national")

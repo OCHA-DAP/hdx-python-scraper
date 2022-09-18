@@ -74,14 +74,15 @@ The library is set up broadly as follows:
             today=today,
         )
         ...
-        adminone = AdminOne(configuration)
         Fallbacks.add(json_path)
-        runner = Runner(("AFG",), adminone, today)
+        runner = Runner(("AFG",), today)
         keys = runner.add_configurables(scraper_configuration, "national")
         education_closures = EducationClosures(
             datasetinfo, today, countries, region
         )
         runner.add_custom(education_closures)
+        adminlevel = AdminLevel(configuration, admin_level=2)
+        keys = runner.add_configurables(scraper_configuration, "subnational")
         runner.run(prioritise_scrapers=("population_national", "population_subnational"))
         results = runner.get_results()["national"]
         assert results["headers"] == [("header1", header2"...), ("#hxltag1", "#hxltag2",...)]
@@ -115,9 +116,9 @@ to obtain the Read object associated with the supplied `SCRAPER_NAME`. If no spe
 authorisations are needed for the website the scraper accesses, then the default Read
 object is returned.
 
-### AdminOne Class
+### AdminLevel Class
 
-More about the AdminOne class can be found in the 
+More about the AdminLevel class can be found in the 
 [HDX Python Country](https://github.com/OCHA-DAP/hdx-python-country) library. Briefly, 
 that class accepts a configuration (which is shown below in YAML syntax) as follows:
 
@@ -128,9 +129,9 @@ from the names in the OCHA countries and territories file).
       PSE: "occupied Palestinian territory"
       BOL: "Bolivia"
 
-`admin1_info` defines the admin level 1 names and pcodes. 
+`admin_info` defines the admin level names and pcodes. 
 
-    admin1_info:
+    admin_info:
       - {pcode: AF01, name: Kabul, iso2: AF, iso3: AFG, country: Afghanistan}
       - {pcode: AF02, name: Kapisa, iso2: AF, iso3: AFG, country: Afghanistan}
 
@@ -141,25 +142,25 @@ from the names in the OCHA countries and territories file).
       "CAR": "CAF"
       "oPt": "PSE"
 
-`admin1_name_mappings` defines mappings from admin 1 name to pcode
+`admin_name_mappings` defines mappings from admin name to pcode
     
-    admin1_name_mappings:
+    admin_name_mappings:
       "Nord-Ouest": "HT09"
       "nord-ouest": "HT09"
     ...
 
-`adm1_name_replacements` defines some find and replaces that are done to improve 
-automatic admin1 name matching to pcode.
+`adm_name_replacements` defines some find and replaces that are done to improve 
+automatic admin name matching to pcode.
 
-    adm1_name_replacements:
+    adm_name_replacements:
       " urban": ""
       "sud": "south"
       "ouest": "west"
     ...
 
-`admin1_fuzzy_dont` defines admin 1 names to ignore in fuzzy matching.
+`admin_fuzzy_dont` defines admin names to ignore in fuzzy matching.
 
-    admin1_fuzzy_dont:
+    admin_fuzzy_dont:
       - "nord"
     ...
 
@@ -169,23 +170,22 @@ The Runner constructor takes various parameters.
 
 The first parameter is a list of country iso3s. 
 
-The second is an AdminOne object. 
-
-The third is the datetime you want to use for "today". If you pass None, it will use the 
+The second is the datetime you want to use for "today". If you pass None, it will use the 
 current datetime.
 
-The fourth is an optional object of class ErrorsOnExit from the 
+The third is an optional object of class ErrorsOnExit from the 
 [HDX Python Utilities](https://github.com/OCHA-DAP/hdx-python-utilities) library. This
 class collects and outputs errors on exit.
 
 The last optional parameter is a list of scrapers to run.
 
 The method `add_configurables` is used to add scrapers that are configured from a YAML 
-configuration. The method `add_custom` is used to add a custom scraper and `add_customs`
-for multiple custom scrapers - these are scrapers written in Python that inherit the 
-`BaseScraper` class. If running specific scrapers rather than all, and you want to force 
-the inclusion of the scraper in the run regardless of the specific scrapers given, the 
-parameter `force_add_to_run` should be set to True.
+configuration. For subnational levels, an AdminLevel object must be supplied. The method 
+`add_custom` is used to add a custom scraper and `add_customs` for multiple custom 
+scrapers - these are scrapers written in Python that inherit the `BaseScraper` class. If 
+running specific scrapers rather than all, and you want to force  the inclusion of the 
+scraper in the run regardless of the specific scrapers given, the parameter 
+`force_add_to_run` should be set to True.
 
 It is possible to add a post run step to a scraper that has been set up using:
 
@@ -1007,7 +1007,7 @@ The code to go with the configuration is as follows:
     jsonout = JsonFile(json_config, updatetabs)
     outputs = {"gsheets": gsheets, "excel": excelout, "json": jsonout}
     ...
-    update_subnational(runner, scraper_names, adminone, outputs)
+    update_subnational(runner, scraper_names, adminlevel, outputs)
     ...
     excelout.save()
     filepaths = jsonout.save(tempdir, countries_to_save=["AFG"])
@@ -1055,14 +1055,14 @@ update and defaults to "national".
 
     update_subnational(
         runner, 
-        adminone, 
+        adminlevel, 
         outputs, 
         names=subnational_names,
         level="subnational",
         tab="subnational",
     )
 
-The first parameter is the Runner object. The second is an AdminOne object (described 
+The first parameter is the Runner object. The second is an AdminLevel object (described 
 earlier). The third is a dictionary of outputs such as to Google Sheets, Excel or JSON. 
 The fourth optional parameter is the `names` of the scrapers to include. The parameter 
 `level` defaults to "subnational" and is the key to use when obtaining the results of 
