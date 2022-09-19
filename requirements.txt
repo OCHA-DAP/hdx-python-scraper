@@ -1,5 +1,4 @@
-hdx-python-api==5.8.8
-git+https://github.com/OCHA-DAP/hdx-python-country@main#egg=hdx-python-country
+hdx-python-api==5.8.9
 gspread==5.5.0
 pandas==1.4.4
 regex==2022.9.13
