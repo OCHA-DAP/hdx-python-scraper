@@ -352,7 +352,9 @@ def update_subnational(
     rows = runner.get_rows(
         level,
         adminlevel.pcodes,
-        subnational_headers[adminlevel.get_admin_level()],
+        subnational_headers[
+            adminlevel.admin_level
+        ],  # use the main admin level (don't worry about overrides)
         fns,
         names=names,
     )
