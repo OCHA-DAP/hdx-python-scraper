@@ -198,7 +198,6 @@ class Read(Retrieve):
         Returns:
             Tuple[List[str],Iterator[Dict]]: Tuple (headers, iterator where each row is a dictionary)
         """
-        url = self.get_url(datasetinfo["url"], **kwargs)
         sheet = datasetinfo.get("sheet")
         headers = datasetinfo.get("headers")
         if headers is None:
@@ -216,9 +215,17 @@ class Read(Retrieve):
         compression = datasetinfo.get("compression")
         if compression:
             kwargs["compression"] = compression
-        return self.get_tabular_rows(
-            url,
+        url = datasetinfo["url"]
+        if isinstance(url, str):
+            return self.get_tabular_rows(
+                url,
+                dict_form=True,
+                **kwargs,
+            )
+        return self.get_tabular_rows_multi_url(
+            [self.get_url(x, **kwargs) for x in url],
             dict_form=True,
+            has_hxl=datasetinfo.get("use_hxl", False),
             **kwargs,
         )
 
