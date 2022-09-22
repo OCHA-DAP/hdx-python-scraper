@@ -11,7 +11,7 @@ class TestScrapersMultipleURLs:
         BaseScraper.population_lookup = dict()
         today = parse_date("2020-10-01")
         level = "national"
-        scraper_configuration = configuration[f"scraper_multiple_urls"]
+        scraper_configuration = configuration["scraper_multiple_urls"]
         iso3s = (
             "ETH",
             "KEN",
