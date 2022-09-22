@@ -291,6 +291,17 @@ scraper_national:
       - "#affected+killed"
       - "#affected+injured"
 
+scraper_multiple_urls:
+  key_figures:
+    source: "multiple"
+    source_url: "https://data.humdata.org/dataset/key-figures-2022"
+    url:
+      - "https://docs.google.com/spreadsheets/d/e/2PACX-1vRppQx8JTKkKRCKmzfnCMmTFEcvCpkbP9PdHs1sQTUyacmbsx8tlAXpgBLFce-lcehukreGGuXjA_4S/pub?gid=0&single=true&output=csv"
+      - "https://docs.google.com/spreadsheets/d/e/2PACX-1vRppQx8JTKkKRCKmzfnCMmTFEcvCpkbP9PdHs1sQTUyacmbsx8tlAXpgBLFce-lcehukreGGuXjA_4S/pub?gid=2015311116&single=true&output=csv"
+      - "https://docs.google.com/spreadsheets/d/e/2PACX-1vRppQx8JTKkKRCKmzfnCMmTFEcvCpkbP9PdHs1sQTUyacmbsx8tlAXpgBLFce-lcehukreGGuXjA_4S/pub?gid=1275038715&single=true&output=csv"
+    format: "csv"
+    use_hxl: True
+
 unhcr_myanmar_idps:
   url: "https://data.unhcr.org/population/?widget_id=264111&geo_id=693&population_group=5407,4999"
 
