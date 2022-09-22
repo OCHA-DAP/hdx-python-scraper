@@ -216,14 +216,10 @@ class Read(Retrieve):
         if compression:
             kwargs["compression"] = compression
         url = datasetinfo["url"]
-        if isinstance(url, str):
-            return self.get_tabular_rows(
-                url,
-                dict_form=True,
-                **kwargs,
-            )
-        return self.get_tabular_rows_multi_url(
-            [self.get_url(x, **kwargs) for x in url],
+        if isinstance(url, list):
+            url = [self.get_url(x, **kwargs) for x in url]
+        return self.get_tabular_rows(
+            url,
             dict_form=True,
             has_hxl=datasetinfo.get("use_hxl", False),
             **kwargs,
