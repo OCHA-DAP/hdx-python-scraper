@@ -12,7 +12,7 @@ from .unhcr_myanmar_idps import idps_post_run
 
 
 class TestScrapersNational:
-    def test_get_national_afg(self, configuration, fallbacks):
+    def test_get_national_afg(self, configuration):
         BaseScraper.population_lookup = dict()
         today = parse_date("2020-10-01")
         level = "national"
@@ -341,7 +341,7 @@ class TestScrapersNational:
         ]
         run_check_scraper(name, runner, level, headers, values, sources)
 
-    def test_get_national_ukr(self, configuration, fallbacks):
+    def test_get_national_ukr(self, configuration):
         BaseScraper.population_lookup = dict()
         today = parse_date("2020-10-01")
         level = "national"
@@ -381,7 +381,7 @@ class TestScrapersNational:
             ],
         )
 
-    def test_get_national_afg_phl(self, configuration, fallbacks):
+    def test_get_national_afg_phl(self, configuration, fallbacks_json):
         BaseScraper.population_lookup = {"AFG": 38041754}
         today = parse_date("2020-10-01")
         level = "national"
@@ -514,7 +514,7 @@ class TestScrapersNational:
                 "#capacity+doses+administered+total",
                 "2020-09-01",
                 "Our World in Data",
-                "tests/fixtures/fallbacks.json",
+                fallbacks_json,
             )
         ]
         run_check_scraper(
@@ -530,7 +530,7 @@ class TestScrapersNational:
             "Using fallbacks for broken_owd_url! Error: [scheme-error] The data source could not be successfully loaded: [Errno 2] No such file or directory: 'tests/fixtures/broken_owd_url_notexist.csv'"
         ]
 
-    def test_get_national_afg_mmr_phl(self, configuration, fallbacks):
+    def test_get_national_afg_mmr_phl(self, configuration):
         BaseScraper.population_lookup = dict()
         today = parse_date("2021-05-03")
         errors_on_exit = ErrorsOnExit()

@@ -7,6 +7,7 @@ from hdx.location.country import Country
 from hdx.utilities.typehint import ListTuple
 
 from ..runner import Runner
+from ..utilities import add_source_overwrite, add_sources_overwrite
 from .base import BaseOutput
 
 try:
@@ -392,8 +393,10 @@ def update_sources(
         names=names,
         additional_sources=additional_sources,
     )
+    hxltags = [source[0] for source in sources]
     if secondary_runner:
-        secondary_sources = secondary_runner.get_sources()
-        sources.extend(secondary_sources)
-    sources.extend(custom_sources)
+        add_sources_overwrite(
+            hxltags, sources, secondary_runner.get_sources(), logger
+        )
+    add_sources_overwrite(hxltags, sources, custom_sources, logger)
     update_tab(outputs, tab, list(sources_headers) + sources)

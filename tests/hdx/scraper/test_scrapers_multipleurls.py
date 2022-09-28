@@ -7,7 +7,7 @@ from .conftest import run_check_scraper
 
 
 class TestScrapersMultipleURLs:
-    def test_get_key_figures(self, configuration, fallbacks):
+    def test_get_key_figures(self, configuration):
         BaseScraper.population_lookup = dict()
         today = parse_date("2020-10-01")
         level = "national"

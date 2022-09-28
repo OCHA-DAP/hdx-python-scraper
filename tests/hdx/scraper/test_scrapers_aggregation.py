@@ -7,7 +7,7 @@ from .conftest import run_check_scraper, run_check_scrapers
 
 
 class TestScrapersAggregation:
-    def test_get_aggregation_hxl(self, configuration, fallbacks):
+    def test_get_aggregation_hxl(self, configuration):
         BaseScraper.population_lookup = dict()
         today = parse_date("2020-10-01")
 
@@ -213,7 +213,7 @@ class TestScrapersAggregation:
             source_urls=source_urls,
         )
 
-    def test_get_aggregation_nohxl(self, configuration, fallbacks):
+    def test_get_aggregation_nohxl(self, configuration):
         BaseScraper.population_lookup = dict()
         today = parse_date("2020-10-01")
         level = "national"

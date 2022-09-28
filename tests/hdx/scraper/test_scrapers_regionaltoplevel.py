@@ -14,7 +14,7 @@ from .conftest import run_check_scrapers
 
 
 class TestScrapersRegionalToplevel:
-    def test_regionaltoplevel(self, configuration, fallbacks):
+    def test_regionaltoplevel(self, configuration):
         BaseScraper.population_lookup = dict()
         today = parse_date("2020-10-01")
 

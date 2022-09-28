@@ -11,7 +11,7 @@ from .education_enrolment import EducationEnrolment
 
 
 class TestScrapersCustom:
-    def test_get_custom(self, configuration, fallbacks):
+    def test_get_custom(self, configuration, fallbacks_json):
         BaseScraper.population_lookup = dict()
         source_date = "2022-04-30"
         today = parse_date("2020-10-01")
@@ -122,7 +122,7 @@ class TestScrapersCustom:
                 "#impact+type",
                 "2020-09-01",
                 "UNESCO",
-                "tests/fixtures/fallbacks.json",
+                fallbacks_json,
             )
         ]
         check_scraper(
@@ -141,7 +141,7 @@ class TestScrapersCustom:
                 "#status+country+closed",
                 "2020-09-01",
                 "UNESCO",
-                "tests/fixtures/fallbacks.json",
+                fallbacks_json,
             )
         ]
         check_scraper(

@@ -7,7 +7,7 @@ from .conftest import run_check_scrapers
 
 
 class TestRunnerGetResults:
-    def test_get_results(self, configuration, fallbacks):
+    def test_get_results(self, configuration):
         BaseScraper.population_lookup = dict()
         today = parse_date("2020-10-01")
 

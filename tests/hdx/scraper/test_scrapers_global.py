@@ -1,4 +1,5 @@
 import logging
+from os.path import join
 
 import pytest
 from hdx.utilities.dateparse import parse_date
@@ -308,7 +309,7 @@ class TestScraperGlobal:
         run_check_scraper(name, runner, level_name, headers, values, sources)
 
     def test_get_global_2021(
-        self, cerf_headers, caplog, configuration, fallbacks, fixtures
+        self, cerf_headers, caplog, configuration, fallbacks_json, fixtures
     ):
         BaseScraper.population_lookup = dict()
         today = parse_date("2021-05-03")
@@ -369,85 +370,85 @@ class TestScraperGlobal:
                     "#value+cbpf+funding+total+usd",
                     "2020-09-01",
                     "CERF and CBPF",
-                    "tests/fixtures/fallbacks.json",
+                    fallbacks_json,
                 ),
                 (
                     "#value+cbpf+funding+gmempty+total+usd",
                     "2020-09-01",
                     "CERF and CBPF",
-                    "tests/fixtures/fallbacks.json",
+                    fallbacks_json,
                 ),
                 (
                     "#value+cbpf+funding+gm0+total+usd",
                     "2020-09-01",
                     "CERF and CBPF",
-                    "tests/fixtures/fallbacks.json",
+                    fallbacks_json,
                 ),
                 (
                     "#value+cbpf+funding+gm1+total+usd",
                     "2020-09-01",
                     "CERF and CBPF",
-                    "tests/fixtures/fallbacks.json",
+                    fallbacks_json,
                 ),
                 (
                     "#value+cbpf+funding+gm2+total+usd",
                     "2020-09-01",
                     "CERF and CBPF",
-                    "tests/fixtures/fallbacks.json",
+                    fallbacks_json,
                 ),
                 (
                     "#value+cbpf+funding+gm3+total+usd",
                     "2020-09-01",
                     "CERF and CBPF",
-                    "tests/fixtures/fallbacks.json",
+                    fallbacks_json,
                 ),
                 (
                     "#value+cbpf+funding+gm4+total+usd",
                     "2020-09-01",
                     "CERF and CBPF",
-                    "tests/fixtures/fallbacks.json",
+                    fallbacks_json,
                 ),
                 (
                     "#value+cerf+funding+total+usd",
                     "2020-09-01",
                     "CERF and CBPF",
-                    "tests/fixtures/fallbacks.json",
+                    fallbacks_json,
                 ),
                 (
                     "#value+cerf+funding+gmempty+total+usd",
                     "2020-09-01",
                     "CERF and CBPF",
-                    "tests/fixtures/fallbacks.json",
+                    fallbacks_json,
                 ),
                 (
                     "#value+cerf+funding+gm0+total+usd",
                     "2020-09-01",
                     "CERF and CBPF",
-                    "tests/fixtures/fallbacks.json",
+                    fallbacks_json,
                 ),
                 (
                     "#value+cerf+funding+gm1+total+usd",
                     "2020-09-01",
                     "CERF and CBPF",
-                    "tests/fixtures/fallbacks.json",
+                    fallbacks_json,
                 ),
                 (
                     "#value+cerf+funding+gm2+total+usd",
                     "2020-09-01",
                     "CERF and CBPF",
-                    "tests/fixtures/fallbacks.json",
+                    fallbacks_json,
                 ),
                 (
                     "#value+cerf+funding+gm3+total+usd",
                     "2020-09-01",
                     "CERF and CBPF",
-                    "tests/fixtures/fallbacks.json",
+                    fallbacks_json,
                 ),
                 (
                     "#value+cerf+funding+gm4+total+usd",
                     "2020-09-01",
                     "CERF and CBPF",
-                    "tests/fixtures/fallbacks.json",
+                    fallbacks_json,
                 ),
             ]
             run_check_scraper(
@@ -551,6 +552,44 @@ class TestScraperGlobal:
                 "2021-05-03",
                 "Our World in Data",
                 "https://proxy.hxlstandard.org/data.csv?tagger-match-all=on&tagger-01-header=location&tagger-01-tag=%23country%2Bname&tagger-02-header=iso_code&tagger-02-tag=%23country%2Bcode&tagger-03-header=date&tagger-03-tag=%23date&tagger-04-header=total_vaccinations&tagger-04-tag=%23total%2Bvaccinations&tagger-08-header=daily_vaccinations&tagger-08-tag=%23total%2Bvaccinations%2Bdaily&url=https%3A%2F%2Fraw.githubusercontent.com%2Fowid%2Fcovid-19-data%2Fmaster%2Fpublic%2Fdata%2Fvaccinations%2Fvaccinations.csv&header-row=1&dest=data_view",
+            ),
+        ]
+        run_check_scraper(name, runner, level_name, headers, values, sources)
+
+    def test_get_global_source(self, cerf_headers, configuration):
+        BaseScraper.population_lookup = dict()
+        today = parse_date("2021-05-03")
+        level = "single"
+        level_name = "global"
+        scraper_configuration = configuration[f"scraper_{level_name}"]
+        runner = Runner(configuration["HRPs"], today)
+        runner.add_configurables(
+            scraper_configuration,
+            level,
+            level_name=level_name,
+            admin_sources=True,
+        )
+        name = "cerf2_global"
+        headers = (
+            [cerf_headers[0][0], cerf_headers[0][7]],
+            [cerf_headers[1][0], cerf_headers[1][7]],
+        )
+        values = [
+            {"value": 7811774.670000001},
+            {"value": 89298919.0},
+        ]
+        sources = [
+            (
+                "#value+cbpf+funding+total+usd+global",
+                "2021-05-02",
+                "CBPF",
+                "https://data.humdata.org/dataset/cbpf-allocations-and-contributions",
+            ),
+            (
+                "#value+cerf+funding+total+usd+global",
+                "2021-05-01",
+                "CERF",
+                "https://data.humdata.org/dataset/cerf-covid-19-allocations",
             ),
         ]
         run_check_scraper(name, runner, level_name, headers, values, sources)

@@ -13,7 +13,11 @@ from .configurable.resource_downloader import ResourceDownloader
 from .configurable.scraper import ConfigurableScraper
 from .configurable.timeseries import TimeSeries
 from .outputs.base import BaseOutput
-from .utilities import get_isodate_from_dataset_date
+from .utilities import (
+    add_source_overwrite,
+    add_sources_overwrite,
+    get_isodate_from_dataset_date,
+)
 from .utilities.fallbacks import Fallbacks
 from .utilities.reader import Read
 
@@ -101,6 +105,7 @@ class Runner:
         level: str,
         adminlevel: Optional[AdminLevel] = None,
         level_name: Optional[str] = None,
+        admin_sources: bool = False,
         suffix: Optional[str] = None,
         force_add_to_run: bool = False,
     ) -> str:
@@ -115,6 +120,7 @@ class Runner:
             level (str): Can be national, subnational or single
             adminlevel (Optional[AdminLevel]): AdminLevel object from HDX Python Country. Defaults to None.
             level_name (Optional[str]): Customised level_name name. Defaults to None (level_name).
+            admin_sources (bool): Whether sources are per admin unit. Defaults to False.
             suffix (Optional[str]): Suffix to add to the scraper name
             force_add_to_run (bool): Whether to force include the scraper in the next run
 
@@ -132,6 +138,7 @@ class Runner:
             self.countryiso3s,
             adminlevel,
             level_name,
+            admin_sources,
             self.today,
             self.errors_on_exit,
         )
@@ -151,6 +158,7 @@ class Runner:
         level: str,
         adminlevel: Optional[AdminLevel] = None,
         level_name: Optional[str] = None,
+        admin_sources: bool = False,
         suffix: Optional[str] = None,
         force_add_to_run: bool = False,
     ) -> List[str]:
@@ -164,6 +172,7 @@ class Runner:
             level (str): Can be national, subnational or single
             adminlevel (Optional[AdminLevel]): AdminLevel object from HDX Python Country. Defaults to None.
             level_name (Optional[str]): Customised level_name name. Defaults to None (level_name).
+            admin_sources (bool): Whether sources are per admin unit. Defaults to False.
             suffix (Optional[str]): Suffix to add to the scraper name
             force_add_to_run (bool): Whether to force include the scraper in the next run
 
@@ -180,6 +189,7 @@ class Runner:
                     level,
                     adminlevel,
                     level_name,
+                    admin_sources,
                     suffix,
                     force_add_to_run,
                 )
@@ -723,13 +733,32 @@ class Runner:
                     "headers": (list(), list()),
                     "values": list(),
                     "sources": list(),
+                    "source_hxltags": list(),
                     "fallbacks": list(),
                 }
                 results[output_lvl] = level_results
-            level_results["headers"][0].extend(headers[0])
-            level_results["headers"][1].extend(headers[1])
-            level_results["values"].extend(scrap.get_values(level))
-            level_results["sources"].extend(scrap.get_sources(level))
+            headings = headers[0]
+            hxltags = headers[1]
+            values = scrap.get_values(level)
+            lev_headings = level_results["headers"][0]
+            lev_hxltags = level_results["headers"][1]
+            lev_values = level_results["values"]
+            for i, hxltag in enumerate(hxltags):
+                if hxltag in lev_hxltags:
+                    index = lev_hxltags.index(hxltag)
+                    lev_values[index].update(values[i])
+                else:
+                    lev_headings.append(headings[i])
+                    lev_hxltags.append(hxltag)
+                    lev_values.append(values[i])
+            lev_source_hxltags = level_results["source_hxltags"]
+            lev_sources = level_results["sources"]
+            add_sources_overwrite(
+                lev_source_hxltags,
+                lev_sources,
+                scrap.get_sources(level),
+                logger,
+            )
             lvls_used.add(lvl)
             lvls_used.add(output_lvl)
 
@@ -749,6 +778,8 @@ class Runner:
             for level in scraper.headers:
                 add_level_results(level, level, scraper, levels_used)
 
+        for level in results:
+            del results[level]["source_hxltags"]
         return results
 
     def get_rows(
@@ -861,15 +892,16 @@ class Runner:
         """
         if not names:
             names = self.scrapers.keys()
-        hxltags = set()
         sources = list()
+        hxltags = list()
+
         reader = Read.get_reader()
         for sourceinfo in additional_sources:
             date = sourceinfo.get("source_date")
             if date is None:
                 if sourceinfo.get("force_date_today", False):
                     date = self.today.strftime("%Y-%m-%d")
-            source = sourceinfo.get("source")
+            source_name = sourceinfo.get("source")
             source_url = sourceinfo.get("source_url")
             dataset_name = sourceinfo.get("dataset")
             if dataset_name:
@@ -878,11 +910,13 @@ class Runner:
                     date = get_isodate_from_dataset_date(
                         dataset, today=self.today
                     )
-                if source is None:
-                    source = dataset["dataset_source"]
+                if source_name is None:
+                    source_name = dataset["dataset_source"]
                 if source_url is None:
                     source_url = dataset.get_hdx_url()
-            sources.append((sourceinfo["indicator"], date, source, source_url))
+            hxltag = sourceinfo["indicator"]
+            source = (hxltag, date, source_name, source_url)
+            add_source_overwrite(hxltags, sources, source, logger)
         for name in names:
             if self.scrapers_to_run and not any(
                 x in name for x in self.scrapers_to_run
@@ -896,12 +930,9 @@ class Runner:
             else:
                 levels_to_check = scraper.sources.keys()
             for level in levels_to_check:
-                for source in scraper.get_sources(level):
-                    hxltag = source[0]
-                    if hxltag in hxltags:
-                        continue
-                    hxltags.add(hxltag)
-                    sources.append(source)
+                add_sources_overwrite(
+                    hxltags, sources, scraper.get_sources(level), logger
+                )
         return sources
 
     def get_source_urls(

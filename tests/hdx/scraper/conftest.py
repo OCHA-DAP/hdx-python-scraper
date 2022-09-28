@@ -80,9 +80,11 @@ def configuration(fixtures):
     return Configuration.read()
 
 
-@pytest.fixture(scope="session")
-def fallbacks(fixtures):
-    Fallbacks.add(join(fixtures, "fallbacks.json"), sources_key="sources")
+@pytest.fixture(scope="function")
+def fallbacks_json(fixtures):
+    path = join(fixtures, "fallbacks.json")
+    Fallbacks.add(path, sources_key="sources")
+    return path
 
 
 def check_scrapers(

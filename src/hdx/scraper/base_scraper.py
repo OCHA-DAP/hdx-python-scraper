@@ -12,45 +12,62 @@ class BaseScraper(ABC):
     Args:
         name (str): Name of scraper
         datasetinfo (Dict): Information about dataset
-        headers: Dict[str, Tuple]: Headers to be oytput at each level_name
+        headers (Dict[str, Tuple]): Headers to be oytput at each level_name
+        admin_sources (bool): Whether sources are per admin unit. Defaults to False.
     """
 
     population_lookup = dict()
 
     def __init__(
-        self, name: str, datasetinfo: Dict, headers: Dict[str, Tuple]
+        self,
+        name: str,
+        datasetinfo: Dict,
+        headers: Dict[str, Tuple],
+        admin_sources: bool = False,
     ) -> None:
-        self.setup(name, headers)
+        self.setup(name, headers, admin_sources)
         self.datasetinfo = deepcopy(datasetinfo)
         self.errors_on_exit = None
         self.can_fallback = True
 
-    def setup(self, name: str, headers: Dict[str, Tuple]) -> None:
+    def setup(
+        self,
+        name: str,
+        headers: Dict[str, Tuple],
+        admin_sources: bool = False,
+    ) -> None:
         """Initialise member variables including name and headers which is of form:
         {"national": (("School Closure",), ("#impact+type",)), ...},
 
         Args:
             name (str): Name of scraper
             headers (Dict[str, Tuple]): Headers to be output at each level_name
+            admin_sources (bool): Whether sources are per admin unit. Defaults to False.
 
         Returns:
              None
         """
         self.name = name
         self.headers = headers
-        self.initialise_values_sources()
+        self.initialise_values_sources(admin_sources)
         self.has_run = False
         self.fallbacks_used = False
         self.source_urls = set()
         self.population_key = None
 
-    def initialise_values_sources(self) -> None:
+    def initialise_values_sources(
+        self,
+        admin_sources: bool = False,
+    ) -> None:
         """
         Create values and sources member variables for inheriting scrapers to populate.
         values will be of form:
         {"national": ({"AFG": 1.2, "PSE": 1.4}, {"AFG": 123, "PSE": 241}, ...})}
         sources will be of form:
         {"national": [("#food-prices", "2022-07-15", "WFP", "https://data.humdata.org/dataset/global-wfp-food-prices"), ...]
+
+        Args:
+            admin_sources (bool): Whether sources are per admin unit. Defaults to False.
 
         Returns:
              None
@@ -62,6 +79,7 @@ class BaseScraper(ABC):
         self.sources: Dict[str, List] = {
             level: list() for level in self.headers
         }
+        self.admin_sources = admin_sources
 
     def get_reader(
         self, name: Optional[str] = None, prefix: Optional[str] = None
@@ -126,18 +144,52 @@ class BaseScraper(ABC):
         date = self.datasetinfo["source_date"]
         if isinstance(date, datetime):
             date = {"default_date": date}
-        for level in self.headers:
-            self.sources[level] = [
-                (
-                    hxltag,
-                    date.get(hxltag, date["default_date"]).strftime(
-                        "%Y-%m-%d"
-                    ),
-                    source.get(hxltag, source["default_source"]),
-                    source_url.get(hxltag, source_url["default_url"]),
-                )
-                for hxltag in self.headers[level][1]
-            ]
+        if self.admin_sources:
+            for level in self.headers:
+                self.sources[level] = list()
+
+                def add_source(hxltag, adm):
+                    hxltag_adm = f"{hxltag}+{adm.lower()}"
+                    out_date = date.get(
+                        hxltag_adm, date.get(hxltag, date["default_date"])
+                    )
+                    out_source = source.get(
+                        hxltag_adm,
+                        source.get(hxltag, source["default_source"]),
+                    )
+                    out_url = source_url.get(
+                        hxltag_adm,
+                        source_url.get(hxltag, source_url["default_url"]),
+                    )
+                    self.sources[level].append(
+                        (
+                            hxltag_adm,
+                            out_date.strftime("%Y-%m-%d"),
+                            out_source,
+                            out_url,
+                        )
+                    )
+
+                for i, hxltag in enumerate(self.headers[level][1]):
+                    values = self.get_values(level)[i]
+                    if len(values) == 1 and next(iter(values)) == "value":
+                        add_source(hxltag, level)
+                    else:
+                        for adm in values.keys():
+                            add_source(hxltag, adm)
+        else:
+            for level in self.headers:
+                self.sources[level] = [
+                    (
+                        hxltag,
+                        date.get(hxltag, date["default_date"]).strftime(
+                            "%Y-%m-%d"
+                        ),
+                        source.get(hxltag, source["default_source"]),
+                        source_url.get(hxltag, source_url["default_url"]),
+                    )
+                    for hxltag in self.headers[level][1]
+                ]
 
     def add_hxltag_source(self, key: str, indicator: str) -> None:
         """

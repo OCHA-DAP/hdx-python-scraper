@@ -45,6 +45,11 @@ additional_sources:
     source_date: "2022-02-24"
     source: "Meduza"
     source_url: "https://meduza.io/en/news/2022/02/24/putin-announces-start-of-military-operation-in-eastern-ukraine"
+# Checking duplication of sources
+  - indicator: "#date+start+conflict"
+    source_date: "2022-02-24"
+    source: "Meduza"
+    source_url: "https://meduza.io/en/news/2022/02/24/putin-announces-start-of-military-operation-in-eastern-ukraine"
 
 # national
 scraper_national:
@@ -301,6 +306,27 @@ scraper_multiple_urls:
       - "https://docs.google.com/spreadsheets/d/e/2PACX-1vRppQx8JTKkKRCKmzfnCMmTFEcvCpkbP9PdHs1sQTUyacmbsx8tlAXpgBLFce-lcehukreGGuXjA_4S/pub?gid=1275038715&single=true&output=csv"
     format: "csv"
     use_hxl: True
+
+scraper_append_data:
+  key_figures_som:
+    source: "multiple"
+    source_url: "https://data.humdata.org/dataset/som-key-figures-2022"
+    url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRppQx8JTKkKRCKmzfnCMmTFEcvCpkbP9PdHs1sQTUyacmbsx8tlAXpgBLFce-lcehukreGGuXjA_4S/pub?gid=0&single=true&output=csv"
+    format: "csv"
+    use_hxl: True
+  key_figures_eth:
+    source: "multiple"
+    source_url: "https://data.humdata.org/dataset/eth-key-figures-2022"
+    url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRppQx8JTKkKRCKmzfnCMmTFEcvCpkbP9PdHs1sQTUyacmbsx8tlAXpgBLFce-lcehukreGGuXjA_4S/pub?gid=2015311116&single=true&output=csv"
+    format: "csv"
+    use_hxl: True
+  key_figures_ken:
+    source: "multiple"
+    source_url: "https://data.humdata.org/dataset/ken-key-figures-2022"
+    url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRppQx8JTKkKRCKmzfnCMmTFEcvCpkbP9PdHs1sQTUyacmbsx8tlAXpgBLFce-lcehukreGGuXjA_4S/pub?gid=1275038715&single=true&output=csv"
+    format: "csv"
+    use_hxl: True
+
 
 unhcr_myanmar_idps:
   url: "https://data.unhcr.org/population/?widget_id=264111&geo_id=693&population_group=5407,4999"
