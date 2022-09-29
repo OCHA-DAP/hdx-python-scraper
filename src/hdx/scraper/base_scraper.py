@@ -150,17 +150,26 @@ class BaseScraper(ABC):
 
                 def add_source(hxltag, adm):
                     hxltag_adm = f"{hxltag}+{adm.lower()}"
-                    out_date = date.get(
-                        hxltag_adm, date.get(hxltag, date["default_date"])
-                    )
-                    out_source = source.get(
-                        hxltag_adm,
-                        source.get(hxltag, source["default_source"]),
-                    )
-                    out_url = source_url.get(
-                        hxltag_adm,
-                        source_url.get(hxltag, source_url["default_url"]),
-                    )
+                    source_adm = f"ADM_{adm}"
+                    out_date = date.get(hxltag_adm)
+                    if not out_date:
+                        out_date = date.get(source_adm)
+                    if not out_date:
+                        out_date = date.get(hxltag, date["default_date"])
+                    out_source = source.get(hxltag_adm)
+                    if not out_source:
+                        out_source = source.get(source_adm)
+                    if not out_source:
+                        out_source = source.get(
+                            hxltag, source["default_source"]
+                        )
+                    out_url = source_url.get(hxltag_adm)
+                    if not out_url:
+                        out_url = source_url.get(source_adm)
+                    if not out_url:
+                        out_url = source_url.get(
+                            hxltag, source_url["default_url"]
+                        )
                     self.sources[level].append(
                         (
                             hxltag_adm,
