@@ -155,21 +155,23 @@ class BaseScraper(ABC):
                     if not out_date:
                         out_date = date.get(source_adm)
                     if not out_date:
-                        out_date = date.get(hxltag, date["default_date"])
+                        out_date = date.get(hxltag)
+                    if not out_date:
+                        out_date = date["default_date"]
                     out_source = source.get(hxltag_adm)
                     if not out_source:
                         out_source = source.get(source_adm)
                     if not out_source:
-                        out_source = source.get(
-                            hxltag, source["default_source"]
-                        )
+                        out_source = source.get(hxltag)
+                    if not out_source:
+                        out_source = source["default_source"]
                     out_url = source_url.get(hxltag_adm)
                     if not out_url:
                         out_url = source_url.get(source_adm)
                     if not out_url:
-                        out_url = source_url.get(
-                            hxltag, source_url["default_url"]
-                        )
+                        out_url = source_url.get(hxltag)
+                    if not out_url:
+                        out_url = source_url["default_url"]
                     self.sources[level].append(
                         (
                             hxltag_adm,
