@@ -26,7 +26,9 @@ class TestScrapersAppendData:
         runner = Runner(iso3s, today)
         names = ["key_figures_som", "key_figures_eth", "key_figures_ken"]
         keys = runner.add_configurables(
-            scraper_configuration, level, admin_sources=True
+            scraper_configuration,
+            level,
+            source_configuration={"admin_sources": True},
         )
         assert keys == names
 

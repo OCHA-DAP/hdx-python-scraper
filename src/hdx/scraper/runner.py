@@ -105,7 +105,7 @@ class Runner:
         level: str,
         adminlevel: Optional[AdminLevel] = None,
         level_name: Optional[str] = None,
-        admin_sources: bool = False,
+        source_configuration: Optional[Dict] = None,
         suffix: Optional[str] = None,
         force_add_to_run: bool = False,
     ) -> str:
@@ -120,7 +120,7 @@ class Runner:
             level (str): Can be national, subnational or single
             adminlevel (Optional[AdminLevel]): AdminLevel object from HDX Python Country. Defaults to None.
             level_name (Optional[str]): Customised level_name name. Defaults to None (level_name).
-            admin_sources (bool): Whether sources are per admin unit. Defaults to False.
+            source_configuration (Optional[Dict]): Configuration for sources. Defaults to None (use defaults).
             suffix (Optional[str]): Suffix to add to the scraper name
             force_add_to_run (bool): Whether to force include the scraper in the next run
 
@@ -138,7 +138,7 @@ class Runner:
             self.countryiso3s,
             adminlevel,
             level_name,
-            admin_sources,
+            source_configuration,
             self.today,
             self.errors_on_exit,
         )
@@ -158,7 +158,7 @@ class Runner:
         level: str,
         adminlevel: Optional[AdminLevel] = None,
         level_name: Optional[str] = None,
-        admin_sources: bool = False,
+        source_configuration: Optional[Dict] = None,
         suffix: Optional[str] = None,
         force_add_to_run: bool = False,
     ) -> List[str]:
@@ -172,7 +172,7 @@ class Runner:
             level (str): Can be national, subnational or single
             adminlevel (Optional[AdminLevel]): AdminLevel object from HDX Python Country. Defaults to None.
             level_name (Optional[str]): Customised level_name name. Defaults to None (level_name).
-            admin_sources (bool): Whether sources are per admin unit. Defaults to False.
+            source_configuration (Optional[Dict]): Configuration for sources. Defaults to None (use defaults).
             suffix (Optional[str]): Suffix to add to the scraper name
             force_add_to_run (bool): Whether to force include the scraper in the next run
 
@@ -189,7 +189,7 @@ class Runner:
                     level,
                     adminlevel,
                     level_name,
-                    admin_sources,
+                    source_configuration,
                     suffix,
                     force_add_to_run,
                 )

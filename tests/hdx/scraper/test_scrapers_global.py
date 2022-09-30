@@ -566,7 +566,7 @@ class TestScraperGlobal:
             scraper_configuration,
             level,
             level_name=level_name,
-            admin_sources=True,
+            source_configuration={"admin_sources": True},
         )
         name = "cerf2_global"
         headers = (
@@ -586,6 +586,73 @@ class TestScraperGlobal:
             ),
             (
                 "#value+cerf+funding+total+usd+global",
+                "2021-05-01",
+                "CERF",
+                "https://data.humdata.org/dataset/cerf-covid-19-allocations",
+            ),
+        ]
+        run_check_scraper(name, runner, level_name, headers, values, sources)
+
+        runner = Runner(configuration["HRPs"], today)
+        runner.add_configurables(
+            scraper_configuration,
+            level,
+            level_name=level_name,
+            source_configuration={
+                "admin_sources": True,
+                "admin_mapping": {"global": "globe"},
+            },
+        )
+        name = "cerf2_global"
+        headers = (
+            [cerf_headers[0][0], cerf_headers[0][7]],
+            [cerf_headers[1][0], cerf_headers[1][7]],
+        )
+        values = [
+            {"value": 7811774.670000001},
+            {"value": 89298919.0},
+        ]
+        sources = [
+            (
+                "#value+cbpf+funding+total+usd+globe",
+                "2021-05-02",
+                "CBPF",
+                "https://data.humdata.org/dataset/cbpf-allocations-and-contributions",
+            ),
+            (
+                "#value+cerf+funding+total+usd+globe",
+                "2021-05-01",
+                "CERF",
+                "https://data.humdata.org/dataset/cerf-covid-19-allocations",
+            ),
+        ]
+        run_check_scraper(name, runner, level_name, headers, values, sources)
+
+        runner = Runner(configuration["HRPs"], today)
+        runner.add_configurables(
+            scraper_configuration,
+            level,
+            level_name=level_name,
+            source_configuration={"suffix_attribute": "world"},
+        )
+        name = "cerf2_global"
+        headers = (
+            [cerf_headers[0][0], cerf_headers[0][7]],
+            [cerf_headers[1][0], cerf_headers[1][7]],
+        )
+        values = [
+            {"value": 7811774.670000001},
+            {"value": 89298919.0},
+        ]
+        sources = [
+            (
+                "#value+cbpf+funding+total+usd+world",
+                "2021-05-02",
+                "CBPF",
+                "https://data.humdata.org/dataset/cbpf-allocations-and-contributions",
+            ),
+            (
+                "#value+cerf+funding+total+usd+world",
                 "2021-05-01",
                 "CERF",
                 "https://data.humdata.org/dataset/cerf-covid-19-allocations",

@@ -13,7 +13,7 @@ class BaseScraper(ABC):
         name (str): Name of scraper
         datasetinfo (Dict): Information about dataset
         headers (Dict[str, Tuple]): Headers to be oytput at each level_name
-        admin_sources (bool): Whether sources are per admin unit. Defaults to False.
+        source_configuration (Optional[Dict]): Configuration for sources. Defaults to None (use defaults).
     """
 
     population_lookup = dict()
@@ -23,9 +23,9 @@ class BaseScraper(ABC):
         name: str,
         datasetinfo: Dict,
         headers: Dict[str, Tuple],
-        admin_sources: bool = False,
+        source_configuration: Optional[Dict] = None,
     ) -> None:
-        self.setup(name, headers, admin_sources)
+        self.setup(name, headers, source_configuration)
         self.datasetinfo = deepcopy(datasetinfo)
         self.errors_on_exit = None
         self.can_fallback = True
@@ -34,7 +34,7 @@ class BaseScraper(ABC):
         self,
         name: str,
         headers: Dict[str, Tuple],
-        admin_sources: bool = False,
+        source_configuration: Optional[Dict] = None,
     ) -> None:
         """Initialise member variables including name and headers which is of form:
         {"national": (("School Closure",), ("#impact+type",)), ...},
@@ -42,14 +42,14 @@ class BaseScraper(ABC):
         Args:
             name (str): Name of scraper
             headers (Dict[str, Tuple]): Headers to be output at each level_name
-            admin_sources (bool): Whether sources are per admin unit. Defaults to False.
+            source_configuration (Optional[Dict]): Configuration for sources. Defaults to None (use defaults).
 
         Returns:
              None
         """
         self.name = name
         self.headers = headers
-        self.initialise_values_sources(admin_sources)
+        self.initialise_values_sources(source_configuration)
         self.has_run = False
         self.fallbacks_used = False
         self.source_urls = set()
@@ -57,7 +57,7 @@ class BaseScraper(ABC):
 
     def initialise_values_sources(
         self,
-        admin_sources: bool = False,
+        source_configuration: Optional[Dict] = None,
     ) -> None:
         """
         Create values and sources member variables for inheriting scrapers to populate.
@@ -67,7 +67,7 @@ class BaseScraper(ABC):
         {"national": [("#food-prices", "2022-07-15", "WFP", "https://data.humdata.org/dataset/global-wfp-food-prices"), ...]
 
         Args:
-            admin_sources (bool): Whether sources are per admin unit. Defaults to False.
+            source_configuration (Optional[Dict]): Configuration for sources. Defaults to None (use defaults).
 
         Returns:
              None
@@ -79,7 +79,7 @@ class BaseScraper(ABC):
         self.sources: Dict[str, List] = {
             level: list() for level in self.headers
         }
-        self.admin_sources = admin_sources
+        self.source_configuration: Optional[Dict] = source_configuration
 
     def get_reader(
         self, name: Optional[str] = None, prefix: Optional[str] = None
@@ -144,51 +144,7 @@ class BaseScraper(ABC):
         date = self.datasetinfo["source_date"]
         if isinstance(date, datetime):
             date = {"default_date": date}
-        if self.admin_sources:
-            for level in self.headers:
-                self.sources[level] = list()
-
-                def add_source(hxltag, adm):
-                    hxltag_adm = f"{hxltag}+{adm.lower()}"
-                    source_adm = f"ADM_{adm}"
-                    out_date = date.get(hxltag_adm)
-                    if not out_date:
-                        out_date = date.get(source_adm)
-                    if not out_date:
-                        out_date = date.get(hxltag)
-                    if not out_date:
-                        out_date = date["default_date"]
-                    out_source = source.get(hxltag_adm)
-                    if not out_source:
-                        out_source = source.get(source_adm)
-                    if not out_source:
-                        out_source = source.get(hxltag)
-                    if not out_source:
-                        out_source = source["default_source"]
-                    out_url = source_url.get(hxltag_adm)
-                    if not out_url:
-                        out_url = source_url.get(source_adm)
-                    if not out_url:
-                        out_url = source_url.get(hxltag)
-                    if not out_url:
-                        out_url = source_url["default_url"]
-                    self.sources[level].append(
-                        (
-                            hxltag_adm,
-                            out_date.strftime("%Y-%m-%d"),
-                            out_source,
-                            out_url,
-                        )
-                    )
-
-                for i, hxltag in enumerate(self.headers[level][1]):
-                    values = self.get_values(level)[i]
-                    if len(values) == 1 and next(iter(values)) == "value":
-                        add_source(hxltag, level)
-                    else:
-                        for adm in values.keys():
-                            add_source(hxltag, adm)
-        else:
+        if self.source_configuration is None:
             for level in self.headers:
                 self.sources[level] = [
                     (
@@ -201,6 +157,76 @@ class BaseScraper(ABC):
                     )
                     for hxltag in self.headers[level][1]
                 ]
+            return
+        for level in self.headers:
+            self.sources[level] = list()
+
+            def add_source(hxltag, suffix_attribute):
+                hxltag_suffix = f"{hxltag}+{suffix_attribute.lower()}"
+                source_suffix = f"CUSTOM_{suffix_attribute}"
+                out_date = date.get(hxltag_suffix)
+                if not out_date:
+                    out_date = date.get(source_suffix)
+                if not out_date:
+                    out_date = date.get(hxltag)
+                if not out_date:
+                    out_date = date["default_date"]
+                out_source = source.get(hxltag_suffix)
+                if not out_source:
+                    out_source = source.get(source_suffix)
+                if not out_source:
+                    out_source = source.get(hxltag)
+                if not out_source:
+                    out_source = source["default_source"]
+                out_url = source_url.get(hxltag_suffix)
+                if not out_url:
+                    out_url = source_url.get(source_suffix)
+                if not out_url:
+                    out_url = source_url.get(hxltag)
+                if not out_url:
+                    out_url = source_url["default_url"]
+                self.sources[level].append(
+                    (
+                        hxltag_suffix,
+                        out_date.strftime("%Y-%m-%d"),
+                        out_source,
+                        out_url,
+                    )
+                )
+
+            for i, hxltag in enumerate(self.headers[level][1]):
+                suffix_attribute = self.source_configuration.get(
+                    "suffix_attribute"
+                )
+                if suffix_attribute:
+                    add_source(hxltag, suffix_attribute)
+                    continue
+                values = self.get_values(level)[i]
+                admin_sources = self.source_configuration.get(
+                    "admin_sources", False
+                )
+                if admin_sources:
+                    admin_mapping = self.source_configuration.get(
+                        "admin_mapping"
+                    )
+                    if len(values) == 1 and next(iter(values)) == "value":
+                        if admin_mapping:
+                            out_adm = admin_mapping.get(level)
+                        else:
+                            out_adm = level
+                        if out_adm:
+                            add_source(hxltag, out_adm)
+                        continue
+                    out_adms = list()
+                    for adm in values.keys():
+                        if admin_mapping:
+                            out_adm = admin_mapping.get(adm)
+                            if out_adm and out_adm not in out_adms:
+                                out_adms.append(out_adm)
+                        else:
+                            out_adms.append(adm)
+                    for out_adm in out_adms:
+                        add_source(hxltag, out_adm)
 
     def add_hxltag_source(self, key: str, indicator: str) -> None:
         """
