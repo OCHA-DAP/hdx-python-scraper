@@ -949,6 +949,12 @@ scraper_subnational:
     output_hxl:
       - "#severity+malnutrition+num+subnational"
 
+affected_targeted_reached:
+  datasets:
+    ETH: "ethiopia-pin-targeted-reached-by-location-and-cluster"
+    KEN: "kenya-pin-targeted-reached-by-location-and-cluster"
+    SOM: "somalia-pin-targeted-reached-by-location-and-cluster"
+
 # region lookup
 regional:
   dataset: "unocha-office-locations"
@@ -1178,3 +1184,356 @@ admin_info:
   - {pcode: AF32, name: Hirat, iso2: AF, iso3: AFG, country: Afghanistan}
   - {pcode: AF33, name: Farah, iso2: AF, iso3: AFG, country: Afghanistan}
   - {pcode: AF34, name: Nimroz, iso2: AF, iso3: AFG, country: Afghanistan}
+
+admin1:
+  admin_info:
+    - {country: Ethiopia, iso3: ETH, pcode: ET14, name: Addis Ababa}
+    - {country: Ethiopia, iso3: ETH, pcode: ET02, name: Afar}
+    - {country: Ethiopia, iso3: ETH, pcode: ET03, name: Amhara}
+    - {country: Ethiopia, iso3: ETH, pcode: ET06, name: Benishangul Gumz}
+    - {country: Ethiopia, iso3: ETH, pcode: ET15, name: Dire Dawa}
+    - {country: Ethiopia, iso3: ETH, pcode: ET12, name: Gambela}
+    - {country: Ethiopia, iso3: ETH, pcode: ET13, name: Harari}
+    - {country: Ethiopia, iso3: ETH, pcode: ET04, name: Oromia}
+    - {country: Ethiopia, iso3: ETH, pcode: ET07, name: SNNP}
+    - {country: Ethiopia, iso3: ETH, pcode: ET16, name: Sidama}
+    - {country: Ethiopia, iso3: ETH, pcode: ET05, name: Somali}
+    - {country: Ethiopia, iso3: ETH, pcode: ET11, name: South West Ethiopia}
+    - {country: Ethiopia, iso3: ETH, pcode: ET01, name: Tigray}
+    - {country: Kenya, iso3: KEN, pcode: KE030, name: Baringo}
+    - {country: Kenya, iso3: KEN, pcode: KE036, name: Bomet}
+    - {country: Kenya, iso3: KEN, pcode: KE039, name: Bungoma}
+    - {country: Kenya, iso3: KEN, pcode: KE040, name: Busia}
+    - {country: Kenya, iso3: KEN, pcode: KE028, name: Elgeyo Marakwet}
+    - {country: Kenya, iso3: KEN, pcode: KE014, name: Embu}
+    - {country: Kenya, iso3: KEN, pcode: KE007, name: Garissa}
+    - {country: Kenya, iso3: KEN, pcode: KE043, name: Homa Bay}
+    - {country: Kenya, iso3: KEN, pcode: KE011, name: Isiolo}
+    - {country: Kenya, iso3: KEN, pcode: KE034, name: Kajiado}
+    - {country: Kenya, iso3: KEN, pcode: KE037, name: Kakamega}
+    - {country: Kenya, iso3: KEN, pcode: KE035, name: Kericho}
+    - {country: Kenya, iso3: KEN, pcode: KE022, name: Kiambu}
+    - {country: Kenya, iso3: KEN, pcode: KE003, name: Kilifi}
+    - {country: Kenya, iso3: KEN, pcode: KE020, name: Kirinyaga}
+    - {country: Kenya, iso3: KEN, pcode: KE045, name: Kisii}
+    - {country: Kenya, iso3: KEN, pcode: KE042, name: Kisumu}
+    - {country: Kenya, iso3: KEN, pcode: KE015, name: Kitui}
+    - {country: Kenya, iso3: KEN, pcode: KE002, name: Kwale}
+    - {country: Kenya, iso3: KEN, pcode: KE031, name: Laikipia}
+    - {country: Kenya, iso3: KEN, pcode: KE005, name: Lamu}
+    - {country: Kenya, iso3: KEN, pcode: KE016, name: Machakos}
+    - {country: Kenya, iso3: KEN, pcode: KE017, name: Makueni}
+    - {country: Kenya, iso3: KEN, pcode: KE009, name: Mandera}
+    - {country: Kenya, iso3: KEN, pcode: KE010, name: Marsabit}
+    - {country: Kenya, iso3: KEN, pcode: KE012, name: Meru}
+    - {country: Kenya, iso3: KEN, pcode: KE044, name: Migori}
+    - {country: Kenya, iso3: KEN, pcode: KE001, name: Mombasa}
+    - {country: Kenya, iso3: KEN, pcode: KE021, name: Muranga}
+    - {country: Kenya, iso3: KEN, pcode: KE047, name: Nairobi}
+    - {country: Kenya, iso3: KEN, pcode: KE032, name: Nakuru}
+    - {country: Kenya, iso3: KEN, pcode: KE029, name: Nandi}
+    - {country: Kenya, iso3: KEN, pcode: KE033, name: Narok}
+    - {country: Kenya, iso3: KEN, pcode: KE046, name: Nyamira}
+    - {country: Kenya, iso3: KEN, pcode: KE018, name: Nyandarua}
+    - {country: Kenya, iso3: KEN, pcode: KE019, name: Nyeri}
+    - {country: Kenya, iso3: KEN, pcode: KE025, name: Samburu}
+    - {country: Kenya, iso3: KEN, pcode: KE041, name: Siaya}
+    - {country: Kenya, iso3: KEN, pcode: KE006, name: Taita Taveta}
+    - {country: Kenya, iso3: KEN, pcode: KE004, name: Tana River}
+    - {country: Kenya, iso3: KEN, pcode: KE013, name: Tharaka Nithi}
+    - {country: Kenya, iso3: KEN, pcode: KE026, name: Trans Nzoia}
+    - {country: Kenya, iso3: KEN, pcode: KE023, name: Turkana}
+    - {country: Kenya, iso3: KEN, pcode: KE027, name: Uasin Gishu}
+    - {country: Kenya, iso3: KEN, pcode: KE038, name: Vihiga}
+    - {country: Kenya, iso3: KEN, pcode: KE008, name: Wajir}
+    - {country: Kenya, iso3: KEN, pcode: KE024, name: West Pokot}
+    - {country: Somalia, iso3: SOM, pcode: SO11, name: Awdal}
+    - {country: Somalia, iso3: SOM, pcode: SO25, name: Bakool}
+    - {country: Somalia, iso3: SOM, pcode: SO22, name: Banadir}
+    - {country: Somalia, iso3: SOM, pcode: SO16, name: Bari}
+    - {country: Somalia, iso3: SOM, pcode: SO24, name: Bay}
+    - {country: Somalia, iso3: SOM, pcode: SO19, name: Galgaduud}
+    - {country: Somalia, iso3: SOM, pcode: SO26, name: Gedo}
+    - {country: Somalia, iso3: SOM, pcode: SO20, name: Hiraan}
+    - {country: Somalia, iso3: SOM, pcode: SO28, name: Lower Juba}
+    - {country: Somalia, iso3: SOM, pcode: SO23, name: Lower Shabelle}
+    - {country: Somalia, iso3: SOM, pcode: SO27, name: Middle Juba}
+    - {country: Somalia, iso3: SOM, pcode: SO21, name: Middle Shabelle}
+    - {country: Somalia, iso3: SOM, pcode: SO18, name: Mudug}
+    - {country: Somalia, iso3: SOM, pcode: SO17, name: Nugaal}
+    - {country: Somalia, iso3: SOM, pcode: SO15, name: Sanaag}
+    - {country: Somalia, iso3: SOM, pcode: SO14, name: Sool}
+    - {country: Somalia, iso3: SOM, pcode: SO13, name: Togdheer}
+    - {country: Somalia, iso3: SOM, pcode: SO12, name: Woqooyi Galbeed}
+
+  admin_name_mappings:
+    "ben-gumz": "ET06"
+    "PL.Sool": "SO14"
+    "PL.Sanag": "SO15"
+    "PL.Mudug": "SO18"
+    "Sc.Mudug": "SO18"
+    "Shabelle dhexe": "SO21"
+    "Shabelle hoose": "SO23"
+    "Juba dhexe": "SO27"
+    "Juba hoose": "SO28"
+
+  admin_name_replacements:
+    " urban": ""
+    "sud": "south"
+    "ouest": "west"
+    "est": "east"
+    "nord": "north"
+    "'": ""
+    "/": " "
+    ".": " "
+    " region": ""
+
+  admin_fuzzy_dont:
+    - "nord"
+    - "north"
+    - "sud"
+    - "south"
+    - "est"
+    - "east"
+    - "ouest"
+    - "west"
+
+admin2:
+  admin_info:
+    - {country: Ethiopia, iso3: ETH, pcode: ET0508, name: Afder}
+    - {country: Ethiopia, iso3: ETH, pcode: ET1202, name: Agnewak}
+    - {country: Ethiopia, iso3: ETH, pcode: ET0712, name: Alle}
+    - {country: Ethiopia, iso3: ETH, pcode: ET0721, name: Amaro}
+    - {country: Ethiopia, iso3: ETH, pcode: ET0408, name: Arsi}
+    - {country: Ethiopia, iso3: ETH, pcode: ET0603, name: Assosa}
+    - {country: Ethiopia, iso3: ETH, pcode: ET0309, name: Awi}
+    - {country: Ethiopia, iso3: ETH, pcode: ET0201, name: Awsi /Zone 1}
+    - {country: Ethiopia, iso3: ETH, pcode: ET0411, name: Bale}
+    - {country: Ethiopia, iso3: ETH, pcode: ET0716, name: Basketo}
+    - {country: Ethiopia, iso3: ETH, pcode: ET1103, name: Bench Sheko}
+    - {country: Ethiopia, iso3: ETH, pcode: ET0412, name: Borena}
+    - {country: Ethiopia, iso3: ETH, pcode: ET0416, name: Buno Bedele}
+    - {country: Ethiopia, iso3: ETH, pcode: ET0722, name: Burji}
+    - {country: Ethiopia, iso3: ETH, pcode: ET0102, name: Central}
+    - {country: Ethiopia, iso3: ETH, pcode: ET0311, name: Central Gondar}
+    - {country: Ethiopia, iso3: ETH, pcode: ET0511, name: Daawa}
+    - {country: Ethiopia, iso3: ETH, pcode: ET1104, name: Dawuro}
+    - {country: Ethiopia, iso3: ETH, pcode: ET0723, name: Derashe}
+    - {country: Ethiopia, iso3: ETH, pcode: ET1502, name: Dire Dawa rural}
+    - {country: Ethiopia, iso3: ETH, pcode: ET1501, name: Dire Dawa urban}
+    - {country: Ethiopia, iso3: ETH, pcode: ET0507, name: Doolo}
+    - {country: Ethiopia, iso3: ETH, pcode: ET0421, name: East Bale}
+    - {country: Ethiopia, iso3: ETH, pcode: ET0306, name: East Gojam}
+    - {country: Ethiopia, iso3: ETH, pcode: ET0410, name: East Hararge}
+    - {country: Ethiopia, iso3: ETH, pcode: ET0407, name: East Shewa}
+    - {country: Ethiopia, iso3: ETH, pcode: ET0402, name: East Wellega}
+    - {country: Ethiopia, iso3: ETH, pcode: ET0103, name: Eastern}
+    - {country: Ethiopia, iso3: ETH, pcode: ET0504, name: Erer}
+    - {country: Ethiopia, iso3: ETH, pcode: ET0502, name: Fafan}
+    - {country: Ethiopia, iso3: ETH, pcode: ET0204, name: Fanti /Zone 4}
+    - {country: Ethiopia, iso3: ETH, pcode: ET0420, name: Finfine Special}
+    - {country: Ethiopia, iso3: ETH, pcode: ET0203, name: Gabi /Zone 3}
+    - {country: Ethiopia, iso3: ETH, pcode: ET0710, name: Gamo}
+    - {country: Ethiopia, iso3: ETH, pcode: ET0705, name: Gedeo}
+    - {country: Ethiopia, iso3: ETH, pcode: ET0715, name: Gofa}
+    - {country: Ethiopia, iso3: ETH, pcode: ET0414, name: Guji}
+    - {country: Ethiopia, iso3: ETH, pcode: ET0701, name: Guraghe}
+    - {country: Ethiopia, iso3: ETH, pcode: ET0702, name: Hadiya}
+    - {country: Ethiopia, iso3: ETH, pcode: ET0714, name: Halaba}
+    - {country: Ethiopia, iso3: ETH, pcode: ET1301, name: Harari}
+    - {country: Ethiopia, iso3: ETH, pcode: ET0205, name: Hari /Zone 5}
+    - {country: Ethiopia, iso3: ETH, pcode: ET0419, name: Horo Gudru Wellega}
+    - {country: Ethiopia, iso3: ETH, pcode: ET0403, name: Ilu Aba Bora}
+    - {country: Ethiopia, iso3: ETH, pcode: ET1204, name: Itang Special woreda}
+    - {country: Ethiopia, iso3: ETH, pcode: ET0503, name: Jarar}
+    - {country: Ethiopia, iso3: ETH, pcode: ET0404, name: Jimma}
+    - {country: Ethiopia, iso3: ETH, pcode: ET0604, name: Kamashi}
+    - {country: Ethiopia, iso3: ETH, pcode: ET1102, name: Kefa}
+    - {country: Ethiopia, iso3: ETH, pcode: ET0418, name: Kelem Wellega}
+    - {country: Ethiopia, iso3: ETH, pcode: ET0703, name: Kembata Tembaro}
+    - {country: Ethiopia, iso3: ETH, pcode: ET0202, name: Kilbati /Zone2}
+    - {country: Ethiopia, iso3: ETH, pcode: ET0713, name: Konso}
+    - {country: Ethiopia, iso3: ETH, pcode: ET1106, name: Konta Special}
+    - {country: Ethiopia, iso3: ETH, pcode: ET0505, name: Korahe}
+    - {country: Ethiopia, iso3: ETH, pcode: ET0509, name: Liban}
+    - {country: Ethiopia, iso3: ETH, pcode: ET1203, name: Majang}
+    - {country: Ethiopia, iso3: ETH, pcode: ET0605, name: Mao Komo Special}
+    - {country: Ethiopia, iso3: ETH, pcode: ET0107, name: Mekelle}
+    - {country: Ethiopia, iso3: ETH, pcode: ET0602, name: Metekel}
+    - {country: Ethiopia, iso3: ETH, pcode: ET1105, name: Mirab Omo}
+    - {country: Ethiopia, iso3: ETH, pcode: ET0510, name: Nogob}
+    - {country: Ethiopia, iso3: ETH, pcode: ET0301, name: North Gondar}
+    - {country: Ethiopia, iso3: ETH, pcode: ET0305, name: North Shewa (AM)}
+    - {country: Ethiopia, iso3: ETH, pcode: ET0406, name: North Shewa (OR)}
+    - {country: Ethiopia, iso3: ETH, pcode: ET0303, name: North Wello}
+    - {country: Ethiopia, iso3: ETH, pcode: ET0101, name: North Western}
+    - {country: Ethiopia, iso3: ETH, pcode: ET1201, name: Nuwer}
+    - {country: Ethiopia, iso3: ETH, pcode: ET0310, name: Oromia}
+    - {country: Ethiopia, iso3: ETH, pcode: ET1401, name: Region 14}
+    - {country: Ethiopia, iso3: ETH, pcode: ET0506, name: Shabelle}
+    - {country: Ethiopia, iso3: ETH, pcode: ET1101, name: Sheka}
+    - {country: Ethiopia, iso3: ETH, pcode: ET1600, name: Sidama}
+    - {country: Ethiopia, iso3: ETH, pcode: ET0720, name: Siltie}
+    - {country: Ethiopia, iso3: ETH, pcode: ET0501, name: Siti}
+    - {country: Ethiopia, iso3: ETH, pcode: ET0106, name: South Eastern}
+    - {country: Ethiopia, iso3: ETH, pcode: ET0302, name: South Gondar}
+    - {country: Ethiopia, iso3: ETH, pcode: ET0707, name: South Omo}
+    - {country: Ethiopia, iso3: ETH, pcode: ET0304, name: South Wello}
+    - {country: Ethiopia, iso3: ETH, pcode: ET0413, name: South West Shewa}
+    - {country: Ethiopia, iso3: ETH, pcode: ET0104, name: Southern}
+    - {country: Ethiopia, iso3: ETH, pcode: ET0308, name: Wag Hamra}
+    - {country: Ethiopia, iso3: ETH, pcode: ET0417, name: West Arsi}
+    - {country: Ethiopia, iso3: ETH, pcode: ET0307, name: West Gojam}
+    - {country: Ethiopia, iso3: ETH, pcode: ET0312, name: West Gondar}
+    - {country: Ethiopia, iso3: ETH, pcode: ET0415, name: West Guji}
+    - {country: Ethiopia, iso3: ETH, pcode: ET0409, name: West Hararge}
+    - {country: Ethiopia, iso3: ETH, pcode: ET0405, name: West Shewa}
+    - {country: Ethiopia, iso3: ETH, pcode: ET0401, name: West Wellega}
+    - {country: Ethiopia, iso3: ETH, pcode: ET0105, name: Western}
+    - {country: Ethiopia, iso3: ETH, pcode: ET0706, name: Wolayita}
+    - {country: Ethiopia, iso3: ETH, pcode: ET0724, name: Yem Special}
+    - {country: Kenya, iso3: KEN, pcode: KE030, name: Baringo}
+    - {country: Kenya, iso3: KEN, pcode: KE036, name: Bomet}
+    - {country: Kenya, iso3: KEN, pcode: KE039, name: Bungoma}
+    - {country: Kenya, iso3: KEN, pcode: KE040, name: Busia}
+    - {country: Kenya, iso3: KEN, pcode: KE028, name: Elgeyo Marakwet}
+    - {country: Kenya, iso3: KEN, pcode: KE014, name: Embu}
+    - {country: Kenya, iso3: KEN, pcode: KE007, name: Garissa}
+    - {country: Kenya, iso3: KEN, pcode: KE043, name: Homa Bay}
+    - {country: Kenya, iso3: KEN, pcode: KE011, name: Isiolo}
+    - {country: Kenya, iso3: KEN, pcode: KE034, name: Kajiado}
+    - {country: Kenya, iso3: KEN, pcode: KE037, name: Kakamega}
+    - {country: Kenya, iso3: KEN, pcode: KE035, name: Kericho}
+    - {country: Kenya, iso3: KEN, pcode: KE022, name: Kiambu}
+    - {country: Kenya, iso3: KEN, pcode: KE003, name: Kilifi}
+    - {country: Kenya, iso3: KEN, pcode: KE020, name: Kirinyaga}
+    - {country: Kenya, iso3: KEN, pcode: KE045, name: Kisii}
+    - {country: Kenya, iso3: KEN, pcode: KE042, name: Kisumu}
+    - {country: Kenya, iso3: KEN, pcode: KE015, name: Kitui}
+    - {country: Kenya, iso3: KEN, pcode: KE002, name: Kwale}
+    - {country: Kenya, iso3: KEN, pcode: KE031, name: Laikipia}
+    - {country: Kenya, iso3: KEN, pcode: KE005, name: Lamu}
+    - {country: Kenya, iso3: KEN, pcode: KE016, name: Machakos}
+    - {country: Kenya, iso3: KEN, pcode: KE017, name: Makueni}
+    - {country: Kenya, iso3: KEN, pcode: KE009, name: Mandera}
+    - {country: Kenya, iso3: KEN, pcode: KE010, name: Marsabit}
+    - {country: Kenya, iso3: KEN, pcode: KE012, name: Meru}
+    - {country: Kenya, iso3: KEN, pcode: KE044, name: Migori}
+    - {country: Kenya, iso3: KEN, pcode: KE001, name: Mombasa}
+    - {country: Kenya, iso3: KEN, pcode: KE021, name: Muranga}
+    - {country: Kenya, iso3: KEN, pcode: KE047, name: Nairobi}
+    - {country: Kenya, iso3: KEN, pcode: KE032, name: Nakuru}
+    - {country: Kenya, iso3: KEN, pcode: KE029, name: Nandi}
+    - {country: Kenya, iso3: KEN, pcode: KE033, name: Narok}
+    - {country: Kenya, iso3: KEN, pcode: KE046, name: Nyamira}
+    - {country: Kenya, iso3: KEN, pcode: KE018, name: Nyandarua}
+    - {country: Kenya, iso3: KEN, pcode: KE019, name: Nyeri}
+    - {country: Kenya, iso3: KEN, pcode: KE025, name: Samburu}
+    - {country: Kenya, iso3: KEN, pcode: KE041, name: Siaya}
+    - {country: Kenya, iso3: KEN, pcode: KE006, name: Taita Taveta}
+    - {country: Kenya, iso3: KEN, pcode: KE004, name: Tana River}
+    - {country: Kenya, iso3: KEN, pcode: KE013, name: Tharaka Nithi}
+    - {country: Kenya, iso3: KEN, pcode: KE026, name: Trans Nzoia}
+    - {country: Kenya, iso3: KEN, pcode: KE023, name: Turkana}
+    - {country: Kenya, iso3: KEN, pcode: KE027, name: Uasin Gishu}
+    - {country: Kenya, iso3: KEN, pcode: KE038, name: Vihiga}
+    - {country: Kenya, iso3: KEN, pcode: KE008, name: Wajir}
+    - {country: Kenya, iso3: KEN, pcode: KE024, name: West Pokot}
+    - {country: Somalia, iso3: SOM, pcode: SO2102, name: Adan Yabaal}
+    - {country: Somalia, iso3: SOM, pcode: SO2302, name: Afgooye}
+    - {country: Somalia, iso3: SOM, pcode: SO2802, name: Afmadow}
+    - {country: Somalia, iso3: SOM, pcode: SO2602, name: Baardheere}
+    - {country: Somalia, iso3: SOM, pcode: SO2803, name: Badhaadhe}
+    - {country: Somalia, iso3: SOM, pcode: SO1102, name: Baki}
+    - {country: Somalia, iso3: SOM, pcode: SO2103, name: Balcad}
+    - {country: Somalia, iso3: SOM, pcode: SO2201, name: Banadir}
+    - {country: Somalia, iso3: SOM, pcode: SO1602, name: Bandarbeyla}
+    - {country: Somalia, iso3: SOM, pcode: SO2303, name: Baraawe}
+    - {country: Somalia, iso3: SOM, pcode: SO2401, name: Baydhaba}
+    - {country: Somalia, iso3: SOM, pcode: SO2001, name: Belet Weyne}
+    - {country: Somalia, iso3: SOM, pcode: SO2603, name: Belet Xaawo}
+    - {country: Somalia, iso3: SOM, pcode: SO1202, name: Berbera}
+    - {country: Somalia, iso3: SOM, pcode: SO1101, name: Borama}
+    - {country: Somalia, iso3: SOM, pcode: SO1601, name: Bossaso}
+    - {country: Somalia, iso3: SOM, pcode: SO2701, name: Buaale}
+    - {country: Somalia, iso3: SOM, pcode: SO2002, name: Bulo Burto}
+    - {country: Somalia, iso3: SOM, pcode: SO1301, name: Burco}
+    - {country: Somalia, iso3: SOM, pcode: SO1702, name: Burtinle}
+    - {country: Somalia, iso3: SOM, pcode: SO1302, name: Buuhoodle}
+    - {country: Somalia, iso3: SOM, pcode: SO2402, name: Buur Hakaba}
+    - {country: Somalia, iso3: SOM, pcode: SO1902, name: Cabudwaaq}
+    - {country: Somalia, iso3: SOM, pcode: SO1903, name: Cadaado}
+    - {country: Somalia, iso3: SOM, pcode: SO2104, name: Cadale}
+    - {country: Somalia, iso3: SOM, pcode: SO1603, name: Caluula}
+    - {country: Somalia, iso3: SOM, pcode: SO1402, name: Caynabo}
+    - {country: Somalia, iso3: SOM, pcode: SO1502, name: Ceel Afweyn}
+    - {country: Somalia, iso3: SOM, pcode: SO2502, name: Ceel Barde}
+    - {country: Somalia, iso3: SOM, pcode: SO1904, name: Ceel Buur}
+    - {country: Somalia, iso3: SOM, pcode: SO1905, name: Ceel Dheer}
+    - {country: Somalia, iso3: SOM, pcode: SO2604, name: Ceel Waaq}
+    - {country: Somalia, iso3: SOM, pcode: SO1501, name: Ceerigaabo}
+    - {country: Somalia, iso3: SOM, pcode: SO1901, name: Dhuusamarreeb}
+    - {country: Somalia, iso3: SOM, pcode: SO2403, name: Diinsoor}
+    - {country: Somalia, iso3: SOM, pcode: SO2605, name: Doolow}
+    - {country: Somalia, iso3: SOM, pcode: SO1703, name: Eyl}
+    - {country: Somalia, iso3: SOM, pcode: SO1801, name: Gaalkacyo}
+    - {country: Somalia, iso3: SOM, pcode: SO1802, name: Galdogob}
+    - {country: Somalia, iso3: SOM, pcode: SO2601, name: Garbahaarey}
+    - {country: Somalia, iso3: SOM, pcode: SO1701, name: Garoowe}
+    - {country: Somalia, iso3: SOM, pcode: SO1203, name: Gebiley}
+    - {country: Somalia, iso3: SOM, pcode: SO1201, name: Hargeysa}
+    - {country: Somalia, iso3: SOM, pcode: SO1803, name: Hobyo}
+    - {country: Somalia, iso3: SOM, pcode: SO1604, name: Iskushuban}
+    - {country: Somalia, iso3: SOM, pcode: SO2003, name: Jalalaqsi}
+    - {country: Somalia, iso3: SOM, pcode: SO2804, name: Jamaame}
+    - {country: Somalia, iso3: SOM, pcode: SO1804, name: Jariiban}
+    - {country: Somalia, iso3: SOM, pcode: SO2702, name: Jilib}
+    - {country: Somalia, iso3: SOM, pcode: SO2101, name: Jowhar}
+    - {country: Somalia, iso3: SOM, pcode: SO2801, name: Kismaayo}
+    - {country: Somalia, iso3: SOM, pcode: SO2304, name: Kurtunwaarey}
+    - {country: Somalia, iso3: SOM, pcode: SO1401, name: Laas Caanood}
+    - {country: Somalia, iso3: SOM, pcode: SO1503, name: Laasqoray}
+    - {country: Somalia, iso3: SOM, pcode: SO1103, name: Lughaye}
+    - {country: Somalia, iso3: SOM, pcode: SO2606, name: Luuq}
+    - {country: Somalia, iso3: SOM, pcode: SO2301, name: Marka}
+    - {country: Somalia, iso3: SOM, pcode: SO1303, name: Owdweyne}
+    - {country: Somalia, iso3: SOM, pcode: SO1605, name: Qandala}
+    - {country: Somalia, iso3: SOM, pcode: SO2404, name: Qansax Dheere}
+    - {country: Somalia, iso3: SOM, pcode: SO1606, name: Qardho}
+    - {country: Somalia, iso3: SOM, pcode: SO2305, name: Qoryooley}
+    - {country: Somalia, iso3: SOM, pcode: SO2505, name: Rab Dhuure}
+    - {country: Somalia, iso3: SOM, pcode: SO2703, name: Saakow}
+    - {country: Somalia, iso3: SOM, pcode: SO2306, name: Sablaale}
+    - {country: Somalia, iso3: SOM, pcode: SO1304, name: Sheikh}
+    - {country: Somalia, iso3: SOM, pcode: SO1403, name: Taleex}
+    - {country: Somalia, iso3: SOM, pcode: SO2503, name: Tayeeglow}
+    - {country: Somalia, iso3: SOM, pcode: SO2504, name: Waajid}
+    - {country: Somalia, iso3: SOM, pcode: SO2307, name: Wanla Weyn}
+    - {country: Somalia, iso3: SOM, pcode: SO1805, name: Xarardheere}
+    - {country: Somalia, iso3: SOM, pcode: SO1404, name: Xudun}
+    - {country: Somalia, iso3: SOM, pcode: SO2501, name: Xudur}
+    - {country: Somalia, iso3: SOM, pcode: SO1104, name: Zeylac}
+
+  admin_name_mappings:
+    "Baidoa": "SO2401"
+
+  admin_name_replacements:
+    " urban": ""
+    "sud": "south"
+    "ouest": "west"
+    "est": "east"
+    "nord": "north"
+    "'": ""
+    "/": " "
+    ".": " "
+    " region": ""
+
+  admin_fuzzy_dont:
+    - "nord"
+    - "north"
+    - "sud"
+    - "south"
+    - "est"
+    - "east"
+    - "ouest"
+    - "west"

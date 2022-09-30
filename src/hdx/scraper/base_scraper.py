@@ -205,28 +205,27 @@ class BaseScraper(ABC):
                 admin_sources = self.source_configuration.get(
                     "admin_sources", False
                 )
-                if admin_sources:
-                    admin_mapping = self.source_configuration.get(
-                        "admin_mapping"
-                    )
-                    if len(values) == 1 and next(iter(values)) == "value":
-                        if admin_mapping:
-                            out_adm = admin_mapping.get(level)
-                        else:
-                            out_adm = level
-                        if out_adm:
-                            add_source(hxltag, out_adm)
-                        continue
-                    out_adms = list()
-                    for adm in values.keys():
-                        if admin_mapping:
-                            out_adm = admin_mapping.get(adm)
-                            if out_adm and out_adm not in out_adms:
-                                out_adms.append(out_adm)
-                        else:
-                            out_adms.append(adm)
-                    for out_adm in out_adms:
+                if not admin_sources:
+                    raise ValueError("Invalid source configuration!")
+                admin_mapping = self.source_configuration.get("admin_mapping")
+                if len(values) == 1 and next(iter(values)) == "value":
+                    if admin_mapping:
+                        out_adm = admin_mapping.get(level)
+                    else:
+                        out_adm = level
+                    if out_adm:
                         add_source(hxltag, out_adm)
+                    continue
+                out_adms = list()
+                for adm in values.keys():
+                    if admin_mapping:
+                        out_adm = admin_mapping.get(adm)
+                        if out_adm and out_adm not in out_adms:
+                            out_adms.append(out_adm)
+                    else:
+                        out_adms.append(adm)
+                for out_adm in out_adms:
+                    add_source(hxltag, out_adm)
 
     def add_hxltag_source(self, key: str, indicator: str) -> None:
         """
