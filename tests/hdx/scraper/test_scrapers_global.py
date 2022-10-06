@@ -5,6 +5,7 @@ from hdx.utilities.dateparse import parse_date
 
 from hdx.scraper.base_scraper import BaseScraper
 from hdx.scraper.runner import Runner
+from hdx.scraper.utilities.sources import create_source_configuration
 
 from .conftest import run_check_scraper
 
@@ -566,7 +567,9 @@ class TestScraperGlobal:
             scraper_configuration,
             level,
             level_name=level_name,
-            source_configuration={"admin_sources": True},
+            source_configuration=create_source_configuration(
+                admin_sources=True
+            ),
         )
         name = "cerf2_global"
         headers = (
@@ -598,10 +601,9 @@ class TestScraperGlobal:
             scraper_configuration,
             level,
             level_name=level_name,
-            source_configuration={
-                "admin_sources": True,
-                "admin_mapping": {"global": "globe"},
-            },
+            source_configuration=create_source_configuration(
+                admin_mapping_dict={"global": "globe"}
+            ),
         )
         name = "cerf2_global"
         headers = (
@@ -633,7 +635,9 @@ class TestScraperGlobal:
             scraper_configuration,
             level,
             level_name=level_name,
-            source_configuration={"suffix_attribute": "world"},
+            source_configuration=create_source_configuration(
+                suffix_attribute="world"
+            ),
         )
         name = "cerf2_global"
         headers = (

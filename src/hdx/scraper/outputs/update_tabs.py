@@ -7,7 +7,7 @@ from hdx.location.country import Country
 from hdx.utilities.typehint import ListTuple
 
 from ..runner import Runner
-from ..utilities import add_sources_overwrite
+from ..utilities.sources import add_sources_overwrite
 from .base import BaseOutput
 
 try:

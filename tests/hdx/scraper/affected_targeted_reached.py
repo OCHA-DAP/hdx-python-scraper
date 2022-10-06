@@ -4,6 +4,7 @@ from hdx.utilities.dictandlist import dict_of_lists_add
 from hdx.utilities.text import number_format
 
 from hdx.scraper.base_scraper import BaseScraper
+from hdx.scraper.utilities.sources import create_source_configuration
 
 logger = logging.getLogger(__name__)
 
@@ -43,13 +44,9 @@ class AffectedTargetedReached(BaseScraper):
                     ),
                 ),
             },
-            source_configuration={
-                "admin_sources": True,
-                "admin_mapping": {
-                    **adminone.pcode_to_iso3,
-                    **admintwo.pcode_to_iso3,
-                },
-            },
+            source_configuration=create_source_configuration(
+                adminlevel=(adminone, admintwo)
+            ),
         )
         self.today = today
         self.adminone = adminone

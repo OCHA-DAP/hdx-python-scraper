@@ -13,13 +13,10 @@ from .configurable.resource_downloader import ResourceDownloader
 from .configurable.scraper import ConfigurableScraper
 from .configurable.timeseries import TimeSeries
 from .outputs.base import BaseOutput
-from .utilities import (
-    add_source_overwrite,
-    add_sources_overwrite,
-    get_isodate_from_dataset_date,
-)
+from .utilities import get_isodate_from_dataset_date
 from .utilities.fallbacks import Fallbacks
 from .utilities.reader import Read
+from .utilities.sources import add_source_overwrite, add_sources_overwrite
 
 logger = logging.getLogger(__name__)
 

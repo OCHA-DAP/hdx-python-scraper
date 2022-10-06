@@ -1,10 +1,8 @@
 import re
 from datetime import datetime
-from logging import Logger
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, Optional, Tuple
 
 from hdx.data.dataset import Dataset
-from hdx.utilities.typehint import ListTuple
 
 template = re.compile("{{.*?}}")
 
@@ -12,7 +10,7 @@ template = re.compile("{{.*?}}")
 def string_params_to_dict(string: str) -> Dict[str, str]:
     params = dict()
     if not string:
-        params
+        return params
     for name_par in string.split(","):
         name, par = name_par.strip().split(":")
         params[name] = par.strip()
@@ -94,51 +92,3 @@ def get_isodate_from_dataset_date(
     if date:
         date = date.strftime("%Y-%m-%d")
     return date
-
-
-def add_source_overwrite(
-    hxltags: List[str],
-    sources: List[ListTuple],
-    source: ListTuple[str],
-    logger: Logger,
-):
-    """Add source to sources preventing duplication
-
-    Args:
-        hxltags (List[str]): List of HXL hashtags, one for each source name
-        sources (List[ListTuple]): List of sources
-        source (ListTuple[str]): Source information
-        logger (Logger): Logegr to log warnings to
-
-    Returns:
-        None
-    """
-    hxltag = source[0]
-    if hxltag in hxltags:
-        logger.warning(f"Overwriting source information for {hxltag}!")
-        index = hxltags.index(hxltag)
-        del hxltags[index]
-        del sources[index]
-    hxltags.append(hxltag)
-    sources.append(source)
-
-
-def add_sources_overwrite(
-    hxltags: List[str],
-    sources: List[ListTuple],
-    sources_to_add: List[ListTuple],
-    logger: Logger,
-):
-    """Add source to sources preventing duplication
-
-    Args:
-        hxltags (List[str]): List of HXL hashtags, one for each source name
-        sources (List[ListTuple]): List of sources
-        sources_to_add (List[ListTuple]): List of sources to add
-        logger (Logger): Logegr to log warnings to
-
-    Returns:
-        None
-    """
-    for source in sources_to_add:
-        add_source_overwrite(hxltags, sources, source, logger)
