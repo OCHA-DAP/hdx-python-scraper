@@ -26,10 +26,10 @@ def add_source_overwrite(
     if hxltag in hxltags:
         logger.warning(f"Overwriting source information for {hxltag}!")
         index = hxltags.index(hxltag)
-        del hxltags[index]
-        del sources[index]
-    hxltags.append(hxltag)
-    sources.append(source)
+        sources[index] = source
+    else:
+        hxltags.append(hxltag)
+        sources.append(source)
 
 
 def add_sources_overwrite(
