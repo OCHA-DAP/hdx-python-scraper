@@ -324,6 +324,12 @@ class RowParser:
                 continue
             if isinstance(admcol, str):
                 admcol = [admcol]
+            elif isinstance(admcol, dict):
+                value = admcol.get("value")
+                if not value:
+                    continue
+                adms[i] = value
+                continue
             for admcl in admcol:
                 exact = get_adm(admcl, i)
                 if adms[i] and exact:

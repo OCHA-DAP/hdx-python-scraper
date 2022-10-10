@@ -20,7 +20,7 @@ class TestScrapersSubnational:
         keys = runner.add_configurables(
             scraper_configuration, level, adminlevel=adminlevel
         )
-        assert keys == ["gam"]
+        assert keys == ["gam", "ipc_somalia"]
 
         name = "gam"
         headers = (
@@ -351,3 +351,58 @@ class TestScrapersSubnational:
             )
         ]
         run_check_scraper(name, runner, level, headers, values, sources)
+
+    def test_fixed_country(self, configuration):
+        BaseScraper.population_lookup = dict()
+        today = parse_date("2020-10-01")
+        adminlevel = AdminLevel(configuration["admin1"])
+        level = "subnational"
+        scraper_configuration = configuration[f"scraper_{level}"]
+        runner = Runner(("SOM",), today)
+        runner.add_configurables(
+            scraper_configuration, level, adminlevel=adminlevel
+        )
+        name = "ipc_somalia"
+        headers = (
+            ["FoodInsecurityIPCP3+"],
+            ["#affected+food+ipc+p3plus+num"],
+        )
+        values = [
+            {
+                "SO11": "141240",
+                "SO12": "304640",
+                "SO13": "266310",
+                "SO14": "190270",
+                "SO15": "206550",
+                "SO16": "377780",
+                "SO17": "328470",
+                "SO18": "640920",
+                "SO19": "380590",
+                "SO20": "192450",
+                "SO21": "378550",
+                "SO22": "774030",
+                "SO23": "412570",
+                "SO24": "924800",
+                "SO25": "276220",
+                "SO26": "356170",
+                "SO27": "145310",
+                "SO28": "383900",
+            }
+        ]
+        sources = [
+            (
+                "#affected+food+ipc+p3plus+num",
+                "2022-12-31",
+                "National IPC Technical Working Group",
+                "https://data.humdata.org/dataset/somalia-acute-food-insecurity-country-data",
+            )
+        ]
+        run_check_scraper(
+            name,
+            runner,
+            level,
+            headers,
+            values,
+            sources,
+            set_not_run=False,
+        )

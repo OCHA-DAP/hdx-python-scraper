@@ -948,6 +948,30 @@ scraper_subnational:
       - "Malnutrition Estimate"
     output_hxl:
       - "#severity+malnutrition+num+subnational"
+  ipc_somalia:
+    dataset: "somalia-acute-food-insecurity-country-data"
+    format: "csv"
+    headers: 4
+    stop_row:
+      Region: "TOTAL"
+    admin:
+      - value: "SOM"
+      - "Region"
+    input:
+      - "IPC 3"
+      - "IPC 4"
+      - "IPC 5"
+    transform:
+      "IPC 3": "get_numeric_if_possible(IPC 3) if IPC 3 else 0"
+      "IPC 4": "get_numeric_if_possible(IPC 4) if IPC 4 else 0"
+      "IPC 5": "get_numeric_if_possible(IPC 5) if IPC 5 else 0"
+    sum:
+      - formula: "number_format(IPC 3 + IPC 4 + IPC 5, format='%.0f')"
+        mustbepopulated: False
+    output:
+      - "FoodInsecurityIPCP3+"
+    output_hxl:
+      - "#affected+food+ipc+p3plus+num"
 
 affected_targeted_reached:
   datasets:
