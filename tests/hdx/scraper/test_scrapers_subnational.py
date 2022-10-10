@@ -20,7 +20,7 @@ class TestScrapersSubnational:
         keys = runner.add_configurables(
             scraper_configuration, level, adminlevel=adminlevel
         )
-        assert keys == ["gam", "ipc_somalia"]
+        assert keys == ["gam", "ipc_somalia", "idps_somalia"]
 
         name = "gam"
         headers = (
@@ -369,24 +369,24 @@ class TestScrapersSubnational:
         )
         values = [
             {
-                "SO11": "141240",
-                "SO12": "304640",
-                "SO13": "266310",
-                "SO14": "190270",
-                "SO15": "206550",
-                "SO16": "377780",
-                "SO17": "328470",
-                "SO18": "640920",
-                "SO19": "380590",
-                "SO20": "192450",
-                "SO21": "378550",
-                "SO22": "774030",
-                "SO23": "412570",
-                "SO24": "924800",
-                "SO25": "276220",
-                "SO26": "356170",
-                "SO27": "145310",
-                "SO28": "383900",
+                "SO11": 141240,
+                "SO12": 304640,
+                "SO13": 266310,
+                "SO14": 190270,
+                "SO15": 206550,
+                "SO16": 377780,
+                "SO17": 328470,
+                "SO18": 640920,
+                "SO19": 380590,
+                "SO20": 192450,
+                "SO21": 378550,
+                "SO22": 774030,
+                "SO23": 412570,
+                "SO24": 924800,
+                "SO25": 276220,
+                "SO26": 356170,
+                "SO27": 145310,
+                "SO28": 383900,
             }
         ]
         sources = [
@@ -395,6 +395,109 @@ class TestScrapersSubnational:
                 "2022-12-31",
                 "National IPC Technical Working Group",
                 "https://data.humdata.org/dataset/somalia-acute-food-insecurity-country-data",
+            )
+        ]
+        run_check_scraper(
+            name,
+            runner,
+            level,
+            headers,
+            values,
+            sources,
+            set_not_run=False,
+        )
+
+        adminlevel = AdminLevel(configuration["admin2"])
+        runner = Runner(("SOM",), today)
+        runner.add_configurables(
+            scraper_configuration, level, adminlevel=adminlevel
+        )
+        name = "idps_somalia"
+        headers = (
+            ["IDPs"],
+            ["#affected+idps+ind"],
+        )
+        values = [
+            {
+                "SO1101": 5578,
+                "SO1102": 1681,
+                "SO1103": 1654,
+                "SO1104": 820,
+                "SO1201": 1329,
+                "SO1202": 128,
+                "SO1203": 77,
+                "SO1301": 41365,
+                "SO1302": 7446,
+                "SO1303": 10596,
+                "SO1401": 13199,
+                "SO1402": 3376,
+                "SO1403": 835,
+                "SO1404": 4777,
+                "SO1501": 12728,
+                "SO1502": 1904,
+                "SO1503": 6871,
+                "SO1601": 14332,
+                "SO1602": 1148,
+                "SO1603": 21,
+                "SO1604": 13691,
+                "SO1605": 826,
+                "SO1606": 20093,
+                "SO1701": 1025,
+                "SO1702": 592,
+                "SO1703": 393,
+                "SO1801": 70167,
+                "SO1802": 9020,
+                "SO1803": 25856,
+                "SO1804": 5676,
+                "SO1901": 58294,
+                "SO1902": 38557,
+                "SO1903": 31702,
+                "SO1904": 216,
+                "SO1905": 275,
+                "SO2001": 7396,
+                "SO2002": 1299,
+                "SO2003": 741,
+                "SO2101": 8060,
+                "SO2102": 1723,
+                "SO2103": 1662,
+                "SO2104": 1225,
+                "SO2201": 325969,
+                "SO2301": 5683,
+                "SO2302": 10925,
+                "SO2303": 902,
+                "SO2304": 2320,
+                "SO2305": 1266,
+                "SO2306": 296,
+                "SO2307": 209,
+                "SO2401": 59560,
+                "SO2403": 21844,
+                "SO2404": 20635,
+                "SO2501": 10210,
+                "SO2502": 10866,
+                "SO2503": 15,
+                "SO2504": 220,
+                "SO2505": 18,
+                "SO2601": 12019,
+                "SO2602": 47535,
+                "SO2603": 10906,
+                "SO2604": 2412,
+                "SO2605": 21335,
+                "SO2606": 18875,
+                "SO2701": 56,
+                "SO2702": 176,
+                "SO2703": 20835,
+                "SO2801": 30655,
+                "SO2802": 24442,
+                "SO2803": 6443,
+                "SO2804": 6678,
+            }
+        ]
+        sources = [
+            (
+                "#affected+idps+ind",
+                "2022-08-31",
+                "UNHCR",
+                "https://data.humdata.org/dataset/somalia-internally-displaced-persons-idps",
             )
         ]
         run_check_scraper(

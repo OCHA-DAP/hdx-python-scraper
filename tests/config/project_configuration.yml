@@ -966,12 +966,32 @@ scraper_subnational:
       "IPC 4": "get_numeric_if_possible(IPC 4) if IPC 4 else 0"
       "IPC 5": "get_numeric_if_possible(IPC 5) if IPC 5 else 0"
     sum:
-      - formula: "number_format(IPC 3 + IPC 4 + IPC 5, format='%.0f')"
+      - formula: "int(IPC 3 + IPC 4 + IPC 5)"
         mustbepopulated: False
     output:
       - "FoodInsecurityIPCP3+"
     output_hxl:
       - "#affected+food+ipc+p3plus+num"
+  idps_somalia:
+    dataset: "somalia-internally-displaced-persons-idps"
+    format: "xlsx"
+    filter_cols:
+      - "Reason"
+      - "Year"
+    prefilter: "'drought' in Reason.lower() and Year in (self.source_date.year - 1, self.source_date.year)"
+    admin:
+      - value: "SOM"
+      - "Current (Arrival) District"
+    input:
+      - "Number of Individuals"
+    sum:
+      - formula: "int(Number of Individuals)"
+        mustbepopulated: True
+    output:
+      - "IDPs"
+    output_hxl:
+      - "#affected+idps+ind"
+
 
 affected_targeted_reached:
   datasets:
@@ -1540,6 +1560,8 @@ admin2:
 
   admin_name_mappings:
     "Baidoa": "SO2401"
+    "Badhan": "SO1503"
+    "Dhahar": "SO1503"
 
   admin_name_replacements:
     " urban": ""
