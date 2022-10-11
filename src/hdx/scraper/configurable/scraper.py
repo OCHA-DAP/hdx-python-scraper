@@ -232,7 +232,7 @@ class ConfigurableScraper(BaseScraper):
                             adm_cols[0] = hxltag
                     continue
                 if find_tags or self.datelevel != "national":
-                    if "#adm1" in hxltag:
+                    if "#adm" in hxltag:
                         if "code" in hxltag:
                             if len(adm_cols) == 0:
                                 adm_cols.append(None)
@@ -246,7 +246,8 @@ class ConfigurableScraper(BaseScraper):
                 continue
             input_cols.append(hxltag)
             columns.append(header)
-        self.datasetinfo["admin"] = adm_cols
+        if "admin" not in self.datasetinfo:
+            self.datasetinfo["admin"] = adm_cols
         for subset in self.subsets:
             orig_input_cols = subset.get("input", list())
             if not orig_input_cols:
