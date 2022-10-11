@@ -3,6 +3,7 @@ from datetime import datetime
 from typing import Any, Dict, Optional, Tuple
 
 from hdx.data.dataset import Dataset
+from hdx.utilities.dateparse import parse_date
 
 template = re.compile("{{.*?}}")
 
@@ -55,6 +56,21 @@ def get_rowval(row: Dict, valcol: str) -> Any:
         if isinstance(result, str):
             return result.strip()
         return result
+
+
+def get_source_date_from_datasetinfo(datasetinfo):
+    source_date = datasetinfo.get("source_date")
+    if not source_date:
+        return None
+    if isinstance(source_date, str):
+        source_date = parse_date(source_date)
+        datasetinfo["source_date"] = source_date
+    elif isinstance(source_date, dict):
+        for key, value in source_date.items():
+            if isinstance(value, str):
+                source_date[key] = parse_date(value)
+        source_date = source_date["default_date"]
+    return source_date
 
 
 def get_date_from_dataset_date(

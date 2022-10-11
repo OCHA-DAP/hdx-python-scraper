@@ -15,7 +15,8 @@ from hdx.utilities.typehint import ListTuple
 from hxl.input import InputOptions, munge_url
 from slugify import slugify
 
-from . import get_date_from_dataset_date, match_template
+from . import get_date_from_dataset_date, match_template, \
+    get_source_date_from_datasetinfo
 
 logger = logging.getLogger(__name__)
 
@@ -310,14 +311,7 @@ class Read(Retrieve):
             Optional[Resource]: The resource if a url was not given
         """
         dataset_nameinfo = datasetinfo["dataset"]
-        source_date = datasetinfo.get("source_date")
-        if source_date:
-            if isinstance(source_date, str):
-                datasetinfo["source_date"] = parse_date(source_date)
-            elif isinstance(source_date, dict):
-                for key, value in source_date.items():
-                    if isinstance(value, str):
-                        source_date[key] = parse_date(value)
+        get_source_date_from_datasetinfo(datasetinfo)
         if isinstance(dataset_nameinfo, str):
             dataset = self.read_dataset(dataset_nameinfo)
             resource = None
