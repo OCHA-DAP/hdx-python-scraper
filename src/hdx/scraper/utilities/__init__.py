@@ -62,15 +62,30 @@ def get_source_date_from_datasetinfo(datasetinfo):
     source_date = datasetinfo.get("source_date")
     if not source_date:
         return None
-    if isinstance(source_date, str):
-        source_date = parse_date(source_date)
-        datasetinfo["source_date"] = source_date
-    elif isinstance(source_date, dict):
+
+    output_source_date = dict()
+
+    def set_source_date(date, hxltag="default_date", startend="end"):
+        if isinstance(date, str):
+            date = parse_date(date)
+        if hxltag not in output_source_date:
+            output_source_date[hxltag] = dict()
+        output_source_date[hxltag][startend] = date
+
+    if isinstance(source_date, dict):
         for key, value in source_date.items():
-            if isinstance(value, str):
-                source_date[key] = parse_date(value)
-        source_date = source_date["default_date"]
-    return source_date
+            if key in ("start", "end"):
+                set_source_date(value, startend=key)
+            else:
+                if isinstance(value, dict):
+                    for startend, date in value:
+                        set_source_date(date, hxltag=key, startend=startend)
+                else:
+                    set_source_date(value, hxltag=key)
+    else:
+        set_source_date(source_date)
+    datasetinfo["source_date"] = output_source_date
+    return output_source_date["default_date"]["end"]
 
 
 def get_date_from_dataset_date(

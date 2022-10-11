@@ -311,7 +311,6 @@ class Read(Retrieve):
             Optional[Resource]: The resource if a url was not given
         """
         dataset_nameinfo = datasetinfo["dataset"]
-        get_source_date_from_datasetinfo(datasetinfo)
         if isinstance(dataset_nameinfo, str):
             dataset = self.read_dataset(dataset_nameinfo)
             resource = None
@@ -338,6 +337,7 @@ class Read(Retrieve):
                 datasetinfo["source"] = dataset["dataset_source"]
             if "source_url" not in datasetinfo:
                 datasetinfo["source_url"] = dataset.get_hdx_url()
+            get_source_date_from_datasetinfo(datasetinfo)
             return resource
         if "source_date" not in datasetinfo:
             source_date = dict()
@@ -383,6 +383,7 @@ class Read(Retrieve):
             datasetinfo["source"] = source
         if source_url is not None:
             datasetinfo["source_url"] = source_url
+        get_source_date_from_datasetinfo(datasetinfo)
         return None
 
     def read_hdx(
