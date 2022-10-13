@@ -995,6 +995,7 @@ scraper_subnational:
       - "IDPs"
     output_hxl:
       - "#affected+idps+ind"
+    source_date_format: "%Y-%m-%d"
 
 
 affected_targeted_reached:

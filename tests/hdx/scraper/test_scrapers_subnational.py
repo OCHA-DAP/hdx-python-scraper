@@ -495,7 +495,7 @@ class TestScrapersSubnational:
         sources = [
             (
                 "#affected+idps+ind",
-                "Aug 31, 2022",
+                "2022-08-31",
                 "UNHCR",
                 "https://data.humdata.org/dataset/somalia-internally-displaced-persons-idps",
             )

@@ -165,9 +165,13 @@ class BaseScraper(ABC):
             def add_source(hxltag, suffix_attribute):
                 hxltag_suffix = f"{hxltag}+{suffix_attribute.lower()}"
                 source_suffix = f"CUSTOM_{suffix_attribute}"
-                out_date = get_hxltag_source_date(self.datasetinfo, hxltag_suffix)
+                out_date = get_hxltag_source_date(
+                    self.datasetinfo, hxltag_suffix
+                )
                 if not out_date:
-                    out_date = get_hxltag_source_date(self.datasetinfo, source_suffix)
+                    out_date = get_hxltag_source_date(
+                        self.datasetinfo, source_suffix
+                    )
                 if not out_date:
                     out_date = get_hxltag_source_date(
                         self.datasetinfo, hxltag, fallback=True
@@ -240,7 +244,9 @@ class BaseScraper(ABC):
         Returns:
             None
         """
-        date = get_hxltag_source_date(self.datasetinfo, indicator, fallback=True)
+        date = get_hxltag_source_date(
+            self.datasetinfo, indicator, fallback=True
+        )
         self.sources[key] = [
             (
                 indicator,
