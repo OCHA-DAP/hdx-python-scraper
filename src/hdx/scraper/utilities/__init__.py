@@ -3,7 +3,6 @@ from datetime import datetime
 from typing import Any, Dict, Optional, Tuple
 
 from hdx.data.dataset import Dataset
-from hdx.utilities.dateparse import parse_date
 
 template = re.compile("{{.*?}}")
 
@@ -58,68 +57,26 @@ def get_rowval(row: Dict, valcol: str) -> Any:
         return result
 
 
-def get_source_date_from_datasetinfo(datasetinfo):
-    source_date = datasetinfo.get("source_date")
-    if not source_date:
-        return None
-
-    output_source_date = dict()
-
-    def set_source_date(date, hxltag="default_date", startend="end"):
-        if isinstance(date, str):
-            date = parse_date(date)
-        if hxltag not in output_source_date:
-            output_source_date[hxltag] = dict()
-        output_source_date[hxltag][startend] = date
-
-    if isinstance(source_date, dict):
-        for key, value in source_date.items():
-            if key in ("start", "end"):
-                set_source_date(value, startend=key)
-            else:
-                if isinstance(value, dict):
-                    for startend, date in value:
-                        set_source_date(date, hxltag=key, startend=startend)
-                else:
-                    set_source_date(value, hxltag=key)
-    else:
-        set_source_date(source_date)
-    datasetinfo["source_date"] = output_source_date
-    return output_source_date["default_date"]["end"]
-
-
-def get_date_from_dataset_date(
+def get_startend_dates_from_dataset_date(
     dataset: Dataset, today: Optional[datetime] = None
-) -> Optional[datetime]:
-    """Return the date or end date of a dataset
+) -> Optional[Dict]:
+    """Return the date of a dataset in form required for source_date
 
     Args:
         dataset (Dataset): Dataset object
         today (Optional[datetime]): Date to use for today. Defaults to None (datetime.utcnow)
 
     Returns:
-        Optional[datetime]: Date or end date of a dataset
+        Optional[Dict]: Date of a dataset in form required for source_date
     """
     if today is None:
         date_info = dataset.get_date_of_dataset()
     else:
         date_info = dataset.get_date_of_dataset(today=today)
-    return date_info.get("enddate")
-
-
-def get_isodate_from_dataset_date(
-    dataset: Dataset, today: Optional[datetime] = None
-) -> Optional[str]:
-    """Return the date or end date of a dataset as an iso formatted date
-
-    Args:
-        dataset (Dataset): Dataset object
-        today (Optional[datetime]): Date to use for today. Defaults to None (datetime.utcnow)
-
-    Returns:
-        Optional[str]: Date or end date of a dataset
-    """
-    date = get_date_from_dataset_date(dataset, today)
-    if date:
-        date = date.strftime("%Y-%m-%d")
-    return date
+    startdate = date_info.get("startdate")
+    enddate = date_info.get("enddate")
+    if enddate is None:
+        return None
+    if startdate.date() == enddate.date():
+        return {"end": enddate}
+    return {"start": startdate, "end": enddate}

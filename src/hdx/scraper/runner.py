@@ -13,10 +13,15 @@ from .configurable.resource_downloader import ResourceDownloader
 from .configurable.scraper import ConfigurableScraper
 from .configurable.timeseries import TimeSeries
 from .outputs.base import BaseOutput
-from .utilities import get_isodate_from_dataset_date
+from .utilities import get_startend_dates_from_dataset_date
 from .utilities.fallbacks import Fallbacks
 from .utilities.reader import Read
-from .utilities.sources import add_source_overwrite, add_sources_overwrite
+from .utilities.sources import (
+    add_source_overwrite,
+    add_sources_overwrite,
+    get_hxltag_date,
+    standardise_datasetinfo_source_date,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -871,7 +876,7 @@ class Runner:
         self,
         names: Optional[ListTuple[str]] = None,
         levels: Optional[Iterable[str]] = None,
-        additional_sources: ListTuple[str] = tuple(),
+        additional_sources: ListTuple[Dict] = tuple(),
     ) -> List[Tuple]:
         """Get sources for scrapers limiting to those in names if given. All levels will
         be obtained unless the levels parameter (which can contain levels like national,
@@ -894,24 +899,28 @@ class Runner:
 
         reader = Read.get_reader()
         for sourceinfo in additional_sources:
+            hxltag = sourceinfo["indicator"]
             date = sourceinfo.get("source_date")
             if date is None:
                 if sourceinfo.get("force_date_today", False):
-                    date = self.today.strftime("%Y-%m-%d")
+                    sourceinfo["source_date"] = self.today
             source_name = sourceinfo.get("source")
             source_url = sourceinfo.get("source_url")
             dataset_name = sourceinfo.get("dataset")
             if dataset_name:
                 dataset = reader.read_dataset(dataset_name)
                 if date is None:
-                    date = get_isodate_from_dataset_date(
+                    sourceinfo[
+                        "source_date"
+                    ] = get_startend_dates_from_dataset_date(
                         dataset, today=self.today
                     )
                 if source_name is None:
                     source_name = dataset["dataset_source"]
                 if source_url is None:
                     source_url = dataset.get_hdx_url()
-            hxltag = sourceinfo["indicator"]
+            standardise_datasetinfo_source_date(sourceinfo)
+            date = get_hxltag_date(sourceinfo, hxltag, fallback=True)
             source = (hxltag, date, source_name, source_url)
             add_source_overwrite(hxltags, sources, source, logger)
         for name in names:

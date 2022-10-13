@@ -7,7 +7,6 @@ from urllib.parse import parse_qsl
 import hxl
 from hdx.data.dataset import Dataset
 from hdx.data.resource import Resource
-from hdx.utilities.dateparse import parse_date
 from hdx.utilities.downloader import Download
 from hdx.utilities.retriever import Retrieve
 from hdx.utilities.saver import save_json
@@ -15,8 +14,8 @@ from hdx.utilities.typehint import ListTuple
 from hxl.input import InputOptions, munge_url
 from slugify import slugify
 
-from . import get_date_from_dataset_date, match_template, \
-    get_source_date_from_datasetinfo
+from . import get_startend_dates_from_dataset_date, match_template
+from .sources import standardise_datasetinfo_source_date
 
 logger = logging.getLogger(__name__)
 
@@ -330,14 +329,16 @@ class Read(Retrieve):
                     )
                 datasetinfo["url"] = url
             if "source_date" not in datasetinfo:
-                datasetinfo["source_date"] = get_date_from_dataset_date(
+                datasetinfo[
+                    "source_date"
+                ] = get_startend_dates_from_dataset_date(
                     dataset, today=self.today
                 )
             if "source" not in datasetinfo:
                 datasetinfo["source"] = dataset["dataset_source"]
             if "source_url" not in datasetinfo:
                 datasetinfo["source_url"] = dataset.get_hdx_url()
-            get_source_date_from_datasetinfo(datasetinfo)
+            standardise_datasetinfo_source_date(datasetinfo)
             return resource
         if "source_date" not in datasetinfo:
             source_date = dict()
@@ -362,7 +363,7 @@ class Read(Retrieve):
                     key = "default_date"
                 else:
                     key = hxltag
-                source_date[key] = get_date_from_dataset_date(
+                source_date[key] = get_startend_dates_from_dataset_date(
                     dataset, today=self.today
                 )
             if source is not None:
@@ -383,7 +384,7 @@ class Read(Retrieve):
             datasetinfo["source"] = source
         if source_url is not None:
             datasetinfo["source_url"] = source_url
-        get_source_date_from_datasetinfo(datasetinfo)
+        standardise_datasetinfo_source_date(datasetinfo)
         return None
 
     def read_hdx(

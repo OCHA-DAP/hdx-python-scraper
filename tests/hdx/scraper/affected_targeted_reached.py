@@ -1,5 +1,6 @@
 import logging
 
+from hdx.utilities.dateparse import default_date
 from hdx.utilities.dictandlist import dict_of_lists_add
 from hdx.utilities.text import number_format
 
@@ -70,10 +71,15 @@ class AffectedTargetedReached(BaseScraper):
         sources = self.datasetinfo["source"]
         self.datasetinfo["source_url"] = {}
         source_urls = self.datasetinfo["source_url"]
+        end_date = default_date
         for countryiso3, dataset in datasets.items():
             datasetinfo = {"dataset": dataset, "format": "csv"}
             resource = reader.read_hdx_metadata(datasetinfo)
-            source_dates[f"CUSTOM_{countryiso3}"] = datasetinfo["source_date"]
+            source_default_date = datasetinfo["source_date"]["default_date"]
+            new_end_date = source_default_date["end"]
+            if new_end_date > end_date:
+                end_date = new_end_date
+            source_dates[f"CUSTOM_{countryiso3}"] = source_default_date
             sources[f"CUSTOM_{countryiso3}"] = datasetinfo["source"]
             source_urls[f"CUSTOM_{countryiso3}"] = datasetinfo["source_url"]
             data = reader.read_hxl_resource(
@@ -116,6 +122,7 @@ class AffectedTargetedReached(BaseScraper):
                         aggregate_value, format="%.0f"
                     )
 
+        source_dates["default_date"] = {"end": end_date}
         affected = self.get_values("adminone")[0]
         fill_values(affecteddict1, affected, self.adminone)
         targeted = self.get_values("adminone")[1]

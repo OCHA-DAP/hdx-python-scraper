@@ -151,7 +151,11 @@ class TestReaders:
             "Targeted 2017": "             _",
             "% targeted": "0",
         }
-        date = datetime(2016, 9, 1, 23, 59, 59, tzinfo=timezone.utc)
+        date = {
+            "default_date": {
+                "end": datetime(2016, 9, 1, 23, 59, 59, tzinfo=timezone.utc),
+            }
+        }
         assert datasetinfo == {
             "name": "test",
             "dataset": "sahel-humanitarian-needs-overview",

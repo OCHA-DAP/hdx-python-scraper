@@ -2,7 +2,70 @@ from logging import Logger
 from typing import Dict, List, Optional, Union
 
 from hdx.location.adminlevel import AdminLevel
+from hdx.utilities.dateparse import parse_date
 from hdx.utilities.typehint import ListTuple
+
+DEFAULT_SOURCE_DATE_FORMAT = "%Y-%m-%d"  # "%b %d, %Y"
+DEFAULT_DATE_RANGE_SEPARATOR = "-"
+
+
+def standardise_datasetinfo_source_date(datasetinfo):
+    source_date = datasetinfo.get("source_date")
+    if not source_date:
+        datasetinfo["source_date"] = None
+        return None
+
+    output_source_date = dict()
+
+    def set_source_date(date, hxltag="default_date", startend="end"):
+        if isinstance(date, str):
+            date = parse_date(date)
+        if hxltag not in output_source_date:
+            output_source_date[hxltag] = dict()
+        output_source_date[hxltag][startend] = date
+
+    if isinstance(source_date, dict):
+        for key, value in source_date.items():
+            if key in ("start", "end"):
+                set_source_date(value, startend=key)
+            else:
+                if isinstance(value, dict):
+                    for startend, date in value.items():
+                        set_source_date(date, hxltag=key, startend=startend)
+                else:
+                    set_source_date(value, hxltag=key)
+    else:
+        set_source_date(source_date)
+    default_date = output_source_date.get("default_date")
+    if default_date:
+        default_end_date = default_date.get("end")
+        if default_end_date:
+            datasetinfo["source_date"] = output_source_date
+            return default_end_date
+    datasetinfo["source_date"] = None
+    return None
+
+
+def get_hxltag_date(datasetinfo, hxltag, fallback=False):
+    source_date = datasetinfo["source_date"]
+    date = source_date.get(hxltag)
+    if not date:
+        if not fallback:
+            return None
+        date = source_date["default_date"]
+    source_date_format = datasetinfo.get(
+        "source_date_format", DEFAULT_SOURCE_DATE_FORMAT
+    )
+    enddate = date["end"].strftime(source_date_format)
+    source_date_range = datasetinfo.get("source_date_range", False)
+    startdate = date.get("start")
+    if source_date_range and startdate:
+        startdate = startdate.strftime(source_date_format)
+        separator = datasetinfo.get(
+            "date_range_separator", DEFAULT_DATE_RANGE_SEPARATOR
+        )
+        return f"{startdate}{separator}{enddate}"
+    return enddate
 
 
 def add_source_overwrite(
