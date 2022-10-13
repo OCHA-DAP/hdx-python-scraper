@@ -32,7 +32,7 @@ class TestScrapersResourceDownloader:
             assert runner.get_sources() == [
                 (
                     "#xlsx",
-                    "2022-04-14",
+                    "Apr 14, 2022",
                     "Multiple Sources",
                     "https://data.humdata.org/dataset/ukraine-border-crossings",
                 )

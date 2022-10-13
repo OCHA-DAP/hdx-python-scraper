@@ -5,7 +5,7 @@ from hdx.location.adminlevel import AdminLevel
 from hdx.utilities.dateparse import parse_date
 from hdx.utilities.typehint import ListTuple
 
-DEFAULT_SOURCE_DATE_FORMAT = "%Y-%m-%d"  # "%b %d, %Y"
+DEFAULT_SOURCE_DATE_FORMAT = "%b %d, %Y"
 DEFAULT_DATE_RANGE_SEPARATOR = "-"
 
 
