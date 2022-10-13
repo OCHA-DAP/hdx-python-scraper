@@ -4,7 +4,7 @@ from typing import Dict, List, Optional, Set, Tuple
 
 from .utilities.reader import Read
 from .utilities.sources import (
-    get_hxltag_date,
+    get_hxltag_source_date,
     standardise_datasetinfo_source_date,
 )
 
@@ -150,7 +150,7 @@ class BaseScraper(ABC):
                 self.sources[level] = [
                     (
                         hxltag,
-                        get_hxltag_date(
+                        get_hxltag_source_date(
                             self.datasetinfo, hxltag, fallback=True
                         ),
                         source.get(hxltag, source["default_source"]),
@@ -165,11 +165,11 @@ class BaseScraper(ABC):
             def add_source(hxltag, suffix_attribute):
                 hxltag_suffix = f"{hxltag}+{suffix_attribute.lower()}"
                 source_suffix = f"CUSTOM_{suffix_attribute}"
-                out_date = get_hxltag_date(self.datasetinfo, hxltag_suffix)
+                out_date = get_hxltag_source_date(self.datasetinfo, hxltag_suffix)
                 if not out_date:
-                    out_date = get_hxltag_date(self.datasetinfo, source_suffix)
+                    out_date = get_hxltag_source_date(self.datasetinfo, source_suffix)
                 if not out_date:
-                    out_date = get_hxltag_date(
+                    out_date = get_hxltag_source_date(
                         self.datasetinfo, hxltag, fallback=True
                     )
                 out_source = source.get(hxltag_suffix)
@@ -240,7 +240,7 @@ class BaseScraper(ABC):
         Returns:
             None
         """
-        date = get_hxltag_date(self.datasetinfo, indicator, fallback=True)
+        date = get_hxltag_source_date(self.datasetinfo, indicator, fallback=True)
         self.sources[key] = [
             (
                 indicator,

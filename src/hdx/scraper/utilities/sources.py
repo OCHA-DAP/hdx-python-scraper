@@ -46,7 +46,7 @@ def standardise_datasetinfo_source_date(datasetinfo):
     return None
 
 
-def get_hxltag_date(datasetinfo, hxltag, fallback=False):
+def get_hxltag_source_date(datasetinfo, hxltag, fallback=False):
     source_date = datasetinfo["source_date"]
     date = source_date.get(hxltag)
     if not date:
@@ -56,15 +56,23 @@ def get_hxltag_date(datasetinfo, hxltag, fallback=False):
     source_date_format = datasetinfo.get(
         "source_date_format", DEFAULT_SOURCE_DATE_FORMAT
     )
-    enddate = date["end"].strftime(source_date_format)
-    source_date_range = datasetinfo.get("source_date_range", False)
-    startdate = date.get("start")
-    if source_date_range and startdate:
-        startdate = startdate.strftime(source_date_format)
-        separator = datasetinfo.get(
-            "date_range_separator", DEFAULT_DATE_RANGE_SEPARATOR
+    if isinstance(source_date_format, str):
+        start_source_date_format = None
+        end_source_date_format = source_date_format
+        date_range_separator = None
+    else:
+        start_source_date_format = source_date_format.get("start")
+        end_source_date_format = source_date_format.get("end")
+        if not end_source_date_format:
+            end_source_date_format = source_date_format["date"]
+        date_range_separator = source_date_format.get(
+            "separator", DEFAULT_DATE_RANGE_SEPARATOR
         )
-        return f"{startdate}{separator}{enddate}"
+    enddate = date["end"].strftime(end_source_date_format)
+    startdate = date.get("start")
+    if start_source_date_format and startdate:
+        startdate = startdate.strftime(start_source_date_format)
+        return f"{startdate}{date_range_separator}{enddate}"
     return enddate
 
 

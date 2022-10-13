@@ -392,7 +392,7 @@ class TestScrapersSubnational:
         sources = [
             (
                 "#affected+food+ipc+p3plus+num",
-                "Dec 31, 2022",
+                "Jan-Dec 2022",
                 "National IPC Technical Working Group",
                 "https://data.humdata.org/dataset/somalia-acute-food-insecurity-country-data",
             )

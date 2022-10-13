@@ -19,7 +19,7 @@ from .utilities.reader import Read
 from .utilities.sources import (
     add_source_overwrite,
     add_sources_overwrite,
-    get_hxltag_date,
+    get_hxltag_source_date,
     standardise_datasetinfo_source_date,
 )
 
@@ -920,7 +920,7 @@ class Runner:
                 if source_url is None:
                     source_url = dataset.get_hdx_url()
             standardise_datasetinfo_source_date(sourceinfo)
-            date = get_hxltag_date(sourceinfo, hxltag, fallback=True)
+            date = get_hxltag_source_date(sourceinfo, hxltag, fallback=True)
             source = (hxltag, date, source_name, source_url)
             add_source_overwrite(hxltags, sources, source, logger)
         for name in names:

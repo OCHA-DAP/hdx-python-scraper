@@ -972,6 +972,10 @@ scraper_subnational:
       - "FoodInsecurityIPCP3+"
     output_hxl:
       - "#affected+food+ipc+p3plus+num"
+    source_date_format:
+      start: "%b"
+      separator: "-"
+      end: "%b %Y"
   idps_somalia:
     dataset: "somalia-internally-displaced-persons-idps"
     format: "xlsx"
