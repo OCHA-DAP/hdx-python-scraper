@@ -60,7 +60,7 @@ class TestScrapersNational:
         sources = [
             (
                 "#population",
-                "2020-10-01",
+                "Oct 01, 2020",
                 "World Bank",
                 "https://data.humdata.org/organization/world-bank-group",
             )
@@ -102,25 +102,25 @@ class TestScrapersNational:
         sources = [
             (
                 "#affected+infected+per100000",
-                "2020-08-06",
+                "Aug 06, 2020",
                 "WHO",
                 "https://covid19.who.int/WHO-COVID-19-global-data.csv",
             ),
             (
                 "#affected+killed+per100000",
-                "2020-08-06",
+                "Aug 06, 2020",
                 "WHO",
                 "https://covid19.who.int/WHO-COVID-19-global-data.csv",
             ),
             (
                 "#affected+infected+2+per100000",
-                "2020-08-06",
+                "Aug 06, 2020",
                 "WHO",
                 "https://covid19.who.int/WHO-COVID-19-global-data.csv",
             ),
             (
                 "#affected+killed+2+per100000",
-                "2020-08-06",
+                "Aug 06, 2020",
                 "WHO",
                 "https://covid19.who.int/WHO-COVID-19-global-data.csv",
             ),
@@ -165,7 +165,7 @@ class TestScrapersNational:
         combined_sources = [
             (
                 "#date+start+conflict",
-                "2022-02-24",
+                "Feb 24, 2022",
                 "Meduza",
                 "https://meduza.io/en/news/2022/02/24/putin-announces-start-of-military-operation-in-eastern-ukraine",
             ),
@@ -220,61 +220,61 @@ class TestScrapersNational:
         sources = [
             (
                 "#access+visas+pct",
-                "2020-10-01",
+                "Oct 01, 2020",
                 "OCHA",
                 "https://docs.google.com/spreadsheets/d/e/2PACX-1vRSzJzuyVt9i_mkRQ2HbxrUl2Lx2VIhkTHQM-laE8NyhQTy70zQTCuFS3PXbhZGAt1l2bkoA4_dAoAP/pub?gid=1565063847&single=true&output=csv",
             ),
             (
                 "#access+travel+pct",
-                "2020-10-01",
+                "Oct 01, 2020",
                 "OCHA",
                 "https://docs.google.com/spreadsheets/d/e/2PACX-1vRSzJzuyVt9i_mkRQ2HbxrUl2Lx2VIhkTHQM-laE8NyhQTy70zQTCuFS3PXbhZGAt1l2bkoA4_dAoAP/pub?gid=1565063847&single=true&output=csv",
             ),
             (
                 "#event+year+previous+num",
-                "2020-10-01",
+                "Oct 01, 2020",
                 "Aid Workers Database",
                 "https://data.humdata.org/dataset/security-incidents-on-aid-workers",
             ),
             (
                 "#event+year+todate+num",
-                "2020-10-01",
+                "Oct 01, 2020",
                 "Aid Workers Database",
                 "https://data.humdata.org/dataset/security-incidents-on-aid-workers",
             ),
             (
                 "#event+year+previous+todate+num",
-                "2020-10-01",
+                "Oct 01, 2020",
                 "Aid Workers Database",
                 "https://data.humdata.org/dataset/security-incidents-on-aid-workers",
             ),
             (
                 "#activity+cerf+project+insecurity+pct",
-                "2020-10-01",
+                "Oct 01, 2020",
                 "UNCERF",
                 "https://docs.google.com/spreadsheets/d/e/2PACX-1vRSzJzuyVt9i_mkRQ2HbxrUl2Lx2VIhkTHQM-laE8NyhQTy70zQTCuFS3PXbhZGAt1l2bkoA4_dAoAP/pub?gid=1565063847&single=true&output=csv",
             ),
             (
                 "#activity+cbpf+project+insecurity+pct",
-                "2020-10-01",
+                "Oct 01, 2020",
                 "UNCERF",
                 "https://docs.google.com/spreadsheets/d/e/2PACX-1vRSzJzuyVt9i_mkRQ2HbxrUl2Lx2VIhkTHQM-laE8NyhQTy70zQTCuFS3PXbhZGAt1l2bkoA4_dAoAP/pub?gid=1565063847&single=true&output=csv",
             ),
             (
                 "#service+name",
-                "2020-10-01",
+                "Oct 01, 2020",
                 "Multiple sources",
                 "https://docs.google.com/spreadsheets/d/e/2PACX-1vRSzJzuyVt9i_mkRQ2HbxrUl2Lx2VIhkTHQM-laE8NyhQTy70zQTCuFS3PXbhZGAt1l2bkoA4_dAoAP/pub?gid=1565063847&single=true&output=csv",
             ),
             (
                 "#status+name",
-                "2020-10-01",
+                "Oct 01, 2020",
                 "Multiple sources",
                 "https://docs.google.com/spreadsheets/d/e/2PACX-1vRSzJzuyVt9i_mkRQ2HbxrUl2Lx2VIhkTHQM-laE8NyhQTy70zQTCuFS3PXbhZGAt1l2bkoA4_dAoAP/pub?gid=1565063847&single=true&output=csv",
             ),
             (
                 "#population+education",
-                "2020-10-01",
+                "Oct 01, 2020",
                 "UNESCO",
                 "https://docs.google.com/spreadsheets/d/e/2PACX-1vRSzJzuyVt9i_mkRQ2HbxrUl2Lx2VIhkTHQM-laE8NyhQTy70zQTCuFS3PXbhZGAt1l2bkoA4_dAoAP/pub?gid=1565063847&single=true&output=csv",
             ),
@@ -316,25 +316,25 @@ class TestScrapersNational:
         sources = [
             (
                 "#affected+infected+m+pct",
-                "2020-08-07",
+                "Aug 07, 2020",
                 "SADD",
                 "https://globalhealth5050.org/?_covid-data=dataset-fullvars&_extype=csv",
             ),
             (
                 "#affected+f+infected+pct",
-                "2020-08-07",
+                "Aug 07, 2020",
                 "SADD",
                 "https://globalhealth5050.org/?_covid-data=dataset-fullvars&_extype=csv",
             ),
             (
                 "#affected+killed+m+pct",
-                "2020-08-07",
+                "Aug 07, 2020",
                 "SADD",
                 "https://globalhealth5050.org/?_covid-data=dataset-fullvars&_extype=csv",
             ),
             (
                 "#affected+f+killed+pct",
-                "2020-08-07",
+                "Aug 07, 2020",
                 "SADD",
                 "https://globalhealth5050.org/?_covid-data=dataset-fullvars&_extype=csv",
             ),
@@ -358,13 +358,13 @@ class TestScrapersNational:
         sources = [
             (
                 "#affected+killed",
-                "2020-10-01",
+                "Oct 01, 2020",
                 "OHCHR",
                 "https://data.humdata.org/dataset/ukraine-key-figures-2022",
             ),
             (
                 "#affected+injured",
-                "2020-10-01",
+                "Oct 01, 2020",
                 "OHCHR",
                 "https://data.humdata.org/dataset/ukraine-key-figures-2022",
             ),
@@ -404,13 +404,13 @@ class TestScrapersNational:
         sources = [
             (
                 "#capacity+doses+administered+total",
-                "2020-10-01",
+                "Oct 01, 2020",
                 "Our World in Data",
                 "https://proxy.hxlstandard.org/data.csv?tagger-match-all=on&tagger-01-header=location&tagger-01-tag=%23country%2Bname&tagger-02-header=iso_code&tagger-02-tag=%23country%2Bcode&tagger-03-header=date&tagger-03-tag=%23date&tagger-04-header=total_vaccinations&tagger-04-tag=%23total%2Bvaccinations&tagger-08-header=daily_vaccinations&tagger-08-tag=%23total%2Bvaccinations%2Bdaily&url=https%3A%2F%2Fraw.githubusercontent.com%2Fowid%2Fcovid-19-data%2Fmaster%2Fpublic%2Fdata%2Fvaccinations%2Fvaccinations.csv&header-row=1&dest=data_view",
             ),
             (
                 "#capacity+doses+administered+coverage+pct",
-                "2020-10-01",
+                "Oct 01, 2020",
                 "Our World in Data",
                 "https://proxy.hxlstandard.org/data.csv?tagger-match-all=on&tagger-01-header=location&tagger-01-tag=%23country%2Bname&tagger-02-header=iso_code&tagger-02-tag=%23country%2Bcode&tagger-03-header=date&tagger-03-tag=%23date&tagger-04-header=total_vaccinations&tagger-04-tag=%23total%2Bvaccinations&tagger-08-header=daily_vaccinations&tagger-08-tag=%23total%2Bvaccinations%2Bdaily&url=https%3A%2F%2Fraw.githubusercontent.com%2Fowid%2Fcovid-19-data%2Fmaster%2Fpublic%2Fdata%2Fvaccinations%2Fvaccinations.csv&header-row=1&dest=data_view",
             ),
@@ -441,25 +441,25 @@ class TestScrapersNational:
         sources = [
             (
                 "#affected+tested",
-                "2020-10-01",
+                "Oct 01, 2020",
                 "Our World in Data",
                 "https://data.humdata.org/dataset/total-covid-19-tests-performed-by-country",
             ),
             (
                 "#affected+tested+per1000",
-                "2020-10-01",
+                "Oct 01, 2020",
                 "Our World in Data",
                 "https://data.humdata.org/dataset/total-covid-19-tests-performed-by-country",
             ),
             (
                 "#affected+tested+avg+per1000",
-                "2020-10-01",
+                "Oct 01, 2020",
                 "Our World in Data",
                 "https://data.humdata.org/dataset/total-covid-19-tests-performed-by-country",
             ),
             (
                 "#affected+tested+positive+pct",
-                "2020-10-01",
+                "Oct 01, 2020",
                 "Our World in Data",
                 "https://data.humdata.org/dataset/total-covid-19-tests-performed-by-country",
             ),
@@ -489,13 +489,13 @@ class TestScrapersNational:
         sources = [
             (
                 "#capacity+doses+administered+total",
-                "2021-05-03",
+                "May 03, 2021",
                 "Our World in Data",
                 "https://proxy.hxlstandard.org/data.csv?tagger-match-all=on&tagger-01-header=location&tagger-01-tag=%23country%2Bname&tagger-02-header=iso_code&tagger-02-tag=%23country%2Bcode&tagger-03-header=date&tagger-03-tag=%23date&tagger-04-header=total_vaccinations&tagger-04-tag=%23total%2Bvaccinations&tagger-08-header=daily_vaccinations&tagger-08-tag=%23total%2Bvaccinations%2Bdaily&url=https%3A%2F%2Fraw.githubusercontent.com%2Fowid%2Fcovid-19-data%2Fmaster%2Fpublic%2Fdata%2Fvaccinations%2Fvaccinations.csv&header-row=1&dest=data_view",
             ),
             (
                 "#capacity+doses+administered+coverage+pct",
-                "2021-05-03",
+                "May 03, 2021",
                 "Our World in Data",
                 "https://proxy.hxlstandard.org/data.csv?tagger-match-all=on&tagger-01-header=location&tagger-01-tag=%23country%2Bname&tagger-02-header=iso_code&tagger-02-tag=%23country%2Bcode&tagger-03-header=date&tagger-03-tag=%23date&tagger-04-header=total_vaccinations&tagger-04-tag=%23total%2Bvaccinations&tagger-08-header=daily_vaccinations&tagger-08-tag=%23total%2Bvaccinations%2Bdaily&url=https%3A%2F%2Fraw.githubusercontent.com%2Fowid%2Fcovid-19-data%2Fmaster%2Fpublic%2Fdata%2Fvaccinations%2Fvaccinations.csv&header-row=1&dest=data_view",
             ),
@@ -553,7 +553,7 @@ class TestScrapersNational:
         sources = [
             (
                 "#affected+displaced",
-                "2020-12-31",
+                "Dec 31, 2020",
                 "IDMC",
                 "https://data.humdata.org/dataset/idmc-internally-displaced-persons-idps",
             )

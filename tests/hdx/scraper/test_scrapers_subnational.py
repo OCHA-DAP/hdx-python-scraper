@@ -68,7 +68,7 @@ class TestScrapersSubnational:
         sources = [
             (
                 "#severity+malnutrition+num+subnational",
-                "2020-10-01",
+                "Oct 01, 2020",
                 "UNICEF",
                 "https://data.humdata.org/dataset/87b86e7d-e9b2-4922-a48e-1f10afd528e6/resource/eabba7e7-16d0-436c-a62c-df6edd03be7c/download/unicef_who_wb_global_expanded_databases_severe_wasting.xlsx",
             )
@@ -345,7 +345,7 @@ class TestScrapersSubnational:
         sources = [
             (
                 "#severity+malnutrition+num+subnational",
-                "2020-10-01",
+                "Oct 01, 2020",
                 "UNICEF",
                 "https://data.humdata.org/dataset/87b86e7d-e9b2-4922-a48e-1f10afd528e6/resource/eabba7e7-16d0-436c-a62c-df6edd03be7c/download/unicef_who_wb_global_expanded_databases_severe_wasting.xlsx",
             )
@@ -392,7 +392,7 @@ class TestScrapersSubnational:
         sources = [
             (
                 "#affected+food+ipc+p3plus+num",
-                "2022-12-31",
+                "Jan-Dec 2022",
                 "National IPC Technical Working Group",
                 "https://data.humdata.org/dataset/somalia-acute-food-insecurity-country-data",
             )

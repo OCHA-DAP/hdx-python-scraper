@@ -15,7 +15,7 @@ from .education_enrolment import EducationEnrolment
 class TestScrapersCustom:
     def test_get_custom(self, configuration, fallbacks_json):
         BaseScraper.population_lookup = dict()
-        source_date = "2022-04-30"
+        source_date = "Apr 30, 2022"
         today = parse_date("2020-10-01")
         level = "national"
         countries = ("AFG",)
@@ -76,7 +76,7 @@ class TestScrapersCustom:
         sources = [
             (
                 "#population",
-                "2020-10-01",
+                "Oct 01, 2020",
                 "World Bank",
                 "https://data.humdata.org/organization/world-bank-group",
             ),
@@ -179,19 +179,19 @@ class TestScrapersCustom:
         sources = [
             (
                 "#population+learners+pre_primary_to_secondary",
-                "2022-04-30",
+                "Apr 30, 2022",
                 "UNESCO",
                 "https://data.humdata.org/dataset/global-school-closures-covid19",
             ),
             (
                 "#population+learners+tertiary",
-                "2022-04-30",
+                "Apr 30, 2022",
                 "UNESCO",
                 "https://data.humdata.org/dataset/global-school-closures-covid19",
             ),
             (
                 "#affected+learners",
-                "2022-04-30",
+                "Apr 30, 2022",
                 "UNESCO",
                 "https://data.humdata.org/dataset/global-school-closures-covid19",
             ),
@@ -205,13 +205,13 @@ class TestScrapersCustom:
         sources = [
             (
                 "#affected+learners",
-                "2022-04-30",
+                "Apr 30, 2022",
                 "UNESCO",
                 "https://data.humdata.org/dataset/global-school-closures-covid19",
             ),
             (
                 "#affected+learners+pct",
-                "2022-04-30",
+                "Apr 30, 2022",
                 "UNESCO",
                 "https://data.humdata.org/dataset/global-school-closures-covid19",
             ),
@@ -248,7 +248,7 @@ class TestScrapersCustom:
         assert sources == [
             (
                 "#lala",
-                "2022-04-30",
+                "Apr 30, 2022",
                 "UNESCO",
                 "https://data.humdata.org/dataset/global-school-closures-covid19",
             )
@@ -440,55 +440,55 @@ class TestScrapersCustom:
         sources = [
             (
                 "#affected+total+eth",
-                "2022-07-31",
+                "Jul 31, 2022",
                 "Multiple Source (Humanitarian Partners)",
                 "https://data.humdata.org/dataset/ethiopia-pin-targeted-reached-by-location-and-cluster",
             ),
             (
                 "#affected+total+ken",
-                "2022-10-31",
+                "Oct 31, 2022",
                 "Multiple Source (Humanitarian Partners)",
                 "https://data.humdata.org/dataset/kenya-pin-targeted-reached-by-location-and-cluster",
             ),
             (
                 "#affected+total+som",
-                "2022-12-31",
+                "Dec 31, 2022",
                 "Multiple Source (Humanitarian Partners)",
                 "https://data.humdata.org/dataset/somalia-pin-targeted-reached-by-location-and-cluster",
             ),
             (
                 "#targeted+total+eth",
-                "2022-07-31",
+                "Jul 31, 2022",
                 "Multiple Source (Humanitarian Partners)",
                 "https://data.humdata.org/dataset/ethiopia-pin-targeted-reached-by-location-and-cluster",
             ),
             (
                 "#targeted+total+ken",
-                "2022-10-31",
+                "Oct 31, 2022",
                 "Multiple Source (Humanitarian Partners)",
                 "https://data.humdata.org/dataset/kenya-pin-targeted-reached-by-location-and-cluster",
             ),
             (
                 "#targeted+total+som",
-                "2022-12-31",
+                "Dec 31, 2022",
                 "Multiple Source (Humanitarian Partners)",
                 "https://data.humdata.org/dataset/somalia-pin-targeted-reached-by-location-and-cluster",
             ),
             (
                 "#priority+eth",
-                "2022-07-31",
+                "Jul 31, 2022",
                 "Multiple Source (Humanitarian Partners)",
                 "https://data.humdata.org/dataset/ethiopia-pin-targeted-reached-by-location-and-cluster",
             ),
             (
                 "#priority+ken",
-                "2022-10-31",
+                "Oct 31, 2022",
                 "Multiple Source (Humanitarian Partners)",
                 "https://data.humdata.org/dataset/kenya-pin-targeted-reached-by-location-and-cluster",
             ),
             (
                 "#priority+som",
-                "2022-12-31",
+                "Dec 31, 2022",
                 "Multiple Source (Humanitarian Partners)",
                 "https://data.humdata.org/dataset/somalia-pin-targeted-reached-by-location-and-cluster",
             ),

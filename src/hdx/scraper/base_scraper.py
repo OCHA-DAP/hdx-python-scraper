@@ -1,9 +1,12 @@
 from abc import ABC, abstractmethod
 from copy import deepcopy
-from datetime import datetime
 from typing import Dict, List, Optional, Set, Tuple
 
 from .utilities.reader import Read
+from .utilities.sources import (
+    get_hxltag_source_date,
+    standardise_datasetinfo_source_date,
+)
 
 
 class BaseScraper(ABC):
@@ -141,16 +144,14 @@ class BaseScraper(ABC):
         source_url = self.datasetinfo["source_url"]
         if isinstance(source_url, str):
             source_url = {"default_url": source_url}
-        date = self.datasetinfo["source_date"]
-        if isinstance(date, datetime):
-            date = {"default_date": date}
+        standardise_datasetinfo_source_date(self.datasetinfo)
         if self.source_configuration is None:
             for level in self.headers:
                 self.sources[level] = [
                     (
                         hxltag,
-                        date.get(hxltag, date["default_date"]).strftime(
-                            "%Y-%m-%d"
+                        get_hxltag_source_date(
+                            self.datasetinfo, hxltag, fallback=True
                         ),
                         source.get(hxltag, source["default_source"]),
                         source_url.get(hxltag, source_url["default_url"]),
@@ -164,13 +165,17 @@ class BaseScraper(ABC):
             def add_source(hxltag, suffix_attribute):
                 hxltag_suffix = f"{hxltag}+{suffix_attribute.lower()}"
                 source_suffix = f"CUSTOM_{suffix_attribute}"
-                out_date = date.get(hxltag_suffix)
+                out_date = get_hxltag_source_date(
+                    self.datasetinfo, hxltag_suffix
+                )
                 if not out_date:
-                    out_date = date.get(source_suffix)
+                    out_date = get_hxltag_source_date(
+                        self.datasetinfo, source_suffix
+                    )
                 if not out_date:
-                    out_date = date.get(hxltag)
-                if not out_date:
-                    out_date = date["default_date"]
+                    out_date = get_hxltag_source_date(
+                        self.datasetinfo, hxltag, fallback=True
+                    )
                 out_source = source.get(hxltag_suffix)
                 if not out_source:
                     out_source = source.get(source_suffix)
@@ -188,7 +193,7 @@ class BaseScraper(ABC):
                 self.sources[level].append(
                     (
                         hxltag_suffix,
-                        out_date.strftime("%Y-%m-%d"),
+                        out_date,
                         out_source,
                         out_url,
                     )
@@ -239,10 +244,13 @@ class BaseScraper(ABC):
         Returns:
             None
         """
+        date = get_hxltag_source_date(
+            self.datasetinfo, indicator, fallback=True
+        )
         self.sources[key] = [
             (
                 indicator,
-                self.datasetinfo["source_date"].strftime("%Y-%m-%d"),
+                date,
                 self.datasetinfo["source"],
                 self.datasetinfo["source_url"],
             )

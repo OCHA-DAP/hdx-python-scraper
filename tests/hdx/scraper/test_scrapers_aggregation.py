@@ -23,7 +23,7 @@ class TestScrapersAggregation:
         sources = [
             (
                 "#population",
-                "2020-10-01",
+                "Oct 01, 2020",
                 "World Bank",
                 "https://data.humdata.org/organization/world-bank-group",
             )
@@ -144,19 +144,19 @@ class TestScrapersAggregation:
         sources = [
             (
                 "#population",
-                "2020-10-01",
+                "Oct 01, 2020",
                 "World Bank",
                 "https://data.humdata.org/organization/world-bank-group",
             ),
             (
                 "#affected+infected+per100000",
-                "2020-08-06",
+                "Aug 06, 2020",
                 "WHO",
                 "https://covid19.who.int/WHO-COVID-19-global-data.csv",
             ),
             (
                 "#affected+killed+per100000",
-                "2020-08-06",
+                "Aug 06, 2020",
                 "WHO",
                 "https://covid19.who.int/WHO-COVID-19-global-data.csv",
             ),
@@ -229,7 +229,7 @@ class TestScrapersAggregation:
         sources = [
             (
                 "#population",
-                "2020-10-01",
+                "Oct 01, 2020",
                 "World Bank",
                 "https://data.humdata.org/organization/world-bank-group",
             )
@@ -348,19 +348,19 @@ class TestScrapersAggregation:
         sources = [
             (
                 "#population",
-                "2020-10-01",
+                "Oct 01, 2020",
                 "World Bank",
                 "https://data.humdata.org/organization/world-bank-group",
             ),
             (
                 "#affected+infected+per100000",
-                "2020-08-06",
+                "Aug 06, 2020",
                 "WHO",
                 "https://covid19.who.int/WHO-COVID-19-global-data.csv",
             ),
             (
                 "#affected+killed+per100000",
-                "2020-08-06",
+                "Aug 06, 2020",
                 "WHO",
                 "https://covid19.who.int/WHO-COVID-19-global-data.csv",
             ),
