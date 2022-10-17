@@ -5,80 +5,11 @@ from hdx.location.adminlevel import AdminLevel
 from hdx.utilities.dateparse import parse_date
 from hdx.utilities.typehint import ListTuple
 
-DEFAULT_SOURCE_DATE_FORMAT = "%b %d, %Y"
-DEFAULT_DATE_RANGE_SEPARATOR = "-"
-
-
-def standardise_datasetinfo_source_date(datasetinfo):
-    source_date = datasetinfo.get("source_date")
-    if not source_date:
-        datasetinfo["source_date"] = None
-        return None
-
-    output_source_date = dict()
-
-    def set_source_date(date, hxltag="default_date", startend="end"):
-        if isinstance(date, str):
-            date = parse_date(date)
-        if hxltag not in output_source_date:
-            output_source_date[hxltag] = dict()
-        output_source_date[hxltag][startend] = date
-
-    if isinstance(source_date, dict):
-        for key, value in source_date.items():
-            if key in ("start", "end"):
-                set_source_date(value, startend=key)
-            else:
-                if isinstance(value, dict):
-                    for startend, date in value.items():
-                        set_source_date(date, hxltag=key, startend=startend)
-                else:
-                    set_source_date(value, hxltag=key)
-    else:
-        set_source_date(source_date)
-    default_date = output_source_date.get("default_date")
-    if default_date:
-        default_end_date = default_date.get("end")
-        if default_end_date:
-            datasetinfo["source_date"] = output_source_date
-            return default_end_date
-    datasetinfo["source_date"] = None
-    return None
-
-
-def get_hxltag_source_date(datasetinfo, hxltag, fallback=False):
-    source_date = datasetinfo["source_date"]
-    date = source_date.get(hxltag)
-    if not date:
-        if not fallback:
-            return None
-        date = source_date["default_date"]
-    source_date_format = datasetinfo.get(
-        "source_date_format", DEFAULT_SOURCE_DATE_FORMAT
-    )
-    if isinstance(source_date_format, str):
-        start_source_date_format = None
-        end_source_date_format = source_date_format
-        date_range_separator = None
-    else:
-        start_source_date_format = source_date_format.get("start")
-        end_source_date_format = source_date_format.get("end")
-        if not end_source_date_format:
-            end_source_date_format = source_date_format["date"]
-        date_range_separator = source_date_format.get(
-            "separator", DEFAULT_DATE_RANGE_SEPARATOR
-        )
-    enddate = date["end"].strftime(end_source_date_format)
-    startdate = date.get("start")
-    if start_source_date_format and startdate:
-        startdate = startdate.strftime(start_source_date_format)
-        return f"{startdate}{date_range_separator}{enddate}"
-    return enddate
-
 
 class Sources:
     DEFAULT_SOURCE_DATE_FORMAT = "%b %d, %Y"
     DEFAULT_DATE_RANGE_SEPARATOR = "-"
+    SHOULD_OVERWRITE_SOURCES = False
 
     @classmethod
     def set_default_source_date_format(cls, format):
@@ -87,6 +18,10 @@ class Sources:
     @classmethod
     def set_default_date_range_separator(cls, separator):
         cls.DEFAULT_DATE_RANGE_SEPARATOR = separator
+
+    @classmethod
+    def set_should_overwrite_sources(cls, overwrite):
+        cls.SHOULD_OVERWRITE_SOURCES = overwrite
 
     @staticmethod
     def standardise_datasetinfo_source_date(datasetinfo):
@@ -157,8 +92,9 @@ class Sources:
             return f"{startdate}{date_range_separator}{enddate}"
         return enddate
 
-    @staticmethod
+    @classmethod
     def add_source_overwrite(
+        cls,
         hxltags: List[str],
         sources: List[ListTuple],
         source: ListTuple[str],
@@ -177,9 +113,14 @@ class Sources:
         """
         hxltag = source[0]
         if hxltag in hxltags:
-            logger.warning(f"Overwriting source information for {hxltag}!")
-            index = hxltags.index(hxltag)
-            sources[index] = source
+            if cls.SHOULD_OVERWRITE_SOURCES:
+                logger.warning(f"Overwriting source information for {hxltag}!")
+                index = hxltags.index(hxltag)
+                sources[index] = source
+            else:
+                logger.warning(
+                    f"Keeping existing source information for {hxltag}!"
+                )
         else:
             hxltags.append(hxltag)
             sources.append(source)

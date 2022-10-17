@@ -363,10 +363,6 @@ class TestScrapersAppendData:
             "KEN",
             "SOM",
         )
-        runner = Runner(iso3s, today)
-        names = ["key_figures_som", "key_figures_eth", "key_figures_ken"]
-        keys = runner.add_configurables(scraper_configuration, level)
-        assert keys == names
 
         headers = (
             [
@@ -418,100 +414,51 @@ class TestScrapersAppendData:
             {"ETH": "595717", "KEN": None, "SOM": "1001700"},
             {"ETH": "8200000", "KEN": "4100000", "SOM": "3900000"},
         ]
-        sources = [
-            (
-                "#value+funding+required+usd",
-                "Oct 01, 2020",
-                "multiple",
-                "https://data.humdata.org/dataset/ken-key-figures-2022",
-            ),
-            (
-                "#value+funding+total+usd",
-                "Oct 01, 2020",
-                "multiple",
-                "https://data.humdata.org/dataset/ken-key-figures-2022",
-            ),
-            (
-                "#value+funding+pct",
-                "Oct 01, 2020",
-                "multiple",
-                "https://data.humdata.org/dataset/ken-key-figures-2022",
-            ),
-            (
-                "#inneed+total",
-                "Oct 01, 2020",
-                "multiple",
-                "https://data.humdata.org/dataset/ken-key-figures-2022",
-            ),
-            (
-                "#targeted+total",
-                "Oct 01, 2020",
-                "multiple",
-                "https://data.humdata.org/dataset/ken-key-figures-2022",
-            ),
-            (
-                "#targeted+pct",
-                "Oct 01, 2020",
-                "multiple",
-                "https://data.humdata.org/dataset/ken-key-figures-2022",
-            ),
-            (
-                "#reached+total",
-                "Oct 01, 2020",
-                "multiple",
-                "https://data.humdata.org/dataset/ken-key-figures-2022",
-            ),
-            (
-                "#reached+pct",
-                "Oct 01, 2020",
-                "multiple",
-                "https://data.humdata.org/dataset/ken-key-figures-2022",
-            ),
-            (
-                "#affected+food",
-                "Oct 01, 2020",
-                "multiple",
-                "https://data.humdata.org/dataset/ken-key-figures-2022",
-            ),
-            (
-                "#affected+sam",
-                "Oct 01, 2020",
-                "multiple",
-                "https://data.humdata.org/dataset/ken-key-figures-2022",
-            ),
-            (
-                "#affected+mam",
-                "Oct 01, 2020",
-                "multiple",
-                "https://data.humdata.org/dataset/ken-key-figures-2022",
-            ),
-            (
-                "#affected+gam",
-                "Oct 01, 2020",
-                "multiple",
-                "https://data.humdata.org/dataset/ken-key-figures-2022",
-            ),
-            (
-                "#affected+idps",
-                "Oct 01, 2020",
-                "multiple",
-                "https://data.humdata.org/dataset/ken-key-figures-2022",
-            ),
-            (
-                "#affected+water",
-                "Oct 01, 2020",
-                "multiple",
-                "https://data.humdata.org/dataset/ken-key-figures-2022",
-            ),
-        ]
 
+        def get_expected_sources(headers, countryiso3):
+            sources = list()
+            for hxltag in headers[1]:
+                sources.append(
+                    (
+                        hxltag,
+                        "Oct 01, 2020",
+                        "multiple",
+                        f"https://data.humdata.org/dataset/{countryiso3.lower()}-key-figures-2022",
+                    )
+                )
+            return sources
+
+        def get_expected_sources_data(headers, countryiso3):
+            sources_data = [
+                {
+                    "#date": "Feb 24, 2022",
+                    "#indicator+name": "#date+start+conflict",
+                    "#meta+source": "Meduza",
+                    "#meta+url": "https://meduza.io/en/news/2022/02/24/putin-announces-start-of-military-operation-in-eastern-ukraine",
+                }
+            ]
+            for hxltag in headers[1]:
+                sources_data.append(
+                    {
+                        "#date": "Oct 01, 2020",
+                        "#indicator+name": hxltag,
+                        "#meta+source": "multiple",
+                        "#meta+url": f"https://data.humdata.org/dataset/{countryiso3.lower()}-key-figures-2022",
+                    },
+                )
+            return sources_data
+
+        runner = Runner(iso3s, today)
+        names = ["key_figures_som", "key_figures_eth", "key_figures_ken"]
+        keys = runner.add_configurables(scraper_configuration, level)
+        assert keys == names
         run_check_scrapers(
             names,
             runner,
             level,
             headers,
             values,
-            sources,
+            get_expected_sources(headers, "SOM"),
             source_urls=[
                 "https://data.humdata.org/dataset/eth-key-figures-2022",
                 "https://data.humdata.org/dataset/ken-key-figures-2022",
@@ -537,95 +484,47 @@ class TestScrapersAppendData:
             configuration["additional_sources"],
             secondary_runner=runner,  # to check we don't get duplicate sources
         )
-        assert jsonout.json["sources_data"] == [
+        assert jsonout.json["sources_data"] == get_expected_sources_data(
+            headers, "SOM"
+        )
+
+        Sources.set_should_overwrite_sources(True)
+        runner = Runner(iso3s, today)
+        names = ["key_figures_som", "key_figures_eth", "key_figures_ken"]
+        keys = runner.add_configurables(scraper_configuration, level)
+        assert keys == names
+        run_check_scrapers(
+            names,
+            runner,
+            level,
+            headers,
+            values,
+            get_expected_sources(headers, "KEN"),
+            source_urls=[
+                "https://data.humdata.org/dataset/eth-key-figures-2022",
+                "https://data.humdata.org/dataset/ken-key-figures-2022",
+                "https://data.humdata.org/dataset/som-key-figures-2022",
+            ],
+            set_not_run=False,
+        )
+
+        jsonout = JsonFile(configuration["json"], ["sources"])
+        outputs = {"json": jsonout}
+        additional_sources = deepcopy(configuration["additional_sources"])
+        additional_sources.append(
             {
-                "#date": "Feb 24, 2022",
-                "#indicator+name": "#date+start+conflict",
-                "#meta+source": "Meduza",
-                "#meta+url": "https://meduza.io/en/news/2022/02/24/putin-announces-start-of-military-operation-in-eastern-ukraine",
-            },
-            {
-                "#date": "Oct 01, 2020",
-                "#indicator+name": "#value+funding+required+usd",
-                "#meta+source": "multiple",
-                "#meta+url": "https://data.humdata.org/dataset/ken-key-figures-2022",
-            },
-            {
-                "#date": "Oct 01, 2020",
-                "#indicator+name": "#value+funding+total+usd",
-                "#meta+source": "multiple",
-                "#meta+url": "https://data.humdata.org/dataset/ken-key-figures-2022",
-            },
-            {
-                "#date": "Oct 01, 2020",
-                "#indicator+name": "#value+funding+pct",
-                "#meta+source": "multiple",
-                "#meta+url": "https://data.humdata.org/dataset/ken-key-figures-2022",
-            },
-            {
-                "#date": "Oct 01, 2020",
-                "#indicator+name": "#inneed+total",
-                "#meta+source": "multiple",
-                "#meta+url": "https://data.humdata.org/dataset/ken-key-figures-2022",
-            },
-            {
-                "#date": "Oct 01, 2020",
-                "#indicator+name": "#targeted+total",
-                "#meta+source": "multiple",
-                "#meta+url": "https://data.humdata.org/dataset/ken-key-figures-2022",
-            },
-            {
-                "#date": "Oct 01, 2020",
-                "#indicator+name": "#targeted+pct",
-                "#meta+source": "multiple",
-                "#meta+url": "https://data.humdata.org/dataset/ken-key-figures-2022",
-            },
-            {
-                "#date": "Oct 01, 2020",
-                "#indicator+name": "#reached+total",
-                "#meta+source": "multiple",
-                "#meta+url": "https://data.humdata.org/dataset/ken-key-figures-2022",
-            },
-            {
-                "#date": "Oct 01, 2020",
-                "#indicator+name": "#reached+pct",
-                "#meta+source": "multiple",
-                "#meta+url": "https://data.humdata.org/dataset/ken-key-figures-2022",
-            },
-            {
-                "#date": "Oct 01, 2020",
-                "#indicator+name": "#affected+food",
-                "#meta+source": "multiple",
-                "#meta+url": "https://data.humdata.org/dataset/ken-key-figures-2022",
-            },
-            {
-                "#date": "Oct 01, 2020",
-                "#indicator+name": "#affected+sam",
-                "#meta+source": "multiple",
-                "#meta+url": "https://data.humdata.org/dataset/ken-key-figures-2022",
-            },
-            {
-                "#date": "Oct 01, 2020",
-                "#indicator+name": "#affected+mam",
-                "#meta+source": "multiple",
-                "#meta+url": "https://data.humdata.org/dataset/ken-key-figures-2022",
-            },
-            {
-                "#date": "Oct 01, 2020",
-                "#indicator+name": "#affected+gam",
-                "#meta+source": "multiple",
-                "#meta+url": "https://data.humdata.org/dataset/ken-key-figures-2022",
-            },
-            {
-                "#date": "Oct 01, 2020",
-                "#indicator+name": "#affected+idps",
-                "#meta+source": "multiple",
-                "#meta+url": "https://data.humdata.org/dataset/ken-key-figures-2022",
-            },
-            {
-                "#date": "Oct 01, 2020",
-                "#indicator+name": "#affected+water",
-                "#meta+source": "multiple",
-                "#meta+url": "https://data.humdata.org/dataset/ken-key-figures-2022",
-            },
-        ]
+                "indicator": "#value+funding+required+usd",
+                "source_date": "Oct 01, 2020",
+                "source": "multiple",
+                "source_url": "https://data.humdata.org/dataset/ken-key-figures-2022",
+            }
+        )
+        update_sources(
+            runner,
+            outputs,
+            configuration["additional_sources"],
+            secondary_runner=runner,  # to check we don't get duplicate sources
+        )
+        assert jsonout.json["sources_data"] == get_expected_sources_data(
+            headers, "KEN"
+        )
