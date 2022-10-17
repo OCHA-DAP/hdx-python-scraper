@@ -15,7 +15,7 @@ from hxl.input import InputOptions, munge_url
 from slugify import slugify
 
 from . import get_startend_dates_from_dataset_date, match_template
-from .sources import standardise_datasetinfo_source_date
+from .sources import Sources
 
 logger = logging.getLogger(__name__)
 
@@ -338,7 +338,7 @@ class Read(Retrieve):
                 datasetinfo["source"] = dataset["dataset_source"]
             if "source_url" not in datasetinfo:
                 datasetinfo["source_url"] = dataset.get_hdx_url()
-            standardise_datasetinfo_source_date(datasetinfo)
+            Sources.standardise_datasetinfo_source_date(datasetinfo)
             return resource
         if "source_date" not in datasetinfo:
             source_date = dict()
@@ -384,7 +384,7 @@ class Read(Retrieve):
             datasetinfo["source"] = source
         if source_url is not None:
             datasetinfo["source_url"] = source_url
-        standardise_datasetinfo_source_date(datasetinfo)
+        Sources.standardise_datasetinfo_source_date(datasetinfo)
         return None
 
     def read_hdx(

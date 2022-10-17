@@ -6,7 +6,7 @@ from hdx.scraper.base_scraper import BaseScraper
 from hdx.scraper.outputs.json import JsonFile
 from hdx.scraper.outputs.update_tabs import update_sources
 from hdx.scraper.runner import Runner
-from hdx.scraper.utilities.sources import create_source_configuration
+from hdx.scraper.utilities.sources import Sources
 
 from .conftest import run_check_scrapers
 
@@ -29,7 +29,7 @@ class TestScrapersAppendData:
         keys = runner.add_configurables(
             scraper_configuration,
             level,
-            source_configuration=create_source_configuration(
+            source_configuration=Sources.create_source_configuration(
                 admin_sources=True
             ),
         )
