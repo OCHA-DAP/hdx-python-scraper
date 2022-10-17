@@ -16,12 +16,7 @@ from .outputs.base import BaseOutput
 from .utilities import get_startend_dates_from_dataset_date
 from .utilities.fallbacks import Fallbacks
 from .utilities.reader import Read
-from .utilities.sources import (
-    add_source_overwrite,
-    add_sources_overwrite,
-    get_hxltag_source_date,
-    standardise_datasetinfo_source_date,
-)
+from .utilities.sources import Sources
 
 logger = logging.getLogger(__name__)
 
@@ -755,7 +750,7 @@ class Runner:
                     lev_values.append(values[i])
             lev_source_hxltags = level_results["source_hxltags"]
             lev_sources = level_results["sources"]
-            add_sources_overwrite(
+            Sources.add_sources_overwrite(
                 lev_source_hxltags,
                 lev_sources,
                 scrap.get_sources(level),
@@ -919,10 +914,12 @@ class Runner:
                     source_name = dataset["dataset_source"]
                 if source_url is None:
                     source_url = dataset.get_hdx_url()
-            standardise_datasetinfo_source_date(sourceinfo)
-            date = get_hxltag_source_date(sourceinfo, hxltag, fallback=True)
+            Sources.standardise_datasetinfo_source_date(sourceinfo)
+            date = Sources.get_hxltag_source_date(
+                sourceinfo, hxltag, fallback=True
+            )
             source = (hxltag, date, source_name, source_url)
-            add_source_overwrite(hxltags, sources, source, logger)
+            Sources.add_source_overwrite(hxltags, sources, source, logger)
         for name in names:
             if self.scrapers_to_run and not any(
                 x in name for x in self.scrapers_to_run
@@ -936,7 +933,7 @@ class Runner:
             else:
                 levels_to_check = scraper.sources.keys()
             for level in levels_to_check:
-                add_sources_overwrite(
+                Sources.add_sources_overwrite(
                     hxltags, sources, scraper.get_sources(level), logger
                 )
         return sources

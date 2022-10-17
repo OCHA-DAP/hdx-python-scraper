@@ -4,11 +4,7 @@ from hdx.utilities.dateparse import parse_date
 
 from hdx.scraper.base_scraper import BaseScraper
 from hdx.scraper.configurable.scraper import ConfigurableScraper
-from hdx.scraper.utilities.sources import (
-    create_source_configuration,
-    get_hxltag_source_date,
-    standardise_datasetinfo_source_date,
-)
+from hdx.scraper.utilities.sources import Sources
 
 
 class TestSources:
@@ -19,6 +15,143 @@ class TestSources:
     @pytest.fixture(scope="class")
     def enddate(self):
         return parse_date("2022-01-01")
+
+    def test_set_defaults(self):
+        format = Sources.DEFAULT_SOURCE_DATE_FORMAT
+        new_format = "%y-%m-%d"
+        Sources.set_default_source_date_format(new_format)
+        assert Sources.DEFAULT_SOURCE_DATE_FORMAT == new_format
+        Sources.set_default_source_date_format(format)
+        separator = Sources.DEFAULT_DATE_RANGE_SEPARATOR
+        new_separator = "/"
+        Sources.set_default_date_range_separator(new_separator)
+        assert Sources.DEFAULT_DATE_RANGE_SEPARATOR == new_separator
+        Sources.set_default_date_range_separator(separator)
+
+    def test_standardise_datasetinfo_source_date(self, startdate, enddate):
+        datasetinfo = {"source_date": enddate}
+        result = Sources.standardise_datasetinfo_source_date(datasetinfo)
+        assert result == enddate
+        assert datasetinfo["source_date"] == {"default_date": {"end": enddate}}
+        datasetinfo["source_date"] = {"start": startdate, "end": enddate}
+        result = Sources.standardise_datasetinfo_source_date(datasetinfo)
+        assert result == enddate
+        assert datasetinfo["source_date"] == {
+            "default_date": {"start": startdate, "end": enddate}
+        }
+        datasetinfo["source_date"] = {"#mytag": startdate}
+        result = Sources.standardise_datasetinfo_source_date(datasetinfo)
+        assert result is None
+        assert datasetinfo["source_date"] is None
+        datasetinfo = {
+            "source_date": {"default_date": enddate, "#mytag": startdate}
+        }
+        result = Sources.standardise_datasetinfo_source_date(datasetinfo)
+        assert result == enddate
+        assert datasetinfo["source_date"] == {
+            "default_date": {"end": enddate},
+            "#mytag": {"end": startdate},
+        }
+        result = Sources.standardise_datasetinfo_source_date(datasetinfo)
+        assert result == enddate
+        assert datasetinfo["source_date"] == {
+            "default_date": {"end": enddate},
+            "#mytag": {"end": startdate},
+        }
+        datasetinfo["source_date"]["default_date"]["start"] = startdate
+        datasetinfo["source_date"]["#mytag"]["start"] = startdate
+        result = Sources.standardise_datasetinfo_source_date(datasetinfo)
+        assert result == enddate
+        assert datasetinfo["source_date"] == {
+            "default_date": {"start": startdate, "end": enddate},
+            "#mytag": {"start": startdate, "end": startdate},
+        }
+
+    def test_get_hxltag_source_date(self, startdate, enddate):
+        datasetinfo = {"source_date": enddate}
+        Sources.standardise_datasetinfo_source_date(datasetinfo)
+        result = Sources.get_hxltag_source_date(datasetinfo, "default_date")
+        assert result == "Jan 01, 2022"
+        source_date_format = "%Y-%m-%d"
+        datasetinfo["source_date_format"] = source_date_format
+        result = Sources.get_hxltag_source_date(datasetinfo, "default_date")
+        assert result == "2022-01-01"
+        source_date_format = {"end": "%Y-%m-%d"}
+        datasetinfo["source_date_format"] = source_date_format
+        result = Sources.get_hxltag_source_date(datasetinfo, "default_date")
+        assert result == "2022-01-01"
+        source_date_format = {"date": "%Y-%m-%d"}
+        datasetinfo["source_date_format"] = source_date_format
+        result = Sources.get_hxltag_source_date(datasetinfo, "default_date")
+        assert result == "2022-01-01"
+        datasetinfo["source_date"] = {"start": startdate, "end": enddate}
+        Sources.standardise_datasetinfo_source_date(datasetinfo)
+        result = Sources.get_hxltag_source_date(datasetinfo, "default_date")
+        assert result == "2022-01-01"
+        source_date_format = {
+            "start": "%b %d, %Y",
+            "separator": " : ",
+            "end": "%b %d, %Y",
+        }
+        datasetinfo["source_date_format"] = source_date_format
+        result = Sources.get_hxltag_source_date(datasetinfo, "default_date")
+        assert result == "Sep 23, 2021 : Jan 01, 2022"
+
+    def test_create_source_configuration(self, configuration):
+        result = Sources.create_source_configuration()
+        assert result is None
+        suffix_attribute = "suf"
+        result = Sources.create_source_configuration(
+            suffix_attribute=suffix_attribute
+        )
+        assert result == {"suffix_attribute": "suf"}
+        adminlevel = AdminLevel(configuration)
+        d = adminlevel.pcode_to_iso3
+        adminlevel.pcode_to_iso3 = {k: d[k] for k in list(d)[:5]}
+        result = Sources.create_source_configuration(
+            suffix_attribute=suffix_attribute, adminlevel=adminlevel
+        )
+        assert result == {"suffix_attribute": "suf"}
+        result = Sources.create_source_configuration(adminlevel=adminlevel)
+        assert result == {
+            "admin_mapping": {
+                "AF01": "AFG",
+                "AF02": "AFG",
+                "AF03": "AFG",
+                "AF04": "AFG",
+                "AF05": "AFG",
+            },
+            "admin_sources": True,
+        }
+        adminlevel2 = AdminLevel(configuration["admin1"])
+        d = adminlevel2.pcode_to_iso3
+        adminlevel2.pcode_to_iso3 = {k: d[k] for k in list(d)[:5]}
+        result = Sources.create_source_configuration(
+            adminlevel=(adminlevel, adminlevel2)
+        )
+        assert result == {
+            "admin_mapping": {
+                "AF01": "AFG",
+                "AF02": "AFG",
+                "AF03": "AFG",
+                "AF04": "AFG",
+                "AF05": "AFG",
+                "ET02": "ETH",
+                "ET03": "ETH",
+                "ET06": "ETH",
+                "ET14": "ETH",
+                "ET15": "ETH",
+            },
+            "admin_sources": True,
+        }
+        admin_mapping_dict = {"MY01": "MY", "MY02": "MY"}
+        result = Sources.create_source_configuration(
+            admin_mapping_dict=admin_mapping_dict
+        )
+        assert result == {
+            "admin_mapping": {"MY01": "MY", "MY02": "MY"},
+            "admin_sources": True,
+        }
 
     def test_scraper_add_sources(self, configuration, enddate):
         BaseScraper.population_lookup = dict()
@@ -62,127 +195,4 @@ class TestSources:
         scraper.add_sources()
         assert scraper.datasetinfo["source_date"] == {
             "default_date": {"end": parse_date("2019-01-01")}
-        }
-
-    def test_standardise_datasetinfo_source_date(self, startdate, enddate):
-        datasetinfo = {"source_date": enddate}
-        result = standardise_datasetinfo_source_date(datasetinfo)
-        assert result == enddate
-        assert datasetinfo["source_date"] == {"default_date": {"end": enddate}}
-        datasetinfo["source_date"] = {"start": startdate, "end": enddate}
-        result = standardise_datasetinfo_source_date(datasetinfo)
-        assert result == enddate
-        assert datasetinfo["source_date"] == {
-            "default_date": {"start": startdate, "end": enddate}
-        }
-        datasetinfo["source_date"] = {"#mytag": startdate}
-        result = standardise_datasetinfo_source_date(datasetinfo)
-        assert result is None
-        assert datasetinfo["source_date"] is None
-        datasetinfo = {
-            "source_date": {"default_date": enddate, "#mytag": startdate}
-        }
-        result = standardise_datasetinfo_source_date(datasetinfo)
-        assert result == enddate
-        assert datasetinfo["source_date"] == {
-            "default_date": {"end": enddate},
-            "#mytag": {"end": startdate},
-        }
-        result = standardise_datasetinfo_source_date(datasetinfo)
-        assert result == enddate
-        assert datasetinfo["source_date"] == {
-            "default_date": {"end": enddate},
-            "#mytag": {"end": startdate},
-        }
-        datasetinfo["source_date"]["default_date"]["start"] = startdate
-        datasetinfo["source_date"]["#mytag"]["start"] = startdate
-        result = standardise_datasetinfo_source_date(datasetinfo)
-        assert result == enddate
-        assert datasetinfo["source_date"] == {
-            "default_date": {"start": startdate, "end": enddate},
-            "#mytag": {"start": startdate, "end": startdate},
-        }
-
-    def test_get_hxltag_source_date(self, startdate, enddate):
-        datasetinfo = {"source_date": enddate}
-        standardise_datasetinfo_source_date(datasetinfo)
-        result = get_hxltag_source_date(datasetinfo, "default_date")
-        assert result == "Jan 01, 2022"
-        source_date_format = "%Y-%m-%d"
-        datasetinfo["source_date_format"] = source_date_format
-        result = get_hxltag_source_date(datasetinfo, "default_date")
-        assert result == "2022-01-01"
-        source_date_format = {"end": "%Y-%m-%d"}
-        datasetinfo["source_date_format"] = source_date_format
-        result = get_hxltag_source_date(datasetinfo, "default_date")
-        assert result == "2022-01-01"
-        source_date_format = {"date": "%Y-%m-%d"}
-        datasetinfo["source_date_format"] = source_date_format
-        result = get_hxltag_source_date(datasetinfo, "default_date")
-        assert result == "2022-01-01"
-        datasetinfo["source_date"] = {"start": startdate, "end": enddate}
-        standardise_datasetinfo_source_date(datasetinfo)
-        result = get_hxltag_source_date(datasetinfo, "default_date")
-        assert result == "2022-01-01"
-        source_date_format = {
-            "start": "%b %d, %Y",
-            "separator": " : ",
-            "end": "%b %d, %Y",
-        }
-        datasetinfo["source_date_format"] = source_date_format
-        result = get_hxltag_source_date(datasetinfo, "default_date")
-        assert result == "Sep 23, 2021 : Jan 01, 2022"
-
-    def test_create_source_configuration(self, configuration):
-        result = create_source_configuration()
-        assert result is None
-        suffix_attribute = "suf"
-        result = create_source_configuration(suffix_attribute=suffix_attribute)
-        assert result == {"suffix_attribute": "suf"}
-        adminlevel = AdminLevel(configuration)
-        d = adminlevel.pcode_to_iso3
-        adminlevel.pcode_to_iso3 = {k: d[k] for k in list(d)[:5]}
-        result = create_source_configuration(
-            suffix_attribute=suffix_attribute, adminlevel=adminlevel
-        )
-        assert result == {"suffix_attribute": "suf"}
-        result = create_source_configuration(adminlevel=adminlevel)
-        assert result == {
-            "admin_mapping": {
-                "AF01": "AFG",
-                "AF02": "AFG",
-                "AF03": "AFG",
-                "AF04": "AFG",
-                "AF05": "AFG",
-            },
-            "admin_sources": True,
-        }
-        adminlevel2 = AdminLevel(configuration["admin1"])
-        d = adminlevel2.pcode_to_iso3
-        adminlevel2.pcode_to_iso3 = {k: d[k] for k in list(d)[:5]}
-        result = create_source_configuration(
-            adminlevel=(adminlevel, adminlevel2)
-        )
-        assert result == {
-            "admin_mapping": {
-                "AF01": "AFG",
-                "AF02": "AFG",
-                "AF03": "AFG",
-                "AF04": "AFG",
-                "AF05": "AFG",
-                "ET02": "ETH",
-                "ET03": "ETH",
-                "ET06": "ETH",
-                "ET14": "ETH",
-                "ET15": "ETH",
-            },
-            "admin_sources": True,
-        }
-        admin_mapping_dict = {"MY01": "MY", "MY02": "MY"}
-        result = create_source_configuration(
-            admin_mapping_dict=admin_mapping_dict
-        )
-        assert result == {
-            "admin_mapping": {"MY01": "MY", "MY02": "MY"},
-            "admin_sources": True,
         }

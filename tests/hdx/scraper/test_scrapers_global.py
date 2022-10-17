@@ -5,7 +5,7 @@ from hdx.utilities.dateparse import parse_date
 
 from hdx.scraper.base_scraper import BaseScraper
 from hdx.scraper.runner import Runner
-from hdx.scraper.utilities.sources import create_source_configuration
+from hdx.scraper.utilities.sources import Sources
 
 from .conftest import run_check_scraper
 
@@ -567,7 +567,7 @@ class TestScraperGlobal:
             scraper_configuration,
             level,
             level_name=level_name,
-            source_configuration=create_source_configuration(
+            source_configuration=Sources.create_source_configuration(
                 admin_sources=True
             ),
         )
@@ -601,7 +601,7 @@ class TestScraperGlobal:
             scraper_configuration,
             level,
             level_name=level_name,
-            source_configuration=create_source_configuration(
+            source_configuration=Sources.create_source_configuration(
                 admin_mapping_dict={"global": "globe"}
             ),
         )
@@ -635,7 +635,7 @@ class TestScraperGlobal:
             scraper_configuration,
             level,
             level_name=level_name,
-            source_configuration=create_source_configuration(
+            source_configuration=Sources.create_source_configuration(
                 suffix_attribute="world"
             ),
         )

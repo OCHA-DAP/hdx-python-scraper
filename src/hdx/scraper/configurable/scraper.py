@@ -21,7 +21,7 @@ from hdx.utilities.text import (  # noqa: F401
 
 from ..base_scraper import BaseScraper
 from ..utilities import get_rowval
-from ..utilities.sources import standardise_datasetinfo_source_date
+from ..utilities.sources import Sources
 from .rowparser import RowParser
 
 logger = logging.getLogger(__name__)
@@ -464,7 +464,9 @@ class ConfigurableScraper(BaseScraper):
         header_to_hxltag = self.use_hxl(None, file_headers, iterator)
         if "source_url" not in self.datasetinfo:
             self.datasetinfo["source_url"] = self.datasetinfo["url"]
-        source_date = standardise_datasetinfo_source_date(self.datasetinfo)
+        source_date = Sources.standardise_datasetinfo_source_date(
+            self.datasetinfo
+        )
         if not source_date or self.datasetinfo.get("force_date_today", False):
             source_date = self.today
             self.datasetinfo["source_date"] = {

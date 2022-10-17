@@ -5,7 +5,7 @@ from hdx.utilities.dictandlist import dict_of_lists_add
 from hdx.utilities.text import number_format
 
 from hdx.scraper.base_scraper import BaseScraper
-from hdx.scraper.utilities.sources import create_source_configuration
+from hdx.scraper.utilities.sources import Sources
 
 logger = logging.getLogger(__name__)
 
@@ -45,7 +45,7 @@ class AffectedTargetedReached(BaseScraper):
                     ),
                 ),
             },
-            source_configuration=create_source_configuration(
+            source_configuration=Sources.create_source_configuration(
                 adminlevel=(adminone, admintwo)
             ),
         )
