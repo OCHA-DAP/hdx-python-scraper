@@ -241,6 +241,7 @@ class BaseScraper(ABC):
         Returns:
             None
         """
+        Sources.standardise_datasetinfo_source_date(self.datasetinfo)
         date = Sources.get_hxltag_source_date(
             self.datasetinfo, indicator, fallback=True
         )
