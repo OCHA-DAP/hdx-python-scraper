@@ -3,9 +3,9 @@ from hdx.utilities.errors_onexit import ErrorsOnExit
 
 from hdx.scraper.base_scraper import BaseScraper
 from hdx.scraper.outputs.json import JsonFile
-from hdx.scraper.outputs.update_tabs import update_national
 from hdx.scraper.runner import Runner
 from hdx.scraper.utilities.reader import Read
+from hdx.scraper.utilities.writer import Writer
 
 from .conftest import run_check_scraper, run_check_scrapers
 from .unhcr_myanmar_idps import idps_post_run
@@ -626,10 +626,9 @@ class TestScrapersNational:
             "PHL": ("Region3", "Region6"),
             "MMR": ("Region3", "Region4"),
         }
-        update_national(
-            runner,
+        writer = Writer(runner, outputs)
+        writer.update_national(
             countries,
-            outputs,
             names=scrapers,
             flag_countries=flag_countries,
             iso3_to_region=iso3_to_region,

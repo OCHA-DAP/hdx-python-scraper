@@ -7,21 +7,21 @@ from hdx.utilities.typehint import ListTuple
 
 
 class Sources:
-    DEFAULT_SOURCE_DATE_FORMAT = "%b %d, %Y"
-    DEFAULT_DATE_RANGE_SEPARATOR = "-"
-    SHOULD_OVERWRITE_SOURCES = False
+    default_source_date_format = "%b %d, %Y"
+    default_date_range_separator = "-"
+    should_overwrite_sources = False
 
     @classmethod
     def set_default_source_date_format(cls, format):
-        cls.DEFAULT_SOURCE_DATE_FORMAT = format
+        cls.default_source_date_format = format
 
     @classmethod
     def set_default_date_range_separator(cls, separator):
-        cls.DEFAULT_DATE_RANGE_SEPARATOR = separator
+        cls.default_date_range_separator = separator
 
     @classmethod
     def set_should_overwrite_sources(cls, overwrite):
-        cls.SHOULD_OVERWRITE_SOURCES = overwrite
+        cls.should_overwrite_sources = overwrite
 
     @staticmethod
     def standardise_datasetinfo_source_date(datasetinfo):
@@ -71,7 +71,7 @@ class Sources:
                 return None
             date = source_date["default_date"]
         source_date_format = datasetinfo.get(
-            "source_date_format", cls.DEFAULT_SOURCE_DATE_FORMAT
+            "source_date_format", cls.default_source_date_format
         )
         if isinstance(source_date_format, str):
             start_source_date_format = None
@@ -83,7 +83,7 @@ class Sources:
             if not end_source_date_format:
                 end_source_date_format = source_date_format["date"]
             date_range_separator = source_date_format.get(
-                "separator", cls.DEFAULT_DATE_RANGE_SEPARATOR
+                "separator", cls.default_date_range_separator
             )
         enddate = date["end"].strftime(end_source_date_format)
         startdate = date.get("start")
@@ -113,7 +113,7 @@ class Sources:
         """
         hxltag = source[0]
         if hxltag in hxltags:
-            if cls.SHOULD_OVERWRITE_SOURCES:
+            if cls.should_overwrite_sources:
                 logger.warning(f"Overwriting source information for {hxltag}!")
                 index = hxltags.index(hxltag)
                 sources[index] = source

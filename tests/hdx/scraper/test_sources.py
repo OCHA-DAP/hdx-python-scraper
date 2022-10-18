@@ -17,15 +17,15 @@ class TestSources:
         return parse_date("2022-01-01")
 
     def test_set_defaults(self):
-        format = Sources.DEFAULT_SOURCE_DATE_FORMAT
+        format = Sources.default_source_date_format
         new_format = "%y-%m-%d"
         Sources.set_default_source_date_format(new_format)
-        assert Sources.DEFAULT_SOURCE_DATE_FORMAT == new_format
+        assert Sources.default_source_date_format == new_format
         Sources.set_default_source_date_format(format)
-        separator = Sources.DEFAULT_DATE_RANGE_SEPARATOR
+        separator = Sources.default_date_range_separator
         new_separator = "/"
         Sources.set_default_date_range_separator(new_separator)
-        assert Sources.DEFAULT_DATE_RANGE_SEPARATOR == new_separator
+        assert Sources.default_date_range_separator == new_separator
         Sources.set_default_date_range_separator(separator)
 
     def test_standardise_datasetinfo_source_date(self, startdate, enddate):

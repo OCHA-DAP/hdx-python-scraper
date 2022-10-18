@@ -2,13 +2,8 @@ from hdx.utilities.dateparse import parse_date
 
 from hdx.scraper.base_scraper import BaseScraper
 from hdx.scraper.outputs.json import JsonFile
-from hdx.scraper.outputs.update_tabs import (
-    get_regional_rows,
-    get_toplevel_rows,
-    update_regional,
-    update_toplevel,
-)
 from hdx.scraper.runner import Runner
+from hdx.scraper.utilities.writer import Writer
 
 from .conftest import run_check_scrapers
 
@@ -133,13 +128,14 @@ class TestScrapersRegionalToplevel:
             force_add_to_run=True,
         )
         runner.run(regional_names)
-        regional_rows = get_regional_rows(
-            runner, regions, names=regional_names
-        )
+        level = "regional"
         toplevel = "allregions"
         mapping = {"global": toplevel}
-        allregions_rows = get_toplevel_rows(
-            runner,
+        jsonout = JsonFile(configuration["json"], [level, toplevel])
+        outputs = {"json": jsonout}
+        writer = Writer(runner, outputs)
+        regional_rows = writer.get_regional_rows(regions, names=regional_names)
+        allregions_rows = writer.get_toplevel_rows(
             names=names,
             overrides={
                 names[0]: mapping,
@@ -148,11 +144,7 @@ class TestScrapersRegionalToplevel:
             },
             toplevel=toplevel,
         )
-        level = "regional"
-        jsonout = JsonFile(configuration["json"], [level, toplevel])
-        outputs = {"json": jsonout}
-        update_regional(
-            outputs,
+        writer.update_regional(
             regional_rows,
             allregions_rows,
             toplevel_hxltags=allregions_rows[1],
@@ -173,8 +165,7 @@ class TestScrapersRegionalToplevel:
             ("#region+name", "#mycolumn"),
             (toplevel, 12345),
         )
-        update_toplevel(
-            outputs,
+        writer.update_toplevel(
             allregions_rows,
             regional_rows=regional_rows,
             regional_adm=toplevel,
@@ -189,8 +180,7 @@ class TestScrapersRegionalToplevel:
             }
         ]
         jsonout.json["allregions_data"] = list()
-        update_toplevel(
-            outputs,
+        writer.update_toplevel(
             allregions_rows,
             regional_rows=regional_rows,
             regional_adm=toplevel,

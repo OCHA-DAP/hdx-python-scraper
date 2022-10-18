@@ -4,9 +4,9 @@ from hdx.utilities.dateparse import parse_date
 
 from hdx.scraper.base_scraper import BaseScraper
 from hdx.scraper.outputs.json import JsonFile
-from hdx.scraper.outputs.update_tabs import update_sources
 from hdx.scraper.runner import Runner
 from hdx.scraper.utilities.sources import Sources
+from hdx.scraper.utilities.writer import Writer
 
 from .conftest import run_check_scrapers
 
@@ -478,9 +478,8 @@ class TestScrapersAppendData:
                 "source_url": "https://data.humdata.org/dataset/ken-key-figures-2022",
             }
         )
-        update_sources(
-            runner,
-            outputs,
+        writer = Writer(runner, outputs)
+        writer.update_sources(
             configuration["additional_sources"],
             secondary_runner=runner,  # to check we don't get duplicate sources
         )
@@ -519,9 +518,8 @@ class TestScrapersAppendData:
                 "source_url": "https://data.humdata.org/dataset/ken-key-figures-2022",
             }
         )
-        update_sources(
-            runner,
-            outputs,
+        writer = Writer(runner, outputs)
+        writer.update_sources(
             configuration["additional_sources"],
             secondary_runner=runner,  # to check we don't get duplicate sources
         )

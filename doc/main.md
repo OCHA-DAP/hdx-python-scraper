@@ -27,6 +27,12 @@ install with:
 
 ## Breaking Changes
 
+From 2.0.1, all functions in outputs.update_tabs are methods in the new Writer class
+in utilities.writer 
+
+From 2.0.0, source dates can be formatted and the default format looks like this: 
+"Mar 21, 2022"   
+
 From 1.8.9, date handling uses timezone aware dates instead of naive dates and defaults
 to UTC
 
@@ -1007,14 +1013,17 @@ The code to go with the configuration is as follows:
     jsonout = JsonFile(json_config, updatetabs)
     outputs = {"gsheets": gsheets, "excel": excelout, "json": jsonout}
     ...
-    update_subnational(runner, scraper_names, adminlevel, outputs)
+    writer = Writer(runner, outputs)
+    writer.update_subnational(scraper_names, adminlevel)
     ...
     excelout.save()
     filepaths = jsonout.save(tempdir, countries_to_save=["AFG"])
 
 Output from the scrapers can go to Excel, Google Sheets and/or a JSON file. 
 
-There are standard functions for updating level data in `update_tabs.py` including 
+The Writer class has a constructor which takes two parameters. The first parameter is 
+the Runner object. The second is a dictionary of outputs such as to Google Sheets, Excel 
+or JSON. There are standard methods for updating level data in the Writer class including 
 `update_toplevel` ("global" for example), `update_regional`, `update_national` and 
 `update_subnational`.
 
@@ -1025,10 +1034,8 @@ There are standard functions for updating level data in `update_tabs.py` includi
         "hxltag": "#meta+ishrp",
         "countries": hrp_countries,
     }
-    update_national(
-        runner,
+    writer.update_national(
         gho_countries,
-        outputs,
         names=national_names,
         flag_countries=flag_countries,
         iso3_to_region=RegionLookup.iso3_to_regions["GHO"],
@@ -1037,36 +1044,32 @@ There are standard functions for updating level data in `update_tabs.py` includi
         tab="national",
     )
 
-The first parameter is the Runner object. The second is a list of country ISO 3 codes.
-The third is a dictionary of outputs such as to Google Sheets, Excel or JSON. The
-fourth optional parameter is the `names` of the scrapers to include. The fifth optional
-parameter, `flag_countries`, is a dictionary where the "header" and "hxltag" keys define 
-an additional column to output which can contain "Y" or "N" depending upon whether the 
-country is one of those defined in the key "countries". The sixth optional parameter,
-`iso3_to_region`, is a dictionary which maps from ISO 3 country code to a set of regions 
-and it will result in an additional column (with header "Region" and HXL hashtag 
-"#region+name") in which regions are listed separated by "|". The seventh optional 
-`ignore_regions` parameter defines a list of regions that should not be output in the 
-"Region" column. The eighth parameter `level` defaults to "national" and is the key to
-use when obtaining the results of the scrapers. The last parameter is the `tab` to
-update and defaults to "national".
+The first parameter is a list of country ISO 3 codes. The second optional parameter is 
+the `names` of the scrapers to include. The third optional parameter, `flag_countries`, 
+is a dictionary where the "header" and "hxltag" keys define an additional column to 
+output which can contain "Y" or "N" depending upon whether the country is one of those 
+defined in the key "countries". The fourth optional parameter, `iso3_to_region`, is a 
+dictionary which maps from ISO 3 country code to a set of regions and it will result in 
+an additional column (with header "Region" and HXL hashtag "#region+name") in which 
+regions are listed separated by "|". The fifth optional `ignore_regions` parameter 
+defines a list of regions that should not be output in the "Region" column. The sixth 
+parameter `level` defaults to "national" and is the key to use when obtaining the 
+results of the scrapers. The last parameter is the `tab` to update and defaults to 
+"national".
 
 `update_subnational` is used as follows:
 
     update_subnational(
-        runner, 
         adminlevel, 
-        outputs, 
         names=subnational_names,
         level="subnational",
         tab="subnational",
     )
 
-The first parameter is the Runner object. The second is an AdminLevel object (described 
-earlier). The third is a dictionary of outputs such as to Google Sheets, Excel or JSON. 
-The fourth optional parameter is the `names` of the scrapers to include. The parameter 
-`level` defaults to "subnational" and is the key to use when obtaining the results of 
-the scrapers. The last parameter is the `tab` to update and defaults to "subnational".
+The first parameter is an AdminLevel object (described earlier). The second optional 
+parameter is the `names` of the scrapers to include. The parameter `level` defaults to 
+"subnational" and is the key to use when obtaining the results of the scrapers. The last 
+parameter is the `tab` to update and defaults to "subnational".
 
 `update_toplevel` and `update_regional` require the output from two other functions.
 
@@ -1083,19 +1086,17 @@ the scrapers. The last parameter is the `tab` to update and defaults to "subnati
         toplevel="global",
     )
 
-The first parameter of `get_regional_rows` is the Runner object. The second is a list
-of regions. The third optional parameter is the `names` of the scrapers to include. The 
-parameter `level` defaults to "regional" and is the key to use when obtaining the 
-results of the scrapers.
+The first parameter of `get_regional_rows` is a list of regions. The second optional 
+parameter is the `names` of the scrapers to include. The parameter `level` defaults to 
+"regional" and is the key to use when obtaining the results of the scrapers.
 
-The first parameter of `get_toplevel_rows` is the Runner object. The second optional 
-parameter is the `names` of the scrapers to include. The optional parameter `overrides`
-defines levels to get for specific scrapers, for example for "who_covid", output the
-data for the level "gho" as "global". The last parameter `toplevel` defaults to 
-"allregions" and is the key to use when obtaining the results of the scrapers.
+The first optional parameter of `get_toplevel_rows` is the `names` of the scrapers to 
+include. The second optional parameter `overrides` defines levels to get for specific 
+scrapers, for example for "who_covid", output the data for the level "gho" as "global". 
+The last parameter `toplevel` defaults to "allregions" and is the key to use when 
+obtaining the results of the scrapers.
 
     update_regional(
-        outputs,
         regional_rows,
         toplevel_rows=global_rows,
         toplevel_hxltags=additional_global_hxltags,
@@ -1103,7 +1104,6 @@ data for the level "gho" as "global". The last parameter `toplevel` defaults to
     )
 
     update_toplevel(
-        outputs,
         global_rows,
         tab="world",
         regional_rows=regional_rows,
@@ -1112,31 +1112,27 @@ data for the level "gho" as "global". The last parameter `toplevel` defaults to
         regional_first=False,
     )
 
-The first parameter of `update_regional` is a dictionary of outputs such as to Google 
-Sheets, Excel or JSON. The second is the regional rows obtained from 
-`get_regional_rows`. The third optional parameter is the `toplevel_rows` obtained from 
-`get_toplevel_rows`. The fourth optional parameter, `toplevel_hxltags` specifies top 
+The first parameter of `update_regional` is the regional rows obtained from 
+`get_regional_rows`. The second optional parameter is the `toplevel_rows` obtained from 
+`get_toplevel_rows`. The third optional parameter, `toplevel_hxltags` specifies top 
 level data to include. It will correspond to one row in the regional output. The last 
 parameter `toplevel` defaults to "allregions" and is used as the region name.
 
-The first parameter of `update_toplevel` is a dictionary of outputs such as to Google 
-Sheets, Excel or JSON. The second is the `toplevel_rows` obtained from 
-`get_toplevel_rows`. The third optional parameter is the `tab` to update and defaults to
-"allregions". The fourth optional parameter is the `regional_rows` (obtained from
-`get_regional_rows`) from which data for the admin given by the sixth optional parameter 
-`regional_adm` is extracted. The specific regional columns to include is given by the 
-seventh optional parameter `regional_hxltags`. The last parameter `regional_first` which 
-defaults to `False` specifies whether columns from regional data are put in front of 
-columns from top level data.
+The first parameter of `update_toplevel` is the `toplevel_rows` obtained from 
+`get_toplevel_rows`. The second optional parameter is the `tab` to update and defaults 
+to "allregions". The third optional parameter is the `regional_rows` (obtained from
+`get_regional_rows`) from which data for the admin given by the fourth optional 
+parameter `regional_adm` is extracted. The specific regional columns to include is given 
+by the fifth optional parameter `regional_hxltags`. The last parameter `regional_first` 
+which  defaults to `False` specifies whether columns from regional data are put in front 
+of columns from top level data.
 
 ### Sources
 
-There is an `update_sources` function to update source information and it is set up as 
-follows:
+There is an `update_sources` method in the Writer class to update source information and 
+it is used as follows:
 
-    update_sources(
-        runner,
-        outputs,
+    writer.update_sources(
         additional_sources=configuration["additional_sources"],
         names=names,
         secondary_runner=None,
@@ -1144,9 +1140,8 @@ follows:
         tab="sources",
     )
 
-The first parameter is the Runner object. The second is a dictionary of outputs such as 
-to Google Sheets, Excel or JSON. The third optional parameter `additional_sources`
-enables additional sources to be declared according to a specification eg. from YAML:
+The first optional parameter `additional_sources` enables additional sources to be 
+declared according to a specification eg. from YAML:
 
     additional_sources:
       - indicator: "#food-prices"
@@ -1160,10 +1155,10 @@ This allows additional HXL hashtags to be associated with a dataset date, source
 url. The metadata for "#food-prices" is obtained from a dataset on HDX, while for
 "#affected+food+p3plus+num", it is all specified. 
 
-The fourth optional `names` parameter allows the specific scrapers for which sources are 
-to be output to be chosen by name. The fifth optional parameter `secondary_runner` 
+The second optional `names` parameter allows the specific scrapers for which sources are 
+to be output to be chosen by name. The third optional parameter `secondary_runner` 
 allows a second Runner object to be supplied and the sources from the scrapers 
-associated with that Runner object to be included. The sixth optional parameter 
+associated with that Runner object to be included. The fourth optional parameter 
 `custom_sources` allows sources that have been obtained for example from a function call
 to be added directly without any processing or changes to them. They should be in the 
 form: (HXL tag, source date, source, source url). The last parameter is the `tab` to 
