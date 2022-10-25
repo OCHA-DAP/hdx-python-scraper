@@ -101,16 +101,27 @@ there is a now_utc() function from the dependency HDX Python Utilities.
 
 ### Read Class
 
+The Read class inherits from Retrieve from the HDX Python Utilities library. The 
+Retrieve class inherits from BaseDownload which specifies a number of standard
+methods that all downloaders should have: `download_file`, `download_text`, 
+`download_yaml`, `download_json` and `get_tabular_rows`.
+
 The Read class is a utility for reading metadata and data from websites and APIs with
 the ability to set up authorisations up front with Read objects held in a dictionary 
 for subsequent use. Read objects can save copies of the data being downloaded or read 
 from pre-saved data for tests. 
 
-The first parameter is the location of fallback data (if available). The second 
-specifies to where data should be saved if desired. The third parameter is the path of
-a temporary folder. If the downloaded data should be saved, the fourth optional 
-parameter `save` should be True. If a test is being run against pre-saved data, the fifth 
-optional parameter `use_saved` should be True.
+Note that a single Read object cannot be used in parallel: each download operation 
+must be completed before starting the next. For example, you will get an error if you 
+try to call `get_tabular_rows` twice with different urls to get two iterators, then 
+afterwards iterate through those iterators. The first iteration must be completed before 
+obtaining another iterator.
+
+The first parameter of the `create_readers` method is the location of fallback data 
+(if available). The second specifies to where data should be saved if desired. The third 
+parameter is the path of a temporary folder. If the downloaded data should be saved, the 
+fourth optional parameter `save` should be True. If a test is being run against 
+pre-saved data, the fifth optional parameter `use_saved` should be True.
 
 Additional readers are generated if any of header_auths, basic_auths or extra_params 
 are populated. header_auths and basic_auths are dictionaries of form 
