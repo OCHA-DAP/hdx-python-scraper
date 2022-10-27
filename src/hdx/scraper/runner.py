@@ -255,6 +255,7 @@ class Runner:
         input_level: str,
         output_level: str,
         adm_aggregation: Union[Dict, List],
+        source_configuration: Optional[Dict] = None,
         names: Optional[ListTuple[str]] = None,
         overrides: Dict[str, Dict] = dict(),
         aggregation_scrapers: List["Aggregator"] = list(),
@@ -268,6 +269,7 @@ class Runner:
             input_level (str): Input level to aggregate like national or subnational
             output_level (str): Output level of aggregated data like regional
             adm_aggregation (Union[Dict, List]): Mapping from input admins to aggregated output admins
+            source_configuration (Optional[Dict]): Configuration for sources. Defaults to None (use defaults).
             names (Optional[ListTuple[str]]): Names of scrapers. Defaults to None.
             overrides (Dict[str, Dict]): Dictionary mapping scrapers to level mappings. Defaults to dict().
             aggregation_scrapers (List["Aggregator"]): Other aggregations needed. Defaults to list().
@@ -275,7 +277,11 @@ class Runner:
         Returns:
             Optional["Aggregator"]: scraper or None
         """
-        input_headers, input_values = self.get_values_by_header(
+        (
+            input_headers,
+            input_values,
+            input_sources,
+        ) = self.get_values_sources_by_header(
             input_level, names, overrides, False, use_hxl
         )
         if not input_headers:
@@ -289,6 +295,8 @@ class Runner:
             adm_aggregation,
             input_headers,
             input_values,
+            input_sources,
+            source_configuration,
             aggregation_scrapers,
         )
 
@@ -300,6 +308,7 @@ class Runner:
         input_level: str,
         output_level: str,
         adm_aggregation: Union[Dict, List],
+        source_configuration: Optional[Dict] = None,
         names: Optional[ListTuple[str]] = None,
         overrides: Dict[str, Dict] = dict(),
         aggregation_scrapers: List["Aggregator"] = list(),
@@ -319,6 +328,7 @@ class Runner:
             input_level (str): Input level to aggregate like national or subnational
             output_level (str): Output level of aggregated data like regional
             adm_aggregation (Union[Dict, List]): Mapping from input admins to aggregated output admins
+            source_configuration (Optional[Dict]): Configuration for sources. Defaults to None (use defaults).
             names (Optional[ListTuple[str]]): Names of scrapers. Defaults to None.
             overrides (Dict[str, Dict]): Dictionary mapping scrapers to level mappings. Defaults to dict().
             aggregation_scrapers (List["Aggregator"]): Other aggregations needed. Defaults to list().
@@ -334,6 +344,7 @@ class Runner:
             input_level,
             output_level,
             adm_aggregation,
+            source_configuration,
             names,
             overrides,
             aggregation_scrapers,
@@ -349,6 +360,7 @@ class Runner:
         input_level: str,
         output_level: str,
         adm_aggregation: Union[Dict, ListTuple],
+        source_configuration: Optional[Dict] = None,
         names: Optional[ListTuple[str]] = None,
         overrides: Dict[str, Dict] = dict(),
         force_add_to_run: bool = False,
@@ -367,6 +379,7 @@ class Runner:
             input_level (str): Input level to aggregate like national or subnational
             output_level (str): Output level of aggregated data like regional
             adm_aggregation (Union[Dict, ListTuple]): Mapping from input admins to aggregated output admins
+            source_configuration (Optional[Dict]): Configuration for sources. Defaults to None (use defaults).
             names (Optional[ListTuple[str]]): Names of scrapers
             overrides (Dict[str, Dict]): Dictionary mapping scrapers to level mappings. Defaults to dict().
             force_add_to_run (bool): Whether to force include the scraper in the next run
@@ -383,6 +396,7 @@ class Runner:
                 input_level,
                 output_level,
                 adm_aggregation,
+                source_configuration,
                 names,
                 overrides,
                 scrapers,
@@ -826,20 +840,20 @@ class Runner:
                 rows.append(row)
         return rows
 
-    def get_values_by_header(
+    def get_values_sources_by_header(
         self,
         level: str,
         names: Optional[ListTuple[str]] = None,
         overrides: Dict[str, Dict] = dict(),
         has_run: bool = True,
         use_hxl: bool = True,
-    ) -> Tuple[Tuple, Dict]:
-        """Get mapping from headers to values for a given level for scrapers limiting
-        to those in names if given. Keys will be headers if use_hxl is False or HXL
-        hashtags if use_hxl is True. Sometimes it may be necessary to map alternative
-        level names to levels and this can be done using overrides. It is a dictionary
-        with keys being scraper names and values being dictionaries which map level
-        names to output levels.
+    ) -> Tuple[Tuple, Dict, Dict]:
+        """Get mapping from headers to values and headers to sources for a given level
+        for scrapers limiting to those in names if given. Keys will be headers if
+        use_hxl is False or HXL hashtags if use_hxl is True. Sometimes it may be
+        necessary to map alternative level names to levels and this can be done using
+        overrides. It is a dictionary with keys being scraper names and values being
+        dictionaries which map level names to output levels.
 
         Args:
             level (str): Level to get like national, subnational or single
@@ -849,13 +863,14 @@ class Runner:
             use_hxl (bool): Whether keys should be HXL hashtags or column headers. Defaults to True.
 
         Returns:
-            Tuple[Tuple, Dict]: Tuple of (results headers, mapping from headers to values)
+            Tuple[Tuple, Dict, Dict]: Tuple (results headers, headers to values, headers to sources)
         """
         results = self.get_results(
             names, [level], overrides=overrides, has_run=has_run
         ).get(level)
         headers = None
         values = dict()
+        sources = dict()
         if results:
             if use_hxl:
                 main_index = 1
@@ -863,9 +878,14 @@ class Runner:
                 main_index = 0
             headers = results["headers"]
             vals = results["values"]
-            for index, header_or_hxltag in enumerate(headers[main_index]):
+            srcs = results["sources"]
+            for index, hxltag in enumerate(headers[1]):
+                header_or_hxltag = headers[main_index][index]
                 values[header_or_hxltag] = vals[index]
-        return headers, values
+                for source in srcs:
+                    if source[0] == hxltag:
+                        sources[header_or_hxltag] = source
+        return headers, values, sources
 
     def get_sources(
         self,

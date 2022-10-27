@@ -2,6 +2,7 @@ from hdx.utilities.dateparse import parse_date
 
 from hdx.scraper.base_scraper import BaseScraper
 from hdx.scraper.runner import Runner
+from hdx.scraper.utilities.sources import Sources
 
 from .conftest import run_check_scraper, run_check_scrapers
 
@@ -67,11 +68,14 @@ class TestScrapersAggregation:
             level,
             headers,
             values,
-            list(),
+            sources,
             population_lookup=national_values[0] | values[0],
             source_urls=source_urls,
         )
 
+        source_configuration = Sources.create_source_configuration(
+            suffix_attribute="regional"
+        )
         aggregator_configuration = configuration_hxl["aggregation_mean"]
         runner.add_aggregators(
             True,
@@ -79,20 +83,33 @@ class TestScrapersAggregation:
             "national",
             level,
             adm_aggregation,
+            source_configuration,
             force_add_to_run=True,
         )
 
         level = "regional"
         values = [{"ROAP": 46043587}]
+        sources2 = [
+            (
+                "#population+regional",
+                "Dec 31, 2022",
+                "aggsource",
+                "http://aggsource",
+            )
+        ]
+        source_urls2 = [
+            "http://aggsource",
+            "https://data.humdata.org/organization/world-bank-group",
+        ]
         run_check_scraper(
             name,
             runner,
             level,
             headers,
             values,
-            list(),
+            sources2,
             population_lookup=national_values[0] | values[0],
-            source_urls=source_urls,
+            source_urls=source_urls2,
         )
 
         aggregator_configuration = configuration_hxl["aggregation_range"]
@@ -113,7 +130,7 @@ class TestScrapersAggregation:
             level,
             headers,
             values,
-            list(),
+            sources,
             source_urls=source_urls,
         )
 
@@ -202,13 +219,33 @@ class TestScrapersAggregation:
             ],
         )
         values = [{"value": pop}, {"value": "229.71"}, {"value": "0.5376"}]
+        sources = [
+            (
+                "#population",
+                "Oct 01, 2020",
+                "World Bank",
+                "https://data.humdata.org/organization/world-bank-group",
+            ),
+            (
+                "#affected+infected+per100000",
+                "Aug 06, 2020",
+                "WHO",
+                "https://covid19.who.int/WHO-COVID-19-global-data.csv",
+            ),
+            (
+                "#affected+infected+perpop",
+                "Aug 06, 2020",
+                "WHO",
+                "https://covid19.who.int/WHO-COVID-19-global-data.csv",
+            ),
+        ]
         run_check_scrapers(
             names,
             runner,
             level,
             headers,
             values,
-            list(),
+            sources,
             population_lookup=national_values[0] | {"global": pop},
             source_urls=source_urls,
         )
@@ -253,27 +290,43 @@ class TestScrapersAggregation:
 
         level = "regional"
         aggregator_configuration = configuration_nohxl["aggregation_sum"]
+        source_configuration = Sources.create_source_configuration(
+            suffix_attribute="global"
+        )
         names = runner.add_aggregators(
             False,
             aggregator_configuration,
             "national",
             level,
             adm_aggregation,
+            source_configuration,
             force_add_to_run=True,
         )
         name = "population_regional"
         assert names == [name]
 
         values = [{"ROAP": 92087174}]
+        sources2 = [
+            (
+                "#population+global",
+                "Jan-Dec 2020",
+                "World Bank",
+                "https://data.humdata.org/dataset/population",
+            )
+        ]
+        source_urls2 = [
+            "https://data.humdata.org/dataset/population",
+            "https://data.humdata.org/organization/world-bank-group",
+        ]
         run_check_scraper(
             name,
             runner,
             level,
             headers,
             values,
-            list(),
+            sources2,
             population_lookup=national_values[0] | values[0],
-            source_urls=source_urls,
+            source_urls=source_urls2,
         )
 
         aggregator_configuration = configuration_nohxl["aggregation_mean"]
@@ -294,7 +347,7 @@ class TestScrapersAggregation:
             level,
             headers,
             values,
-            list(),
+            sources,
             population_lookup=national_values[0] | values[0],
             source_urls=source_urls,
         )
@@ -317,7 +370,7 @@ class TestScrapersAggregation:
             level,
             headers,
             values,
-            list(),
+            sources,
             source_urls=source_urls,
         )
 
@@ -406,13 +459,33 @@ class TestScrapersAggregation:
             ],
         )
         values = [{"value": pop}, {"value": "229.71"}, {"value": "0.5376"}]
+        sources = [
+            (
+                "#population",
+                "Oct 01, 2020",
+                "World Bank",
+                "https://data.humdata.org/organization/world-bank-group",
+            ),
+            (
+                "#affected+infected+per100000",
+                "Oct 01, 2020",
+                "World Bank",
+                "https://data.humdata.org/organization/world-bank-group",
+            ),
+            (
+                "#affected+infected+perpop",
+                "Aug 06, 2020",
+                "WHO",
+                "https://covid19.who.int/WHO-COVID-19-global-data.csv",
+            ),
+        ]
         run_check_scrapers(
             names,
             runner,
             level,
             headers,
             values,
-            list(),
+            sources,
             population_lookup=national_values[0] | {"allregions": pop},
             source_urls=source_urls,
         )

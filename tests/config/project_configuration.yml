@@ -1030,6 +1030,11 @@ aggregation_hxl:
 
   aggregation_mean:
     "#population":
+      source: "aggsource"
+      source_url: "http://aggsource"
+      source_date:
+        start: "2022-01-01"
+        end: "2022-12-31"
       action: "mean"
 
   aggregation_range:
@@ -1053,6 +1058,11 @@ aggregation_hxl:
 aggregation_nohxl:
   aggregation_sum:
     "Population":
+      dataset: "population"
+      source_date_format:
+        start: "%b"
+        separator: "-"
+        end: "%b %Y"
       action: "sum"
 
   aggregation_mean:
@@ -1069,6 +1079,7 @@ aggregation_nohxl:
       population_key: "allregions"
     "CasesPer100000":
       action: "mean"
+      source_copy: "Population"
     "CasesPerPopulation":
       output: "#affected+infected+perpop"
       input:

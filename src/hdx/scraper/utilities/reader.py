@@ -300,11 +300,16 @@ class Read(Retrieve):
             logger.exception(f"Error reading {data_type} for {identifier}!")
             raise
 
-    def read_hdx_metadata(self, datasetinfo: Dict) -> Optional[Resource]:
-        """Read metadata from HDX dataset and add to input dictionary
+    def read_hdx_metadata(
+        self, datasetinfo: Dict, do_resource_check: bool = True
+    ) -> Optional[Resource]:
+        """Read metadata from HDX dataset and add to input dictionary. If url is not
+        supplied, will look through resources for one that matches specified format and
+        use its url unless do_resource_check is False.
 
         Args:
             datasetinfo (Dict): Dictionary of information about dataset
+            do_resource_check (bool): Whether to check resources. Defaults to False.
 
         Returns:
             Optional[Resource]: The resource if a url was not given
@@ -314,7 +319,7 @@ class Read(Retrieve):
             dataset = self.read_dataset(dataset_nameinfo)
             resource = None
             url = datasetinfo.get("url")
-            if not url:
+            if do_resource_check and not url:
                 resource_name = datasetinfo.get("resource")
                 format = datasetinfo["format"].lower()
                 for resource in dataset.get_resources():

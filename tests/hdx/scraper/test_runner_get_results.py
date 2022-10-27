@@ -103,13 +103,33 @@ class TestRunnerGetResults:
             ],
         )
         values = [{"value": pop}, {"value": "229.71"}, {"value": "0.5376"}]
+        sources = [
+            (
+                "#population",
+                "Oct 01, 2020",
+                "World Bank",
+                "https://data.humdata.org/organization/world-bank-group",
+            ),
+            (
+                "#affected+infected+per100000",
+                "Aug 06, 2020",
+                "WHO",
+                "https://covid19.who.int/WHO-COVID-19-global-data.csv",
+            ),
+            (
+                "#affected+infected+perpop",
+                "Aug 06, 2020",
+                "WHO",
+                "https://covid19.who.int/WHO-COVID-19-global-data.csv",
+            ),
+        ]
         run_check_scrapers(
             names,
             runner,
             level,
             headers,
             values,
-            list(),
+            sources,
             population_lookup=national_values[0] | {"global": pop},
             source_urls=source_urls,
             set_not_run=False,
@@ -178,13 +198,39 @@ class TestRunnerGetResults:
                     {"value": "229.71"},
                     {"value": "0.5376"},
                 ],
-                "sources": [],
+                "sources": [
+                    (
+                        "#population",
+                        "Oct 01, 2020",
+                        "World Bank",
+                        "https://data.humdata.org/organization/world-bank-group",
+                    ),
+                    (
+                        "#affected+infected+per100000",
+                        "Aug 06, 2020",
+                        "WHO",
+                        "https://covid19.who.int/WHO-COVID-19-global-data.csv",
+                    ),
+                    (
+                        "#affected+infected+perpop",
+                        "Aug 06, 2020",
+                        "WHO",
+                        "https://covid19.who.int/WHO-COVID-19-global-data.csv",
+                    ),
+                ],
                 "fallbacks": [],
             },
             "regional": {
                 "headers": (["Population"], ["#population"]),
                 "values": [{"ROAP": 38041754, "somewhere": 4685306}],
-                "sources": [],
+                "sources": [
+                    (
+                        "#population",
+                        "Oct 01, 2020",
+                        "World Bank",
+                        "https://data.humdata.org/organization/world-bank-group",
+                    )
+                ],
                 "fallbacks": [],
             },
         }
@@ -195,7 +241,14 @@ class TestRunnerGetResults:
             "global": {
                 "headers": (["Population"], ["#population"]),
                 "values": [{"value": 42727060}],
-                "sources": [],
+                "sources": [
+                    (
+                        "#population",
+                        "Oct 01, 2020",
+                        "World Bank",
+                        "https://data.humdata.org/organization/world-bank-group",
+                    )
+                ],
                 "fallbacks": [],
             }
         }
@@ -210,7 +263,14 @@ class TestRunnerGetResults:
             "world": {
                 "headers": (["Population"], ["#population"]),
                 "values": [{"value": 42727060}],
-                "sources": [],
+                "sources": [
+                    (
+                        "#population",
+                        "Oct 01, 2020",
+                        "World Bank",
+                        "https://data.humdata.org/organization/world-bank-group",
+                    )
+                ],
                 "fallbacks": [],
             }
         }
