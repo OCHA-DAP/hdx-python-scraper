@@ -298,10 +298,15 @@ class Runner:
         if not scraper:
             return None
         scraper_name = scraper.name
-        fn = lambda: self.get_values_sources_by_header(
-            input_level, names, overrides, False, use_hxl
-        )
-        self.aggregation_value_sources_fns[scraper_name] = fn
+
+        def get_values_sources_by_header():
+            return self.get_values_sources_by_header(
+                input_level, names, overrides, False, use_hxl
+            )
+
+        self.aggregation_value_sources_fns[
+            scraper_name
+        ] = get_values_sources_by_header
         return scraper
 
     def add_aggregator(
@@ -727,7 +732,8 @@ class Runner:
         names: Optional[ListTuple[str]] = None,
         levels: Optional[ListTuple[str]] = None,
         overrides: Dict[str, Dict] = dict(),
-        has_run=True,
+        has_run: bool = True,
+        source_info: Dict[str, Dict] = dict(),
     ) -> Dict[str, Dict]:
         """Get the results (headers, values and sources) for scrapers limiting to those
         in names if given and limiting further to those that have been set in the
@@ -747,6 +753,7 @@ class Runner:
             levels (Optional[Iterable[str]]): Levels to get like national, subnational or single
             overrides (Dict[str, Dict]): Dictionary mapping scrapers to level mappings. Defaults to dict().
             has_run (bool): Only get results for scrapers marked as having run. Defaults to True.
+            source_info (Dict[str, Dict]): Dictionary mapping
 
         Returns:
             Dict[str, Dict]: Results dictionary that maps each level to headers, values, sources, fallbacks.
