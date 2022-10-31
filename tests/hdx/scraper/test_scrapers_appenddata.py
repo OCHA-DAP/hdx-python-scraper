@@ -353,6 +353,51 @@ class TestScrapersAppendData:
             ],
         )
 
+        names = runner.add_aggregators(
+            True,
+            configuration["aggregate_append_data"],
+            "national",
+            "regional",
+            iso3s,
+            force_add_to_run=True,
+        )
+        assert names == [
+            "affected_sam_regional",
+            "affected_mam_regional",
+            "affected_gam_regional",
+            "affected_water_regional",
+        ]
+        headers = (
+            [
+                "SAM",
+                "MAM",
+                "GAM",
+                "Water Insecurity",
+            ],
+            [
+                "#affected+sam",
+                "#affected+mam",
+                "#affected+gam",
+                "#affected+water",
+            ],
+        )
+        values = [
+            {"value": 1313619},
+            {"value": 3257327},
+            {"value": 4570946},
+            {"value": 16200000},
+        ]
+        sources = []
+        run_check_scrapers(
+            names,
+            runner,
+            "regional",
+            headers,
+            values,
+            sources,
+            source_urls=[],
+        )
+
     def test_sourceoverwrite(self, configuration):
         BaseScraper.population_lookup = dict()
         today = parse_date("2020-10-01")

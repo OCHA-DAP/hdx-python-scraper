@@ -46,6 +46,7 @@ class Runner:
         self.scrapers_to_run: Optional[List[str]] = scrapers_to_run
         self.scrapers = dict()
         self.scraper_names = list()
+        self.aggregation_value_sources_fns = dict()
 
     def add_custom(
         self, scraper: BaseScraper, force_add_to_run: bool = False
@@ -277,16 +278,13 @@ class Runner:
         Returns:
             Optional["Aggregator"]: scraper or None
         """
-        (
-            input_headers,
-            input_values,
-            input_sources,
-        ) = self.get_values_sources_by_header(
-            input_level, names, overrides, False, use_hxl
+        input_headers = self.get_headers(
+            names, [input_level], overrides=overrides
         )
+        input_headers = input_headers.get(input_level)
         if not input_headers:
             return None
-        return Aggregator.get_scraper(
+        scraper = Aggregator.get_scraper(
             use_hxl,
             header_or_hxltag,
             datasetinfo,
@@ -294,11 +292,17 @@ class Runner:
             output_level,
             adm_aggregation,
             input_headers,
-            input_values,
-            input_sources,
             source_configuration,
             aggregation_scrapers,
         )
+        if not scraper:
+            return None
+        scraper_name = scraper.name
+        fn = lambda: self.get_values_sources_by_header(
+            input_level, names, overrides, False, use_hxl
+        )
+        self.aggregation_value_sources_fns[scraper_name] = fn
+        return scraper
 
     def add_aggregator(
         self,
@@ -550,6 +554,12 @@ class Runner:
         scraper = self.get_scraper_exception(name)
         if scraper.has_run is False or force_run:
             try:
+                fn = self.aggregation_value_sources_fns.get(name)
+                if fn:
+                    input_values, input_sources = fn()
+                    scraper.set_input_values_sources(
+                        input_values, input_sources
+                    )
                 scraper.run()
                 scraper.add_sources()
                 scraper.add_source_urls()
@@ -652,6 +662,7 @@ class Runner:
         levels: Optional[Iterable[str]] = None,
         headers: Optional[Iterable[str]] = None,
         hxltags: Optional[Iterable[str]] = None,
+        overrides: Dict[str, Dict] = dict(),
     ) -> Dict[str, Tuple]:
         """Get the headers for scrapers limiting to those in names if given and
         limiting further to those that have been set in the constructor if previously
@@ -664,6 +675,7 @@ class Runner:
             levels (Optional[Iterable[str]]): Levels to get like national, subnational or single
             headers (Optional[Iterable[str]]): Headers to get
             hxltags (Optional[Iterable[str]]): HXL hashtags to get
+            overrides (Dict[str, Dict]): Dictionary mapping scrapers to level mappings. Defaults to dict().
 
 
         Returns:
@@ -672,27 +684,42 @@ class Runner:
         if not names:
             names = self.scrapers.keys()
         results = dict()
+
+        def add_level_results(lvl, output_lvl, scrap, lvls_used):
+            nonlocal results
+
+            if lvl in lvls_used:
+                return
+            if levels is not None and output_lvl not in levels:
+                return
+            level_results = results.get(lvl)
+            if level_results is None:
+                level_results = (list(), list())
+                results[level] = level_results
+            scrp_headers = scrap.headers.get(lvl)
+            for i, header in enumerate(scrp_headers[0]):
+                if headers is not None and header not in headers:
+                    continue
+                hxltag = scrp_headers[1][i]
+                if hxltags is not None and hxltag not in hxltags:
+                    continue
+                level_results[0].append(header)
+                level_results[1].append(hxltag)
+            lvls_used.add(lvl)
+            lvls_used.add(output_lvl)
+
         for name in names:
             if self.scrapers_to_run and not any(
                 x in name for x in self.scrapers_to_run
             ):
                 continue
             scraper = self.get_scraper(name)
-            for level, scraper_headers in scraper.headers.items():
-                if levels is not None and level not in levels:
-                    continue
-                level_results = results.get(level)
-                if level_results is None:
-                    level_results = (list(), list())
-                    results[level] = level_results
-                for i, header in enumerate(scraper_headers[0]):
-                    if headers is not None and header not in headers:
-                        continue
-                    hxltag = scraper_headers[1][i]
-                    if hxltags is not None and hxltag not in hxltags:
-                        continue
-                    level_results[0].append(header)
-                    level_results[1].append(hxltag)
+            override = overrides.get(name, dict())
+            levels_used = set()
+            for level, output_level in override.items():
+                add_level_results(level, output_level, scraper, levels_used)
+            for level in scraper.headers:
+                add_level_results(level, level, scraper, levels_used)
         return results
 
     def get_results(
@@ -731,7 +758,7 @@ class Runner:
         def add_level_results(lvl, output_lvl, scrap, lvls_used):
             nonlocal results
 
-            if level in lvls_used:
+            if lvl in lvls_used:
                 return
             if levels is not None and output_lvl not in levels:
                 return
@@ -847,7 +874,7 @@ class Runner:
         overrides: Dict[str, Dict] = dict(),
         has_run: bool = True,
         use_hxl: bool = True,
-    ) -> Tuple[Tuple, Dict, Dict]:
+    ) -> Tuple[Dict, Dict]:
         """Get mapping from headers to values and headers to sources for a given level
         for scrapers limiting to those in names if given. Keys will be headers if
         use_hxl is False or HXL hashtags if use_hxl is True. Sometimes it may be
@@ -863,12 +890,11 @@ class Runner:
             use_hxl (bool): Whether keys should be HXL hashtags or column headers. Defaults to True.
 
         Returns:
-            Tuple[Tuple, Dict, Dict]: Tuple (results headers, headers to values, headers to sources)
+            Tuple[Tuple, Dict, Dict]: Tuple of (headers to values, headers to sources)
         """
         results = self.get_results(
             names, [level], overrides=overrides, has_run=has_run
         ).get(level)
-        headers = None
         values = dict()
         sources = dict()
         if results:
@@ -885,7 +911,7 @@ class Runner:
                 for source in srcs:
                     if source[0] == hxltag:
                         sources[header_or_hxltag] = source
-        return headers, values, sources
+        return values, sources
 
     def get_sources(
         self,

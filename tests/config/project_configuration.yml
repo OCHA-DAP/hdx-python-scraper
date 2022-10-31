@@ -327,6 +327,16 @@ scraper_append_data:
     format: "csv"
     use_hxl: True
 
+aggregate_append_data:
+  "#affected+sam":
+    action: "sum"
+  "#affected+mam":
+    action: "sum"
+  "#affected+gam":
+    action: "sum"
+  "#affected+water":
+    action: "sum"
+
 
 unhcr_myanmar_idps:
   url: "https://data.unhcr.org/population/?widget_id=264111&geo_id=693&population_group=5407,4999"
