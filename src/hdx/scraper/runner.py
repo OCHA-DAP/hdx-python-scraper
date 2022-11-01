@@ -969,12 +969,12 @@ class Runner:
                 )
                 scrp_startdate = scrp_date.get("start")
                 scrp_enddate = scrp_date["end"]
-                date = sourceinfo.get("date", dict())
+                date = sourceinfo.get("source_date", dict())
                 if date:
                     startdate = date["start"]
                     if scrp_startdate:
                         if startdate:
-                            if scrp_startdate > startdate:
+                            if scrp_startdate < startdate:
                                 date["start"] = scrp_startdate
                         else:
                             date["start"] = scrp_startdate

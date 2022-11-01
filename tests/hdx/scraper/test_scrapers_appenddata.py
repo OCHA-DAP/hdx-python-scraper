@@ -89,85 +89,85 @@ class TestScrapersAppendData:
         sources = [
             (
                 "#value+funding+required+usd+eth",
-                "Oct 01, 2020",
+                "Nov 01, 2022",
                 "Multiple Source (Humanitarian Partners)",
                 "https://data.humdata.org/dataset/ethiopia-drought-related-key-figures",
             ),
             (
                 "#value+funding+total+usd+eth",
-                "Oct 01, 2020",
+                "Nov 01, 2022",
                 "Multiple Source (Humanitarian Partners)",
                 "https://data.humdata.org/dataset/ethiopia-drought-related-key-figures",
             ),
             (
                 "#value+funding+pct+eth",
-                "Oct 01, 2020",
+                "Nov 01, 2022",
                 "Multiple Source (Humanitarian Partners)",
                 "https://data.humdata.org/dataset/ethiopia-drought-related-key-figures",
             ),
             (
                 "#inneed+total+eth",
-                "Oct 01, 2020",
+                "Nov 01, 2022",
                 "Multiple Source (Humanitarian Partners)",
                 "https://data.humdata.org/dataset/ethiopia-drought-related-key-figures",
             ),
             (
                 "#targeted+total+eth",
-                "Oct 01, 2020",
+                "Nov 01, 2022",
                 "Multiple Source (Humanitarian Partners)",
                 "https://data.humdata.org/dataset/ethiopia-drought-related-key-figures",
             ),
             (
                 "#targeted+pct+eth",
-                "Oct 01, 2020",
+                "Nov 01, 2022",
                 "Multiple Source (Humanitarian Partners)",
                 "https://data.humdata.org/dataset/ethiopia-drought-related-key-figures",
             ),
             (
                 "#reached+total+eth",
-                "Oct 01, 2020",
+                "Nov 01, 2022",
                 "Multiple Source (Humanitarian Partners)",
                 "https://data.humdata.org/dataset/ethiopia-drought-related-key-figures",
             ),
             (
                 "#reached+pct+eth",
-                "Oct 01, 2020",
+                "Nov 01, 2022",
                 "Multiple Source (Humanitarian Partners)",
                 "https://data.humdata.org/dataset/ethiopia-drought-related-key-figures",
             ),
             (
                 "#affected+food+eth",
-                "Oct 01, 2020",
+                "Nov 01, 2022",
                 "Multiple Source (Humanitarian Partners)",
                 "https://data.humdata.org/dataset/ethiopia-drought-related-key-figures",
             ),
             (
                 "#affected+sam+eth",
-                "Oct 01, 2020",
+                "Nov 01, 2022",
                 "Multiple Source (Humanitarian Partners)",
                 "https://data.humdata.org/dataset/ethiopia-drought-related-key-figures",
             ),
             (
                 "#affected+mam+eth",
-                "Oct 01, 2020",
+                "Nov 01, 2022",
                 "Multiple Source (Humanitarian Partners)",
                 "https://data.humdata.org/dataset/ethiopia-drought-related-key-figures",
             ),
             (
                 "#affected+gam+eth",
-                "Oct 01, 2020",
+                "Nov 01, 2022",
                 "Multiple Source (Humanitarian Partners)",
                 "https://data.humdata.org/dataset/ethiopia-drought-related-key-figures",
             ),
             (
                 "#affected+idps+eth",
-                "Oct 01, 2020",
+                "Nov 01, 2022",
                 "Multiple Source (Humanitarian Partners)",
                 "https://data.humdata.org/dataset/ethiopia-drought-related-key-figures",
             ),
             (
                 "#affected+water+eth",
-                "Oct 01, 2020",
+                "Nov 01, 2022",
                 "Multiple Source (Humanitarian Partners)",
                 "https://data.humdata.org/dataset/ethiopia-drought-related-key-figures",
             ),
@@ -392,25 +392,25 @@ class TestScrapersAppendData:
         sources = [
             (
                 "#affected+sam",
-                "May-Oct 2020",
+                "Oct 2021-Nov 2022",
                 "Multiple Source (Humanitarian Partners)",
                 "https://data.humdata.org/dataset?groups=eth&groups=ken&groups=som&organization=ocha-rosea&vocab_Topics=droughts&q=&sort=score%20desc%2C%20if(gt(last_modified%2Creview_date)%2Clast_modified%2Creview_date)%20desc&ext_page_size=25",
             ),
             (
                 "#affected+mam",
-                "01-05-2022:01-10-2020",
+                "01-10-2021:01-11-2022",
                 "Multiple Source (Humanitarian Partners)",
                 "https://data.humdata.org/dataset?groups=eth&groups=ken&groups=som&organization=ocha-rosea&vocab_Topics=droughts&q=&sort=score%20desc%2C%20if(gt(last_modified%2Creview_date)%2Clast_modified%2Creview_date)%20desc&ext_page_size=25",
             ),
             (
                 "#affected+gam",
-                "Oct 01, 2020",
+                "Nov 01, 2022",
                 "Multiple Source (Humanitarian Partners)",
                 "https://data.humdata.org/dataset?groups=eth&groups=ken&groups=som&organization=ocha-rosea&vocab_Topics=droughts&q=&sort=score%20desc%2C%20if(gt(last_modified%2Creview_date)%2Clast_modified%2Creview_date)%20desc&ext_page_size=25",
             ),
             (
                 "#affected+water",
-                "Oct 01, 2020",
+                "Nov 01, 2022",
                 "Multiple Source (Humanitarian Partners)",
                 "https://data.humdata.org/dataset?groups=eth&groups=ken&groups=som&organization=ocha-rosea&vocab_Topics=droughts&q=&sort=score%20desc%2C%20if(gt(last_modified%2Creview_date)%2Clast_modified%2Creview_date)%20desc&ext_page_size=25",
             ),
@@ -492,7 +492,7 @@ class TestScrapersAppendData:
             {"ETH": "8200000", "KEN": "4100000", "SOM": "3900000"},
         ]
 
-        def get_expected_sources(headers, countryiso3):
+        def get_expected_sources(headers, date, countryiso3):
             sources = list()
             countryname = Country.get_country_name_from_iso3(
                 countryiso3
@@ -501,14 +501,14 @@ class TestScrapersAppendData:
                 sources.append(
                     (
                         hxltag,
-                        "Oct 01, 2020",
+                        date,
                         "Multiple Source (Humanitarian Partners)",
                         f"https://data.humdata.org/dataset/{countryname}-drought-related-key-figures",
                     )
                 )
             return sources
 
-        def get_expected_sources_data(headers, countryiso3):
+        def get_expected_sources_data(headers, date, countryiso3):
             sources_data = [
                 {
                     "#date": "Feb 24, 2022",
@@ -523,7 +523,7 @@ class TestScrapersAppendData:
             for hxltag in headers[1]:
                 sources_data.append(
                     {
-                        "#date": "Oct 01, 2020",
+                        "#date": date,
                         "#indicator+name": hxltag,
                         "#meta+source": "Multiple Source (Humanitarian Partners)",
                         "#meta+url": f"https://data.humdata.org/dataset/{countryname}-drought-related-key-figures",
@@ -541,7 +541,7 @@ class TestScrapersAppendData:
             level,
             headers,
             values,
-            get_expected_sources(headers, "ETH"),
+            get_expected_sources(headers, "Nov 01, 2022", "ETH"),
             source_urls=[
                 "https://data.humdata.org/dataset/ethiopia-drought-related-key-figures",
                 "https://data.humdata.org/dataset/kenya-drought-related-key-figures",
@@ -556,7 +556,7 @@ class TestScrapersAppendData:
         additional_sources.append(
             {
                 "indicator": "#value+funding+required+usd",
-                "source_date": "Oct 01, 2020",
+                "source_date": "Nov 01, 2022",
                 "source": "Multiple Source (Humanitarian Partners)",
                 "source_url": "https://data.humdata.org/dataset/kenya-drought-related-key-figures",
             }
@@ -567,7 +567,7 @@ class TestScrapersAppendData:
             secondary_runner=runner,  # to check we don't get duplicate sources
         )
         assert jsonout.json["sources_data"] == get_expected_sources_data(
-            headers, "ETH"
+            headers, "Nov 01, 2022", "ETH"
         )
 
         Sources.set_should_overwrite_sources(True)
@@ -581,7 +581,7 @@ class TestScrapersAppendData:
             level,
             headers,
             values,
-            get_expected_sources(headers, "SOM"),
+            get_expected_sources(headers, "Oct 01, 2020", "SOM"),
             source_urls=[
                 "https://data.humdata.org/dataset/ethiopia-drought-related-key-figures",
                 "https://data.humdata.org/dataset/kenya-drought-related-key-figures",
@@ -607,5 +607,5 @@ class TestScrapersAppendData:
             secondary_runner=runner,  # to check we don't get duplicate sources
         )
         assert jsonout.json["sources_data"] == get_expected_sources_data(
-            headers, "SOM"
+            headers, "Oct 01, 2020", "SOM"
         )

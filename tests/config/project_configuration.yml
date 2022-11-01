@@ -329,7 +329,7 @@ aggregate_append_data:
     source_url: "https://data.humdata.org/dataset?groups=eth&groups=ken&groups=som&organization=ocha-rosea&vocab_Topics=droughts&q=&sort=score%20desc%2C%20if(gt(last_modified%2Creview_date)%2Clast_modified%2Creview_date)%20desc&ext_page_size=25"
     action: "sum"
     source_date_format:
-      start: "%b"
+      start: "%b %Y"
       separator: "-"
       end: "%b %Y"
   "#affected+mam":
