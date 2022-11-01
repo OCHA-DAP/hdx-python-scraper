@@ -952,12 +952,20 @@ class Runner:
                 scrp_source = scrp_datasetinfo.get("source")
                 if scrp_source:
                     source = sourceinfo.get("source", list())
+                    if not isinstance(scrp_source, str):
+                        scrp_source = scrp_source.get(
+                            hxltag, scrp_source["default_source"]
+                        )
                     if scrp_source not in source:
                         source.append(scrp_source)
                     sourceinfo["source"] = source
                 scrp_source_url = scrp_datasetinfo.get("source_url")
                 if scrp_source_url:
                     source_url = sourceinfo.get("source_url", list())
+                    if not isinstance(scrp_source_url, str):
+                        scrp_source_url = scrp_source_url.get(
+                            hxltag, scrp_source_url["default_url"]
+                        )
                     if scrp_source_url not in source_url:
                         source_url.append(scrp_source_url)
                     sourceinfo["source_url"] = source_url

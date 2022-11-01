@@ -1107,6 +1107,18 @@ aggregation_nohxl:
       population_key: "allregions"
       formula: "number_format(CasesPer100000 * 100000 / #population)"
 
+aggregation_regionaltoplevel:
+    "#access+visas+pct":
+      action: "mean"
+    "#access+travel+pct":
+      action: "mean"
+      no_sources: True
+    "#event+year+todate+num":
+      action: "sum"
+    "#activity+cerf+project+insecurity+pct":
+      action: "mean"
+
+
 timeseries:
   casualties:
     source: "OHCHR"

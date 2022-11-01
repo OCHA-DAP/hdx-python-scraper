@@ -135,6 +135,12 @@ class BaseScraper(ABC):
         Returns:
             None
         """
+        if self.source_configuration and self.source_configuration.get(
+            "no_sources", False
+        ):
+            return
+        if self.datasetinfo.get("no_sources", False):
+            return
         source = self.datasetinfo["source"]
         if isinstance(source, str):
             source = {"default_source": source}

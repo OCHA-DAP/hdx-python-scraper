@@ -173,6 +173,7 @@ class Sources:
         admin_sources: bool = False,
         adminlevel: Union[AdminLevel, ListTuple[AdminLevel], None] = None,
         admin_mapping_dict: Optional[Dict] = None,
+        no_sources: bool = False,
     ) -> Optional[Dict]:
         """Create source configuration. If none of the arguments are suppled, source
         configuration is None. suffix_attribute is an attribute to add to the end of
@@ -181,18 +182,22 @@ class Sources:
         AdminLevel objects that will be used to map admin pcodes to country iso3 codes. If
         admin_level is defined, admin_sources is assumed to be True. Alternatively,
         admin_mapping_dict can be supplied to define mapping from amin names to attribute
-        suffixes.
+        suffixes. If no sources should be outputted no_sources should be set to True.
 
         Args:
             suffix_attribute (Optional[str]): Suffix to add. Defaults to None.
             admin_sources (bool): Whether source information is per admin unit. Defaults to False.
             adminlevel (Union[AdminLevel, ListTuple[AdminLevel], None]): Admin level(s) mapping. Defaults to None.
             admin_mapping_dict (Optional[Dict]): Admin unit mapping to use. Defaults to None.
+            no_sources (bool): Don't create sources. Defaults to False.
 
         Returns:
              Optional[Dict]: Source configuration dictionary
         """
         source_configuration = dict()
+        if no_sources:
+            source_configuration["no_sources"] = True
+            return source_configuration
         if suffix_attribute:
             source_configuration["suffix_attribute"] = suffix_attribute
             return source_configuration
