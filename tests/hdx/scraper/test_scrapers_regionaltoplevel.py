@@ -3,24 +3,150 @@ from hdx.utilities.dateparse import parse_date
 from hdx.scraper.base_scraper import BaseScraper
 from hdx.scraper.outputs.json import JsonFile
 from hdx.scraper.runner import Runner
+from hdx.scraper.utilities.sources import Sources
 from hdx.scraper.utilities.writer import Writer
 
-from .conftest import run_check_scrapers
+from .conftest import run_check_scraper, run_check_scrapers
 
 
 class TestScrapersRegionalToplevel:
+    access_national_headers = (
+        [
+            "% of visas pending or denied",
+            "% of travel authorizations or movements denied",
+            "Number of incidents reported in previous year",
+            "Number of incidents reported since start of year",
+            "Number of incidents reported since start of previous year",
+            "% of CERF projects affected by insecurity and inaccessibility",
+            "% of CBPF projects affected by insecurity and inaccessibility",
+            "Campaign Vaccine",
+            "Campaign Vaccine Status",
+            "Number of learners enrolled from pre-primary to tertiary education",
+        ],
+        [
+            "#access+visas+pct",
+            "#access+travel+pct",
+            "#event+year+previous+num",
+            "#event+year+todate+num",
+            "#event+year+previous+todate+num",
+            "#activity+cerf+project+insecurity+pct",
+            "#activity+cbpf+project+insecurity+pct",
+            "#service+name",
+            "#status+name",
+            "#population+education",
+        ],
+    )
+    access_national_values = [
+        {"AFG": 0.2, "PSE": None},
+        {"AFG": "N/A", "PSE": None},
+        {"AFG": "20", "PSE": "7"},
+        {"AFG": "2", "PSE": None},
+        {"AFG": "22", "PSE": "7"},
+        {"AFG": 0.5710000000000001, "PSE": 0.0},
+        {"AFG": 0.04, "PSE": 0.205},
+        {"AFG": "bivalent Oral Poliovirus", "PSE": None},
+        {"AFG": "Postponed", "PSE": "N/A"},
+        {"AFG": 9979405, "PSE": None},
+    ]
+    access_national_sources = [
+        (
+            "#access+visas+pct",
+            "Oct 01, 2020",
+            "OCHA",
+            "https://docs.google.com/spreadsheets/d/e/2PACX-1vRSzJzuyVt9i_mkRQ2HbxrUl2Lx2VIhkTHQM-laE8NyhQTy70zQTCuFS3PXbhZGAt1l2bkoA4_dAoAP/pub?gid=1565063847&single=true&output=csv",
+        ),
+        (
+            "#access+travel+pct",
+            "Oct 01, 2020",
+            "OCHA",
+            "https://docs.google.com/spreadsheets/d/e/2PACX-1vRSzJzuyVt9i_mkRQ2HbxrUl2Lx2VIhkTHQM-laE8NyhQTy70zQTCuFS3PXbhZGAt1l2bkoA4_dAoAP/pub?gid=1565063847&single=true&output=csv",
+        ),
+        (
+            "#event+year+previous+num",
+            "Oct 01, 2020",
+            "Aid Workers Database",
+            "https://data.humdata.org/dataset/security-incidents-on-aid-workers",
+        ),
+        (
+            "#event+year+todate+num",
+            "Oct 01, 2020",
+            "Aid Workers Database",
+            "https://data.humdata.org/dataset/security-incidents-on-aid-workers",
+        ),
+        (
+            "#event+year+previous+todate+num",
+            "Oct 01, 2020",
+            "Aid Workers Database",
+            "https://data.humdata.org/dataset/security-incidents-on-aid-workers",
+        ),
+        (
+            "#activity+cerf+project+insecurity+pct",
+            "Oct 01, 2020",
+            "UNCERF",
+            "https://docs.google.com/spreadsheets/d/e/2PACX-1vRSzJzuyVt9i_mkRQ2HbxrUl2Lx2VIhkTHQM-laE8NyhQTy70zQTCuFS3PXbhZGAt1l2bkoA4_dAoAP/pub?gid=1565063847&single=true&output=csv",
+        ),
+        (
+            "#activity+cbpf+project+insecurity+pct",
+            "Oct 01, 2020",
+            "UNCERF",
+            "https://docs.google.com/spreadsheets/d/e/2PACX-1vRSzJzuyVt9i_mkRQ2HbxrUl2Lx2VIhkTHQM-laE8NyhQTy70zQTCuFS3PXbhZGAt1l2bkoA4_dAoAP/pub?gid=1565063847&single=true&output=csv",
+        ),
+        (
+            "#service+name",
+            "Oct 01, 2020",
+            "Multiple sources",
+            "https://docs.google.com/spreadsheets/d/e/2PACX-1vRSzJzuyVt9i_mkRQ2HbxrUl2Lx2VIhkTHQM-laE8NyhQTy70zQTCuFS3PXbhZGAt1l2bkoA4_dAoAP/pub?gid=1565063847&single=true&output=csv",
+        ),
+        (
+            "#status+name",
+            "Oct 01, 2020",
+            "Multiple sources",
+            "https://docs.google.com/spreadsheets/d/e/2PACX-1vRSzJzuyVt9i_mkRQ2HbxrUl2Lx2VIhkTHQM-laE8NyhQTy70zQTCuFS3PXbhZGAt1l2bkoA4_dAoAP/pub?gid=1565063847&single=true&output=csv",
+        ),
+        (
+            "#population+education",
+            "Oct 01, 2020",
+            "UNESCO",
+            "https://docs.google.com/spreadsheets/d/e/2PACX-1vRSzJzuyVt9i_mkRQ2HbxrUl2Lx2VIhkTHQM-laE8NyhQTy70zQTCuFS3PXbhZGAt1l2bkoA4_dAoAP/pub?gid=1565063847&single=true&output=csv",
+        ),
+    ]
+    access_names = [
+        "access_visas_pct_global",
+        "access_travel_pct_global",
+        "event_year_todate_num_global",
+        "activity_cerf_project_insecurity_pct_global",
+    ]
+    access_headers = (
+        [
+            "% of visas pending or denied",
+            "% of travel authorizations or movements denied",
+            "Number of incidents reported since start of year",
+            "% of CERF projects affected by insecurity and inaccessibility",
+        ],
+        [
+            "#access+visas+pct",
+            "#access+travel+pct",
+            "#event+year+todate+num",
+            "#activity+cerf+project+insecurity+pct",
+        ],
+    )
+    access_values = [
+        {"value": "0.2"},
+        {"value": ""},
+        {"value": 2},
+        {"value": "0.2855"},
+    ]
+    access_source_urls = [
+        "https://data.humdata.org/dataset/security-incidents-on-aid-workers",
+        "https://docs.google.com/spreadsheets/d/e/2PACX-1vRSzJzuyVt9i_mkRQ2HbxrUl2Lx2VIhkTHQM-laE8NyhQTy70zQTCuFS3PXbhZGAt1l2bkoA4_dAoAP/pub?gid=1565063847&single=true&output=csv",
+    ]
+
     def test_regionaltoplevel(self, configuration):
         BaseScraper.population_lookup = dict()
         today = parse_date("2020-10-01")
 
         level = "national"
         scraper_configuration = configuration[f"scraper_{level}"]
-        iso3s = ("AFG", "MMR")
-        runner = Runner(iso3s, today)
-        runner.add_configurables(scraper_configuration, level)
-
-        level = "national"
-        BaseScraper.population_lookup = dict()
         iso3s = ("AFG", "PSE")
         runner = Runner(iso3s, today)
         runner.add_configurables(scraper_configuration, level)
@@ -215,3 +341,119 @@ class TestScrapersRegionalToplevel:
                 "#affected+infected+perpop": "0.5376",
             }
         ]
+
+    def test_sourceperhxltag_nosources(self, configuration):
+        BaseScraper.population_lookup = dict()
+        today = parse_date("2020-10-01")
+
+        level = "national"
+        scraper_configuration = configuration[f"scraper_{level}"]
+        iso3s = ("AFG", "PSE")
+        runner = Runner(iso3s, today)
+        runner.add_configurables(scraper_configuration, level)
+
+        run_check_scraper(
+            "access",
+            runner,
+            level,
+            self.access_national_headers,
+            self.access_national_values,
+            self.access_national_sources,
+            source_urls=self.access_source_urls,
+            set_not_run=False,
+        )
+
+        level = "global"
+        aggregator_configuration = configuration[
+            "aggregation_regionaltoplevel"
+        ]
+        adm_aggregation = ("AFG", "PSE")
+        source_configuration = Sources.create_source_configuration(
+            no_sources=True
+        )
+        names = runner.add_aggregators(
+            True,
+            aggregator_configuration,
+            "national",
+            level,
+            adm_aggregation,
+            source_configuration=source_configuration,
+            force_add_to_run=True,
+        )
+        assert names == self.access_names
+        run_check_scrapers(
+            names,
+            runner,
+            level,
+            self.access_headers,
+            self.access_values,
+            list(),
+            source_urls=self.access_source_urls,
+            set_not_run=False,
+        )
+
+    def test_sourceperhxltag(self, configuration):
+        BaseScraper.population_lookup = dict()
+        today = parse_date("2020-10-01")
+
+        level = "national"
+        scraper_configuration = configuration[f"scraper_{level}"]
+        iso3s = ("AFG", "PSE")
+        runner = Runner(iso3s, today)
+        runner.add_configurables(scraper_configuration, level)
+
+        run_check_scraper(
+            "access",
+            runner,
+            level,
+            self.access_national_headers,
+            self.access_national_values,
+            self.access_national_sources,
+            source_urls=self.access_source_urls,
+            set_not_run=False,
+        )
+
+        level = "global"
+        aggregator_configuration = configuration[
+            "aggregation_regionaltoplevel"
+        ]
+        adm_aggregation = ("AFG", "PSE")
+        names = runner.add_aggregators(
+            True,
+            aggregator_configuration,
+            "national",
+            level,
+            adm_aggregation,
+            force_add_to_run=True,
+        )
+        assert names == self.access_names
+        sources = [
+            (
+                "#access+visas+pct",
+                "Oct 01, 2020",
+                "OCHA",
+                "https://docs.google.com/spreadsheets/d/e/2PACX-1vRSzJzuyVt9i_mkRQ2HbxrUl2Lx2VIhkTHQM-laE8NyhQTy70zQTCuFS3PXbhZGAt1l2bkoA4_dAoAP/pub?gid=1565063847&single=true&output=csv",
+            ),
+            (
+                "#event+year+todate+num",
+                "Oct 01, 2020",
+                "Aid Workers Database",
+                "https://data.humdata.org/dataset/security-incidents-on-aid-workers",
+            ),
+            (
+                "#activity+cerf+project+insecurity+pct",
+                "Oct 01, 2020",
+                "UNCERF",
+                "https://docs.google.com/spreadsheets/d/e/2PACX-1vRSzJzuyVt9i_mkRQ2HbxrUl2Lx2VIhkTHQM-laE8NyhQTy70zQTCuFS3PXbhZGAt1l2bkoA4_dAoAP/pub?gid=1565063847&single=true&output=csv",
+            ),
+        ]
+        run_check_scrapers(
+            names,
+            runner,
+            level,
+            self.access_headers,
+            self.access_values,
+            sources,
+            source_urls=self.access_source_urls,
+            set_not_run=False,
+        )

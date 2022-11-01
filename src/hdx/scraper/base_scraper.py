@@ -135,6 +135,12 @@ class BaseScraper(ABC):
         Returns:
             None
         """
+        if self.source_configuration and self.source_configuration.get(
+            "no_sources", False
+        ):
+            return
+        if self.datasetinfo.get("no_sources", False):
+            return
         source = self.datasetinfo["source"]
         if isinstance(source, str):
             source = {"default_source": source}
@@ -241,7 +247,6 @@ class BaseScraper(ABC):
         Returns:
             None
         """
-        Sources.standardise_datasetinfo_source_date(self.datasetinfo)
         date = Sources.get_hxltag_source_date(
             self.datasetinfo, indicator, fallback=True
         )
@@ -335,6 +340,15 @@ class BaseScraper(ABC):
     def run_after_fallbacks(self) -> None:
         """
         Executed after fallbacks are used. Can be overridden if needed.
+
+        Returns:
+            None
+        """
+        pass
+
+    def pre_run(self) -> None:
+        """
+        Executed before running. Can be overridden if needed.
 
         Returns:
             None

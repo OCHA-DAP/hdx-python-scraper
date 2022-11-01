@@ -31,11 +31,11 @@ class Aggregator(BaseScraper):
 
 
     Args:
-        use_hxl (bool): Whether to map from headers or from HXL tags
-        header_or_hxltag (str): Column header or HXL hashtag depending on use_hxl
+        name (str): Name of aggregator
         datasetinfo (Dict): Information about dataset
         adm_aggregation (Union[Dict, ListTuple]): Mapping from input admins to aggregated output admins
-        input_values (Dict[str, Dict]): Mapping from headers or HXL tags to column values
+        headers (Dict[str, Tuple]): Column headers and HXL hashtags
+        use_hxl (bool): Whether to map from headers or from HXL tags
         source_configuration (Optional[Dict]): Configuration for sources. Defaults to None (use defaults).
         aggregation_scrapers (List["Aggregator"]): Other aggregations needed. Defaults to list().
     """
@@ -46,7 +46,6 @@ class Aggregator(BaseScraper):
         datasetinfo: Dict,
         headers: Dict[str, Tuple],
         adm_aggregation: Union[Dict, ListTuple],
-        input_values: Dict[str, Dict],
         use_hxl: bool,
         source_configuration: Optional[Dict] = None,
         aggregation_scrapers: List["Aggregator"] = list(),
@@ -64,7 +63,6 @@ class Aggregator(BaseScraper):
                 x: ("value",) for x in adm_aggregation
             }
 
-        self.input_values = input_values
         self.use_hxl = use_hxl
         self.aggregation_scrapers = aggregation_scrapers
 
@@ -77,9 +75,7 @@ class Aggregator(BaseScraper):
         input_level: str,
         output_level: str,
         adm_aggregation: Union[Dict, ListTuple],
-        input_headers: Tuple[List, List],
-        input_values: Dict[str, Dict],
-        input_sources: Dict[str, Dict] = dict(),
+        input_headers: Tuple[ListTuple, ListTuple],
         source_configuration: Optional[Dict] = None,
         aggregation_scrapers: List["Aggregator"] = list(),
     ) -> Optional["Aggregator"]:
@@ -94,10 +90,11 @@ class Aggregator(BaseScraper):
             use_hxl (bool): Whether to map from headers or from HXL tags
             header_or_hxltag (str): Column header or HXL hashtag depending on use_hxl
             datasetinfo (Dict): Information about dataset
+            input_level (str): Input level to aggregate like national or subnational
+            output_level (str): Output level of aggregated data like regional
             adm_aggregation (Union[Dict, ListTuple]): Mapping from input admins to aggregated output admins
-            input_headers (Tuple[List, List]): Column headers and HXL hashtags
-            input_values (Dict[str, Dict]): Mapping from headers or HXL tags to column values
-            input_sources (Dict[str, Dict]): Mapping from headers or HXL tags to source information
+            input_headers (Tuple[ListTuple, ListTuple]): Column headers and HXL hashtags
+            runner(Runner): Runner object
             source_configuration (Optional[Dict]): Configuration for sources. Defaults to None (use defaults).
             aggregation_scrapers (List["Aggregator"]): Other aggregations needed. Defaults to list().
 
@@ -115,12 +112,9 @@ class Aggregator(BaseScraper):
         if "dataset" in datasetinfo:
             reader = Read.get_reader("hdx")
             reader.read_hdx_metadata(datasetinfo, do_resource_check=False)
-        source_lookup = datasetinfo.get("source_copy")
         config_headers_or_hxltags = datasetinfo.get("input")
         if config_headers_or_hxltags:
             exists = True
-            if not source_lookup and len(config_headers_or_hxltags) == 1:
-                source_lookup = config_headers_or_hxltags[0]
             for i, config_header_or_hxltag in enumerate(
                 config_headers_or_hxltags
             ):
@@ -150,17 +144,6 @@ class Aggregator(BaseScraper):
                 )
                 return None
 
-        if not source_lookup:
-            source_lookup = header_or_hxltag
-        source = input_sources.get(source_lookup)
-        if source:
-            if "source_date" not in datasetinfo:
-                datasetinfo["source_date"] = source[1]
-            if "source" not in datasetinfo:
-                datasetinfo["source"] = source[2]
-            if "source_url" not in datasetinfo:
-                datasetinfo["source_url"] = source[3]
-
         name = f"{slugify(header_or_hxltag.lower(), separator='_')}_{output_level}"
         if use_hxl:
             headers = ((output,), (header_or_hxltag,))
@@ -171,7 +154,6 @@ class Aggregator(BaseScraper):
             datasetinfo,
             {output_level: headers},
             adm_aggregation,
-            input_values,
             use_hxl,
             source_configuration,
             aggregation_scrapers,
@@ -318,6 +300,10 @@ class Aggregator(BaseScraper):
                 total = eval(toeval)
                 output_values[output_adm] = total
 
+    def set_input_values_sources(self, input_values, input_sourcesinfo):
+        self.input_values = input_values
+        self.input_sourcesinfo = input_sourcesinfo
+
     def run(self) -> None:
         """Runs one aggregator given dataset information
 
@@ -352,6 +338,30 @@ class Aggregator(BaseScraper):
         Returns:
             None
         """
+        config_headers_or_hxltags = self.datasetinfo.get("input")
+        source_lookup = self.datasetinfo.get("source_copy")
+        if (
+            not source_lookup
+            and config_headers_or_hxltags
+            and len(config_headers_or_hxltags) == 1
+        ):
+            source_lookup = config_headers_or_hxltags[0]
+        if not source_lookup:
+            output_level = next(iter(self.headers.keys()))
+            if self.use_hxl:
+                source_lookup = self.headers[output_level][1][0]
+            else:
+                source_lookup = self.headers[output_level][0][0]
+        sourceinfo = self.input_sourcesinfo.get(source_lookup)
+        if sourceinfo:
+            if "source_date" not in self.datasetinfo:
+                self.datasetinfo["source_date"] = sourceinfo["source_date"]
+            if "source" not in self.datasetinfo:
+                self.datasetinfo["source"] = ",".join(sourceinfo["source"])
+            if "source_url" not in self.datasetinfo:
+                self.datasetinfo["source_url"] = ",".join(
+                    sourceinfo["source_url"]
+                )
         if "source" not in self.datasetinfo:
             return
         super().add_sources()

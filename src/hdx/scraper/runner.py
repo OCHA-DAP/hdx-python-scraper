@@ -1,6 +1,6 @@
 import logging
 from datetime import datetime
-from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple, Union
+from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
 from hdx.location.adminlevel import AdminLevel
 from hdx.utilities.dateparse import now_utc
@@ -76,7 +76,7 @@ class Runner:
         return scraper_name
 
     def add_customs(
-        self, scrapers: Iterable[BaseScraper], force_add_to_run: bool = False
+        self, scrapers: ListTuple[BaseScraper], force_add_to_run: bool = False
     ) -> List[str]:
         """Add multiple custom scrapers that inherit BaseScraper. If running specific
         scrapers rather than all, and you want to force the inclusion of the scraper in
@@ -84,7 +84,7 @@ class Runner:
         force_add_to_run should be set to True.
 
         Args:
-            scrapers (Iterable[BaseScraper]): The scrapers to add
+            scrapers (ListTuple[BaseScraper]): The scrapers to add
             force_add_to_run (bool): Whether to force include the scraper in the next run
 
         Returns:
@@ -277,16 +277,13 @@ class Runner:
         Returns:
             Optional["Aggregator"]: scraper or None
         """
-        (
-            input_headers,
-            input_values,
-            input_sources,
-        ) = self.get_values_sources_by_header(
-            input_level, names, overrides, False, use_hxl
+        input_headers = self.get_headers(
+            names, [input_level], overrides=overrides
         )
+        input_headers = input_headers.get(input_level)
         if not input_headers:
             return None
-        return Aggregator.get_scraper(
+        scraper = Aggregator.get_scraper(
             use_hxl,
             header_or_hxltag,
             datasetinfo,
@@ -294,11 +291,25 @@ class Runner:
             output_level,
             adm_aggregation,
             input_headers,
-            input_values,
-            input_sources,
             source_configuration,
             aggregation_scrapers,
         )
+        if not scraper:
+            return None
+
+        def get_values_sourcesinfo_by_header(scraper_self):
+            (
+                input_values,
+                input_sourcesinfo,
+            ) = self.get_values_sourcesinfo_by_header(
+                input_level, names, overrides, True, use_hxl
+            )
+            scraper_self.set_input_values_sources(
+                input_values, input_sourcesinfo
+            )
+
+        scraper.pre_run = lambda: get_values_sourcesinfo_by_header(scraper)
+        return scraper
 
     def add_aggregator(
         self,
@@ -518,6 +529,24 @@ class Runner:
         for key, value in kwargs.items():
             setattr(scraper, key, value)
 
+    def add_pre_run(
+        self, name: str, fn: Callable[[BaseScraper], None]
+    ) -> None:
+        """Add pre run instance method to scraper instance given scraper name. The
+        function should have one parameter. Since it is being added as an instance
+        method to the scraper instance, that parameter will be self and hence is of
+        type BaseScraper. The function does not need to return anything.
+
+        Args:
+            name (str): Name of scraper
+            fn (Callable[[BaseScraper], None]): Function to call pre run
+
+        Returns:
+            None
+        """
+        scraper = self.get_scraper_exception(name)
+        scraper.pre_run = lambda: fn(scraper)
+
     def add_post_run(
         self, name: str, fn: Callable[[BaseScraper], None]
     ) -> None:
@@ -550,6 +579,7 @@ class Runner:
         scraper = self.get_scraper_exception(name)
         if scraper.has_run is False or force_run:
             try:
+                scraper.pre_run()
                 scraper.run()
                 scraper.add_sources()
                 scraper.add_source_urls()
@@ -599,7 +629,7 @@ class Runner:
 
     def run(
         self,
-        what_to_run: Optional[Iterable[str]] = None,
+        what_to_run: Optional[ListTuple[str]] = None,
         force_run: bool = False,
         prioritise_scrapers: Optional[ListTuple[str]] = None,
     ) -> None:
@@ -609,7 +639,7 @@ class Runner:
         are run first. If scraper run fails and fallbacks have been set up, use them.
 
         Args:
-            what_to_run (Optional[Iterable[str]]): Run only these scrapers. Defaults to None (run all).
+            what_to_run (Optional[ListTuple[str]]): Run only these scrapers. Defaults to None (run all).
             force_run (bool): Force run even if any scraper marked as already run
             prioritise_scrapers (Optional[ListTuple[str]]): Scrapers to run first. Defaults to None.
 
@@ -634,11 +664,11 @@ class Runner:
         """
         self.get_scraper(name).has_run = False
 
-    def set_not_run_many(self, names: Iterable[str]) -> None:
+    def set_not_run_many(self, names: ListTuple[str]) -> None:
         """Set scrapers given by names as not run
 
         Args:
-            names (Iterable[str]): Names of scraper
+            names (ListTuple[str]): Names of scraper
 
         Returns:
             None
@@ -649,9 +679,10 @@ class Runner:
     def get_headers(
         self,
         names: Optional[ListTuple[str]] = None,
-        levels: Optional[Iterable[str]] = None,
-        headers: Optional[Iterable[str]] = None,
-        hxltags: Optional[Iterable[str]] = None,
+        levels: Optional[ListTuple[str]] = None,
+        headers: Optional[ListTuple[str]] = None,
+        hxltags: Optional[ListTuple[str]] = None,
+        overrides: Dict[str, Dict] = dict(),
     ) -> Dict[str, Tuple]:
         """Get the headers for scrapers limiting to those in names if given and
         limiting further to those that have been set in the constructor if previously
@@ -661,9 +692,10 @@ class Runner:
 
         Args:
             names (Optional[ListTuple[str]]): Names of scraper
-            levels (Optional[Iterable[str]]): Levels to get like national, subnational or single
-            headers (Optional[Iterable[str]]): Headers to get
-            hxltags (Optional[Iterable[str]]): HXL hashtags to get
+            levels (Optional[ListTuple[str]]): Levels to get like national, subnational or single
+            headers (Optional[ListTuple[str]]): Headers to get
+            hxltags (Optional[ListTuple[str]]): HXL hashtags to get
+            overrides (Dict[str, Dict]): Dictionary mapping scrapers to level mappings. Defaults to dict().
 
 
         Returns:
@@ -672,27 +704,44 @@ class Runner:
         if not names:
             names = self.scrapers.keys()
         results = dict()
+
+        def add_level_results(
+            scraper_level, override_level, scrap, levels_used
+        ):
+            nonlocal results
+
+            if scraper_level in levels_used:
+                return
+            if levels is not None and override_level not in levels:
+                return
+            level_results = results.get(override_level)
+            if level_results is None:
+                level_results = (list(), list())
+                results[override_level] = level_results
+            scrp_headers = scrap.headers.get(scraper_level)
+            for i, header in enumerate(scrp_headers[0]):
+                if headers is not None and header not in headers:
+                    continue
+                hxltag = scrp_headers[1][i]
+                if hxltags is not None and hxltag not in hxltags:
+                    continue
+                level_results[0].append(header)
+                level_results[1].append(hxltag)
+            levels_used.add(scraper_level)
+            levels_used.add(override_level)
+
         for name in names:
             if self.scrapers_to_run and not any(
                 x in name for x in self.scrapers_to_run
             ):
                 continue
             scraper = self.get_scraper(name)
-            for level, scraper_headers in scraper.headers.items():
-                if levels is not None and level not in levels:
-                    continue
-                level_results = results.get(level)
-                if level_results is None:
-                    level_results = (list(), list())
-                    results[level] = level_results
-                for i, header in enumerate(scraper_headers[0]):
-                    if headers is not None and header not in headers:
-                        continue
-                    hxltag = scraper_headers[1][i]
-                    if hxltags is not None and hxltag not in hxltags:
-                        continue
-                    level_results[0].append(header)
-                    level_results[1].append(hxltag)
+            override = overrides.get(name, dict())
+            lvls_used = set()
+            for scrap_level, over_level in override.items():
+                add_level_results(scrap_level, over_level, scraper, lvls_used)
+            for scrap_level in scraper.headers:
+                add_level_results(scrap_level, scrap_level, scraper, lvls_used)
         return results
 
     def get_results(
@@ -700,7 +749,8 @@ class Runner:
         names: Optional[ListTuple[str]] = None,
         levels: Optional[ListTuple[str]] = None,
         overrides: Dict[str, Dict] = dict(),
-        has_run=True,
+        has_run: bool = True,
+        should_overwrite_sources: Optional[bool] = None,
     ) -> Dict[str, Dict]:
         """Get the results (headers, values and sources) for scrapers limiting to those
         in names if given and limiting further to those that have been set in the
@@ -717,9 +767,10 @@ class Runner:
 
         Args:
             names (Optional[ListTuple[str]]): Names of scrapers. Defaults to None (all scrapers).
-            levels (Optional[Iterable[str]]): Levels to get like national, subnational or single
+            levels (Optional[ListTuple[str]]): Levels to get like national, subnational or single
             overrides (Dict[str, Dict]): Dictionary mapping scrapers to level mappings. Defaults to dict().
             has_run (bool): Only get results for scrapers marked as having run. Defaults to True.
+            should_overwrite_sources (Optional[bool]): Whether to overwrite sources. Defaults to None (class default).
 
         Returns:
             Dict[str, Dict]: Results dictionary that maps each level to headers, values, sources, fallbacks.
@@ -728,17 +779,19 @@ class Runner:
             names = self.scrapers.keys()
         results = dict()
 
-        def add_level_results(lvl, output_lvl, scrap, lvls_used):
+        def add_level_results(
+            scraper_level, override_level, scrap, levels_used
+        ):
             nonlocal results
 
-            if level in lvls_used:
+            if scraper_level in levels_used:
                 return
-            if levels is not None and output_lvl not in levels:
+            if levels is not None and override_level not in levels:
                 return
-            headers = scrap.headers.get(lvl)
+            headers = scrap.headers.get(scraper_level)
             if headers is None:
                 return
-            level_results = results.get(output_lvl)
+            level_results = results.get(override_level)
             if level_results is None:
                 level_results = {
                     "headers": (list(), list()),
@@ -747,10 +800,10 @@ class Runner:
                     "source_hxltags": list(),
                     "fallbacks": list(),
                 }
-                results[output_lvl] = level_results
+                results[override_level] = level_results
             headings = headers[0]
             hxltags = headers[1]
-            values = scrap.get_values(level)
+            values = scrap.get_values(scraper_level)
             lev_headings = level_results["headers"][0]
             lev_hxltags = level_results["headers"][1]
             lev_values = level_results["values"]
@@ -767,11 +820,12 @@ class Runner:
             Sources.add_sources_overwrite(
                 lev_source_hxltags,
                 lev_sources,
-                scrap.get_sources(level),
+                scrap.get_sources(scraper_level),
                 logger,
+                should_overwrite_sources,
             )
-            lvls_used.add(lvl)
-            lvls_used.add(output_lvl)
+            levels_used.add(scraper_level)
+            levels_used.add(override_level)
 
         for name in names:
             if self.scrapers_to_run and not any(
@@ -782,12 +836,11 @@ class Runner:
             if has_run and not scraper.has_run:
                 continue
             override = overrides.get(name, dict())
-            levels_used = set()
-            for level, output_level in override.items():
-                add_level_results(level, output_level, scraper, levels_used)
-
-            for level in scraper.headers:
-                add_level_results(level, level, scraper, levels_used)
+            lvls_used = set()
+            for scrap_level, over_level in override.items():
+                add_level_results(scrap_level, over_level, scraper, lvls_used)
+            for scrap_level in scraper.headers:
+                add_level_results(scrap_level, scrap_level, scraper, lvls_used)
 
         for level in results:
             del results[level]["source_hxltags"]
@@ -840,18 +893,18 @@ class Runner:
                 rows.append(row)
         return rows
 
-    def get_values_sources_by_header(
+    def get_values_sourcesinfo_by_header(
         self,
         level: str,
         names: Optional[ListTuple[str]] = None,
         overrides: Dict[str, Dict] = dict(),
         has_run: bool = True,
         use_hxl: bool = True,
-    ) -> Tuple[Tuple, Dict, Dict]:
-        """Get mapping from headers to values and headers to sources for a given level
-        for scrapers limiting to those in names if given. Keys will be headers if
-        use_hxl is False or HXL hashtags if use_hxl is True. Sometimes it may be
-        necessary to map alternative level names to levels and this can be done using
+    ) -> Tuple[Dict, Dict]:
+        """Get mapping from headers to values and headers to sources information for a
+        given level for scrapers limiting to those in names if given. Keys will be
+        headers if use_hxl is False or HXL hashtags if use_hxl is True. Sometimes it may
+        be necessary to map alternative level names to levels and this can be done using
         overrides. It is a dictionary with keys being scraper names and values being
         dictionaries which map level names to output levels.
 
@@ -863,35 +916,110 @@ class Runner:
             use_hxl (bool): Whether keys should be HXL hashtags or column headers. Defaults to True.
 
         Returns:
-            Tuple[Tuple, Dict, Dict]: Tuple (results headers, headers to values, headers to sources)
+            Tuple[Dict, Dict]: Tuple of (headers to values, headers to sources)
         """
-        results = self.get_results(
-            names, [level], overrides=overrides, has_run=has_run
-        ).get(level)
-        headers = None
+        if not names:
+            names = self.scrapers.keys()
         values = dict()
-        sources = dict()
-        if results:
-            if use_hxl:
-                main_index = 1
-            else:
-                main_index = 0
-            headers = results["headers"]
-            vals = results["values"]
-            srcs = results["sources"]
-            for index, hxltag in enumerate(headers[1]):
-                header_or_hxltag = headers[main_index][index]
-                values[header_or_hxltag] = vals[index]
-                for source in srcs:
-                    if source[0] == hxltag:
-                        sources[header_or_hxltag] = source
-        return headers, values, sources
+        sourcesinfo = dict()
+
+        if use_hxl:
+            main_index = 1
+        else:
+            main_index = 0
+
+        def add_level_results(
+            scraper_level, override_level, scrap, levels_used
+        ):
+            nonlocal values, sourcesinfo
+
+            if scraper_level in levels_used:
+                return
+            if override_level != level:
+                return
+            scrp_headers = scrap.headers.get(scraper_level)
+            scrp_values = scrap.get_values(scraper_level)
+            scrp_datasetinfo = scrap.datasetinfo
+            for i, header in enumerate(scrp_headers[0]):
+                header_or_hxltag = scrp_headers[main_index][i]
+                if header_or_hxltag in values:
+                    values[header_or_hxltag].update(scrp_values[i])
+                else:
+                    values[header_or_hxltag] = scrp_values[i]
+                hxltag = scrp_headers[1][i]
+
+                sourceinfo = sourcesinfo.get(header_or_hxltag, dict())
+                scrp_source = scrp_datasetinfo.get("source")
+                if scrp_source:
+                    source = sourceinfo.get("source", list())
+                    if not isinstance(scrp_source, str):
+                        scrp_source = scrp_source.get(
+                            hxltag, scrp_source["default_source"]
+                        )
+                    if scrp_source not in source:
+                        source.append(scrp_source)
+                    sourceinfo["source"] = source
+                scrp_source_url = scrp_datasetinfo.get("source_url")
+                if scrp_source_url:
+                    source_url = sourceinfo.get("source_url", list())
+                    if not isinstance(scrp_source_url, str):
+                        scrp_source_url = scrp_source_url.get(
+                            hxltag, scrp_source_url["default_url"]
+                        )
+                    if scrp_source_url not in source_url:
+                        source_url.append(scrp_source_url)
+                    sourceinfo["source_url"] = source_url
+
+                if "source_date" not in scrp_datasetinfo:
+                    continue
+                scrp_date = Sources.get_hxltag_source_datetime(
+                    scrp_datasetinfo, hxltag, True
+                )
+                scrp_startdate = scrp_date.get("start")
+                scrp_enddate = scrp_date["end"]
+                date = sourceinfo.get("source_date", dict())
+                if date:
+                    startdate = date["start"]
+                    if scrp_startdate:
+                        if startdate:
+                            if scrp_startdate < startdate:
+                                date["start"] = scrp_startdate
+                        else:
+                            date["start"] = scrp_startdate
+                    if scrp_enddate > date["end"]:
+                        date["end"] = scrp_enddate
+                else:
+                    date["start"] = scrp_startdate
+                    date["end"] = scrp_enddate
+                sourceinfo["source_date"] = date
+                sourcesinfo[header_or_hxltag] = sourceinfo
+
+            levels_used.add(scraper_level)
+            levels_used.add(override_level)
+
+        for name in names:
+            if self.scrapers_to_run and not any(
+                x in name for x in self.scrapers_to_run
+            ):
+                continue
+            scraper = self.get_scraper(name)
+            if has_run and not scraper.has_run:
+                continue
+            override = overrides.get(name, dict())
+            lvls_used = set()
+            for scrap_level, over_level in override.items():
+                add_level_results(scrap_level, over_level, scraper, lvls_used)
+            for scrap_level in scraper.headers:
+                add_level_results(scrap_level, scrap_level, scraper, lvls_used)
+
+        return values, sourcesinfo
 
     def get_sources(
         self,
         names: Optional[ListTuple[str]] = None,
-        levels: Optional[Iterable[str]] = None,
+        levels: Optional[ListTuple[str]] = None,
         additional_sources: ListTuple[Dict] = tuple(),
+        should_overwrite_sources: Optional[bool] = None,
     ) -> List[Tuple]:
         """Get sources for scrapers limiting to those in names if given. All levels will
         be obtained unless the levels parameter (which can contain levels like national,
@@ -901,8 +1029,9 @@ class Runner:
 
         Args:
             names (Optional[ListTuple[str]]): Names of scrapers
-            levels (Optional[Iterable[str]]): Levels to get like national, subnational or single
+            levels (Optional[ListTuple[str]]): Levels to get like national, subnational or single
             additional_sources (ListTuple[Dict]): Additional sources to add
+            should_overwrite_sources (Optional[bool]): Whether to overwrite sources. Defaults to None (class default).
 
         Returns:
             List[Tuple]: Sources in form (indicator, date, source, source_url)
@@ -934,12 +1063,13 @@ class Runner:
                     source_name = dataset["dataset_source"]
                 if source_url is None:
                     source_url = dataset.get_hdx_url()
-            Sources.standardise_datasetinfo_source_date(sourceinfo)
             date = Sources.get_hxltag_source_date(
                 sourceinfo, hxltag, fallback=True
             )
             source = (hxltag, date, source_name, source_url)
-            Sources.add_source_overwrite(hxltags, sources, source, logger)
+            Sources.add_source_overwrite(
+                hxltags, sources, source, logger, should_overwrite_sources
+            )
         for name in names:
             if self.scrapers_to_run and not any(
                 x in name for x in self.scrapers_to_run
@@ -954,7 +1084,11 @@ class Runner:
                 levels_to_check = scraper.sources.keys()
             for level in levels_to_check:
                 Sources.add_sources_overwrite(
-                    hxltags, sources, scraper.get_sources(level), logger
+                    hxltags,
+                    sources,
+                    scraper.get_sources(level),
+                    logger,
+                    should_overwrite_sources,
                 )
         return sources
 

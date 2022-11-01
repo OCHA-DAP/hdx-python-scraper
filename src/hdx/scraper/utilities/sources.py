@@ -63,13 +63,18 @@ class Sources:
         return None
 
     @classmethod
-    def get_hxltag_source_date(cls, datasetinfo, hxltag, fallback=False):
+    def get_hxltag_source_datetime(cls, datasetinfo, hxltag, fallback=False):
+        cls.standardise_datasetinfo_source_date(datasetinfo)
         source_date = datasetinfo["source_date"]
         date = source_date.get(hxltag)
         if not date:
             if not fallback:
                 return None
             date = source_date["default_date"]
+        return date
+
+    @classmethod
+    def format_hxltag_source_date(cls, datasetinfo, date):
         source_date_format = datasetinfo.get(
             "source_date_format", cls.default_source_date_format
         )
@@ -93,27 +98,38 @@ class Sources:
         return enddate
 
     @classmethod
+    def get_hxltag_source_date(cls, datasetinfo, hxltag, fallback=False):
+        date = cls.get_hxltag_source_datetime(datasetinfo, hxltag, fallback)
+        if not date:
+            return
+        return cls.format_hxltag_source_date(datasetinfo, date)
+
+    @classmethod
     def add_source_overwrite(
         cls,
         hxltags: List[str],
         sources: List[ListTuple],
         source: ListTuple[str],
         logger: Logger,
+        should_overwrite_sources: Optional[bool] = None,
     ):
-        """Add source to sources preventing duplication
+        """Add source to sources preventing duplication.
 
         Args:
             hxltags (List[str]): List of HXL hashtags, one for each source name
             sources (List[ListTuple]): List of sources
             source (ListTuple[str]): Source information
-            logger (Logger): Logegr to log warnings to
+            logger (Logger): Logger to log warnings to
+            should_overwrite_sources (Optional[bool]): Whether to overwrite sources. Defaults to None (class default).
 
         Returns:
             None
         """
         hxltag = source[0]
+        if should_overwrite_sources is None:
+            should_overwrite_sources = cls.should_overwrite_sources
         if hxltag in hxltags:
-            if cls.should_overwrite_sources:
+            if should_overwrite_sources:
                 logger.warning(f"Overwriting source information for {hxltag}!")
                 index = hxltags.index(hxltag)
                 sources[index] = source
@@ -132,6 +148,7 @@ class Sources:
         sources: List[ListTuple],
         sources_to_add: List[ListTuple],
         logger: Logger,
+        should_overwrite_sources: Optional[bool] = None,
     ):
         """Add source to sources preventing duplication
 
@@ -140,12 +157,15 @@ class Sources:
             sources (List[ListTuple]): List of sources
             sources_to_add (List[ListTuple]): List of sources to add
             logger (Logger): Logegr to log warnings to
+            should_overwrite_sources (Optional[bool]): Whether to overwrite sources. Defaults to None (class default).
 
         Returns:
             None
         """
         for source in sources_to_add:
-            cls.add_source_overwrite(hxltags, sources, source, logger)
+            cls.add_source_overwrite(
+                hxltags, sources, source, logger, should_overwrite_sources
+            )
 
     @staticmethod
     def create_source_configuration(
@@ -153,6 +173,7 @@ class Sources:
         admin_sources: bool = False,
         adminlevel: Union[AdminLevel, ListTuple[AdminLevel], None] = None,
         admin_mapping_dict: Optional[Dict] = None,
+        no_sources: bool = False,
     ) -> Optional[Dict]:
         """Create source configuration. If none of the arguments are suppled, source
         configuration is None. suffix_attribute is an attribute to add to the end of
@@ -161,18 +182,22 @@ class Sources:
         AdminLevel objects that will be used to map admin pcodes to country iso3 codes. If
         admin_level is defined, admin_sources is assumed to be True. Alternatively,
         admin_mapping_dict can be supplied to define mapping from amin names to attribute
-        suffixes.
+        suffixes. If no sources should be outputted no_sources should be set to True.
 
         Args:
             suffix_attribute (Optional[str]): Suffix to add. Defaults to None.
             admin_sources (bool): Whether source information is per admin unit. Defaults to False.
             adminlevel (Union[AdminLevel, ListTuple[AdminLevel], None]): Admin level(s) mapping. Defaults to None.
             admin_mapping_dict (Optional[Dict]): Admin unit mapping to use. Defaults to None.
+            no_sources (bool): Don't create sources. Defaults to False.
 
         Returns:
              Optional[Dict]: Source configuration dictionary
         """
         source_configuration = dict()
+        if no_sources:
+            source_configuration["no_sources"] = True
+            return source_configuration
         if suffix_attribute:
             source_configuration["suffix_attribute"] = suffix_attribute
             return source_configuration
