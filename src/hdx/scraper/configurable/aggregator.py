@@ -14,6 +14,7 @@ from slugify import slugify
 
 from ..base_scraper import BaseScraper
 from ..utilities.reader import Read
+from ..utilities.sources import Sources
 
 logger = logging.getLogger(__name__)
 
@@ -300,9 +301,9 @@ class Aggregator(BaseScraper):
                 total = eval(toeval)
                 output_values[output_adm] = total
 
-    def set_input_values_sources(self, input_values, input_sources):
+    def set_input_values_sources(self, input_values, input_sourcesinfo):
         self.input_values = input_values
-        self.input_sources = input_sources
+        self.input_sourcesinfo = input_sourcesinfo
 
     def run(self) -> None:
         """Runs one aggregator given dataset information
@@ -352,14 +353,19 @@ class Aggregator(BaseScraper):
                 source_lookup = self.headers[output_level][1][0]
             else:
                 source_lookup = self.headers[output_level][0][0]
-        source = self.input_sources.get(source_lookup)
-        if source:
+        sourceinfo = self.input_sourcesinfo.get(source_lookup)
+        if sourceinfo:
             if "source_date" not in self.datasetinfo:
-                self.datasetinfo["source_date"] = source[1]
+                source_date = Sources.format_hxltag_source_date(
+                    self.datasetinfo, sourceinfo["source_date"]
+                )
+                self.datasetinfo["source_date"] = source_date
             if "source" not in self.datasetinfo:
-                self.datasetinfo["source"] = source[2]
+                self.datasetinfo["source"] = ",".join(sourceinfo["source"])
             if "source_url" not in self.datasetinfo:
-                self.datasetinfo["source_url"] = source[3]
+                self.datasetinfo["source_url"] = ",".join(
+                    sourceinfo["source_url"]
+                )
         if "source" not in self.datasetinfo:
             return
         super().add_sources()

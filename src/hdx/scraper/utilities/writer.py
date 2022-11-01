@@ -362,6 +362,7 @@ class Writer:
         secondary_runner: Optional[Runner] = None,
         custom_sources: ListTuple[Tuple] = list(),
         tab: str = "sources",
+        should_overwrite_sources: Optional[bool] = None,
     ) -> None:
         """Update the sources tab (or key in JSON) in the outputs for scrapers limiting to
         those in names. Additional sources can be added. Each is a dictionary with indicator
@@ -375,6 +376,7 @@ class Writer:
             secondary_runner (Optional[Runner]): Secondary Runner object. Defaults to None.
             custom_sources (ListTuple[Tuple]): Custom sources to add
             tab (str): Name of tab (key in JSON) to update. Defaults to "sources".
+            should_overwrite_sources (Optional[bool]): Whether to overwrite sources. Defaults to None (class default).
 
         Returns:
             None
@@ -382,11 +384,22 @@ class Writer:
         sources = self.runner.get_sources(
             names=names,
             additional_sources=additional_sources,
+            should_overwrite_sources=should_overwrite_sources,
         )
         hxltags = [source[0] for source in sources]
         if secondary_runner:
             Sources.add_sources_overwrite(
-                hxltags, sources, secondary_runner.get_sources(), logger
+                hxltags,
+                sources,
+                secondary_runner.get_sources(),
+                logger,
+                should_overwrite_sources,
             )
-        Sources.add_sources_overwrite(hxltags, sources, custom_sources, logger)
+        Sources.add_sources_overwrite(
+            hxltags,
+            sources,
+            custom_sources,
+            logger,
+            should_overwrite_sources,
+        )
         self.update(tab, list(self.sources_headers) + sources)

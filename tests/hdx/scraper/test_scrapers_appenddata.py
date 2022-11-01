@@ -351,6 +351,7 @@ class TestScrapersAppendData:
                 "https://data.humdata.org/dataset/ken-key-figures-2022",
                 "https://data.humdata.org/dataset/som-key-figures-2022",
             ],
+            set_not_run=False,
         )
 
         names = runner.add_aggregators(
@@ -382,12 +383,37 @@ class TestScrapersAppendData:
             ],
         )
         values = [
-            {"value": 1313619},
-            {"value": 3257327},
-            {"value": 4570946},
-            {"value": 16200000},
+            {"value": 222720},
+            {"value": 661744},
+            {"value": 884464},
+            {"value": 4100000},
         ]
-        sources = []
+        sources = [
+            (
+                "#affected+sam",
+                "Oct 01, 2020",
+                "multiple",
+                "https://data.humdata.org/dataset?groups=eth&groups=ken&groups=som&organization=ocha-rosea&vocab_Topics=droughts&q=&sort=score%20desc%2C%20if(gt(last_modified%2Creview_date)%2Clast_modified%2Creview_date)%20desc&ext_page_size=25",
+            ),
+            (
+                "#affected+mam",
+                "Oct 01, 2020",
+                "multiple",
+                "https://data.humdata.org/dataset?groups=eth&groups=ken&groups=som&organization=ocha-rosea&vocab_Topics=droughts&q=&sort=score%20desc%2C%20if(gt(last_modified%2Creview_date)%2Clast_modified%2Creview_date)%20desc&ext_page_size=25",
+            ),
+            (
+                "#affected+gam",
+                "Oct 01, 2020",
+                "multiple",
+                "https://data.humdata.org/dataset?groups=eth&groups=ken&groups=som&organization=ocha-rosea&vocab_Topics=droughts&q=&sort=score%20desc%2C%20if(gt(last_modified%2Creview_date)%2Clast_modified%2Creview_date)%20desc&ext_page_size=25",
+            ),
+            (
+                "#affected+water",
+                "Oct 01, 2020",
+                "multiple",
+                "https://data.humdata.org/dataset?groups=eth&groups=ken&groups=som&organization=ocha-rosea&vocab_Topics=droughts&q=&sort=score%20desc%2C%20if(gt(last_modified%2Creview_date)%2Clast_modified%2Creview_date)%20desc&ext_page_size=25",
+            ),
+        ]
         run_check_scrapers(
             names,
             runner,
@@ -395,7 +421,12 @@ class TestScrapersAppendData:
             headers,
             values,
             sources,
-            source_urls=[],
+            source_urls=[
+                "https://data.humdata.org/dataset/eth-key-figures-2022",
+                "https://data.humdata.org/dataset/ken-key-figures-2022",
+                "https://data.humdata.org/dataset/som-key-figures-2022",
+                "https://data.humdata.org/dataset?groups=eth&groups=ken&groups=som&organization=ocha-rosea&vocab_Topics=droughts&q=&sort=score%20desc%2C%20if(gt(last_modified%2Creview_date)%2Clast_modified%2Creview_date)%20desc&ext_page_size=25",
+            ],
         )
 
     def test_sourceoverwrite(self, configuration):
