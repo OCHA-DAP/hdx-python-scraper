@@ -942,7 +942,10 @@ class Runner:
             scrp_datasetinfo = scrap.datasetinfo
             for i, header in enumerate(scrp_headers[0]):
                 header_or_hxltag = scrp_headers[main_index][i]
-                values[header_or_hxltag] = scrp_values[i]
+                if header_or_hxltag in values:
+                    values[header_or_hxltag].update(scrp_values[i])
+                else:
+                    values[header_or_hxltag] = scrp_values[i]
                 hxltag = scrp_headers[1][i]
 
                 sourceinfo = sourcesinfo.get(header_or_hxltag, dict())

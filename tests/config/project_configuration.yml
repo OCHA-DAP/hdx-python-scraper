@@ -308,22 +308,19 @@ scraper_multiple_urls:
     use_hxl: True
 
 scraper_append_data:
-  key_figures_som:
-    source: "multiple"
-    source_url: "https://data.humdata.org/dataset/som-key-figures-2022"
-    url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRppQx8JTKkKRCKmzfnCMmTFEcvCpkbP9PdHs1sQTUyacmbsx8tlAXpgBLFce-lcehukreGGuXjA_4S/pub?gid=0&single=true&output=csv"
-    format: "csv"
-    use_hxl: True
   key_figures_eth:
-    source: "multiple"
-    source_url: "https://data.humdata.org/dataset/eth-key-figures-2022"
+    dataset: "ethiopia-drought-related-key-figures"
     url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRppQx8JTKkKRCKmzfnCMmTFEcvCpkbP9PdHs1sQTUyacmbsx8tlAXpgBLFce-lcehukreGGuXjA_4S/pub?gid=2015311116&single=true&output=csv"
     format: "csv"
     use_hxl: True
   key_figures_ken:
-    source: "multiple"
-    source_url: "https://data.humdata.org/dataset/ken-key-figures-2022"
+    dataset: "kenya-drought-related-key-figures"
     url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRppQx8JTKkKRCKmzfnCMmTFEcvCpkbP9PdHs1sQTUyacmbsx8tlAXpgBLFce-lcehukreGGuXjA_4S/pub?gid=1275038715&single=true&output=csv"
+    format: "csv"
+    use_hxl: True
+  key_figures_som:
+    dataset: "somalia-drought-related-key-figures"
+    url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRppQx8JTKkKRCKmzfnCMmTFEcvCpkbP9PdHs1sQTUyacmbsx8tlAXpgBLFce-lcehukreGGuXjA_4S/pub?gid=0&single=true&output=csv"
     format: "csv"
     use_hxl: True
 
@@ -331,9 +328,17 @@ aggregate_append_data:
   "#affected+sam":
     source_url: "https://data.humdata.org/dataset?groups=eth&groups=ken&groups=som&organization=ocha-rosea&vocab_Topics=droughts&q=&sort=score%20desc%2C%20if(gt(last_modified%2Creview_date)%2Clast_modified%2Creview_date)%20desc&ext_page_size=25"
     action: "sum"
+    source_date_format:
+      start: "%b"
+      separator: "-"
+      end: "%b %Y"
   "#affected+mam":
     source_url: "https://data.humdata.org/dataset?groups=eth&groups=ken&groups=som&organization=ocha-rosea&vocab_Topics=droughts&q=&sort=score%20desc%2C%20if(gt(last_modified%2Creview_date)%2Clast_modified%2Creview_date)%20desc&ext_page_size=25"
     action: "sum"
+    source_date_format:
+      start: "%d-%m-%Y"
+      separator: ":"
+      end: "%d-%m-%Y"
   "#affected+gam":
     source_url: "https://data.humdata.org/dataset?groups=eth&groups=ken&groups=som&organization=ocha-rosea&vocab_Topics=droughts&q=&sort=score%20desc%2C%20if(gt(last_modified%2Creview_date)%2Clast_modified%2Creview_date)%20desc&ext_page_size=25"
     action: "sum"

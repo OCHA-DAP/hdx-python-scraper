@@ -1,5 +1,6 @@
 from copy import deepcopy
 
+from hdx.location.country import Country
 from hdx.utilities.dateparse import parse_date
 
 from hdx.scraper.base_scraper import BaseScraper
@@ -25,7 +26,7 @@ class TestScrapersAppendData:
             "SOM",
         )
         runner = Runner(iso3s, today)
-        names = ["key_figures_som", "key_figures_eth", "key_figures_ken"]
+        names = ["key_figures_eth", "key_figures_ken", "key_figures_som"]
         keys = runner.add_configurables(
             scraper_configuration,
             level,
@@ -87,256 +88,256 @@ class TestScrapersAppendData:
         ]
         sources = [
             (
-                "#value+funding+required+usd+som",
-                "Oct 01, 2020",
-                "multiple",
-                "https://data.humdata.org/dataset/som-key-figures-2022",
-            ),
-            (
-                "#value+funding+total+usd+som",
-                "Oct 01, 2020",
-                "multiple",
-                "https://data.humdata.org/dataset/som-key-figures-2022",
-            ),
-            (
-                "#value+funding+pct+som",
-                "Oct 01, 2020",
-                "multiple",
-                "https://data.humdata.org/dataset/som-key-figures-2022",
-            ),
-            (
-                "#inneed+total+som",
-                "Oct 01, 2020",
-                "multiple",
-                "https://data.humdata.org/dataset/som-key-figures-2022",
-            ),
-            (
-                "#targeted+total+som",
-                "Oct 01, 2020",
-                "multiple",
-                "https://data.humdata.org/dataset/som-key-figures-2022",
-            ),
-            (
-                "#targeted+pct+som",
-                "Oct 01, 2020",
-                "multiple",
-                "https://data.humdata.org/dataset/som-key-figures-2022",
-            ),
-            (
-                "#reached+total+som",
-                "Oct 01, 2020",
-                "multiple",
-                "https://data.humdata.org/dataset/som-key-figures-2022",
-            ),
-            (
-                "#reached+pct+som",
-                "Oct 01, 2020",
-                "multiple",
-                "https://data.humdata.org/dataset/som-key-figures-2022",
-            ),
-            (
-                "#affected+food+som",
-                "Oct 01, 2020",
-                "multiple",
-                "https://data.humdata.org/dataset/som-key-figures-2022",
-            ),
-            (
-                "#affected+sam+som",
-                "Oct 01, 2020",
-                "multiple",
-                "https://data.humdata.org/dataset/som-key-figures-2022",
-            ),
-            (
-                "#affected+mam+som",
-                "Oct 01, 2020",
-                "multiple",
-                "https://data.humdata.org/dataset/som-key-figures-2022",
-            ),
-            (
-                "#affected+gam+som",
-                "Oct 01, 2020",
-                "multiple",
-                "https://data.humdata.org/dataset/som-key-figures-2022",
-            ),
-            (
-                "#affected+idps+som",
-                "Oct 01, 2020",
-                "multiple",
-                "https://data.humdata.org/dataset/som-key-figures-2022",
-            ),
-            (
-                "#affected+water+som",
-                "Oct 01, 2020",
-                "multiple",
-                "https://data.humdata.org/dataset/som-key-figures-2022",
-            ),
-            (
                 "#value+funding+required+usd+eth",
                 "Oct 01, 2020",
-                "multiple",
-                "https://data.humdata.org/dataset/eth-key-figures-2022",
+                "Multiple Source (Humanitarian Partners)",
+                "https://data.humdata.org/dataset/ethiopia-drought-related-key-figures",
             ),
             (
                 "#value+funding+total+usd+eth",
                 "Oct 01, 2020",
-                "multiple",
-                "https://data.humdata.org/dataset/eth-key-figures-2022",
+                "Multiple Source (Humanitarian Partners)",
+                "https://data.humdata.org/dataset/ethiopia-drought-related-key-figures",
             ),
             (
                 "#value+funding+pct+eth",
                 "Oct 01, 2020",
-                "multiple",
-                "https://data.humdata.org/dataset/eth-key-figures-2022",
+                "Multiple Source (Humanitarian Partners)",
+                "https://data.humdata.org/dataset/ethiopia-drought-related-key-figures",
             ),
             (
                 "#inneed+total+eth",
                 "Oct 01, 2020",
-                "multiple",
-                "https://data.humdata.org/dataset/eth-key-figures-2022",
+                "Multiple Source (Humanitarian Partners)",
+                "https://data.humdata.org/dataset/ethiopia-drought-related-key-figures",
             ),
             (
                 "#targeted+total+eth",
                 "Oct 01, 2020",
-                "multiple",
-                "https://data.humdata.org/dataset/eth-key-figures-2022",
+                "Multiple Source (Humanitarian Partners)",
+                "https://data.humdata.org/dataset/ethiopia-drought-related-key-figures",
             ),
             (
                 "#targeted+pct+eth",
                 "Oct 01, 2020",
-                "multiple",
-                "https://data.humdata.org/dataset/eth-key-figures-2022",
+                "Multiple Source (Humanitarian Partners)",
+                "https://data.humdata.org/dataset/ethiopia-drought-related-key-figures",
             ),
             (
                 "#reached+total+eth",
                 "Oct 01, 2020",
-                "multiple",
-                "https://data.humdata.org/dataset/eth-key-figures-2022",
+                "Multiple Source (Humanitarian Partners)",
+                "https://data.humdata.org/dataset/ethiopia-drought-related-key-figures",
             ),
             (
                 "#reached+pct+eth",
                 "Oct 01, 2020",
-                "multiple",
-                "https://data.humdata.org/dataset/eth-key-figures-2022",
+                "Multiple Source (Humanitarian Partners)",
+                "https://data.humdata.org/dataset/ethiopia-drought-related-key-figures",
             ),
             (
                 "#affected+food+eth",
                 "Oct 01, 2020",
-                "multiple",
-                "https://data.humdata.org/dataset/eth-key-figures-2022",
+                "Multiple Source (Humanitarian Partners)",
+                "https://data.humdata.org/dataset/ethiopia-drought-related-key-figures",
             ),
             (
                 "#affected+sam+eth",
                 "Oct 01, 2020",
-                "multiple",
-                "https://data.humdata.org/dataset/eth-key-figures-2022",
+                "Multiple Source (Humanitarian Partners)",
+                "https://data.humdata.org/dataset/ethiopia-drought-related-key-figures",
             ),
             (
                 "#affected+mam+eth",
                 "Oct 01, 2020",
-                "multiple",
-                "https://data.humdata.org/dataset/eth-key-figures-2022",
+                "Multiple Source (Humanitarian Partners)",
+                "https://data.humdata.org/dataset/ethiopia-drought-related-key-figures",
             ),
             (
                 "#affected+gam+eth",
                 "Oct 01, 2020",
-                "multiple",
-                "https://data.humdata.org/dataset/eth-key-figures-2022",
+                "Multiple Source (Humanitarian Partners)",
+                "https://data.humdata.org/dataset/ethiopia-drought-related-key-figures",
             ),
             (
                 "#affected+idps+eth",
                 "Oct 01, 2020",
-                "multiple",
-                "https://data.humdata.org/dataset/eth-key-figures-2022",
+                "Multiple Source (Humanitarian Partners)",
+                "https://data.humdata.org/dataset/ethiopia-drought-related-key-figures",
             ),
             (
                 "#affected+water+eth",
                 "Oct 01, 2020",
-                "multiple",
-                "https://data.humdata.org/dataset/eth-key-figures-2022",
+                "Multiple Source (Humanitarian Partners)",
+                "https://data.humdata.org/dataset/ethiopia-drought-related-key-figures",
             ),
             (
                 "#value+funding+required+usd+ken",
                 "Oct 01, 2020",
-                "multiple",
-                "https://data.humdata.org/dataset/ken-key-figures-2022",
+                "Multiple Source (Humanitarian Partners)",
+                "https://data.humdata.org/dataset/kenya-drought-related-key-figures",
             ),
             (
                 "#value+funding+total+usd+ken",
                 "Oct 01, 2020",
-                "multiple",
-                "https://data.humdata.org/dataset/ken-key-figures-2022",
+                "Multiple Source (Humanitarian Partners)",
+                "https://data.humdata.org/dataset/kenya-drought-related-key-figures",
             ),
             (
                 "#value+funding+pct+ken",
                 "Oct 01, 2020",
-                "multiple",
-                "https://data.humdata.org/dataset/ken-key-figures-2022",
+                "Multiple Source (Humanitarian Partners)",
+                "https://data.humdata.org/dataset/kenya-drought-related-key-figures",
             ),
             (
                 "#inneed+total+ken",
                 "Oct 01, 2020",
-                "multiple",
-                "https://data.humdata.org/dataset/ken-key-figures-2022",
+                "Multiple Source (Humanitarian Partners)",
+                "https://data.humdata.org/dataset/kenya-drought-related-key-figures",
             ),
             (
                 "#targeted+total+ken",
                 "Oct 01, 2020",
-                "multiple",
-                "https://data.humdata.org/dataset/ken-key-figures-2022",
+                "Multiple Source (Humanitarian Partners)",
+                "https://data.humdata.org/dataset/kenya-drought-related-key-figures",
             ),
             (
                 "#targeted+pct+ken",
                 "Oct 01, 2020",
-                "multiple",
-                "https://data.humdata.org/dataset/ken-key-figures-2022",
+                "Multiple Source (Humanitarian Partners)",
+                "https://data.humdata.org/dataset/kenya-drought-related-key-figures",
             ),
             (
                 "#reached+total+ken",
                 "Oct 01, 2020",
-                "multiple",
-                "https://data.humdata.org/dataset/ken-key-figures-2022",
+                "Multiple Source (Humanitarian Partners)",
+                "https://data.humdata.org/dataset/kenya-drought-related-key-figures",
             ),
             (
                 "#reached+pct+ken",
                 "Oct 01, 2020",
-                "multiple",
-                "https://data.humdata.org/dataset/ken-key-figures-2022",
+                "Multiple Source (Humanitarian Partners)",
+                "https://data.humdata.org/dataset/kenya-drought-related-key-figures",
             ),
             (
                 "#affected+food+ken",
                 "Oct 01, 2020",
-                "multiple",
-                "https://data.humdata.org/dataset/ken-key-figures-2022",
+                "Multiple Source (Humanitarian Partners)",
+                "https://data.humdata.org/dataset/kenya-drought-related-key-figures",
             ),
             (
                 "#affected+sam+ken",
                 "Oct 01, 2020",
-                "multiple",
-                "https://data.humdata.org/dataset/ken-key-figures-2022",
+                "Multiple Source (Humanitarian Partners)",
+                "https://data.humdata.org/dataset/kenya-drought-related-key-figures",
             ),
             (
                 "#affected+mam+ken",
                 "Oct 01, 2020",
-                "multiple",
-                "https://data.humdata.org/dataset/ken-key-figures-2022",
+                "Multiple Source (Humanitarian Partners)",
+                "https://data.humdata.org/dataset/kenya-drought-related-key-figures",
             ),
             (
                 "#affected+gam+ken",
                 "Oct 01, 2020",
-                "multiple",
-                "https://data.humdata.org/dataset/ken-key-figures-2022",
+                "Multiple Source (Humanitarian Partners)",
+                "https://data.humdata.org/dataset/kenya-drought-related-key-figures",
             ),
             (
                 "#affected+idps+ken",
                 "Oct 01, 2020",
-                "multiple",
-                "https://data.humdata.org/dataset/ken-key-figures-2022",
+                "Multiple Source (Humanitarian Partners)",
+                "https://data.humdata.org/dataset/kenya-drought-related-key-figures",
             ),
             (
                 "#affected+water+ken",
                 "Oct 01, 2020",
-                "multiple",
-                "https://data.humdata.org/dataset/ken-key-figures-2022",
+                "Multiple Source (Humanitarian Partners)",
+                "https://data.humdata.org/dataset/kenya-drought-related-key-figures",
+            ),
+            (
+                "#value+funding+required+usd+som",
+                "Oct 01, 2020",
+                "Multiple Source (Humanitarian Partners)",
+                "https://data.humdata.org/dataset/somalia-drought-related-key-figures",
+            ),
+            (
+                "#value+funding+total+usd+som",
+                "Oct 01, 2020",
+                "Multiple Source (Humanitarian Partners)",
+                "https://data.humdata.org/dataset/somalia-drought-related-key-figures",
+            ),
+            (
+                "#value+funding+pct+som",
+                "Oct 01, 2020",
+                "Multiple Source (Humanitarian Partners)",
+                "https://data.humdata.org/dataset/somalia-drought-related-key-figures",
+            ),
+            (
+                "#inneed+total+som",
+                "Oct 01, 2020",
+                "Multiple Source (Humanitarian Partners)",
+                "https://data.humdata.org/dataset/somalia-drought-related-key-figures",
+            ),
+            (
+                "#targeted+total+som",
+                "Oct 01, 2020",
+                "Multiple Source (Humanitarian Partners)",
+                "https://data.humdata.org/dataset/somalia-drought-related-key-figures",
+            ),
+            (
+                "#targeted+pct+som",
+                "Oct 01, 2020",
+                "Multiple Source (Humanitarian Partners)",
+                "https://data.humdata.org/dataset/somalia-drought-related-key-figures",
+            ),
+            (
+                "#reached+total+som",
+                "Oct 01, 2020",
+                "Multiple Source (Humanitarian Partners)",
+                "https://data.humdata.org/dataset/somalia-drought-related-key-figures",
+            ),
+            (
+                "#reached+pct+som",
+                "Oct 01, 2020",
+                "Multiple Source (Humanitarian Partners)",
+                "https://data.humdata.org/dataset/somalia-drought-related-key-figures",
+            ),
+            (
+                "#affected+food+som",
+                "Oct 01, 2020",
+                "Multiple Source (Humanitarian Partners)",
+                "https://data.humdata.org/dataset/somalia-drought-related-key-figures",
+            ),
+            (
+                "#affected+sam+som",
+                "Oct 01, 2020",
+                "Multiple Source (Humanitarian Partners)",
+                "https://data.humdata.org/dataset/somalia-drought-related-key-figures",
+            ),
+            (
+                "#affected+mam+som",
+                "Oct 01, 2020",
+                "Multiple Source (Humanitarian Partners)",
+                "https://data.humdata.org/dataset/somalia-drought-related-key-figures",
+            ),
+            (
+                "#affected+gam+som",
+                "Oct 01, 2020",
+                "Multiple Source (Humanitarian Partners)",
+                "https://data.humdata.org/dataset/somalia-drought-related-key-figures",
+            ),
+            (
+                "#affected+idps+som",
+                "Oct 01, 2020",
+                "Multiple Source (Humanitarian Partners)",
+                "https://data.humdata.org/dataset/somalia-drought-related-key-figures",
+            ),
+            (
+                "#affected+water+som",
+                "Oct 01, 2020",
+                "Multiple Source (Humanitarian Partners)",
+                "https://data.humdata.org/dataset/somalia-drought-related-key-figures",
             ),
         ]
         run_check_scrapers(
@@ -347,9 +348,9 @@ class TestScrapersAppendData:
             values,
             sources,
             source_urls=[
-                "https://data.humdata.org/dataset/eth-key-figures-2022",
-                "https://data.humdata.org/dataset/ken-key-figures-2022",
-                "https://data.humdata.org/dataset/som-key-figures-2022",
+                "https://data.humdata.org/dataset/ethiopia-drought-related-key-figures",
+                "https://data.humdata.org/dataset/kenya-drought-related-key-figures",
+                "https://data.humdata.org/dataset/somalia-drought-related-key-figures",
             ],
             set_not_run=False,
         )
@@ -383,34 +384,34 @@ class TestScrapersAppendData:
             ],
         )
         values = [
-            {"value": 222720},
-            {"value": 661744},
-            {"value": 884464},
-            {"value": 4100000},
+            {"value": 1313619},
+            {"value": 3257327},
+            {"value": 4570946},
+            {"value": 16200000},
         ]
         sources = [
             (
                 "#affected+sam",
-                "Oct 01, 2020",
-                "multiple",
+                "May-Oct 2020",
+                "Multiple Source (Humanitarian Partners)",
                 "https://data.humdata.org/dataset?groups=eth&groups=ken&groups=som&organization=ocha-rosea&vocab_Topics=droughts&q=&sort=score%20desc%2C%20if(gt(last_modified%2Creview_date)%2Clast_modified%2Creview_date)%20desc&ext_page_size=25",
             ),
             (
                 "#affected+mam",
-                "Oct 01, 2020",
-                "multiple",
+                "01-05-2022:01-10-2020",
+                "Multiple Source (Humanitarian Partners)",
                 "https://data.humdata.org/dataset?groups=eth&groups=ken&groups=som&organization=ocha-rosea&vocab_Topics=droughts&q=&sort=score%20desc%2C%20if(gt(last_modified%2Creview_date)%2Clast_modified%2Creview_date)%20desc&ext_page_size=25",
             ),
             (
                 "#affected+gam",
                 "Oct 01, 2020",
-                "multiple",
+                "Multiple Source (Humanitarian Partners)",
                 "https://data.humdata.org/dataset?groups=eth&groups=ken&groups=som&organization=ocha-rosea&vocab_Topics=droughts&q=&sort=score%20desc%2C%20if(gt(last_modified%2Creview_date)%2Clast_modified%2Creview_date)%20desc&ext_page_size=25",
             ),
             (
                 "#affected+water",
                 "Oct 01, 2020",
-                "multiple",
+                "Multiple Source (Humanitarian Partners)",
                 "https://data.humdata.org/dataset?groups=eth&groups=ken&groups=som&organization=ocha-rosea&vocab_Topics=droughts&q=&sort=score%20desc%2C%20if(gt(last_modified%2Creview_date)%2Clast_modified%2Creview_date)%20desc&ext_page_size=25",
             ),
         ]
@@ -422,9 +423,9 @@ class TestScrapersAppendData:
             values,
             sources,
             source_urls=[
-                "https://data.humdata.org/dataset/eth-key-figures-2022",
-                "https://data.humdata.org/dataset/ken-key-figures-2022",
-                "https://data.humdata.org/dataset/som-key-figures-2022",
+                "https://data.humdata.org/dataset/ethiopia-drought-related-key-figures",
+                "https://data.humdata.org/dataset/kenya-drought-related-key-figures",
+                "https://data.humdata.org/dataset/somalia-drought-related-key-figures",
                 "https://data.humdata.org/dataset?groups=eth&groups=ken&groups=som&organization=ocha-rosea&vocab_Topics=droughts&q=&sort=score%20desc%2C%20if(gt(last_modified%2Creview_date)%2Clast_modified%2Creview_date)%20desc&ext_page_size=25",
             ],
         )
@@ -493,13 +494,16 @@ class TestScrapersAppendData:
 
         def get_expected_sources(headers, countryiso3):
             sources = list()
+            countryname = Country.get_country_name_from_iso3(
+                countryiso3
+            ).lower()
             for hxltag in headers[1]:
                 sources.append(
                     (
                         hxltag,
                         "Oct 01, 2020",
-                        "multiple",
-                        f"https://data.humdata.org/dataset/{countryiso3.lower()}-key-figures-2022",
+                        "Multiple Source (Humanitarian Partners)",
+                        f"https://data.humdata.org/dataset/{countryname}-drought-related-key-figures",
                     )
                 )
             return sources
@@ -513,19 +517,62 @@ class TestScrapersAppendData:
                     "#meta+url": "https://meduza.io/en/news/2022/02/24/putin-announces-start-of-military-operation-in-eastern-ukraine",
                 }
             ]
+            countryname = Country.get_country_name_from_iso3(
+                countryiso3
+            ).lower()
             for hxltag in headers[1]:
                 sources_data.append(
                     {
                         "#date": "Oct 01, 2020",
                         "#indicator+name": hxltag,
-                        "#meta+source": "multiple",
-                        "#meta+url": f"https://data.humdata.org/dataset/{countryiso3.lower()}-key-figures-2022",
+                        "#meta+source": "Multiple Source (Humanitarian Partners)",
+                        "#meta+url": f"https://data.humdata.org/dataset/{countryname}-drought-related-key-figures",
                     },
                 )
             return sources_data
 
         runner = Runner(iso3s, today)
-        names = ["key_figures_som", "key_figures_eth", "key_figures_ken"]
+        names = ["key_figures_eth", "key_figures_ken", "key_figures_som"]
+        keys = runner.add_configurables(scraper_configuration, level)
+        assert keys == names
+        run_check_scrapers(
+            names,
+            runner,
+            level,
+            headers,
+            values,
+            get_expected_sources(headers, "ETH"),
+            source_urls=[
+                "https://data.humdata.org/dataset/ethiopia-drought-related-key-figures",
+                "https://data.humdata.org/dataset/kenya-drought-related-key-figures",
+                "https://data.humdata.org/dataset/somalia-drought-related-key-figures",
+            ],
+            set_not_run=False,
+        )
+
+        jsonout = JsonFile(configuration["json"], ["sources"])
+        outputs = {"json": jsonout}
+        additional_sources = deepcopy(configuration["additional_sources"])
+        additional_sources.append(
+            {
+                "indicator": "#value+funding+required+usd",
+                "source_date": "Oct 01, 2020",
+                "source": "Multiple Source (Humanitarian Partners)",
+                "source_url": "https://data.humdata.org/dataset/kenya-drought-related-key-figures",
+            }
+        )
+        writer = Writer(runner, outputs)
+        writer.update_sources(
+            configuration["additional_sources"],
+            secondary_runner=runner,  # to check we don't get duplicate sources
+        )
+        assert jsonout.json["sources_data"] == get_expected_sources_data(
+            headers, "ETH"
+        )
+
+        Sources.set_should_overwrite_sources(True)
+        runner = Runner(iso3s, today)
+        names = ["key_figures_eth", "key_figures_ken", "key_figures_som"]
         keys = runner.add_configurables(scraper_configuration, level)
         assert keys == names
         run_check_scrapers(
@@ -536,9 +583,9 @@ class TestScrapersAppendData:
             values,
             get_expected_sources(headers, "SOM"),
             source_urls=[
-                "https://data.humdata.org/dataset/eth-key-figures-2022",
-                "https://data.humdata.org/dataset/ken-key-figures-2022",
-                "https://data.humdata.org/dataset/som-key-figures-2022",
+                "https://data.humdata.org/dataset/ethiopia-drought-related-key-figures",
+                "https://data.humdata.org/dataset/kenya-drought-related-key-figures",
+                "https://data.humdata.org/dataset/somalia-drought-related-key-figures",
             ],
             set_not_run=False,
         )
@@ -561,44 +608,4 @@ class TestScrapersAppendData:
         )
         assert jsonout.json["sources_data"] == get_expected_sources_data(
             headers, "SOM"
-        )
-
-        Sources.set_should_overwrite_sources(True)
-        runner = Runner(iso3s, today)
-        names = ["key_figures_som", "key_figures_eth", "key_figures_ken"]
-        keys = runner.add_configurables(scraper_configuration, level)
-        assert keys == names
-        run_check_scrapers(
-            names,
-            runner,
-            level,
-            headers,
-            values,
-            get_expected_sources(headers, "KEN"),
-            source_urls=[
-                "https://data.humdata.org/dataset/eth-key-figures-2022",
-                "https://data.humdata.org/dataset/ken-key-figures-2022",
-                "https://data.humdata.org/dataset/som-key-figures-2022",
-            ],
-            set_not_run=False,
-        )
-
-        jsonout = JsonFile(configuration["json"], ["sources"])
-        outputs = {"json": jsonout}
-        additional_sources = deepcopy(configuration["additional_sources"])
-        additional_sources.append(
-            {
-                "indicator": "#value+funding+required+usd",
-                "source_date": "Oct 01, 2020",
-                "source": "multiple",
-                "source_url": "https://data.humdata.org/dataset/ken-key-figures-2022",
-            }
-        )
-        writer = Writer(runner, outputs)
-        writer.update_sources(
-            configuration["additional_sources"],
-            secondary_runner=runner,  # to check we don't get duplicate sources
-        )
-        assert jsonout.json["sources_data"] == get_expected_sources_data(
-            headers, "KEN"
         )

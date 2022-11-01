@@ -356,10 +356,7 @@ class Aggregator(BaseScraper):
         sourceinfo = self.input_sourcesinfo.get(source_lookup)
         if sourceinfo:
             if "source_date" not in self.datasetinfo:
-                source_date = Sources.format_hxltag_source_date(
-                    self.datasetinfo, sourceinfo["source_date"]
-                )
-                self.datasetinfo["source_date"] = source_date
+                self.datasetinfo["source_date"] = sourceinfo["source_date"]
             if "source" not in self.datasetinfo:
                 self.datasetinfo["source"] = ",".join(sourceinfo["source"])
             if "source_url" not in self.datasetinfo:
