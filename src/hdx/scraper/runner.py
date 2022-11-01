@@ -962,7 +962,7 @@ class Runner:
                         source_url.append(scrp_source_url)
                     sourceinfo["source_url"] = source_url
 
-                if not "source_date" in scrp_datasetinfo:
+                if "source_date" not in scrp_datasetinfo:
                     continue
                 scrp_date = Sources.get_hxltag_source_datetime(
                     scrp_datasetinfo, hxltag, True

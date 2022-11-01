@@ -14,7 +14,6 @@ from slugify import slugify
 
 from ..base_scraper import BaseScraper
 from ..utilities.reader import Read
-from ..utilities.sources import Sources
 
 logger = logging.getLogger(__name__)
 
