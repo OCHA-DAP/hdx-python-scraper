@@ -3,6 +3,7 @@ from copy import deepcopy
 from typing import Dict, List, Optional, Set, Tuple
 
 from hdx.utilities.dictandlist import dict_of_lists_add
+from hdx.utilities.typehint import ListTuple
 
 from .utilities.reader import Read
 from .utilities.sources import Sources
@@ -244,8 +245,7 @@ class BaseScraper(ABC):
         key: Optional[str] = None,
     ) -> None:
         """
-        Adds source under a particular key with a particular indicator expressed as a
-        HXL hashtag.
+        Adds source identified by HXL hashtag under a particular key.
 
         Args:
             hxltag (str): HXL hashtag to use for source
@@ -272,6 +272,36 @@ class BaseScraper(ABC):
                 datasetinfo["source_url"],
             ),
         )
+
+    def add_hxltag_sources(
+        self,
+        hxltags: ListTuple[str],
+        datasetinfo: Optional[Dict] = None,
+        key: Optional[str] = None,
+        suffix_attributes: Optional[ListTuple] = None,
+    ) -> None:
+        """
+        Adds sources identified by HXL hashtags under a particular key.
+
+        Args:
+            hxltags (ListTuple[str]): HXL hashtags to use for sources
+            datasetinfo (Optional[Dict]): Information about dataset. Defaults to None (use self.datasetinfo).
+            key (Optional[str]): Key under which to add source. Defaults to None (use scraper name).
+            suffix_attributes (Optional[ListTuple]): List of suffix attributes to append to HXL hashtags eg. iso3 codes
+
+        Returns:
+            None
+        """
+        for hxltag in hxltags:
+            if suffix_attributes is None:
+                self.add_hxltag_source(hxltag, datasetinfo, key)
+            else:
+                for suffix_attribute in suffix_attributes:
+                    self.add_hxltag_source(
+                        f"{hxltag}+{suffix_attribute.lower()}",
+                        datasetinfo,
+                        key,
+                    )
 
     def get_sources(self, level: str) -> Optional[List[Tuple]]:
         """

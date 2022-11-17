@@ -253,6 +253,44 @@ class TestScrapersCustom:
                 "https://data.humdata.org/dataset/global-school-closures-covid19",
             )
         ]
+        education_closures.add_hxltag_sources(
+            ("#haha", "#papa"),
+            datasetinfo=education_closures.datasetinfo,
+            key="test",
+            suffix_attributes=("AFG", "PSE"),
+        )
+        assert sources == [
+            (
+                "#lala",
+                "Apr 30, 2022",
+                "UNESCO",
+                "https://data.humdata.org/dataset/global-school-closures-covid19",
+            ),
+            (
+                "#haha+afg",
+                "Apr 30, 2022",
+                "UNESCO",
+                "https://data.humdata.org/dataset/global-school-closures-covid19",
+            ),
+            (
+                "#haha+pse",
+                "Apr 30, 2022",
+                "UNESCO",
+                "https://data.humdata.org/dataset/global-school-closures-covid19",
+            ),
+            (
+                "#papa+afg",
+                "Apr 30, 2022",
+                "UNESCO",
+                "https://data.humdata.org/dataset/global-school-closures-covid19",
+            ),
+            (
+                "#papa+pse",
+                "Apr 30, 2022",
+                "UNESCO",
+                "https://data.humdata.org/dataset/global-school-closures-covid19",
+            ),
+        ]
 
     def test_affected_targeted_reached(self, configuration):
         BaseScraper.population_lookup = dict()
