@@ -44,5 +44,6 @@ class ResourceDownloader(BaseScraper):
             None
         """
         self.add_hxltag_source(
-            "ResourceDownloader", self.datasetinfo["hxltag"]
+            self.datasetinfo["hxltag"],
+            key="ResourceDownloader",
         )

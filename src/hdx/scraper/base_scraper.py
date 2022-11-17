@@ -2,6 +2,8 @@ from abc import ABC, abstractmethod
 from copy import deepcopy
 from typing import Dict, List, Optional, Set, Tuple
 
+from hdx.utilities.dictandlist import dict_of_lists_add
+
 from .utilities.reader import Read
 from .utilities.sources import Sources
 
@@ -235,29 +237,41 @@ class BaseScraper(ABC):
                 for out_adm in out_adms:
                     add_source(hxltag, out_adm)
 
-    def add_hxltag_source(self, key: str, indicator: str) -> None:
+    def add_hxltag_source(
+        self,
+        hxltag: str,
+        datasetinfo: Optional[Dict] = None,
+        key: Optional[str] = None,
+    ) -> None:
         """
         Adds source under a particular key with a particular indicator expressed as a
         HXL hashtag.
 
         Args:
-            key (str): Key under which to add source
-            indicator (str): HXL hashtag to use for source
+            hxltag (str): HXL hashtag to use for source
+            datasetinfo (Optional[Dict]): Information about dataset. Defaults to None (use self.datasetinfo).
+            key (Optional[str]): Key under which to add source. Defaults to None (use scraper name).
 
         Returns:
             None
         """
+        if datasetinfo is None:
+            datasetinfo = self.datasetinfo
         date = Sources.get_hxltag_source_date(
-            self.datasetinfo, indicator, fallback=True
+            datasetinfo, hxltag, fallback=True
         )
-        self.sources[key] = [
+        if key is None:
+            key = self.name
+        dict_of_lists_add(
+            self.sources,
+            key,
             (
-                indicator,
+                hxltag,
                 date,
-                self.datasetinfo["source"],
-                self.datasetinfo["source_url"],
-            )
-        ]
+                datasetinfo["source"],
+                datasetinfo["source_url"],
+            ),
+        )
 
     def get_sources(self, level: str) -> Optional[List[Tuple]]:
         """

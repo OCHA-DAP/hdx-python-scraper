@@ -243,7 +243,7 @@ class TestScrapersCustom:
             "education_closures",
         ]
 
-        education_closures.add_hxltag_source("test", "#lala")
+        education_closures.add_hxltag_source("#lala", key="test")
         sources = education_closures.get_sources("test")
         assert sources == [
             (

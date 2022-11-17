@@ -83,4 +83,4 @@ class TimeSeries(BaseScraper):
             None
         """
         for hxltag in self.datasetinfo["output_hxl"]:
-            self.add_hxltag_source(self.name, hxltag)
+            self.add_hxltag_source(hxltag, key="TimeSeries")
