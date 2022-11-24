@@ -478,7 +478,7 @@ class ConfigurableScraper(BaseScraper):
             self.adminlevel,
             self.level,
             self.datelevel,
-            source_date,
+            self.today,
             self.datasetinfo,
             file_headers,
             header_to_hxltag,

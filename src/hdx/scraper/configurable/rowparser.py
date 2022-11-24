@@ -24,7 +24,7 @@ class RowParser:
         adminlevel (Optional[AdminLevel]): AdminLevel object from HDX Python Country library
         level (str): Can be national, subnational or single
         datelevel (str): Can be global, regional, national, subnational
-        source_date (datetime): Source date
+        today (datetime): Date today
         datasetinfo (Dict): Dictionary of information about dataset
         headers (List[str]): Row headers
         header_to_hxltag (Optional[Dict[str, str]]): Mapping from headers to HXL hashtags or None
@@ -39,7 +39,7 @@ class RowParser:
         adminlevel: Optional[AdminLevel],
         level: str,
         datelevel: str,
-        source_date: datetime,
+        today: datetime,
         datasetinfo: Dict,
         headers: List[str],
         header_to_hxltag: Optional[Dict[str, str]],
@@ -66,7 +66,7 @@ class RowParser:
         self.name = name
         self.level = get_level(level)
         self.datelevel = get_level(datelevel)
-        self.source_date = source_date
+        self.today = today
         self.sort = datasetinfo.get("sort")
         self.stop_row = datasetinfo.get("stop_row")
         self.datecol = datasetinfo.get("date")
@@ -356,11 +356,11 @@ class RowParser:
             if self.datetype == "date":
                 if not isinstance(date, datetime):
                     date = parse_date(date)
-                if date > self.source_date and self.ignore_future_date:
+                if date > self.today and self.ignore_future_date:
                     return None, None
             elif self.datetype == "year":
                 date = int(date)
-                if date > self.source_date.year and self.ignore_future_date:
+                if date > self.today.year and self.ignore_future_date:
                     return None, None
             else:
                 date = int(date)

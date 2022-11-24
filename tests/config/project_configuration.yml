@@ -1001,7 +1001,7 @@ scraper_subnational:
     filter_cols:
       - "Reason"
       - "Year"
-    prefilter: "'drought' in Reason.lower() and Year in (self.source_date.year - 1, self.source_date.year)"
+    prefilter: "'drought' in Reason.lower() and Year in (self.today.year - 1, self.today.year)"
     admin:
       - value: "SOM"
       - "Current (Arrival) District"
