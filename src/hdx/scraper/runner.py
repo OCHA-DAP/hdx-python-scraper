@@ -807,6 +807,11 @@ class Runner:
             lev_headings = level_results["headers"][0]
             lev_hxltags = level_results["headers"][1]
             lev_values = level_results["values"]
+            scraper_should_overwrite_sources = (
+                scraper.source_configuration.get(
+                    "should_overwrite_sources", should_overwrite_sources
+                )
+            )
             for i, hxltag in enumerate(hxltags):
                 if hxltag in lev_hxltags:
                     index = lev_hxltags.index(hxltag)
@@ -822,7 +827,7 @@ class Runner:
                 lev_sources,
                 scrap.get_sources(scraper_level),
                 logger,
-                should_overwrite_sources,
+                scraper_should_overwrite_sources,
             )
             levels_used.add(scraper_level)
             levels_used.add(override_level)
@@ -1085,8 +1090,10 @@ class Runner:
                 levels_to_check = levels
             else:
                 levels_to_check = scraper.sources.keys()
-            should_overwrite_sources = scraper.source_configuration.get(
-                "should_overwrite_sources", should_overwrite_sources
+            scraper_should_overwrite_sources = (
+                scraper.source_configuration.get(
+                    "should_overwrite_sources", should_overwrite_sources
+                )
             )
             for level in levels_to_check:
                 Sources.add_sources_overwrite(
@@ -1094,7 +1101,7 @@ class Runner:
                     sources,
                     scraper.get_sources(level),
                     logger,
-                    should_overwrite_sources,
+                    scraper_should_overwrite_sources,
                 )
         return sources
 

@@ -142,9 +142,13 @@ class BaseScraper(ABC):
             return
         if self.datasetinfo.get("no_sources", False):
             return
-        should_overwrite_sources = self.datasetinfo.get("should_overwrite_sources")
+        should_overwrite_sources = self.datasetinfo.get(
+            "should_overwrite_sources"
+        )
         if should_overwrite_sources is not None:
-            self.source_configuration["should_overwrite_sources"] = should_overwrite_sources
+            self.source_configuration[
+                "should_overwrite_sources"
+            ] = should_overwrite_sources
         source = self.datasetinfo["source"]
         if isinstance(source, str):
             source = {"default_source": source}
@@ -152,7 +156,10 @@ class BaseScraper(ABC):
         if isinstance(source_url, str):
             source_url = {"default_url": source_url}
         Sources.standardise_datasetinfo_source_date(self.datasetinfo)
-        if not any(key in self.source_configuration for key in ("suffix_attribute", "admin_sources")):
+        if not any(
+            key in self.source_configuration
+            for key in ("suffix_attribute", "admin_sources")
+        ):
             for level in self.headers:
                 self.sources[level] = [
                     (

@@ -324,6 +324,24 @@ scraper_append_data:
     format: "csv"
     use_hxl: True
 
+scraper_append_data_should_overwrite:
+  key_figures_eth:
+    dataset: "ethiopia-drought-related-key-figures"
+    url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRppQx8JTKkKRCKmzfnCMmTFEcvCpkbP9PdHs1sQTUyacmbsx8tlAXpgBLFce-lcehukreGGuXjA_4S/pub?gid=2015311116&single=true&output=csv"
+    format: "csv"
+    use_hxl: True
+  key_figures_ken:
+    dataset: "kenya-drought-related-key-figures"
+    url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRppQx8JTKkKRCKmzfnCMmTFEcvCpkbP9PdHs1sQTUyacmbsx8tlAXpgBLFce-lcehukreGGuXjA_4S/pub?gid=1275038715&single=true&output=csv"
+    format: "csv"
+    use_hxl: True
+    should_overwrite_sources: True
+  key_figures_som:
+    dataset: "somalia-drought-related-key-figures"
+    url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRppQx8JTKkKRCKmzfnCMmTFEcvCpkbP9PdHs1sQTUyacmbsx8tlAXpgBLFce-lcehukreGGuXjA_4S/pub?gid=0&single=true&output=csv"
+    format: "csv"
+    use_hxl: True
+
 aggregate_append_data:
   "#affected+sam":
     source_url: "https://data.humdata.org/dataset?groups=eth&groups=ken&groups=som&organization=ocha-rosea&vocab_Topics=droughts&q=&sort=score%20desc%2C%20if(gt(last_modified%2Creview_date)%2Clast_modified%2Creview_date)%20desc&ext_page_size=25"

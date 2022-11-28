@@ -174,6 +174,7 @@ class Sources:
         adminlevel: Union[AdminLevel, ListTuple[AdminLevel], None] = None,
         admin_mapping_dict: Optional[Dict] = None,
         no_sources: bool = False,
+        should_overwrite_sources: Optional[bool] = None,
     ) -> Optional[Dict]:
         """Create source configuration. If none of the arguments are suppled, source
         configuration is None. suffix_attribute is an attribute to add to the end of
@@ -190,6 +191,7 @@ class Sources:
             adminlevel (Union[AdminLevel, ListTuple[AdminLevel], None]): Admin level(s) mapping. Defaults to None.
             admin_mapping_dict (Optional[Dict]): Admin unit mapping to use. Defaults to None.
             no_sources (bool): Don't create sources. Defaults to False.
+            should_overwrite_sources (Optional[bool]): Whether to overwrite sources. Defaults to None (use default).
 
         Returns:
              Optional[Dict]: Source configuration dictionary
@@ -198,6 +200,9 @@ class Sources:
         if no_sources:
             source_configuration["no_sources"] = True
             return source_configuration
+        source_configuration[
+            "should_overwrite_sources"
+        ] = should_overwrite_sources
         if suffix_attribute:
             source_configuration["suffix_attribute"] = suffix_attribute
             return source_configuration

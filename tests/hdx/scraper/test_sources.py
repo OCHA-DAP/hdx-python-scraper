@@ -104,14 +104,20 @@ class TestSources:
         result = Sources.create_source_configuration(
             suffix_attribute=suffix_attribute
         )
-        assert result == {"suffix_attribute": "suf"}
+        assert result == {
+            "suffix_attribute": "suf",
+            "should_overwrite_sources": None,
+        }
         adminlevel = AdminLevel(configuration)
         d = adminlevel.pcode_to_iso3
         adminlevel.pcode_to_iso3 = {k: d[k] for k in list(d)[:5]}
         result = Sources.create_source_configuration(
             suffix_attribute=suffix_attribute, adminlevel=adminlevel
         )
-        assert result == {"suffix_attribute": "suf"}
+        assert result == {
+            "suffix_attribute": "suf",
+            "should_overwrite_sources": None,
+        }
         result = Sources.create_source_configuration(adminlevel=adminlevel)
         assert result == {
             "admin_mapping": {
@@ -122,6 +128,7 @@ class TestSources:
                 "AF05": "AFG",
             },
             "admin_sources": True,
+            "should_overwrite_sources": None,
         }
         adminlevel2 = AdminLevel(configuration["admin1"])
         d = adminlevel2.pcode_to_iso3
@@ -143,6 +150,7 @@ class TestSources:
                 "ET15": "ETH",
             },
             "admin_sources": True,
+            "should_overwrite_sources": None,
         }
         admin_mapping_dict = {"MY01": "MY", "MY02": "MY"}
         result = Sources.create_source_configuration(
@@ -151,6 +159,7 @@ class TestSources:
         assert result == {
             "admin_mapping": {"MY01": "MY", "MY02": "MY"},
             "admin_sources": True,
+            "should_overwrite_sources": None,
         }
 
     def test_scraper_add_sources(self, configuration, enddate):
