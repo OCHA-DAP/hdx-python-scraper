@@ -102,7 +102,7 @@ class Runner:
         level: str,
         adminlevel: Optional[AdminLevel] = None,
         level_name: Optional[str] = None,
-        source_configuration: Optional[Dict] = None,
+        source_configuration: Dict = dict(),
         suffix: Optional[str] = None,
         force_add_to_run: bool = False,
     ) -> str:
@@ -117,7 +117,7 @@ class Runner:
             level (str): Can be national, subnational or single
             adminlevel (Optional[AdminLevel]): AdminLevel object from HDX Python Country. Defaults to None.
             level_name (Optional[str]): Customised level_name name. Defaults to None (level_name).
-            source_configuration (Optional[Dict]): Configuration for sources. Defaults to None (use defaults).
+            source_configuration (Dict): Configuration for sources. Defaults to empty dict (use defaults).
             suffix (Optional[str]): Suffix to add to the scraper name
             force_add_to_run (bool): Whether to force include the scraper in the next run
 
@@ -155,7 +155,7 @@ class Runner:
         level: str,
         adminlevel: Optional[AdminLevel] = None,
         level_name: Optional[str] = None,
-        source_configuration: Optional[Dict] = None,
+        source_configuration: Dict = dict(),
         suffix: Optional[str] = None,
         force_add_to_run: bool = False,
     ) -> List[str]:
@@ -169,7 +169,7 @@ class Runner:
             level (str): Can be national, subnational or single
             adminlevel (Optional[AdminLevel]): AdminLevel object from HDX Python Country. Defaults to None.
             level_name (Optional[str]): Customised level_name name. Defaults to None (level_name).
-            source_configuration (Optional[Dict]): Configuration for sources. Defaults to None (use defaults).
+            source_configuration (Dict): Configuration for sources. Defaults to empty dict (use defaults).
             suffix (Optional[str]): Suffix to add to the scraper name
             force_add_to_run (bool): Whether to force include the scraper in the next run
 
@@ -255,7 +255,7 @@ class Runner:
         input_level: str,
         output_level: str,
         adm_aggregation: Union[Dict, List],
-        source_configuration: Optional[Dict] = None,
+        source_configuration: Dict = dict(),
         names: Optional[ListTuple[str]] = None,
         overrides: Dict[str, Dict] = dict(),
         aggregation_scrapers: List["Aggregator"] = list(),
@@ -269,7 +269,7 @@ class Runner:
             input_level (str): Input level to aggregate like national or subnational
             output_level (str): Output level of aggregated data like regional
             adm_aggregation (Union[Dict, List]): Mapping from input admins to aggregated output admins
-            source_configuration (Optional[Dict]): Configuration for sources. Defaults to None (use defaults).
+            source_configuration (Dict): Configuration for sources. Defaults to empty dict (use defaults).
             names (Optional[ListTuple[str]]): Names of scrapers. Defaults to None.
             overrides (Dict[str, Dict]): Dictionary mapping scrapers to level mappings. Defaults to dict().
             aggregation_scrapers (List["Aggregator"]): Other aggregations needed. Defaults to list().
@@ -319,7 +319,7 @@ class Runner:
         input_level: str,
         output_level: str,
         adm_aggregation: Union[Dict, List],
-        source_configuration: Optional[Dict] = None,
+        source_configuration: Dict = dict(),
         names: Optional[ListTuple[str]] = None,
         overrides: Dict[str, Dict] = dict(),
         aggregation_scrapers: List["Aggregator"] = list(),
@@ -339,7 +339,7 @@ class Runner:
             input_level (str): Input level to aggregate like national or subnational
             output_level (str): Output level of aggregated data like regional
             adm_aggregation (Union[Dict, List]): Mapping from input admins to aggregated output admins
-            source_configuration (Optional[Dict]): Configuration for sources. Defaults to None (use defaults).
+            source_configuration (Dict): Configuration for sources. Defaults to empty dict (use defaults).
             names (Optional[ListTuple[str]]): Names of scrapers. Defaults to None.
             overrides (Dict[str, Dict]): Dictionary mapping scrapers to level mappings. Defaults to dict().
             aggregation_scrapers (List["Aggregator"]): Other aggregations needed. Defaults to list().
@@ -371,7 +371,7 @@ class Runner:
         input_level: str,
         output_level: str,
         adm_aggregation: Union[Dict, ListTuple],
-        source_configuration: Optional[Dict] = None,
+        source_configuration: Dict = dict(),
         names: Optional[ListTuple[str]] = None,
         overrides: Dict[str, Dict] = dict(),
         force_add_to_run: bool = False,
@@ -390,7 +390,7 @@ class Runner:
             input_level (str): Input level to aggregate like national or subnational
             output_level (str): Output level of aggregated data like regional
             adm_aggregation (Union[Dict, ListTuple]): Mapping from input admins to aggregated output admins
-            source_configuration (Optional[Dict]): Configuration for sources. Defaults to None (use defaults).
+            source_configuration (Dict): Configuration for sources. Defaults to empty dict (use defaults).
             names (Optional[ListTuple[str]]): Names of scrapers
             overrides (Dict[str, Dict]): Dictionary mapping scrapers to level mappings. Defaults to dict().
             force_add_to_run (bool): Whether to force include the scraper in the next run
@@ -1067,8 +1067,11 @@ class Runner:
                 sourceinfo, hxltag, fallback=True
             )
             source = (hxltag, date, source_name, source_url)
+            should_overwrite_source = sourceinfo.get(
+                "should_overwrite_source", should_overwrite_sources
+            )
             Sources.add_source_overwrite(
-                hxltags, sources, source, logger, should_overwrite_sources
+                hxltags, sources, source, logger, should_overwrite_source
             )
         for name in names:
             if self.scrapers_to_run and not any(
@@ -1082,6 +1085,9 @@ class Runner:
                 levels_to_check = levels
             else:
                 levels_to_check = scraper.sources.keys()
+            should_overwrite_sources = scraper.source_configuration.get(
+                "should_overwrite_sources", should_overwrite_sources
+            )
             for level in levels_to_check:
                 Sources.add_sources_overwrite(
                     hxltags,

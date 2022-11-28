@@ -16,7 +16,7 @@ class BaseScraper(ABC):
         name (str): Name of scraper
         datasetinfo (Dict): Information about dataset
         headers (Dict[str, Tuple]): Headers to be oytput at each level_name
-        source_configuration (Optional[Dict]): Configuration for sources. Defaults to None (use defaults).
+        source_configuration (Dict): Configuration for sources. Defaults to empty dict (use defaults).
     """
 
     population_lookup = dict()
@@ -26,7 +26,7 @@ class BaseScraper(ABC):
         name: str,
         datasetinfo: Dict,
         headers: Dict[str, Tuple],
-        source_configuration: Optional[Dict] = None,
+        source_configuration: Dict = dict(),
     ) -> None:
         self.setup(name, headers, source_configuration)
         self.datasetinfo = deepcopy(datasetinfo)
@@ -37,7 +37,7 @@ class BaseScraper(ABC):
         self,
         name: str,
         headers: Dict[str, Tuple],
-        source_configuration: Optional[Dict] = None,
+        source_configuration: Dict = dict(),
     ) -> None:
         """Initialise member variables including name and headers which is of form:
         {"national": (("School Closure",), ("#impact+type",)), ...},
@@ -45,7 +45,7 @@ class BaseScraper(ABC):
         Args:
             name (str): Name of scraper
             headers (Dict[str, Tuple]): Headers to be output at each level_name
-            source_configuration (Optional[Dict]): Configuration for sources. Defaults to None (use defaults).
+            source_configuration (Dict): Configuration for sources. Defaults to empty dict (use defaults).
 
         Returns:
              None
@@ -60,7 +60,7 @@ class BaseScraper(ABC):
 
     def initialise_values_sources(
         self,
-        source_configuration: Optional[Dict] = None,
+        source_configuration: Dict = dict(),
     ) -> None:
         """
         Create values and sources member variables for inheriting scrapers to populate.
@@ -70,7 +70,7 @@ class BaseScraper(ABC):
         {"national": [("#food-prices", "2022-07-15", "WFP", "https://data.humdata.org/dataset/global-wfp-food-prices"), ...]
 
         Args:
-            source_configuration (Optional[Dict]): Configuration for sources. Defaults to None (use defaults).
+            source_configuration (Dict): Configuration for sources. Defaults to empty dict (use defaults).
 
         Returns:
              None
@@ -82,7 +82,7 @@ class BaseScraper(ABC):
         self.sources: Dict[str, List] = {
             level: list() for level in self.headers
         }
-        self.source_configuration: Optional[Dict] = source_configuration
+        self.source_configuration = deepcopy(source_configuration)
 
     def get_reader(
         self, name: Optional[str] = None, prefix: Optional[str] = None
@@ -138,12 +138,13 @@ class BaseScraper(ABC):
         Returns:
             None
         """
-        if self.source_configuration and self.source_configuration.get(
-            "no_sources", False
-        ):
+        if self.source_configuration.get("no_sources", False):
             return
         if self.datasetinfo.get("no_sources", False):
             return
+        should_overwrite_sources = self.datasetinfo.get("should_overwrite_sources")
+        if should_overwrite_sources is not None:
+            self.source_configuration["should_overwrite_sources"] = should_overwrite_sources
         source = self.datasetinfo["source"]
         if isinstance(source, str):
             source = {"default_source": source}
@@ -151,7 +152,7 @@ class BaseScraper(ABC):
         if isinstance(source_url, str):
             source_url = {"default_url": source_url}
         Sources.standardise_datasetinfo_source_date(self.datasetinfo)
-        if self.source_configuration is None:
+        if not any(key in self.source_configuration for key in ("suffix_attribute", "admin_sources")):
             for level in self.headers:
                 self.sources[level] = [
                     (

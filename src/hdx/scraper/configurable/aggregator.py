@@ -36,7 +36,7 @@ class Aggregator(BaseScraper):
         adm_aggregation (Union[Dict, ListTuple]): Mapping from input admins to aggregated output admins
         headers (Dict[str, Tuple]): Column headers and HXL hashtags
         use_hxl (bool): Whether to map from headers or from HXL tags
-        source_configuration (Optional[Dict]): Configuration for sources. Defaults to None (use defaults).
+        source_configuration (Dict): Configuration for sources. Defaults to empty dict (use defaults).
         aggregation_scrapers (List["Aggregator"]): Other aggregations needed. Defaults to list().
     """
 
@@ -47,7 +47,7 @@ class Aggregator(BaseScraper):
         headers: Dict[str, Tuple],
         adm_aggregation: Union[Dict, ListTuple],
         use_hxl: bool,
-        source_configuration: Optional[Dict] = None,
+        source_configuration: Dict = dict(),
         aggregation_scrapers: List["Aggregator"] = list(),
     ):
         super().__init__(
@@ -76,7 +76,7 @@ class Aggregator(BaseScraper):
         output_level: str,
         adm_aggregation: Union[Dict, ListTuple],
         input_headers: Tuple[ListTuple, ListTuple],
-        source_configuration: Optional[Dict] = None,
+        source_configuration: Dict = dict(),
         aggregation_scrapers: List["Aggregator"] = list(),
     ) -> Optional["Aggregator"]:
         """Gets one aggregator given dataset information and returns headers, values and
@@ -95,7 +95,7 @@ class Aggregator(BaseScraper):
             adm_aggregation (Union[Dict, ListTuple]): Mapping from input admins to aggregated output admins
             input_headers (Tuple[ListTuple, ListTuple]): Column headers and HXL hashtags
             runner(Runner): Runner object
-            source_configuration (Optional[Dict]): Configuration for sources. Defaults to None (use defaults).
+            source_configuration (Dict): Configuration for sources. Defaults to empty dict (use defaults).
             aggregation_scrapers (List["Aggregator"]): Other aggregations needed. Defaults to list().
 
         Returns:

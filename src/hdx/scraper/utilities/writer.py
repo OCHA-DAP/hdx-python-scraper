@@ -366,7 +366,7 @@ class Writer:
     ) -> None:
         """Update the sources tab (or key in JSON) in the outputs for scrapers limiting to
         those in names. Additional sources can be added. Each is a dictionary with indicator
-        (specified with HXL hash tag), dataset or source and source_url as well as the
+        (specified with HXL hashtag), dataset or source and source_url as well as the
         source_date or whether to force_date_today. Custom sources can be directly passed
         to be appended. They are of form (indicator, date, source, source_url).
 
