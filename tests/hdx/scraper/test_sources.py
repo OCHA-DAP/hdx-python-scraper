@@ -71,7 +71,7 @@ class TestSources:
         datasetinfo = {"source_date": enddate}
         Sources.standardise_datasetinfo_source_date(datasetinfo)
         result = Sources.get_hxltag_source_date(datasetinfo, "default_date")
-        assert result == "Jan 01, 2022"
+        assert result == "Jan 1, 2022"
         source_date_format = "%Y-%m-%d"
         datasetinfo["source_date_format"] = source_date_format
         result = Sources.get_hxltag_source_date(datasetinfo, "default_date")

@@ -68,7 +68,7 @@ class TestScrapersSubnational:
         sources = [
             (
                 "#severity+malnutrition+num+subnational",
-                "Oct 01, 2020",
+                "Oct 1, 2020",
                 "UNICEF",
                 "https://data.humdata.org/dataset/87b86e7d-e9b2-4922-a48e-1f10afd528e6/resource/eabba7e7-16d0-436c-a62c-df6edd03be7c/download/unicef_who_wb_global_expanded_databases_severe_wasting.xlsx",
             )
@@ -344,7 +344,7 @@ class TestScrapersSubnational:
         sources = [
             (
                 "#severity+malnutrition+num+subnational",
-                "Oct 01, 2020",
+                "Oct 1, 2020",
                 "UNICEF",
                 "https://data.humdata.org/dataset/87b86e7d-e9b2-4922-a48e-1f10afd528e6/resource/eabba7e7-16d0-436c-a62c-df6edd03be7c/download/unicef_who_wb_global_expanded_databases_severe_wasting.xlsx",
             )

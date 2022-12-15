@@ -99,43 +99,43 @@ class TestScraperGlobal:
         sources = [
             (
                 "#capacity+doses+forecast+covax",
-                "Aug 07, 2020",
+                "Aug 7, 2020",
                 "covax",
                 "https://docs.google.com/spreadsheets/d/e/2PACX-1vTVzu79PPTfaA2syevOQfyRRjy63dJWitqu0fFbXIQCzoUn9K9TiMWMRvFGg1RBsnLmgYugzSEiAye2/pub?gid=992438980&single=true&output=csv",
             ),
             (
                 "#capacity+doses+delivered+covax",
-                "Aug 07, 2020",
+                "Aug 7, 2020",
                 "covax",
                 "https://docs.google.com/spreadsheets/d/e/2PACX-1vTVzu79PPTfaA2syevOQfyRRjy63dJWitqu0fFbXIQCzoUn9K9TiMWMRvFGg1RBsnLmgYugzSEiAye2/pub?gid=992438980&single=true&output=csv",
             ),
             (
                 "#capacity+doses+delivered+others",
-                "Aug 07, 2020",
+                "Aug 7, 2020",
                 "covax",
                 "https://docs.google.com/spreadsheets/d/e/2PACX-1vTVzu79PPTfaA2syevOQfyRRjy63dJWitqu0fFbXIQCzoUn9K9TiMWMRvFGg1RBsnLmgYugzSEiAye2/pub?gid=992438980&single=true&output=csv",
             ),
             (
                 "#capacity+doses+delivered+total",
-                "Aug 07, 2020",
+                "Aug 7, 2020",
                 "covax",
                 "https://docs.google.com/spreadsheets/d/e/2PACX-1vTVzu79PPTfaA2syevOQfyRRjy63dJWitqu0fFbXIQCzoUn9K9TiMWMRvFGg1RBsnLmgYugzSEiAye2/pub?gid=992438980&single=true&output=csv",
             ),
             (
                 "#capacity+doses+covax+pfizerbiontech",
-                "Aug 07, 2020",
+                "Aug 7, 2020",
                 "covax",
                 "https://docs.google.com/spreadsheets/d/e/2PACX-1vTVzu79PPTfaA2syevOQfyRRjy63dJWitqu0fFbXIQCzoUn9K9TiMWMRvFGg1RBsnLmgYugzSEiAye2/pub?gid=992438980&single=true&output=csv",
             ),
             (
                 "#capacity+doses+covax+astrazenecasii",
-                "Aug 07, 2020",
+                "Aug 7, 2020",
                 "covax",
                 "https://docs.google.com/spreadsheets/d/e/2PACX-1vTVzu79PPTfaA2syevOQfyRRjy63dJWitqu0fFbXIQCzoUn9K9TiMWMRvFGg1RBsnLmgYugzSEiAye2/pub?gid=992438980&single=true&output=csv",
             ),
             (
                 "#capacity+doses+covax+astrazenecaskbio",
-                "Aug 07, 2020",
+                "Aug 7, 2020",
                 "covax",
                 "https://docs.google.com/spreadsheets/d/e/2PACX-1vTVzu79PPTfaA2syevOQfyRRjy63dJWitqu0fFbXIQCzoUn9K9TiMWMRvFGg1RBsnLmgYugzSEiAye2/pub?gid=992438980&single=true&output=csv",
             ),
@@ -301,7 +301,7 @@ class TestScraperGlobal:
         sources = [
             (
                 "#capacity+doses+administered+total",
-                "Oct 01, 2020",
+                "Oct 1, 2020",
                 "Our World in Data",
                 "https://proxy.hxlstandard.org/data.csv?tagger-match-all=on&tagger-01-header=location&tagger-01-tag=%23country%2Bname&tagger-02-header=iso_code&tagger-02-tag=%23country%2Bcode&tagger-03-header=date&tagger-03-tag=%23date&tagger-04-header=total_vaccinations&tagger-04-tag=%23total%2Bvaccinations&tagger-08-header=daily_vaccinations&tagger-08-tag=%23total%2Bvaccinations%2Bdaily&url=https%3A%2F%2Fraw.githubusercontent.com%2Fowid%2Fcovid-19-data%2Fmaster%2Fpublic%2Fdata%2Fvaccinations%2Fvaccinations.csv&header-row=1&dest=data_view",
             )
@@ -332,13 +332,13 @@ class TestScraperGlobal:
         sources = [
             (
                 "#value+cbpf+funding+total+usd",
-                "May 02, 2021",
+                "May 2, 2021",
                 "CBPF",
                 "https://data.humdata.org/dataset/cbpf-allocations-and-contributions",
             ),
             (
                 "#value+cerf+funding+total+usd",
-                "May 01, 2021",
+                "May 1, 2021",
                 "CERF",
                 "https://data.humdata.org/dataset/cerf-covid-19-allocations",
             ),
@@ -475,7 +475,7 @@ class TestScraperGlobal:
         sources = [
             (
                 "#capacity+doses+administered+total",
-                "May 03, 2021",
+                "May 3, 2021",
                 "Our World in Data",
                 "https://proxy.hxlstandard.org/data.csv?tagger-match-all=on&tagger-01-header=location&tagger-01-tag=%23country%2Bname&tagger-02-header=iso_code&tagger-02-tag=%23country%2Bcode&tagger-03-header=date&tagger-03-tag=%23date&tagger-04-header=total_vaccinations&tagger-04-tag=%23total%2Bvaccinations&tagger-08-header=daily_vaccinations&tagger-08-tag=%23total%2Bvaccinations%2Bdaily&url=https%3A%2F%2Fraw.githubusercontent.com%2Fowid%2Fcovid-19-data%2Fmaster%2Fpublic%2Fdata%2Fvaccinations%2Fvaccinations.csv&header-row=1&dest=data_view",
             )
@@ -497,7 +497,7 @@ class TestScraperGlobal:
         sources = [
             (
                 "#population",
-                "May 03, 2021",
+                "May 3, 2021",
                 "World Bank",
                 "https://data.humdata.org/organization/world-bank-group",
             )
@@ -521,7 +521,7 @@ class TestScraperGlobal:
         sources = [
             (
                 "#capacity+doses+administered+total",
-                "May 03, 2021",
+                "May 3, 2021",
                 "Our World in Data",
                 "https://proxy.hxlstandard.org/data.csv?tagger-match-all=on&tagger-01-header=location&tagger-01-tag=%23country%2Bname&tagger-02-header=iso_code&tagger-02-tag=%23country%2Bcode&tagger-03-header=date&tagger-03-tag=%23date&tagger-04-header=total_vaccinations&tagger-04-tag=%23total%2Bvaccinations&tagger-08-header=daily_vaccinations&tagger-08-tag=%23total%2Bvaccinations%2Bdaily&url=https%3A%2F%2Fraw.githubusercontent.com%2Fowid%2Fcovid-19-data%2Fmaster%2Fpublic%2Fdata%2Fvaccinations%2Fvaccinations.csv&header-row=1&dest=data_view",
             )
@@ -543,13 +543,13 @@ class TestScraperGlobal:
         sources = [
             (
                 "#capacity+doses+administered+total",
-                "May 03, 2021",
+                "May 3, 2021",
                 "Our World in Data",
                 "https://proxy.hxlstandard.org/data.csv?tagger-match-all=on&tagger-01-header=location&tagger-01-tag=%23country%2Bname&tagger-02-header=iso_code&tagger-02-tag=%23country%2Bcode&tagger-03-header=date&tagger-03-tag=%23date&tagger-04-header=total_vaccinations&tagger-04-tag=%23total%2Bvaccinations&tagger-08-header=daily_vaccinations&tagger-08-tag=%23total%2Bvaccinations%2Bdaily&url=https%3A%2F%2Fraw.githubusercontent.com%2Fowid%2Fcovid-19-data%2Fmaster%2Fpublic%2Fdata%2Fvaccinations%2Fvaccinations.csv&header-row=1&dest=data_view",
             ),
             (
                 "#capacity+doses+administered+coverage+pct",
-                "May 03, 2021",
+                "May 3, 2021",
                 "Our World in Data",
                 "https://proxy.hxlstandard.org/data.csv?tagger-match-all=on&tagger-01-header=location&tagger-01-tag=%23country%2Bname&tagger-02-header=iso_code&tagger-02-tag=%23country%2Bcode&tagger-03-header=date&tagger-03-tag=%23date&tagger-04-header=total_vaccinations&tagger-04-tag=%23total%2Bvaccinations&tagger-08-header=daily_vaccinations&tagger-08-tag=%23total%2Bvaccinations%2Bdaily&url=https%3A%2F%2Fraw.githubusercontent.com%2Fowid%2Fcovid-19-data%2Fmaster%2Fpublic%2Fdata%2Fvaccinations%2Fvaccinations.csv&header-row=1&dest=data_view",
             ),
@@ -583,13 +583,13 @@ class TestScraperGlobal:
         sources = [
             (
                 "#value+cbpf+funding+total+usd+global",
-                "May 02, 2021",
+                "May 2, 2021",
                 "CBPF",
                 "https://data.humdata.org/dataset/cbpf-allocations-and-contributions",
             ),
             (
                 "#value+cerf+funding+total+usd+global",
-                "May 01, 2021",
+                "May 1, 2021",
                 "CERF",
                 "https://data.humdata.org/dataset/cerf-covid-19-allocations",
             ),
@@ -617,13 +617,13 @@ class TestScraperGlobal:
         sources = [
             (
                 "#value+cbpf+funding+total+usd+globe",
-                "May 02, 2021",
+                "May 2, 2021",
                 "CBPF",
                 "https://data.humdata.org/dataset/cbpf-allocations-and-contributions",
             ),
             (
                 "#value+cerf+funding+total+usd+globe",
-                "May 01, 2021",
+                "May 1, 2021",
                 "CERF",
                 "https://data.humdata.org/dataset/cerf-covid-19-allocations",
             ),
@@ -651,13 +651,13 @@ class TestScraperGlobal:
         sources = [
             (
                 "#value+cbpf+funding+total+usd+world",
-                "May 02, 2021",
+                "May 2, 2021",
                 "CBPF",
                 "https://data.humdata.org/dataset/cbpf-allocations-and-contributions",
             ),
             (
                 "#value+cerf+funding+total+usd+world",
-                "May 01, 2021",
+                "May 1, 2021",
                 "CERF",
                 "https://data.humdata.org/dataset/cerf-covid-19-allocations",
             ),

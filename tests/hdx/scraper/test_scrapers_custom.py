@@ -76,7 +76,7 @@ class TestScrapersCustom:
         sources = [
             (
                 "#population",
-                "Oct 01, 2020",
+                "Oct 1, 2020",
                 "World Bank",
                 "https://data.humdata.org/organization/world-bank-group",
             ),

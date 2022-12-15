@@ -138,13 +138,13 @@ class TestScrapersAppendData:
         assert keys == names
 
         sources = self.get_expected_sources(
-            headers, "Nov 01, 2022", "ETH", True
+            headers, "Nov 1, 2022", "ETH", True
         )
         sources += self.get_expected_sources(
-            headers, "Oct 01, 2020", "KEN", True
+            headers, "Oct 1, 2020", "KEN", True
         )
         sources += self.get_expected_sources(
-            headers, "Oct 01, 2020", "SOM", True
+            headers, "Oct 1, 2020", "SOM", True
         )
         run_check_scrapers(
             names,
@@ -210,13 +210,13 @@ class TestScrapersAppendData:
             ),
             (
                 "#affected+gam",
-                "Nov 01, 2022",
+                "Nov 1, 2022",
                 "Multiple Source (Humanitarian Partners)",
                 "https://data.humdata.org/dataset?groups=eth&groups=ken&groups=som&organization=ocha-rosea&vocab_Topics=droughts&q=&sort=score%20desc%2C%20if(gt(last_modified%2Creview_date)%2Clast_modified%2Creview_date)%20desc&ext_page_size=25",
             ),
             (
                 "#affected+water",
-                "Nov 01, 2022",
+                "Nov 1, 2022",
                 "Multiple Source (Humanitarian Partners)",
                 "https://data.humdata.org/dataset?groups=eth&groups=ken&groups=som&organization=ocha-rosea&vocab_Topics=droughts&q=&sort=score%20desc%2C%20if(gt(last_modified%2Creview_date)%2Clast_modified%2Creview_date)%20desc&ext_page_size=25",
             ),
@@ -251,7 +251,7 @@ class TestScrapersAppendData:
             level,
             headers,
             values,
-            self.get_expected_sources(headers, "Nov 01, 2022", "ETH"),
+            self.get_expected_sources(headers, "Nov 1, 2022", "ETH"),
             source_urls=[
                 "https://data.humdata.org/dataset/ethiopia-drought-related-key-figures",
                 "https://data.humdata.org/dataset/kenya-drought-related-key-figures",
@@ -266,7 +266,7 @@ class TestScrapersAppendData:
         additional_sources.append(
             {
                 "indicator": "#value+funding+required+usd",
-                "source_date": "Nov 01, 2022",
+                "source_date": "Nov 1, 2022",
                 "source": "Multiple Source (Humanitarian Partners)",
                 "source_url": "https://data.humdata.org/dataset/kenya-drought-related-key-figures",
             }
@@ -277,7 +277,7 @@ class TestScrapersAppendData:
             secondary_runner=runner,  # to check we don't get duplicate sources
         )
         assert jsonout.json["sources_data"] == self.get_expected_sources_data(
-            headers, "Nov 01, 2022", "ETH"
+            headers, "Nov 1, 2022", "ETH"
         )
 
         Sources.set_should_overwrite_sources(True)
@@ -291,7 +291,7 @@ class TestScrapersAppendData:
             level,
             headers,
             values,
-            self.get_expected_sources(headers, "Oct 01, 2020", "SOM"),
+            self.get_expected_sources(headers, "Oct 1, 2020", "SOM"),
             source_urls=[
                 "https://data.humdata.org/dataset/ethiopia-drought-related-key-figures",
                 "https://data.humdata.org/dataset/kenya-drought-related-key-figures",
@@ -306,7 +306,7 @@ class TestScrapersAppendData:
         additional_sources.append(
             {
                 "indicator": "#value+funding+required+usd",
-                "source_date": "Oct 01, 2020",
+                "source_date": "Oct 1, 2020",
                 "source": "multiple",
                 "source_url": "https://data.humdata.org/dataset/ken-key-figures-2022",
             }
@@ -317,7 +317,7 @@ class TestScrapersAppendData:
             secondary_runner=runner,  # to check we don't get duplicate sources
         )
         assert jsonout.json["sources_data"] == self.get_expected_sources_data(
-            headers, "Oct 01, 2020", "SOM"
+            headers, "Oct 1, 2020", "SOM"
         )
         Sources.set_should_overwrite_sources(False)
 
@@ -340,7 +340,7 @@ class TestScrapersAppendData:
             level,
             headers,
             values,
-            self.get_expected_sources(headers, "Oct 01, 2020", "KEN"),
+            self.get_expected_sources(headers, "Oct 1, 2020", "KEN"),
             source_urls=[
                 "https://data.humdata.org/dataset/ethiopia-drought-related-key-figures",
                 "https://data.humdata.org/dataset/kenya-drought-related-key-figures",
@@ -355,7 +355,7 @@ class TestScrapersAppendData:
         additional_sources.append(
             {
                 "indicator": "#value+funding+required+usd",
-                "source_date": "Nov 01, 2022",
+                "source_date": "Nov 1, 2022",
                 "source": "Multiple Source (Humanitarian Partners)",
                 "source_url": "https://data.humdata.org/dataset/kenya-drought-related-key-figures",
             }
@@ -366,5 +366,5 @@ class TestScrapersAppendData:
             secondary_runner=runner,  # to check we don't get duplicate sources
         )
         assert jsonout.json["sources_data"] == self.get_expected_sources_data(
-            headers, "Oct 01, 2020", "KEN"
+            headers, "Oct 1, 2020", "KEN"
         )

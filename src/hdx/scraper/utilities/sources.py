@@ -7,7 +7,7 @@ from hdx.utilities.typehint import ListTuple
 
 
 class Sources:
-    default_source_date_format = "%b %d, %Y"
+    default_source_date_format = "%b %-d, %Y"
     default_date_range_separator = "-"
     should_overwrite_sources = False
 
