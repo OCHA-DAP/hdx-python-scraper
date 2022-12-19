@@ -263,22 +263,23 @@ class TestScrapersAppendData:
         jsonout = JsonFile(configuration["json"], ["sources"])
         outputs = {"json": jsonout}
         additional_sources = deepcopy(configuration["additional_sources"])
+        source_url = "https://data.humdata.org/dataset/kenya-drought-related-key-figures"
         additional_sources.append(
             {
                 "indicator": "#value+funding+required+usd",
                 "source_date": "Nov 1, 2022",
                 "source": "Multiple Source (Humanitarian Partners)",
-                "source_url": "https://data.humdata.org/dataset/kenya-drought-related-key-figures",
+                "source_url": source_url,
             }
         )
         writer = Writer(runner, outputs)
         writer.update_sources(
-            configuration["additional_sources"],
+            additional_sources,
             secondary_runner=runner,  # to check we don't get duplicate sources
         )
-        assert jsonout.json["sources_data"] == self.get_expected_sources_data(
-            headers, "Nov 1, 2022", "ETH"
-        )
+        result = self.get_expected_sources_data(headers, "Nov 1, 2022", "ETH")
+        result[1]["#meta+url"] = source_url
+        assert jsonout.json["sources_data"] == result
 
         Sources.set_should_overwrite_sources(True)
         runner = Runner(iso3s, today)
@@ -313,7 +314,7 @@ class TestScrapersAppendData:
         )
         writer = Writer(runner, outputs)
         writer.update_sources(
-            configuration["additional_sources"],
+            additional_sources,
             secondary_runner=runner,  # to check we don't get duplicate sources
         )
         assert jsonout.json["sources_data"] == self.get_expected_sources_data(
@@ -362,9 +363,61 @@ class TestScrapersAppendData:
         )
         writer = Writer(runner, outputs)
         writer.update_sources(
-            configuration["additional_sources"],
+            additional_sources,
             secondary_runner=runner,  # to check we don't get duplicate sources
         )
         assert jsonout.json["sources_data"] == self.get_expected_sources_data(
             headers, "Oct 1, 2020", "KEN"
         )
+
+    def test_additional_source_overwrite(
+        self, configuration, iso3s, headers, values
+    ):
+        BaseScraper.population_lookup = dict()
+        today = parse_date("2020-10-01")
+        level = "national"
+        scraper_configuration = configuration[
+            "scraper_append_data_should_overwrite"
+        ]
+        runner = Runner(iso3s, today)
+        names = ["key_figures_eth", "key_figures_ken", "key_figures_som"]
+        keys = runner.add_configurables(scraper_configuration, level)
+        assert keys == names
+        run_check_scrapers(
+            names,
+            runner,
+            level,
+            headers,
+            values,
+            self.get_expected_sources(headers, "Oct 1, 2020", "KEN"),
+            source_urls=[
+                "https://data.humdata.org/dataset/ethiopia-drought-related-key-figures",
+                "https://data.humdata.org/dataset/kenya-drought-related-key-figures",
+                "https://data.humdata.org/dataset/somalia-drought-related-key-figures",
+            ],
+            set_not_run=False,
+        )
+
+        jsonout = JsonFile(configuration["json"], ["sources"])
+        outputs = {"json": jsonout}
+        additional_sources = deepcopy(configuration["additional_sources"])
+        source_date = "Nov 1, 2022"
+        source_url = "https://data.humdata.org/dataset/kenya-drought-related-key-figures"
+        additional_sources.append(
+            {
+                "indicator": "#value+funding+required+usd",
+                "source_date": source_date,
+                "source": "Multiple Source (Humanitarian Partners)",
+                "source_url": source_url,
+                "should_overwrite_source": True,
+            }
+        )
+        writer = Writer(runner, outputs)
+        writer.update_sources(
+            additional_sources,
+            secondary_runner=runner,  # to check we don't get duplicate sources
+        )
+        result = self.get_expected_sources_data(headers, "Oct 1, 2020", "KEN")
+        result[1]["#date"] = source_date
+        result[1]["#meta+url"] = source_url
+        assert jsonout.json["sources_data"] == result
