@@ -162,14 +162,25 @@ class TestScrapersNational:
             ],
             ["AFG", "96.99", "3.41", "96.99", "3.41"],
         ]
-        combined_sources = [
-            (
-                "#date+start+conflict",
-                "Feb 24, 2022",
-                "Meduza",
-                "https://meduza.io/en/news/2022/02/24/putin-announces-start-of-military-operation-in-eastern-ukraine",
-            ),
-        ] + sources
+        combined_sources = (
+            [
+                (
+                    "#date+start+conflict",
+                    "Feb 24, 2022",
+                    "Meduza",
+                    "https://meduza.io/en/news/2022/02/24/putin-announces-start-of-military-operation-in-eastern-ukraine",
+                ),
+            ]
+            + sources
+            + [
+                (
+                    "#affected+infected+per100000+copy",
+                    "Aug 6, 2020",
+                    "WHO",
+                    "https://covid19.who.int/WHO-COVID-19-global-data.csv",
+                )
+            ]
+        )
         assert (
             runner.get_sources(
                 additional_sources=configuration["additional_sources"]

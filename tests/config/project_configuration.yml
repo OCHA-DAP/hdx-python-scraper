@@ -50,6 +50,8 @@ additional_sources:
     source_date: "2022-02-24"
     source: "Meduza"
     source_url: "https://meduza.io/en/news/2022/02/24/putin-announces-start-of-military-operation-in-eastern-ukraine"
+  - indicator: "#affected+infected+per100000+copy"
+    copy: "#affected+infected+per100000"
 
 # national
 scraper_national:
