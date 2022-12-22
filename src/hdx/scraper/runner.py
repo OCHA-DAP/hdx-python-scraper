@@ -1051,43 +1051,41 @@ class Runner:
         def add_additional_sources():
             for sourceinfo in additional_sources:
                 hxltag = sourceinfo["indicator"]
+                date = sourceinfo.get("source_date")
+                if sourceinfo.get("force_date_today", False):
+                    date = self.today
+                source_name = sourceinfo.get("source")
+                source_url = sourceinfo.get("source_url")
+                dataset_name = sourceinfo.get("dataset")
+                if dataset_name:
+                    dataset = reader.read_dataset(dataset_name)
+                    if date is None:
+                        date = get_startend_dates_from_dataset_date(
+                            dataset, today=self.today
+                        )
+                    if source_name is None:
+                        source_name = dataset["dataset_source"]
+                    if source_url is None:
+                        source_url = dataset.get_hdx_url()
+                if date:
+                    sourceinfo["source_date"] = date
+                    date = Sources.get_hxltag_source_date(
+                        sourceinfo, hxltag, fallback=True
+                    )
                 copy = sourceinfo.get("copy")
                 if copy:
                     try:
                         index = hxltags.index(copy)
                         orig_source = sources[index]
-                        source = (
-                            hxltag,
-                            orig_source[1],
-                            orig_source[2],
-                            orig_source[3],
-                        )
+                        if not date:
+                            date = orig_source[1]
+                        if not source_name:
+                            source_name = orig_source[2]
+                        if not source_url:
+                            source_url = orig_source[3]
                     except ValueError:
                         continue
-                else:
-                    date = sourceinfo.get("source_date")
-                    if date is None:
-                        if sourceinfo.get("force_date_today", False):
-                            sourceinfo["source_date"] = self.today
-                    source_name = sourceinfo.get("source")
-                    source_url = sourceinfo.get("source_url")
-                    dataset_name = sourceinfo.get("dataset")
-                    if dataset_name:
-                        dataset = reader.read_dataset(dataset_name)
-                        if date is None:
-                            sourceinfo[
-                                "source_date"
-                            ] = get_startend_dates_from_dataset_date(
-                                dataset, today=self.today
-                            )
-                        if source_name is None:
-                            source_name = dataset["dataset_source"]
-                        if source_url is None:
-                            source_url = dataset.get_hdx_url()
-                    date = Sources.get_hxltag_source_date(
-                        sourceinfo, hxltag, fallback=True
-                    )
-                    source = (hxltag, date, source_name, source_url)
+                source = (hxltag, date, source_name, source_url)
                 should_overwrite_source = sourceinfo.get(
                     "should_overwrite_source", should_overwrite_sources
                 )
