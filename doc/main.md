@@ -266,6 +266,8 @@ The structure is broadly as follows:
                     "national": (("Header1",), ("#hxltag1",)),
                     "regional": (("Header1",), ("#hxltag1",),),
                 },
+                source_configuration=Sources.create_source_configuration(
+                    admin_sources=True),
             )
             self.today = today
             self.countryiso3s = countryiso3s
@@ -1161,10 +1163,18 @@ declared according to a specification eg. from YAML:
         source: "Multiple sources"
         force_date_today: True
         source_url: "https://data.humdata.org/search?q=(name:ipc-country-data%20OR%20name:cadre-harmonise)"
+      - indicator: "#affected+idps+som"
+        copy: "#affected+idps+ind+som"
+        source_url: "https://data.humdata.org/dataset/somalia-drought-related-key-figures"
+        should_overwrite_source: True
 
 This allows additional HXL hashtags to be associated with a dataset date, source and 
 url. The metadata for "#food-prices" is obtained from a dataset on HDX, while for
-"#affected+food+p3plus+num", it is all specified. 
+"#affected+food+p3plus+num", it is all specified. For "#affected+idps+som", it is copied
+from "#affected+idps+ind+som" with `source_url` being replaced. 
+`should_overwrite_source` allows any existing source to be overridden. It is also 
+possible for `indicator` and `copy` to refer to the same HXL hashtag, meaning that the 
+source will be overridden.
 
 The second optional `names` parameter allows the specific scrapers for which sources are 
 to be output to be chosen by name. The third optional parameter `secondary_runner` 
@@ -1277,6 +1287,14 @@ The configuration lists input HXL tags along with what sort of aggregation will 
 performed ("sum", "mean" or "eval" under `action`). "eval" allows combining already
 aggregated columns together. Where input comes from multiple columns, these can be 
 defined with `input` and the output column name with `output`.
+
+        "#affected+idps":
+          source: "IOM, UNHCR, PRMN"
+          source_url: "https://data.humdata.org/dataset?groups=eth&groups=ken&groups=som&organization=ocha-rosea&vocab_Topics=drought&q=&sort=score%20desc%2C%20if(gt(last_modified%2Creview_date)%2Clast_modified%2Creview_date)%20desc&ext_page_size=25"
+          action: "sum"
+
+Source information such as `source_date`, `source` and/or `source_url`, can be 
+overridden as shown above.
 
 ### Resource Downloader
 
