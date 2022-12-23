@@ -176,7 +176,7 @@ class Sources:
         no_sources: bool = False,
         should_overwrite_sources: Optional[bool] = None,
     ) -> Optional[Dict]:
-        """Create source configuration. If none of the arguments are suppled, source
+        """Create source configuration. If none of the arguments are supplied, source
         configuration is None. suffix_attribute is an attribute to add to the end of
         source HXL hashtags. admin_sources defines whether the admin unit is added as an
         attribute (eg. a country iso3 code like +AFG). admin_level defines one or more
