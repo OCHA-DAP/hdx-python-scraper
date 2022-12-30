@@ -1,3 +1,4 @@
+from datetime import datetime
 from logging import Logger
 from typing import Dict, List, Optional, Union
 
@@ -12,19 +13,53 @@ class Sources:
     should_overwrite_sources = False
 
     @classmethod
-    def set_default_source_date_format(cls, format):
+    def set_default_source_date_format(cls, format: str) -> None:
+        """Set new default source date format. (Default is "%b %-d, %Y".)
+
+        Args:
+            format (str): Date format
+
+        Returns:
+            None
+        """
         cls.default_source_date_format = format
 
     @classmethod
-    def set_default_date_range_separator(cls, separator):
+    def set_default_date_range_separator(cls, separator: str) -> None:
+        """Set new default source date range separator. (Default is "-".)
+
+        Args:
+            separator (str): Separator
+
+        Returns:
+            None
+        """
         cls.default_date_range_separator = separator
 
     @classmethod
-    def set_should_overwrite_sources(cls, overwrite):
+    def set_should_overwrite_sources(cls, overwrite: bool) -> None:
+        """Set whether a source should overwrite a previous one with the same
+        HXL hashtag. (Default is to keep the previous source.)
+
+        Args:
+            overwrite (bool): Whether to overwrite previous source
+
+        Returns:
+            None
+        """
         cls.should_overwrite_sources = overwrite
 
     @staticmethod
-    def standardise_datasetinfo_source_date(datasetinfo):
+    def standardise_datasetinfo_source_date(datasetinfo: Dict) -> Optional[datetime]:
+        """Standardise source date format in datasetinfo dictionary. Returns
+        default end date or None.
+
+        Args:
+            datasetinfo (Dict): Information about dataset
+
+        Returns:
+            Optional[datetime]: Default end date or None
+        """
         source_date = datasetinfo.get("source_date")
         if not source_date:
             datasetinfo["source_date"] = None
@@ -63,7 +98,17 @@ class Sources:
         return None
 
     @classmethod
-    def get_hxltag_source_datetime(cls, datasetinfo, hxltag, fallback=False):
+    def get_hxltag_source_datetime(cls, datasetinfo: Dict, hxltag: str, fallback: bool=False) -> datetime:
+        """Get standardised source date for HXL hashtag as datetime
+
+        Args:
+            datasetinfo (Dict): Information about dataset
+            hxltag (str): HXL hashtag to check
+            fallback (bool): Whether to fall back to default_date. Defaults to False.
+
+        Returns:
+            datetime: Standardised source date for HXL hashtag
+        """
         cls.standardise_datasetinfo_source_date(datasetinfo)
         source_date = datasetinfo["source_date"]
         date = source_date.get(hxltag)
@@ -74,7 +119,16 @@ class Sources:
         return date
 
     @classmethod
-    def format_hxltag_source_date(cls, datasetinfo, date):
+    def format_hxltag_source_date(cls, datasetinfo: Dict, date: Dict) -> str:
+        """Get formatted date from source date
+
+        Args:
+            datasetinfo (Dict): Information about dataset
+            date (Dict): Source date dictionary
+
+        Returns:
+            str: Formatted source date string
+        """
         source_date_format = datasetinfo.get(
             "source_date_format", cls.default_source_date_format
         )
@@ -98,7 +152,18 @@ class Sources:
         return enddate
 
     @classmethod
-    def get_hxltag_source_date(cls, datasetinfo, hxltag, fallback=False):
+    def get_hxltag_source_date(cls, datasetinfo: Dict, hxltag: str, fallback: bool=False):
+        """Get standardised and formatted  source date for HXL hashtag as
+        string
+
+        Args:
+            datasetinfo (Dict): Information about dataset
+            hxltag (str): HXL hashtag to check
+            fallback (bool): Whether to fall back to default_date. Defaults to False.
+
+        Returns:
+            str: Standardised and formatted source date for HXL hashtag
+        """
         date = cls.get_hxltag_source_datetime(datasetinfo, hxltag, fallback)
         if not date:
             return
