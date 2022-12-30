@@ -50,7 +50,9 @@ class Sources:
         cls.should_overwrite_sources = overwrite
 
     @staticmethod
-    def standardise_datasetinfo_source_date(datasetinfo: Dict) -> Optional[datetime]:
+    def standardise_datasetinfo_source_date(
+        datasetinfo: Dict,
+    ) -> Optional[datetime]:
         """Standardise source date format in datasetinfo dictionary. Returns
         default end date or None.
 
@@ -98,7 +100,9 @@ class Sources:
         return None
 
     @classmethod
-    def get_hxltag_source_datetime(cls, datasetinfo: Dict, hxltag: str, fallback: bool=False) -> datetime:
+    def get_hxltag_source_datetime(
+        cls, datasetinfo: Dict, hxltag: str, fallback: bool = False
+    ) -> datetime:
         """Get standardised source date for HXL hashtag as datetime
 
         Args:
@@ -152,7 +156,9 @@ class Sources:
         return enddate
 
     @classmethod
-    def get_hxltag_source_date(cls, datasetinfo: Dict, hxltag: str, fallback: bool=False):
+    def get_hxltag_source_date(
+        cls, datasetinfo: Dict, hxltag: str, fallback: bool = False
+    ):
         """Get standardised and formatted  source date for HXL hashtag as
         string
 
