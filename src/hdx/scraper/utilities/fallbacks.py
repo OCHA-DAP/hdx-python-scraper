@@ -32,10 +32,10 @@ class Fallbacks:
         admin_name_mapping: Dict[str, str] = default_admin_name_mapping,
     ) -> None:
         """
-        Add fallbacks from a given JSON fallbacks_path (which will usually be the
-        previous run). Map the keys in the file to levels, use the given sources_key
-        for sources and use the given HXL hashtags for different admin levels. The
-        defaults are:
+        Add fallbacks from a given JSON fallbacks_path (which will usually be
+        the previous run). Map the keys in the file to levels, use the given
+        sources_key for sources and use the given HXL hashtags for different
+        admin levels. The defaults are:
             default_levels_mapping = {
                 "global": "global_data",
                 "regional": "regional_data",
@@ -97,15 +97,17 @@ class Fallbacks:
     @classmethod
     def get(
         cls,
-        level,
+        level: str,
         headers: Tuple[List, List],
     ) -> Tuple[List, List]:
-        """Use provided fallbacks when there is a problem obtaining the latest data. The
-        fallbacks dictionary should have the following keys: "data" containing a list of
-        dictionaries from HXL hashtag to value, "admin name" to specify a particular admin
-        name to use or "admin hxltag" specifying the HXL hashtag of the admin unit,
-        "sources" containing a list of dictionaries with source information and
-        "sources hxltags" containing a list of HXL hashtags with the name one first. eg.
+        """Use provided fallbacks when there is a problem obtaining the latest
+        data. The fallbacks dictionary should have the following keys: "data"
+        containing a list of dictionaries from HXL hashtag to value,
+        "admin name" to specify a particular admin name to use or
+        "admin hxltag" specifying the HXL hashtag of the admin unit, "sources"
+        containing a list of dictionaries with source information and
+        "sources hxltags" containing a list of HXL hashtags with the name one
+        first. eg.
 
         {"data": [{"#country+code": "AFG", "": "#value+wb+total": "572000000", ...}, ...],
         "admin hxltag": "#country+code",
@@ -115,6 +117,7 @@ class Fallbacks:
         "sources hxltags": ["#indicator+name", "#date", "#meta+source", "#meta+url"]}
 
         Args:
+            level (str): Level to obtain fallbacks
             headers (Tuple[List, List]): Headers
 
         Returns:

@@ -158,8 +158,8 @@ class Sources:
     @classmethod
     def get_hxltag_source_date(
         cls, datasetinfo: Dict, hxltag: str, fallback: bool = False
-    ):
-        """Get standardised and formatted  source date for HXL hashtag as
+    ) -> str:
+        """Get standardised and formatted source date for HXL hashtag as
         string
 
         Args:
@@ -183,7 +183,7 @@ class Sources:
         source: ListTuple[str],
         logger: Logger,
         should_overwrite_sources: Optional[bool] = None,
-    ):
+    ) -> None:
         """Add source to sources preventing duplication.
 
         Args:
@@ -220,7 +220,7 @@ class Sources:
         sources_to_add: List[ListTuple],
         logger: Logger,
         should_overwrite_sources: Optional[bool] = None,
-    ):
+    ) -> None:
         """Add source to sources preventing duplication
 
         Args:
@@ -247,14 +247,16 @@ class Sources:
         no_sources: bool = False,
         should_overwrite_sources: Optional[bool] = None,
     ) -> Optional[Dict]:
-        """Create source configuration. If none of the arguments are supplied, source
-        configuration is None. suffix_attribute is an attribute to add to the end of
-        source HXL hashtags. admin_sources defines whether the admin unit is added as an
-        attribute (eg. a country iso3 code like +AFG). admin_level defines one or more
-        AdminLevel objects that will be used to map admin pcodes to country iso3 codes. If
-        admin_level is defined, admin_sources is assumed to be True. Alternatively,
-        admin_mapping_dict can be supplied to define mapping from amin names to attribute
-        suffixes. If no sources should be outputted no_sources should be set to True.
+        """Create source configuration. If none of the arguments are supplied,
+        source configuration is None. suffix_attribute is an attribute to add
+        to the end of source HXL hashtags. admin_sources defines whether the
+        admin unit is added as an attribute (eg. a country iso3 code like
+        +AFG). admin_level defines one or more AdminLevel objects that will be
+        used to map admin pcodes to country iso3 codes. If admin_level is
+        defined, admin_sources is assumed to be True. Alternatively,
+        admin_mapping_dict can be supplied to define mapping from amin names to
+        attribute suffixes. If no sources should be outputted no_sources should
+        be set to True.
 
         Args:
             suffix_attribute (Optional[str]): Suffix to add. Defaults to None.

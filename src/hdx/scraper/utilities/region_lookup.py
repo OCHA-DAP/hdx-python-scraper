@@ -24,14 +24,15 @@ class RegionLookup:
         additional_regions: Dict[str, ListTuple] = dict(),
     ) -> None:
         """Read in region information and provide regions (list of regions) and
-        iso3_to_region (one-to-one mapping from country ISO3 code to region name). It
-        also provides iso3_to_regions which is a one-to-many mapping from country ISO3
-        code to multiple region names. The possibility of multiple region names arises
-        due to the addition of toplevel_region which is defined in the region_config
-        and additional_regions which are of the form: {"HRPs": hrp_countries, ...}.
-        Hence, a country can map to not only what is specified in the dataset given in
-        region_config but also to toplevel_region (eg. GHO) which covers all countries
-        given by countryiso3s and to one or more additional_regions.
+        iso3_to_region (one-to-one mapping from country ISO3 code to region
+        name). It also provides iso3_to_regions which is a one-to-many mapping
+        from country ISO3 code to multiple region names. The possibility of
+        multiple region names arises due to the addition of toplevel_region
+        which is defined in the region_config and additional_regions which are
+        of the form: {"HRPs": hrp_countries, ...}. Hence, a country can map to
+        not only what is specified in the dataset given in region_config but
+        also to toplevel_region (eg. GHO) which covers all countries given by
+        countryiso3s and to one or more additional_regions.
 
         Args:
             region_config (Dict): Region configuration

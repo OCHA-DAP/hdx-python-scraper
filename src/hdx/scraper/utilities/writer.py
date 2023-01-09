@@ -81,11 +81,12 @@ class Writer:
         overrides: Dict[str, Dict] = dict(),
         toplevel: str = "allregions",
     ) -> List[List]:
-        """Get rows for the given toplevel for scrapers limiting to those in names if given.
-        Rows include header row, HXL hashtag row and a value row.  Sometimes it may be
-        necessary to map alternative level names to the top level and this can be done
-        using overrides. It is a dictionary with keys being scraper names and values being
-        dictionaries which map level names to output levels.
+        """Get rows for the given toplevel for scrapers limiting to those in
+        names if given. Rows include header row, HXL hashtag row and a value
+        row.  Sometimes it may be necessary to map alternative level names to
+        the top level and this can be done using overrides. It is a dictionary
+        with keys being scraper names and values being dictionaries which map
+        level names to output levels.
 
         Args:
             names (Optional[ListTuple[str]]): Names of scrapers. Defaults to None.

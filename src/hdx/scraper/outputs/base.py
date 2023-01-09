@@ -21,7 +21,7 @@ class BaseOutput:
         tabname: str,
         values: Union[List, DataFrame],
         hxltags: Optional[Dict] = None,
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         """Update tab with values. Classes that inherit from this one should
         implement this method.
@@ -30,7 +30,7 @@ class BaseOutput:
             tabname (str): Tab to update
             values (Union[List, DataFrame]): Values in a list of lists or a DataFrame
             hxltags (Optional[Dict]): HXL tag mapping. Defaults to None.
-            **kwargs
+            **kwargs (Any): Keyword arguments
 
         Returns:
             None
