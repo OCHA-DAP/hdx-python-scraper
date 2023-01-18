@@ -82,13 +82,13 @@ class RowParser:
         self.single_maxdate = datasetinfo.get("single_maxdate", False)
         self.ignore_future_date = datasetinfo.get("ignore_future_date", True)
         self.adminlevel = adminlevel
-        self.admcols = datasetinfo.get("admin", list())
+        self.admcols = datasetinfo.get("admin", [])
         self.admexact = datasetinfo.get("admin_exact", False)
         self.admsingle = datasetinfo.get("admin_single", None)
         if self.admsingle:
             self.datelevel = None
         self.subsets = subsets
-        self.filter_cols = datasetinfo.get("filter_cols", list())
+        self.filter_cols = datasetinfo.get("filter_cols", [])
         prefilter = datasetinfo.get("prefilter")
         if prefilter is not None:
             prefilter = self.get_filter_str_for_eval(prefilter)
@@ -126,7 +126,7 @@ class RowParser:
         self.flatteninfo = datasetinfo.get("flatten")
         self.headers = headers
         self.header_to_hxltag: Optional[Dict[str, str]] = header_to_hxltag
-        self.filters = dict()
+        self.filters = {}
         self.read_external_filter(datasetinfo.get("external_filter"))
 
     def read_external_filter(self, external_filter: Optional[Dict]) -> None:
@@ -184,10 +184,10 @@ class RowParser:
         Returns:
             Iterator[Dict]: Input data with prefilter applied if specified and sorted if specified or deemed necessary
         """
-        rows = list()
+        rows = []
         for row in iterator:
             if self.header_to_hxltag:
-                newrow = dict()
+                newrow = {}
                 for header in row:
                     newrow[self.header_to_hxltag[header]] = row[header]
                 row = newrow
@@ -337,7 +337,7 @@ class RowParser:
             if not adms[i]:
                 return None, None
 
-        should_process_subset = list()
+        should_process_subset = []
         for subset in self.subsets:
             filter = subset["filter"]
             process = True

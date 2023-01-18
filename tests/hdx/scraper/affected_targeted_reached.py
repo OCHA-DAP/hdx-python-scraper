@@ -56,14 +56,14 @@ class AffectedTargetedReached(BaseScraper):
     def run(self) -> None:
         datasets = self.datasetinfo["datasets"]
         reader = self.get_reader()
-        affecteddict1 = dict()
-        targeteddict1 = dict()
-        reacheddict1 = dict()
-        prioritydict1 = dict()
-        affecteddict2 = dict()
-        targeteddict2 = dict()
-        reacheddict2 = dict()
-        prioritydict2 = dict()
+        affecteddict1 = {}
+        targeteddict1 = {}
+        reacheddict1 = {}
+        prioritydict1 = {}
+        affecteddict2 = {}
+        targeteddict2 = {}
+        reacheddict2 = {}
+        prioritydict2 = {}
 
         self.datasetinfo["source_date"] = {}
         source_dates = self.datasetinfo["source_date"]

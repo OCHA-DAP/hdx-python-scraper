@@ -64,7 +64,7 @@ class TestOutput:
             excelsheet = excelout.workbook[sheetname]
 
             def get_list_from_cells(cells):
-                result = [list(), list(), list()]
+                result = [[], [], []]
                 for i, row in enumerate(excelsheet[cells]):
                     for column in row:
                         result[i].append(column.value)
@@ -93,7 +93,7 @@ class TestOutput:
                 filepaths[3], join(fixtures, "test_scraper_other.json")
             )
 
-            jsonout.json = dict()
+            jsonout.json = {}
             df = pandas.DataFrame(output[2:], columns=output[0])
             noout.update_tab("national", df, hxltags=hxltags)
             excelout.update_tab("national", df, hxltags=hxltags)
@@ -178,7 +178,7 @@ class TestOutput:
             }
         }
         df = pandas.DataFrame.from_records([rows[1]])
-        jsonout.json = dict()
+        jsonout.json = {}
         noout.add_dataframe_rows("test", df, rows[0])
         jsonout.add_dataframe_rows("test", df, rows[0])
         assert jsonout.json == {

@@ -67,7 +67,7 @@ class Fallbacks:
                 "#meta+source",
                 "#meta+url",
             ]
-            cls.fallbacks = dict()
+            cls.fallbacks = {}
             for level, output_key in levels_mapping.items():
                 cls.fallbacks[level] = {
                     "data": fallback_data[output_key],
@@ -123,8 +123,8 @@ class Fallbacks:
         Returns:
             Tuple[List, List]: Tuple of (Output values, output sources)
         """
-        values = list()
-        sources = list()
+        values = []
+        sources = []
 
         if cls.fallbacks:
             fallbacks = cls.fallbacks[level]
@@ -133,7 +133,7 @@ class Fallbacks:
             fb_adm_hxltag = fallbacks.get("admin hxltag", None)
 
             output_hxltags = headers[1]
-            valdicts = [dict() for _ in output_hxltags]
+            valdicts = [{} for _ in output_hxltags]
             for row in fb_data:
                 if fb_adm_name:
                     adm_key = fb_adm_name

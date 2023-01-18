@@ -28,7 +28,7 @@ class EducationClosures(BaseScraper):
 
     @staticmethod
     def get_fully_closed(closures):
-        fully_closed = list()
+        fully_closed = []
         if not closures:
             return fully_closed
         for countryiso, closure in closures.items():
@@ -42,7 +42,7 @@ class EducationClosures(BaseScraper):
         )
         closures = self.get_values("national")[0]
         closed_countries = self.get_values("regional")[0]
-        country_dates = dict()
+        country_dates = {}
         for row in closures_iterator:
             countryiso = row["ISO"]
             if not countryiso or countryiso not in self.countryiso3s:

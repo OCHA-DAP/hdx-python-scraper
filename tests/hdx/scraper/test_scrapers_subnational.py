@@ -11,7 +11,7 @@ from .conftest import run_check_scraper
 
 class TestScrapersSubnational:
     def test_get_subnational(self, configuration):
-        BaseScraper.population_lookup = dict()
+        BaseScraper.population_lookup = {}
         today = parse_date("2020-10-01")
         adminlevel = AdminLevel(configuration)
         level = "subnational"
@@ -352,7 +352,7 @@ class TestScrapersSubnational:
         run_check_scraper(name, runner, level, headers, values, sources)
 
     def test_fixed_country(self, configuration):
-        BaseScraper.population_lookup = dict()
+        BaseScraper.population_lookup = {}
         today = parse_date("2020-10-01")
         adminlevel = AdminLevel(configuration["admin1"])
         level = "subnational"

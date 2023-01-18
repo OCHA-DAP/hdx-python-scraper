@@ -163,11 +163,11 @@ class TestSources:
         }
 
     def test_scraper_add_sources(self, configuration, enddate):
-        BaseScraper.population_lookup = dict()
+        BaseScraper.population_lookup = {}
         adminlevel = AdminLevel(configuration)
         level = "subnational"
         scraper = ConfigurableScraper(
-            "test", dict(), level, ["AFG"], adminlevel
+            "test", {}, level, ["AFG"], adminlevel
         )
 
         class MyRowParser:

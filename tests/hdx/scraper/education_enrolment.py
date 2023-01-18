@@ -48,7 +48,7 @@ class EducationEnrolment(BaseScraper):
         learners_012, learners_3, affected_learners = self.get_values(
             "national"
         )
-        all_learners = dict()
+        all_learners = {}
 
         for row in learners_iterator:
             countryiso = row["ISO3"]
@@ -92,7 +92,7 @@ class EducationEnrolment(BaseScraper):
                 if countryiso in self.closures.fully_closed:
                     affected_learners[countryiso] = no_learners
         affected_learners_total = self.get_values("regional")[0]
-        learners_total = dict()
+        learners_total = {}
         for countryiso in all_learners:
             country_learners = all_learners[countryiso]
             country_affected_learners = affected_learners.get(countryiso)

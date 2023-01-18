@@ -13,7 +13,7 @@ from .unhcr_myanmar_idps import idps_post_run
 
 class TestScrapersNational:
     def test_get_national_afg(self, configuration):
-        BaseScraper.population_lookup = dict()
+        BaseScraper.population_lookup = {}
         today = parse_date("2020-10-01")
         level = "national"
         scraper_configuration = configuration[f"scraper_{level}"]
@@ -353,7 +353,7 @@ class TestScrapersNational:
         run_check_scraper(name, runner, level, headers, values, sources)
 
     def test_get_national_ukr(self, configuration):
-        BaseScraper.population_lookup = dict()
+        BaseScraper.population_lookup = {}
         today = parse_date("2020-10-01")
         level = "national"
         scraper_configuration = configuration[f"scraper_{level}"]
@@ -411,7 +411,7 @@ class TestScrapersNational:
                 "#capacity+doses+administered+coverage+pct",
             ],
         )
-        values = [dict(), dict()]
+        values = [{}, {}]
         sources = [
             (
                 "#capacity+doses+administered+total",
@@ -542,7 +542,7 @@ class TestScrapersNational:
         ]
 
     def test_get_national_afg_mmr_phl(self, configuration):
-        BaseScraper.population_lookup = dict()
+        BaseScraper.population_lookup = {}
         today = parse_date("2021-05-03")
         errors_on_exit = ErrorsOnExit()
         level = "national"
@@ -598,7 +598,7 @@ class TestScrapersNational:
                 "https://data.unhcr.org/population/?widget_id=264111&geo_id=693&population_group=5407,4999",
             ],
         )
-        assert errors_on_exit.errors == list()
+        assert errors_on_exit.errors == []
         runner = Runner(
             ("AFG", "MMR", "PHL"),
             today,

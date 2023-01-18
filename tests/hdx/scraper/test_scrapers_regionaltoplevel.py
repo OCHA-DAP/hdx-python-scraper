@@ -142,7 +142,7 @@ class TestScrapersRegionalToplevel:
     ]
 
     def test_regionaltoplevel(self, configuration):
-        BaseScraper.population_lookup = dict()
+        BaseScraper.population_lookup = {}
         today = parse_date("2020-10-01")
 
         level = "national"
@@ -325,7 +325,7 @@ class TestScrapersRegionalToplevel:
                 "#mycolumn": "12345",
             }
         ]
-        jsonout.json["allregions_data"] = list()
+        jsonout.json["allregions_data"] = []
         writer.update_toplevel(
             allregions_rows,
             regional_rows=regional_rows,
@@ -343,7 +343,7 @@ class TestScrapersRegionalToplevel:
         ]
 
     def test_sourceperhxltag_nosources(self, configuration):
-        BaseScraper.population_lookup = dict()
+        BaseScraper.population_lookup = {}
         today = parse_date("2020-10-01")
 
         level = "national"
@@ -387,13 +387,13 @@ class TestScrapersRegionalToplevel:
             level,
             self.access_headers,
             self.access_values,
-            list(),
+            [],
             source_urls=self.access_source_urls,
             set_not_run=False,
         )
 
     def test_sourceperhxltag(self, configuration):
-        BaseScraper.population_lookup = dict()
+        BaseScraper.population_lookup = {}
         today = parse_date("2020-10-01")
 
         level = "national"

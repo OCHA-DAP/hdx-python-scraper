@@ -28,8 +28,8 @@ class TestRegionLookup:
             "GHO",
             "ROCCA",
         }
-        RegionLookup.iso3_to_region = dict()
-        RegionLookup.iso3_to_regions = dict()
+        RegionLookup.iso3_to_region = {}
+        RegionLookup.iso3_to_regions = {}
 
         regional_configuration = configuration["regional_ignore"]
         RegionLookup.load(
@@ -41,5 +41,5 @@ class TestRegionLookup:
         assert RegionLookup.iso3_to_regions["GHO"]["PAK"] == {"GHO", "ROAP"}
         assert RegionLookup.iso3_to_regions.get("HRPs") is None
         assert RegionLookup.iso3_to_regions["GHO"]["UKR"] == {"GHO"}
-        RegionLookup.iso3_to_region = dict()
-        RegionLookup.iso3_to_regions = dict()
+        RegionLookup.iso3_to_region = {}
+        RegionLookup.iso3_to_regions = {}

@@ -8,7 +8,7 @@ from .conftest import run_check_scrapers
 
 class TestRunnerGetResults:
     def test_get_results(self, configuration):
-        BaseScraper.population_lookup = dict()
+        BaseScraper.population_lookup = {}
         today = parse_date("2020-10-01")
 
         level = "national"
@@ -18,7 +18,7 @@ class TestRunnerGetResults:
         runner.add_configurables(scraper_configuration, level)
 
         level = "national"
-        BaseScraper.population_lookup = dict()
+        BaseScraper.population_lookup = {}
         iso3s = ("AFG", "PSE")
         runner = Runner(iso3s, today)
         runner.add_configurables(scraper_configuration, level)

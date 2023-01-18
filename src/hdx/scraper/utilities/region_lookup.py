@@ -12,8 +12,8 @@ logger = logging.getLogger(__name__)
 class RegionLookup:
     """Provide list of regions and mappings from country ISO3 code to region names."""
 
-    iso3_to_region = dict()
-    iso3_to_regions = dict()
+    iso3_to_region = {}
+    iso3_to_regions = {}
     regions = None
 
     @classmethod
@@ -21,7 +21,7 @@ class RegionLookup:
         cls,
         region_config: Dict,
         countryiso3s: ListTuple[str],
-        additional_regions: Dict[str, ListTuple] = dict(),
+        additional_regions: Dict[str, ListTuple] = {},
     ) -> None:
         """Read in region information and provide regions (list of regions) and
         iso3_to_region (one-to-one mapping from country ISO3 code to region
@@ -37,7 +37,7 @@ class RegionLookup:
         Args:
             region_config (Dict): Region configuration
             countryiso3s (ListTuple[str]): List of country ISO3 codes
-            additional_regions (Dict[str, ListTuple]): Region to ISO3s. Defaults to dict().
+            additional_regions (Dict[str, ListTuple]): Region to ISO3s. Defaults to {}.
         """
         _, iterator = Read.get_reader().read_hdx(
             region_config,
@@ -47,11 +47,11 @@ class RegionLookup:
         for region in additional_regions:
             if region in ignore_regions:
                 continue
-            cls.iso3_to_regions[region] = dict()
+            cls.iso3_to_regions[region] = {}
         regions = set()
         toplevel_region = region_config.get("toplevel_region")
         if toplevel_region:
-            cls.iso3_to_regions[toplevel_region] = dict()
+            cls.iso3_to_regions[toplevel_region] = {}
         for row in iterator:
             countryiso3 = row[region_config["iso3_header"]]
             if countryiso3 and countryiso3 in countryiso3s:

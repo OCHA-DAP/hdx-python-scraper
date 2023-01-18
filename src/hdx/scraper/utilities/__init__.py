@@ -8,7 +8,7 @@ template = re.compile("{{.*?}}")
 
 
 def string_params_to_dict(string: str) -> Dict[str, str]:
-    params = dict()
+    params = {}
     if not string:
         return params
     for name_par in string.split(","):

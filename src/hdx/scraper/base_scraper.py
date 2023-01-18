@@ -19,14 +19,14 @@ class BaseScraper(ABC):
         source_configuration (Dict): Configuration for sources. Defaults to empty dict (use defaults).
     """
 
-    population_lookup = dict()
+    population_lookup = {}
 
     def __init__(
         self,
         name: str,
         datasetinfo: Dict,
         headers: Dict[str, Tuple],
-        source_configuration: Dict = dict(),
+        source_configuration: Dict = {},
     ) -> None:
         self.setup(name, headers, source_configuration)
         self.datasetinfo = deepcopy(datasetinfo)
@@ -37,7 +37,7 @@ class BaseScraper(ABC):
         self,
         name: str,
         headers: Dict[str, Tuple],
-        source_configuration: Dict = dict(),
+        source_configuration: Dict = {},
     ) -> None:
         """Initialise member variables including name and headers which is of form:
         {"national": (("School Closure",), ("#impact+type",)), ...},
@@ -60,7 +60,7 @@ class BaseScraper(ABC):
 
     def initialise_values_sources(
         self,
-        source_configuration: Dict = dict(),
+        source_configuration: Dict = {},
     ) -> None:
         """
         Create values and sources member variables for inheriting scrapers to populate.
@@ -76,11 +76,11 @@ class BaseScraper(ABC):
              None
         """
         self.values: Dict[str, Tuple] = {
-            level: tuple(dict() for _ in value[0])
+            level: tuple({} for _ in value[0])
             for level, value in self.headers.items()
         }
         self.sources: Dict[str, List] = {
-            level: list() for level in self.headers
+            level: [] for level in self.headers
         }
         self.source_configuration = deepcopy(source_configuration)
 
@@ -174,7 +174,7 @@ class BaseScraper(ABC):
                 ]
             return
         for level in self.headers:
-            self.sources[level] = list()
+            self.sources[level] = []
 
             def add_source(hxltag, suffix_attribute):
                 hxltag_suffix = f"{hxltag}+{suffix_attribute.lower()}"
@@ -235,7 +235,7 @@ class BaseScraper(ABC):
                     if out_adm:
                         add_source(hxltag, out_adm)
                     continue
-                out_adms = list()
+                out_adms = []
                 for adm in values.keys():
                     if admin_mapping:
                         out_adm = admin_mapping.get(adm)

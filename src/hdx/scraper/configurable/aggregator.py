@@ -37,7 +37,7 @@ class Aggregator(BaseScraper):
         headers (Dict[str, Tuple]): Column headers and HXL hashtags
         use_hxl (bool): Whether to map from headers or from HXL tags
         source_configuration (Dict): Configuration for sources. Defaults to empty dict (use defaults).
-        aggregation_scrapers (List["Aggregator"]): Other aggregations needed. Defaults to list().
+        aggregation_scrapers (List["Aggregator"]): Other aggregations needed. Defaults to [].
     """
 
     def __init__(
@@ -47,8 +47,8 @@ class Aggregator(BaseScraper):
         headers: Dict[str, Tuple],
         adm_aggregation: Union[Dict, ListTuple],
         use_hxl: bool,
-        source_configuration: Dict = dict(),
-        aggregation_scrapers: List["Aggregator"] = list(),
+        source_configuration: Dict = {},
+        aggregation_scrapers: List["Aggregator"] = [],
     ):
         super().__init__(
             name,
@@ -76,8 +76,8 @@ class Aggregator(BaseScraper):
         output_level: str,
         adm_aggregation: Union[Dict, ListTuple],
         input_headers: Tuple[ListTuple, ListTuple],
-        source_configuration: Dict = dict(),
-        aggregation_scrapers: List["Aggregator"] = list(),
+        source_configuration: Dict = {},
+        aggregation_scrapers: List["Aggregator"] = [],
     ) -> Optional["Aggregator"]:
         """Gets one aggregator given dataset information and returns headers, values and
         sources. The mapping from input admins to aggregated output admins
@@ -96,7 +96,7 @@ class Aggregator(BaseScraper):
             input_headers (Tuple[ListTuple, ListTuple]): Column headers and HXL hashtags
             runner(Runner): Runner object
             source_configuration (Dict): Configuration for sources. Defaults to empty dict (use defaults).
-            aggregation_scrapers (List["Aggregator"]): Other aggregations needed. Defaults to list().
+            aggregation_scrapers (List["Aggregator"]): Other aggregations needed. Defaults to [].
 
         Returns:
             Optional["Aggregator"]: The aggregation scraper or None if it couldn't be created
@@ -274,7 +274,7 @@ class Aggregator(BaseScraper):
             else:
                 population_str = "self.population_lookup[population_key]"
             arbitrary_string = "#pzbgvjh"
-            headers_or_hxltags = list()
+            headers_or_hxltags = []
             if self.use_hxl:
                 index = 1
             else:
@@ -313,7 +313,7 @@ class Aggregator(BaseScraper):
         output_level = next(iter(self.headers.keys()))
         output_valdicts = self.get_values(output_level)
         output_values = output_valdicts[0]
-        input_valdicts = list()
+        input_valdicts = []
         input_headers_or_hxltags = self.datasetinfo["input"]
         for input_header_or_hxltag in input_headers_or_hxltags:
             input_valdicts.append(self.input_values[input_header_or_hxltag])

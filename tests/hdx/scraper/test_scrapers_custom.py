@@ -14,7 +14,7 @@ from .education_enrolment import EducationEnrolment
 
 class TestScrapersCustom:
     def test_get_custom(self, configuration, fallbacks_json):
-        BaseScraper.population_lookup = dict()
+        BaseScraper.population_lookup = {}
         source_date = "Apr 30, 2022"
         today = parse_date("2020-10-01")
         level = "national"
@@ -293,7 +293,7 @@ class TestScrapersCustom:
         ]
 
     def test_affected_targeted_reached(self, configuration):
-        BaseScraper.population_lookup = dict()
+        BaseScraper.population_lookup = {}
         today = parse_date("2022-09-30")
         countries = ("ETH", "KEN", "SOM")
         adminone = AdminLevel(configuration["admin1"])

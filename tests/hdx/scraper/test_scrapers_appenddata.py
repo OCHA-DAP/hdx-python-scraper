@@ -84,7 +84,7 @@ class TestScrapersAppendData:
     def get_expected_sources(
         headers, date, countryiso3, country_attribute=False
     ):
-        sources = list()
+        sources = []
         countryname = Country.get_country_name_from_iso3(countryiso3).lower()
         for hxltag in headers[1]:
             if country_attribute:
@@ -122,7 +122,7 @@ class TestScrapersAppendData:
         return sources_data
 
     def test_get_key_figures(self, configuration, iso3s, headers, values):
-        BaseScraper.population_lookup = dict()
+        BaseScraper.population_lookup = {}
         today = parse_date("2020-10-01")
         level = "national"
         scraper_configuration = configuration["scraper_append_data"]
@@ -237,7 +237,7 @@ class TestScrapersAppendData:
         )
 
     def test_sourceoverwrite(self, configuration, iso3s, headers, values):
-        BaseScraper.population_lookup = dict()
+        BaseScraper.population_lookup = {}
         today = parse_date("2020-10-01")
         level = "national"
         scraper_configuration = configuration["scraper_append_data"]
@@ -325,7 +325,7 @@ class TestScrapersAppendData:
     def test_source_overwrite_yaml(
         self, configuration, iso3s, headers, values
     ):
-        BaseScraper.population_lookup = dict()
+        BaseScraper.population_lookup = {}
         today = parse_date("2020-10-01")
         level = "national"
         scraper_configuration = configuration[
@@ -373,7 +373,7 @@ class TestScrapersAppendData:
     def test_additional_source_overwrite(
         self, configuration, iso3s, headers, values
     ):
-        BaseScraper.population_lookup = dict()
+        BaseScraper.population_lookup = {}
         today = parse_date("2020-10-01")
         level = "national"
         scraper_configuration = configuration[

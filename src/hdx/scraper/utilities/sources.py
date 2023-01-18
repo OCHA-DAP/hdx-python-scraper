@@ -67,13 +67,13 @@ class Sources:
             datasetinfo["source_date"] = None
             return None
 
-        output_source_date = dict()
+        output_source_date = {}
 
         def set_source_date(date, hxltag="default_date", startend="end"):
             if isinstance(date, str):
                 date = parse_date(date)
             if hxltag not in output_source_date:
-                output_source_date[hxltag] = dict()
+                output_source_date[hxltag] = {}
             output_source_date[hxltag][startend] = date
 
         if isinstance(source_date, dict):
@@ -269,7 +269,7 @@ class Sources:
         Returns:
              Optional[Dict]: Source configuration dictionary
         """
-        source_configuration = dict()
+        source_configuration = {}
         if no_sources:
             source_configuration["no_sources"] = True
             return source_configuration
@@ -284,7 +284,7 @@ class Sources:
             if isinstance(adminlevel, AdminLevel):
                 admin_mapping = adminlevel.pcode_to_iso3
             else:
-                admin_mapping = dict()
+                admin_mapping = {}
                 for admlevel in adminlevel:
                     admin_mapping.update(admlevel.pcode_to_iso3)
         elif admin_mapping_dict:

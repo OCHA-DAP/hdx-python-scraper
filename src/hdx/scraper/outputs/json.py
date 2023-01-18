@@ -31,7 +31,7 @@ class JsonFile(BaseOutput):
     def __init__(self, configuration, updatetabs, suffix="_data"):
         super().__init__(updatetabs)
         self.configuration = configuration
-        self.json = dict()
+        self.json = {}
         self.suffix = suffix
 
     def add_data_row(self, key: str, row: Dict) -> None:
@@ -82,11 +82,11 @@ class JsonFile(BaseOutput):
             None
         """
         fullname = f"{key}{self.suffix}"
-        jsondict = self.json.get(fullname, dict())
-        jsondict[countryiso] = list()
+        jsondict = self.json.get(fullname, {})
+        jsondict[countryiso] = []
         for row in rows:
             if hxltags:
-                newrow = dict()
+                newrow = {}
                 for header, hxltag in hxltags.items():
                     newrow[hxltag] = row[header]
             else:
@@ -106,7 +106,7 @@ class JsonFile(BaseOutput):
         """
         hxltags = rows[1]
         for row in rows[2:]:
-            newrow = dict()
+            newrow = {}
             for i, hxltag in enumerate(hxltags):
                 value = row[i]
                 if value in [None, ""]:
@@ -128,7 +128,7 @@ class JsonFile(BaseOutput):
             None
         """
         for i, row in df.iterrows():
-            newrow = dict()
+            newrow = {}
             row = row.to_dict()
             for i, hxltag in enumerate(hxltags):
                 value = row.get(hxltag)
@@ -168,14 +168,14 @@ class JsonFile(BaseOutput):
             None
         """
         reader = Read.get_reader()
-        for datasetinfo in self.configuration.get("additional_inputs", list()):
+        for datasetinfo in self.configuration.get("additional_inputs", []):
             headers, iterator = reader.read(datasetinfo)
             hxl_row = next(iterator)
             if not isinstance(hxl_row, dict):
                 hxl_row = hxl_row.value
             name = datasetinfo["name"]
             for row in iterator:
-                newrow = dict()
+                newrow = {}
                 if not isinstance(row, dict):
                     row = row.value
                 for key in row:
@@ -194,7 +194,7 @@ class JsonFile(BaseOutput):
         Returns:
             List[str]: List of file paths
         """
-        filepaths = list()
+        filepaths = []
         filepath = self.configuration["output"]
         if folder:
             filepath = join(folder, filepath)
@@ -203,14 +203,14 @@ class JsonFile(BaseOutput):
         filepaths.append(filepath)
         for kwarg in kwargs:
             exec(f"{kwarg}={kwargs[kwarg]}")
-        additional = self.configuration.get("additional_outputs", list())
+        additional = self.configuration.get("additional_outputs", [])
         for filedetails in additional:
-            json = dict()
+            json = {}
             remove = filedetails.get("remove")
             if remove is None:
                 tabs = filedetails["tabs"]
             else:
-                tabs = list()
+                tabs = []
                 for key in self.json.keys():
                     tab = key.replace(f"{self.suffix}", "")
                     if tab not in remove:
@@ -218,12 +218,12 @@ class JsonFile(BaseOutput):
             for tabdetails in tabs:
                 key = f'{tabdetails["tab"]}{self.suffix}'
                 newjson = self.json.get(key)
-                filters = tabdetails.get("filters", dict())
+                filters = tabdetails.get("filters", {})
                 hxltags = tabdetails.get("output")
                 if (filters or hxltags or remove) and isinstance(
                     newjson, list
                 ):
-                    rows = list()
+                    rows = []
                     for row in newjson:
                         ignore_row = False
                         for filter, allowed_values in filters.items():
@@ -252,7 +252,7 @@ class JsonFile(BaseOutput):
                         if hxltags is None:
                             newrow = row
                         else:
-                            newrow = dict()
+                            newrow = {}
                             for hxltag in hxltags:
                                 if hxltag in row:
                                     newrow[hxltag] = row[hxltag]

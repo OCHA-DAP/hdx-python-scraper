@@ -97,7 +97,7 @@ class Read(Retrieve):
         """
         if rate_limit:
             kwargs["rate_limit"] = rate_limit
-        custom_configs = dict()
+        custom_configs = {}
         hdx_auth = kwargs.get("hdx_auth")
         if hdx_auth:
             custom_configs["hdx"] = {"headers": {"Authorization": hdx_auth}}
@@ -346,18 +346,18 @@ class Read(Retrieve):
             Sources.standardise_datasetinfo_source_date(datasetinfo)
             return resource
         if "source_date" not in datasetinfo:
-            source_date = dict()
+            source_date = {}
         else:
             source_date = None
         if "source" not in datasetinfo:
-            source = dict()
+            source = {}
         else:
             source = None
         if "source_url" not in datasetinfo:
-            source_url = dict()
+            source_url = {}
         else:
             source_url = None
-        datasets = dict()
+        datasets = {}
         for hxltag, dataset_name in dataset_nameinfo.items():
             dataset = datasets.get(dataset_name)
             if not dataset:

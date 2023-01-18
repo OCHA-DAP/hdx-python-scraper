@@ -31,7 +31,7 @@ class TimeSeries(BaseScraper):
         today: datetime = now_utc(),
     ):
         # Time series only outputs to separate tabs
-        super().__init__(f"timeseries_{name}", datasetinfo, dict())
+        super().__init__(f"timeseries_{name}", datasetinfo, {})
         self.outputs = outputs
         self.today = today
 

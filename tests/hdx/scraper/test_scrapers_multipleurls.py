@@ -8,7 +8,7 @@ from .conftest import run_check_scraper
 
 class TestScrapersMultipleURLs:
     def test_get_key_figures(self, configuration):
-        BaseScraper.population_lookup = dict()
+        BaseScraper.population_lookup = {}
         today = parse_date("2020-10-01")
         level = "national"
         scraper_configuration = configuration["scraper_multiple_urls"]

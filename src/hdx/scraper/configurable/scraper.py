@@ -65,7 +65,7 @@ class ConfigurableScraper(BaseScraper):
         countryiso3s: List[str],
         adminlevel: Optional[AdminLevel] = None,
         level_name: Optional[str] = None,
-        source_configuration: Dict = dict(),
+        source_configuration: Dict = {},
         today: datetime = now_utc(),
         errors_on_exit: Optional[ErrorsOnExit] = None,
         **kwargs: Any,
@@ -89,7 +89,7 @@ class ConfigurableScraper(BaseScraper):
         self.rowparser = None
         self.datasetinfo = copy.deepcopy(datasetinfo)
         self.use_hxl_called = False
-        headers = {self.level_name: (list(), list())}
+        headers = {self.level_name: ([], [])}
         for subset in self.subsets:
             headers[self.level_name][0].extend(subset["output"])
             headers[self.level_name][1].extend(subset["output_hxl"])
@@ -119,18 +119,18 @@ class ConfigurableScraper(BaseScraper):
             subsets = [
                 {
                     "filter": datasetinfo.get("filter"),
-                    "input": datasetinfo.get("input", list()),
-                    "transform": datasetinfo.get("transform", dict()),
+                    "input": datasetinfo.get("input", []),
+                    "transform": datasetinfo.get("transform", {}),
                     "population_key": datasetinfo.get("population_key"),
-                    "process": datasetinfo.get("process", list()),
-                    "input_keep": datasetinfo.get("input_keep", list()),
-                    "input_append": datasetinfo.get("input_append", list()),
+                    "process": datasetinfo.get("process", []),
+                    "input_keep": datasetinfo.get("input_keep", []),
+                    "input_append": datasetinfo.get("input_append", []),
                     "sum": datasetinfo.get("sum"),
                     "input_ignore_vals": datasetinfo.get(
-                        "input_ignore_vals", list()
+                        "input_ignore_vals", []
                     ),
-                    "output": datasetinfo.get("output", list()),
-                    "output_hxl": datasetinfo.get("output_hxl", list()),
+                    "output": datasetinfo.get("output", []),
+                    "output_hxl": datasetinfo.get("output_hxl", []),
                 }
             ]
         return subsets
@@ -215,11 +215,11 @@ class ConfigurableScraper(BaseScraper):
         if self.use_hxl_called:
             return header_to_hxltag
         self.use_hxl_called = True
-        exclude_tags = self.datasetinfo.get("exclude_tags", list())
+        exclude_tags = self.datasetinfo.get("exclude_tags", [])
         find_tags = self.datasetinfo.get("find_tags")
-        adm_cols = list()
-        input_cols = list()
-        columns = list()
+        adm_cols = []
+        input_cols = []
+        columns = []
         for header in file_headers:
             hxltag = header_to_hxltag[header]
             if not hxltag or hxltag in exclude_tags:
@@ -250,15 +250,15 @@ class ConfigurableScraper(BaseScraper):
         if "admin" not in self.datasetinfo:
             self.datasetinfo["admin"] = adm_cols
         for subset in self.subsets:
-            orig_input_cols = subset.get("input", list())
+            orig_input_cols = subset.get("input", [])
             if not orig_input_cols:
                 orig_input_cols.extend(input_cols)
             subset["input"] = orig_input_cols
-            orig_columns = subset.get("output", list())
+            orig_columns = subset.get("output", [])
             if not orig_columns:
                 orig_columns.extend(columns)
             subset["output"] = orig_columns
-            orig_hxltags = subset.get("output_hxl", list())
+            orig_hxltags = subset.get("output_hxl", [])
             if not orig_hxltags:
                 orig_hxltags.extend(input_cols)
             subset["output_hxl"] = orig_hxltags
@@ -277,10 +277,10 @@ class ConfigurableScraper(BaseScraper):
             None
         """
 
-        valuedicts = dict()
+        valuedicts = {}
         for subset in self.subsets:
             for _ in subset["input"]:
-                dict_of_lists_add(valuedicts, subset["filter"], dict())
+                dict_of_lists_add(valuedicts, subset["filter"], {})
 
         def add_row(row):
             adm, should_process_subset = self.rowparser.parse(row)
@@ -290,12 +290,12 @@ class ConfigurableScraper(BaseScraper):
                 if not should_process_subset[i]:
                     continue
                 filter = subset["filter"]
-                input_ignore_vals = subset.get("input_ignore_vals", list())
-                input_transforms = subset.get("transform", dict())
+                input_ignore_vals = subset.get("input_ignore_vals", [])
+                input_transforms = subset.get("transform", {})
                 sum_cols = subset.get("sum")
                 process_cols = subset.get("process")
-                input_append = subset.get("input_append", list())
-                input_keep = subset.get("input_keep", list())
+                input_append = subset.get("input_append", [])
+                input_keep = subset.get("input_keep", [])
                 for i, valcol in enumerate(subset["input"]):
                     valuedict = valuedicts[filter][i]
                     val = get_rowval(row, valcol)
@@ -327,9 +327,9 @@ class ConfigurableScraper(BaseScraper):
             else:
                 population_str = "self.population_lookup[population_key]"
             process_cols = subset.get("process")
-            input_keep = subset.get("input_keep", list())
+            input_keep = subset.get("input_keep", [])
             sum_cols = subset.get("sum")
-            input_ignore_vals = subset.get("input_ignore_vals", list())
+            input_ignore_vals = subset.get("input_ignore_vals", [])
             valcols = subset["input"]
             # Indices of list sorted by length
             sorted_len_indices = sorted(
@@ -404,7 +404,7 @@ class ConfigurableScraper(BaseScraper):
                 for ind, sum_col in enumerate(sum_cols):
                     formula = sum_col["formula"]
                     mustbepopulated = sum_col.get("mustbepopulated", False)
-                    newvaldicts = [dict() for _ in valdicts]
+                    newvaldicts = [{} for _ in valdicts]
                     valdict0 = valdicts[0]
                     for adm in valdict0:
                         for i, val in enumerate(valdict0[adm]):

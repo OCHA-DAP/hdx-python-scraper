@@ -78,7 +78,7 @@ class Writer:
     def get_toplevel_rows(
         self,
         names: Optional[ListTuple[str]] = None,
-        overrides: Dict[str, Dict] = dict(),
+        overrides: Dict[str, Dict] = {},
         toplevel: str = "allregions",
     ) -> List[List]:
         """Get rows for the given toplevel for scrapers limiting to those in
@@ -90,7 +90,7 @@ class Writer:
 
         Args:
             names (Optional[ListTuple[str]]): Names of scrapers. Defaults to None.
-            overrides (Dict[str, Dict]): Dictionary mapping scrapers to level mappings. Defaults to dict().
+            overrides (Dict[str, Dict]): Dictionary mapping scrapers to level mappings. Defaults to {}.
             toplevel (str): Name of top level such as "global". Defaults to "allregions".
 
         Returns:
@@ -104,7 +104,7 @@ class Writer:
         self,
         regional: ListTuple[str],
         names: Optional[ListTuple[str]] = None,
-        overrides: Dict[str, Dict] = dict(),
+        overrides: Dict[str, Dict] = {},
         level: str = "regional",
     ):
         """Get regional rows for scrapers limiting to those in names if given using the
@@ -118,7 +118,7 @@ class Writer:
         Args:
             regional (ListTuple[str]): Regional admin names
             names (Optional[ListTuple[str]]): Names of scrapers. Defaults to None.
-            overrides (Dict[str, Dict]): Dictionary mapping scrapers to level mappings. Defaults to dict().
+            overrides (Dict[str, Dict]): Dictionary mapping scrapers to level mappings. Defaults to {}.
             level (str): Name of regional level. Defaults to "regional".
 
         Returns:
@@ -157,12 +157,12 @@ class Writer:
             None
         """
         if regional_rows is None:
-            regional_rows = list()
+            regional_rows = []
         if not toplevel_rows:
-            toplevel_rows = [list(), list(), list()]
+            toplevel_rows = [[], [], []]
         if regional_rows:
             adm_header = regional_rows[1].index("#region+name")
-            rows_to_insert = (list(), list(), list())
+            rows_to_insert = ([], [], [])
             for row in regional_rows[2:]:
                 if row[adm_header] == regional_adm:
                     for i, hxltag in enumerate(regional_rows[1]):
@@ -206,8 +206,8 @@ class Writer:
         """
         if not regional_rows:
             return
-        toplevel_values = dict()
-        toplevel_headers = dict()
+        toplevel_values = {}
+        toplevel_headers = {}
         if toplevel_rows:
             for i, hxltag in enumerate(toplevel_rows[1]):
                 if toplevel_hxltags and hxltag not in toplevel_hxltags:
@@ -361,7 +361,7 @@ class Writer:
         additional_sources: ListTuple[Dict] = tuple(),
         names: Optional[ListTuple[str]] = None,
         secondary_runner: Optional[Runner] = None,
-        custom_sources: ListTuple[Tuple] = list(),
+        custom_sources: ListTuple[Tuple] = [],
         tab: str = "sources",
         should_overwrite_sources: Optional[bool] = None,
     ) -> None:

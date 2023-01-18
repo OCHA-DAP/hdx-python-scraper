@@ -49,7 +49,7 @@ class TestScraperGlobal:
         )
 
     def test_get_global_2020(self, configuration, cerf_headers):
-        BaseScraper.population_lookup = dict()
+        BaseScraper.population_lookup = {}
         today = parse_date("2020-10-01")
         level = "single"
         level_name = "global"
@@ -297,7 +297,7 @@ class TestScraperGlobal:
             ["TotalDosesAdministered"],
             ["#capacity+doses+administered+total"],
         )
-        values = [dict()]
+        values = [{}]
         sources = [
             (
                 "#capacity+doses+administered+total",
@@ -311,7 +311,7 @@ class TestScraperGlobal:
     def test_get_global_2021(
         self, cerf_headers, caplog, configuration, fallbacks_json, fixtures
     ):
-        BaseScraper.population_lookup = dict()
+        BaseScraper.population_lookup = {}
         today = parse_date("2021-05-03")
         level = "single"
         level_name = "global"
@@ -557,7 +557,7 @@ class TestScraperGlobal:
         run_check_scraper(name, runner, level_name, headers, values, sources)
 
     def test_get_global_source(self, cerf_headers, configuration):
-        BaseScraper.population_lookup = dict()
+        BaseScraper.population_lookup = {}
         today = parse_date("2021-05-03")
         level = "single"
         level_name = "global"

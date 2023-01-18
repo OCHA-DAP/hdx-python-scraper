@@ -9,7 +9,7 @@ from .conftest import run_check_scraper, run_check_scrapers
 
 class TestScrapersAggregation:
     def test_get_aggregation_hxl(self, configuration):
-        BaseScraper.population_lookup = dict()
+        BaseScraper.population_lookup = {}
         today = parse_date("2020-10-01")
 
         level = "national"
@@ -135,7 +135,7 @@ class TestScrapersAggregation:
         )
 
         level = "national"
-        BaseScraper.population_lookup = dict()
+        BaseScraper.population_lookup = {}
         iso3s = ("AFG", "PSE")
         runner = Runner(iso3s, today)
         runner.add_configurables(scraper_configuration, level)
@@ -251,7 +251,7 @@ class TestScrapersAggregation:
         )
 
     def test_get_aggregation_nohxl(self, configuration):
-        BaseScraper.population_lookup = dict()
+        BaseScraper.population_lookup = {}
         today = parse_date("2020-10-01")
         level = "national"
         configuration_nohxl = configuration["aggregation_nohxl"]
@@ -375,7 +375,7 @@ class TestScrapersAggregation:
         )
 
         level = "national"
-        BaseScraper.population_lookup = dict()
+        BaseScraper.population_lookup = {}
         iso3s = ("AFG", "PSE")
         runner = Runner(iso3s, today)
         runner.add_configurables(scraper_configuration, level)

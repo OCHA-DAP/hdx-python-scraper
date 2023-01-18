@@ -19,7 +19,7 @@ class TestScrapersResourceDownloader:
             delete_on_success=True,
             delete_on_failure=False,
         ) as temp_folder:
-            BaseScraper.population_lookup = dict()
+            BaseScraper.population_lookup = {}
             iso3s = ("AFG", "MMR")
             today = parse_date("2020-10-01")
             runner = Runner(iso3s, today)

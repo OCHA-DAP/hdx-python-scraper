@@ -22,7 +22,7 @@ class ResourceDownloader(BaseScraper):
     def __init__(self, datasetinfo, folder):
         # ResourceDownloader only outputs to sources
         name = f"resource_downloader_{slugify(datasetinfo['hxltag'].lower(), separator='_')}"
-        super().__init__(name, datasetinfo, dict())
+        super().__init__(name, datasetinfo, {})
         self.folder = folder
 
     def run(self) -> None:
