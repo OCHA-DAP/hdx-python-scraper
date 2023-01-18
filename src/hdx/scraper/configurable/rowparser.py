@@ -216,7 +216,7 @@ class RowParser:
         if self.sort:
             keys = self.sort["keys"]
             reverse = self.sort.get("reverse", False)
-            rows = sorted(list(rows), key=itemgetter(*keys), reverse=reverse)
+            rows = sorted(rows, key=itemgetter(*keys), reverse=reverse)
         return rows
 
     def flatten(self, row: Dict) -> Generator[Dict, None, None]:

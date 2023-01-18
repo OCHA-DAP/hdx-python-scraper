@@ -75,7 +75,7 @@ class Fallbacks:
                     "sources": fallback_sources,
                     "sources hxltags": sources_hxltags,
                 }
-        except (IOError, LoadError):
+        except (OSError, LoadError):
             cls.fallbacks = None
 
     @classmethod

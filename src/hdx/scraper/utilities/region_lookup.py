@@ -75,7 +75,7 @@ class RegionLookup:
                             countryiso3,
                             region,
                         )
-        cls.regions = sorted(list(regions))
+        cls.regions = sorted(regions)
         for additional_region in additional_regions:
             if additional_region in ignore_regions:
                 continue

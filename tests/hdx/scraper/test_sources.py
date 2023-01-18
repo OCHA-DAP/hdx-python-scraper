@@ -166,9 +166,7 @@ class TestSources:
         BaseScraper.population_lookup = {}
         adminlevel = AdminLevel(configuration)
         level = "subnational"
-        scraper = ConfigurableScraper(
-            "test", {}, level, ["AFG"], adminlevel
-        )
+        scraper = ConfigurableScraper("test", {}, level, ["AFG"], adminlevel)
 
         class MyRowParser:
             max_date = 0

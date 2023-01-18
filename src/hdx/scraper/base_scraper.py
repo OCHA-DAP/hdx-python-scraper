@@ -79,9 +79,7 @@ class BaseScraper(ABC):
             level: tuple({} for _ in value[0])
             for level, value in self.headers.items()
         }
-        self.sources: Dict[str, List] = {
-            level: [] for level in self.headers
-        }
+        self.sources: Dict[str, List] = {level: [] for level in self.headers}
         self.source_configuration = deepcopy(source_configuration)
 
     def get_reader(
@@ -396,7 +394,6 @@ class BaseScraper(ABC):
         Returns:
             None
         """
-        pass
 
     def pre_run(self) -> None:
         """
@@ -405,7 +402,6 @@ class BaseScraper(ABC):
         Returns:
             None
         """
-        pass
 
     def post_run(self) -> None:
         """
@@ -414,4 +410,3 @@ class BaseScraper(ABC):
         Returns:
             None
         """
-        pass

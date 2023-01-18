@@ -285,7 +285,7 @@ class Writer:
         headers = deepcopy(self.national_headers)
         fns = [
             lambda adm: adm,
-            lambda adm: Country.get_country_name_from_iso3(adm),
+            Country.get_country_name_from_iso3,
         ]
 
         if flag_countries:
@@ -301,7 +301,7 @@ class Writer:
             headers[1].append("#region+name")
 
             def region_fn(adm):
-                regions = sorted(list(iso3_to_region[adm]))
+                regions = sorted(iso3_to_region[adm])
                 for region in reversed(regions):
                     if ignore_regions and region in ignore_regions:
                         regions.remove(region)
