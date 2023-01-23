@@ -61,7 +61,7 @@ scraper_national:
     url: "http://api.worldbank.org/v2/en/indicator/SP.POP.TOTL?downloadformat=excel&dataformat=list"
     format: "xls"
     sheet: "Data"
-    headers: 3
+    headers: 4
     sort:
       keys:
         - "Year"
@@ -877,7 +877,7 @@ other:
     url: "http://api.worldbank.org/v2/en/indicator/SP.POP.TOTL?downloadformat=excel&dataformat=list"
     format: "xls"
     sheet: "Data"
-    headers: 3
+    headers: 4
     sort:
       keys:
         - "Year"
@@ -900,8 +900,8 @@ other:
     format: "xlsx"
     sheet: "Trend"
     headers:
-      - 3
-      - 4
+      - 7
+      - 8
     flatten:
       - original: "Region {{1}} Region Name"
         new: "Region Name"
@@ -969,8 +969,8 @@ scraper_subnational:
     format: "xlsx"
     sheet: "Trend"
     headers:
-      - 3
-      - 4
+      - 7
+      - 8
     flatten:
       - original: "Region {{1}} Region Name"
         new: "Region Name"
