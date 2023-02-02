@@ -26,6 +26,8 @@ jobs:
         python -m pip install --upgrade pip
         pip install --upgrade tox-gh-actions
     - name: Test with tox/pytest
+      env:
+        GSHEET_AUTH: ${{ secrets.GSHEET_AUTH }}
       run: |
         tox
     - name: Publish Unit Test Results
