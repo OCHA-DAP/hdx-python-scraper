@@ -57,22 +57,22 @@ def get_rowval(row: Dict, valcol: str) -> Any:
         return result
 
 
-def get_startend_dates_from_dataset_date(
+def get_startend_dates_from_reference_period(
     dataset: Dataset, today: Optional[datetime] = None
 ) -> Optional[Dict]:
-    """Return the date of a dataset in form required for source_date
+    """Return the reference period in form required for source_date
 
     Args:
         dataset (Dataset): Dataset object
         today (Optional[datetime]): Date to use for today. Defaults to None (datetime.utcnow)
 
     Returns:
-        Optional[Dict]: Date of a dataset in form required for source_date
+        Optional[Dict]: Reference period in form required for source_date
     """
     if today is None:
-        date_info = dataset.get_date_of_dataset()
+        date_info = dataset.get_reference_period()
     else:
-        date_info = dataset.get_date_of_dataset(today=today)
+        date_info = dataset.get_reference_period(today=today)
     startdate = date_info.get("startdate")
     enddate = date_info.get("enddate")
     if enddate is None:

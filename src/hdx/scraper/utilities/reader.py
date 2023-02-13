@@ -14,7 +14,7 @@ from hdx.utilities.typehint import ListTuple
 from hxl.input import InputOptions, munge_url
 from slugify import slugify
 
-from . import get_startend_dates_from_dataset_date, match_template
+from . import get_startend_dates_from_reference_period, match_template
 from .sources import Sources
 
 logger = logging.getLogger(__name__)
@@ -336,7 +336,7 @@ class Read(Retrieve):
             if "source_date" not in datasetinfo:
                 datasetinfo[
                     "source_date"
-                ] = get_startend_dates_from_dataset_date(
+                ] = get_startend_dates_from_reference_period(
                     dataset, today=self.today
                 )
             if "source" not in datasetinfo:
@@ -368,7 +368,7 @@ class Read(Retrieve):
                     key = "default_date"
                 else:
                     key = hxltag
-                source_date[key] = get_startend_dates_from_dataset_date(
+                source_date[key] = get_startend_dates_from_reference_period(
                     dataset, today=self.today
                 )
             if source is not None:

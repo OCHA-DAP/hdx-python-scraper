@@ -349,8 +349,8 @@ It is helpful to look at a few example configurable scrapers to see how they are
 configured:
 
 The economicindex configurable scraper reads the dataset 
-“covid-19-economic-exposure-index” on HDX, taking from it dataset source, date of 
-dataset and using the url of the dataset in HDX as the source url. (In HDX data
+“covid-19-economic-exposure-index” on HDX, taking from it dataset source,  
+reference period and using the url of the dataset in HDX as the source url. (In HDX data
 explorers, these are used by the DATA links.) The scraper framework finds the first 
 resource that is of format `xlsx`, reads the “economic exposure” sheet and looks for the 
 headers in row 1 (by default). Note that it is possible to specify a specific resource 
@@ -1289,7 +1289,7 @@ declared according to a specification eg. from YAML:
         should_overwrite_source: True
 
 
-This allows additional HXL hashtags to be associated with a dataset date, source and 
+This allows additional HXL hashtags to be associated with a source date, source and 
 url. The metadata for "#food-prices" is obtained from a dataset on HDX, while for
 "#affected+food+p3plus+num", it is all specified with the source date being set to 
 today. "#affected+food+ipc+p3plus+num+som" shows a more complex setup with a date
