@@ -537,9 +537,12 @@ class TestScrapersNational:
             sources,
             fallbacks_used=True,
         )
-        assert errors_on_exit.errors == [
-            "Using fallbacks for broken_owd_url! Error: [scheme-error] The data source could not be successfully loaded: [Errno 2] No such file or directory: 'tests/fixtures/broken_owd_url_notexist.csv'"
-        ]
+        error = errors_on_exit.errors[0]
+        assert "Using fallbacks for broken_owd_url!" in error
+        assert (
+            "No such file or directory: 'tests/fixtures/broken_owd_url_notexist.csv'"
+            in error
+        )
 
     def test_get_national_afg_mmr_phl(self, configuration):
         BaseScraper.population_lookup = {}

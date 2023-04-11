@@ -1,5 +1,6 @@
 import logging
 from datetime import datetime
+from traceback import format_exc
 from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
 from hdx.location.adminlevel import AdminLevel
@@ -585,13 +586,13 @@ class Runner:
                 scraper.add_source_urls()
                 scraper.add_population()
                 logger.info(f"Processed {scraper.name}")
-            except Exception as ex:
+            except Exception:
                 if not Fallbacks.exist() or scraper.can_fallback is False:
                     raise
                 logger.exception(f"Using fallbacks for {scraper.name}!")
                 if self.errors_on_exit:
                     self.errors_on_exit.add(
-                        f"Using fallbacks for {scraper.name}! Error: {ex}"
+                        f"Using fallbacks for {scraper.name}! Error: {format_exc()}"
                     )
                 for level in scraper.headers.keys():
                     values, sources = Fallbacks.get(
