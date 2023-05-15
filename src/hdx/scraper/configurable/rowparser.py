@@ -5,6 +5,7 @@ from operator import itemgetter
 from typing import Dict, Generator, Iterator, List, Optional, Tuple
 
 import hxl
+from dateutil.relativedelta import relativedelta  # noqa: F401
 from hdx.location.adminlevel import AdminLevel
 from hdx.location.country import Country
 from hdx.utilities.dateparse import parse_date
