@@ -416,8 +416,10 @@ class TestScrapersAppendData:
         writer.update_sources(
             additional_sources,
             secondary_runner=runner,  # to check we don't get duplicate sources
+            sources_to_delete=("#reached+total",),
         )
         result = self.get_expected_sources_data(headers, "Oct 1, 2020", "KEN")
         result[1]["#date"] = source_date
         result[1]["#meta+url"] = source_url
+        del result[7]
         assert jsonout.json["sources_data"] == result

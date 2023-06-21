@@ -361,23 +361,31 @@ class Writer:
         additional_sources: ListTuple[Dict] = tuple(),
         names: Optional[ListTuple[str]] = None,
         secondary_runner: Optional[Runner] = None,
-        custom_sources: ListTuple[Tuple] = [],
+        custom_sources: ListTuple[Tuple] = tuple(),
         tab: str = "sources",
         should_overwrite_sources: Optional[bool] = None,
+        sources_to_delete: ListTuple[str] = tuple(),
     ) -> None:
-        """Update the sources tab (or key in JSON) in the outputs for scrapers limiting to
-        those in names. Additional sources can be added. Each is a dictionary with indicator
-        (specified with HXL hashtag), dataset or source and source_url as well as the
-        source_date or whether to force_date_today. Custom sources can be directly passed
-        to be appended. They are of form (indicator, date, source, source_url).
+        """Update the sources tab (or key in JSON) in the outputs for scrapers
+        limiting to those in names. Additional sources can be added. Each is a
+        dictionary with indicator (specified with HXL hashtag), dataset or
+        source and source_url as well as the source_date or whether to
+        force_date_today. Custom sources can be directly passed to be appended.
+        They are of form (indicator, date, source, source_url). By default, if
+        the same indicator (HXL hashtag) appears more than once in the list of
+        sources, then the first is used, but there is the option to enable
+        overwriting of sources. A list of sources to delete can be supplied
+        where each source is specified using its HXL hashtag (or a part of the
+        hashtag).
 
         Args:
-            additional_sources (ListTuple[Dict]): Additional sources to add
+            additional_sources (ListTuple[Dict]): Additional sources to add. Defaults to empty tuple.
             names (Optional[ListTuple[str]]): Names of scrapers. Defaults to None.
             secondary_runner (Optional[Runner]): Secondary Runner object. Defaults to None.
-            custom_sources (ListTuple[Tuple]): Custom sources to add
+            custom_sources (ListTuple[Tuple]): Custom sources to add. Defaults to empty tuple.
             tab (str): Name of tab (key in JSON) to update. Defaults to "sources".
             should_overwrite_sources (Optional[bool]): Whether to overwrite sources. Defaults to None (class default).
+            sources_to_delete (ListTuple[Dict]): Sources tags to delete. Defaults to empty tuple.
 
         Returns:
             None
@@ -403,4 +411,9 @@ class Writer:
             logger,
             should_overwrite_sources,
         )
+        for hxltag in sources_to_delete:
+            for i in range(len(sources) - 1, -1, -1):
+                if hxltag in sources[i][0]:
+                    del sources[i]
+
         self.update(tab, list(self.sources_headers) + sources)

@@ -1256,10 +1256,12 @@ it is used as follows:
 
     writer.update_sources(
         additional_sources=configuration["additional_sources"],
-        names=names,
+        names=scraper_names,
         secondary_runner=None,
         custom_sources=(get_report_source(configuration),),
         tab="sources",
+        should_overwrite_sources=False,
+        sources_to_delete=configuration["delete_sources"],
     )
 
 The first optional parameter `additional_sources` enables additional sources to be 
@@ -1302,14 +1304,19 @@ HXL hashtag, meaning that the source will be overridden provided
 `should_overwrite_source` is True. 
 
 
-The second optional `names` parameter allows the specific scrapers for which sources are 
-to be output to be chosen by name. The third optional parameter `secondary_runner` 
-allows a second Runner object to be supplied and the sources from the scrapers 
-associated with that Runner object to be included. The fourth optional parameter 
-`custom_sources` allows sources that have been obtained for example from a function call
-to be added directly without any processing or changes to them. They should be in the 
-form: (HXL tag, source date, source, source url). The last parameter is the `tab` to 
-update and defaults to "sources".
+The second optional `names` parameter allows the specific scrapers for which 
+sources are to be output to be chosen by name. The third optional parameter 
+`secondary_runner` allows a second Runner object to be supplied and the sources 
+from the scrapers associated with that Runner object to be included. The fourth 
+optional parameter `custom_sources` allows sources that have been obtained for 
+example from a function call to be added directly without any processing or 
+changes to them. They should be in the form: (HXL tag, source date, source, 
+source url). The fifth parameter is the `tab` to update and defaults to 
+"sources". By default, if the same indicator (HXL hashtag) appears more than 
+once in the list of sources, then the first is used, but there is the sixth 
+parameter `should_overwrite_sources` enables overwriting of sources instead. 
+The last parameter `sources_to_delete` is a list of sources to delete where 
+each source is specified using its HXL hashtag (or a part of the hashtag).
 
 For more fine-grained control, it is also possible to obtain sources by calling 
 `get_sources` on a Runner object with or without the optional `additional_sources` 
