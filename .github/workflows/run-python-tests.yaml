@@ -26,6 +26,8 @@ jobs:
         python -m pip install --upgrade pip
         pip install --upgrade hatch
     - name: Test with hatch/pytest
+      env:
+        GSHEET_AUTH: ${{ secrets.GSHEET_AUTH }}
       run: |
         hatch run test:test
     - name: Check styling
