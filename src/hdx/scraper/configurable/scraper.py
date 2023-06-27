@@ -4,6 +4,11 @@ from datetime import datetime
 from typing import Any, Dict, Iterator, List, Optional, Tuple
 
 import regex
+
+from ..base_scraper import BaseScraper
+from ..utilities import get_rowval
+from ..utilities.sources import Sources
+from .rowparser import RowParser
 from hdx.location.adminlevel import AdminLevel
 from hdx.utilities.dateparse import (
     get_datetime_from_timestamp,
@@ -18,11 +23,6 @@ from hdx.utilities.text import (  # noqa: F401
     get_numeric_if_possible,
     number_format,
 )
-
-from ..base_scraper import BaseScraper
-from ..utilities import get_rowval
-from ..utilities.sources import Sources
-from .rowparser import RowParser
 
 logger = logging.getLogger(__name__)
 

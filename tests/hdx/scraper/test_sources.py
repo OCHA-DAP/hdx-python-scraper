@@ -1,10 +1,10 @@
 import pytest
-from hdx.location.adminlevel import AdminLevel
-from hdx.utilities.dateparse import parse_date
 
+from hdx.location.adminlevel import AdminLevel
 from hdx.scraper.base_scraper import BaseScraper
 from hdx.scraper.configurable.scraper import ConfigurableScraper
 from hdx.scraper.utilities.sources import Sources
+from hdx.utilities.dateparse import parse_date
 
 
 class TestSources:

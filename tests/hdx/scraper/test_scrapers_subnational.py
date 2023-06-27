@@ -1,12 +1,10 @@
+from .conftest import run_check_scraper
 from hdx.location.adminlevel import AdminLevel
-from hdx.utilities.dateparse import parse_date
-
 from hdx.scraper.base_scraper import BaseScraper
 from hdx.scraper.outputs.json import JsonFile
 from hdx.scraper.runner import Runner
 from hdx.scraper.utilities.writer import Writer
-
-from .conftest import run_check_scraper
+from hdx.utilities.dateparse import parse_date
 
 
 class TestScrapersSubnational:

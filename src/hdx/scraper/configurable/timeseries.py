@@ -2,10 +2,9 @@ import logging
 from datetime import datetime
 from typing import Dict
 
-from hdx.utilities.dateparse import now_utc, parse_date
-
 from ..base_scraper import BaseScraper
 from ..outputs.base import BaseOutput
+from hdx.utilities.dateparse import now_utc, parse_date
 
 logger = logging.getLogger(__name__)
 

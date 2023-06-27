@@ -6,12 +6,12 @@ from typing import Dict, Generator, Iterator, List, Optional, Tuple
 
 import hxl
 from dateutil.relativedelta import relativedelta  # noqa: F401
+
+from ..utilities import match_template
 from hdx.location.adminlevel import AdminLevel
 from hdx.location.country import Country
 from hdx.utilities.dateparse import parse_date
 from hdx.utilities.dictandlist import dict_of_lists_add
-
-from ..utilities import match_template
 
 logger = logging.getLogger(__name__)
 

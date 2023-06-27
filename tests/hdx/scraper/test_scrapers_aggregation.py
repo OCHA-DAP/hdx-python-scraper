@@ -1,10 +1,8 @@
-from hdx.utilities.dateparse import parse_date
-
+from .conftest import run_check_scraper, run_check_scrapers
 from hdx.scraper.base_scraper import BaseScraper
 from hdx.scraper.runner import Runner
 from hdx.scraper.utilities.sources import Sources
-
-from .conftest import run_check_scraper, run_check_scrapers
+from hdx.utilities.dateparse import parse_date
 
 
 class TestScrapersAggregation:

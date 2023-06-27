@@ -3,11 +3,6 @@ from datetime import datetime
 from traceback import format_exc
 from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
-from hdx.location.adminlevel import AdminLevel
-from hdx.utilities.dateparse import now_utc
-from hdx.utilities.errors_onexit import ErrorsOnExit
-from hdx.utilities.typehint import ListTuple
-
 from .base_scraper import BaseScraper
 from .configurable.aggregator import Aggregator
 from .configurable.resource_downloader import ResourceDownloader
@@ -18,6 +13,10 @@ from .utilities import get_startend_dates_from_reference_period
 from .utilities.fallbacks import Fallbacks
 from .utilities.reader import Read
 from .utilities.sources import Sources
+from hdx.location.adminlevel import AdminLevel
+from hdx.utilities.dateparse import now_utc
+from hdx.utilities.errors_onexit import ErrorsOnExit
+from hdx.utilities.typehint import ListTuple
 
 logger = logging.getLogger(__name__)
 
