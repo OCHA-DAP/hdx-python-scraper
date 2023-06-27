@@ -97,7 +97,7 @@ The library is set up broadly as follows:
         assert results["sources"] == [("#population", "2020-10-01", "World Bank", "https://..."), ...]
         
 The framework is configured by passing in a configuration. Typically this will come from 
-a YAML file such as `config/project_configuration.yml`. To use the current date/time, 
+a YAML file such as `config/project_configuration.yaml`. To use the current date/time, 
 there is a now_utc() function from the dependency HDX Python Utilities. 
 
 ### Read Class

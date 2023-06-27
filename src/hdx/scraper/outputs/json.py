@@ -2,10 +2,9 @@ import logging
 from os.path import join
 from typing import Any, Dict, List, Optional, Union
 
+from .base import BaseOutput
 from hdx.utilities.dictandlist import dict_of_lists_add
 from hdx.utilities.saver import save_json
-
-from .base import BaseOutput
 
 try:
     from pandas import DataFrame

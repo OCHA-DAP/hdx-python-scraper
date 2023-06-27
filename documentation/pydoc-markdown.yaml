@@ -1,0 +1,41 @@
+loaders:
+  - type: python
+    search_path:
+      - ../src
+    packages:
+      - hdx.scraper
+renderer:
+  type: mkdocs
+  output_directory: docs
+  mkdocs_config:
+    site_name: HDX Python Scraper
+    theme: readthedocs
+    repo_url: "https://github.com/OCHA-DAP/hdx-python-scraper"
+  markdown:
+    source_linker:
+      type: github
+      repo: OCHA-DAP/hdx-python-scraper
+  pages:
+    - title: Home
+      name: index
+      source: main.md
+    - title: API Documentation
+      children:
+        - title: Source Readers
+          contents:
+            - hdx.scraper.utilities.readers.*
+        - title: Configurable Scrapers
+          contents:
+            - hdx.scraper.configurable.*
+        - title: Base Class for Scrapers
+          contents:
+            - hdx.scraper.base_scraper.BaseScraper
+        - title: Fallbacks
+          contents:
+            - hdx.scraper.utilities.fallbacks.Fallbacks
+        - title: Run Scrapers
+          contents:
+            - hdx.scraper.runner.Runner
+        - title: Outputs
+          contents:
+            - hdx.scraper.outputs.*

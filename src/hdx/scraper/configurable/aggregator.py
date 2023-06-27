@@ -3,6 +3,10 @@ import sys
 from copy import deepcopy
 from typing import Any, Dict, List, Optional, Tuple, Union
 
+from slugify import slugify
+
+from ..base_scraper import BaseScraper
+from ..utilities.reader import Read
 from hdx.utilities.dictandlist import dict_of_lists_add
 from hdx.utilities.text import (  # noqa: F401
     get_fraction_str,
@@ -10,10 +14,6 @@ from hdx.utilities.text import (  # noqa: F401
     number_format,
 )
 from hdx.utilities.typehint import ListTuple
-from slugify import slugify
-
-from ..base_scraper import BaseScraper
-from ..utilities.reader import Read
 
 logger = logging.getLogger(__name__)
 

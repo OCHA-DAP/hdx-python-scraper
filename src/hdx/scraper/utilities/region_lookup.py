@@ -1,10 +1,9 @@
 import logging
 from typing import Dict
 
+from .reader import Read
 from hdx.utilities.dictandlist import dict_of_sets_add
 from hdx.utilities.typehint import ListTuple
-
-from .reader import Read
 
 logger = logging.getLogger(__name__)
 

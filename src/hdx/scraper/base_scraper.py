@@ -2,11 +2,10 @@ from abc import ABC, abstractmethod
 from copy import deepcopy
 from typing import Dict, List, Optional, Set, Tuple
 
-from hdx.utilities.dictandlist import dict_of_lists_add
-from hdx.utilities.typehint import ListTuple
-
 from .utilities.reader import Read
 from .utilities.sources import Sources
+from hdx.utilities.dictandlist import dict_of_lists_add
+from hdx.utilities.typehint import ListTuple
 
 
 class BaseScraper(ABC):

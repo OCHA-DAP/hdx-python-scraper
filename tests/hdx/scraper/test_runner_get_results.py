@@ -1,9 +1,7 @@
-from hdx.utilities.dateparse import parse_date
-
+from .conftest import run_check_scrapers
 from hdx.scraper.base_scraper import BaseScraper
 from hdx.scraper.runner import Runner
-
-from .conftest import run_check_scrapers
+from hdx.utilities.dateparse import parse_date
 
 
 class TestRunnerGetResults:

@@ -2,13 +2,12 @@ import logging
 from copy import deepcopy
 from typing import Dict, List, Optional, Tuple, Union
 
-from hdx.location.adminlevel import AdminLevel
-from hdx.location.country import Country
-from hdx.utilities.typehint import ListTuple
-
 from ..outputs.base import BaseOutput
 from ..runner import Runner
 from .sources import Sources
+from hdx.location.adminlevel import AdminLevel
+from hdx.location.country import Country
+from hdx.utilities.typehint import ListTuple
 
 try:
     from pandas import DataFrame
@@ -291,9 +290,10 @@ class Writer:
         if flag_countries:
             headers[0].append(flag_countries["header"])
             headers[1].append(flag_countries["hxltag"])
-            isfc_fn = (
-                lambda adm: "Y" if adm in flag_countries["countries"] else "N"
-            )
+
+            def isfc_fn(adm):
+                return "Y" if adm in flag_countries["countries"] else "N"
+
             fns.append(isfc_fn)
 
         if iso3_to_region:

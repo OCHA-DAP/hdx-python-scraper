@@ -1,15 +1,13 @@
 from copy import deepcopy
 
-from hdx.location.adminlevel import AdminLevel
-from hdx.utilities.dateparse import parse_date
-
-from hdx.scraper.base_scraper import BaseScraper
-from hdx.scraper.runner import Runner
-
 from .affected_targeted_reached import AffectedTargetedReached
 from .conftest import check_scraper, check_scrapers
 from .education_closures import EducationClosures
 from .education_enrolment import EducationEnrolment
+from hdx.location.adminlevel import AdminLevel
+from hdx.scraper.base_scraper import BaseScraper
+from hdx.scraper.runner import Runner
+from hdx.utilities.dateparse import parse_date
 
 
 class TestScrapersCustom:

@@ -5,17 +5,17 @@ from typing import Any, Dict, Iterator, List, Optional, Tuple
 from urllib.parse import parse_qsl
 
 import hxl
+from hxl.input import InputOptions, munge_url
+from slugify import slugify
+
+from . import get_startend_dates_from_reference_period, match_template
+from .sources import Sources
 from hdx.data.dataset import Dataset
 from hdx.data.resource import Resource
 from hdx.utilities.downloader import Download
 from hdx.utilities.retriever import Retrieve
 from hdx.utilities.saver import save_json
 from hdx.utilities.typehint import ListTuple
-from hxl.input import InputOptions, munge_url
-from slugify import slugify
-
-from . import get_startend_dates_from_reference_period, match_template
-from .sources import Sources
 
 logger = logging.getLogger(__name__)
 

@@ -2,17 +2,16 @@
 from os.path import join
 
 import pytest
+
+from . import bool_assert
 from hdx.api.configuration import Configuration
 from hdx.api.locations import Locations
 from hdx.location.country import Country
-from hdx.utilities.dateparse import parse_date
-
 from hdx.scraper.base_scraper import BaseScraper
 from hdx.scraper.utilities import string_params_to_dict
 from hdx.scraper.utilities.fallbacks import Fallbacks
 from hdx.scraper.utilities.reader import Read
-
-from . import bool_assert
+from hdx.utilities.dateparse import parse_date
 
 
 @pytest.fixture(scope="session")
@@ -27,7 +26,7 @@ def configuration(fixtures):
         hdx_site="prod",
         user_agent="test",
         project_config_yaml=join(
-            "tests", "config", "project_configuration.yml"
+            "tests", "config", "project_configuration.yaml"
         ),
     )
     Locations.set_validlocations(
