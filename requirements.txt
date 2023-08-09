@@ -4,6 +4,8 @@
 #
 #    pip-compile --all-extras --output-file=requirements.txt --resolver=backtracking pyproject.toml
 #
+annotated-types==0.5.0
+    # via pydantic
 attrs==23.1.0
     # via
     #   frictionless
@@ -11,25 +13,25 @@ attrs==23.1.0
     #   jsonschema
 cachetools==5.3.1
     # via google-auth
-certifi==2023.5.7
+certifi==2023.7.22
     # via requests
 cffi==1.15.1
     # via cryptography
 cfgv==3.3.1
     # via pre-commit
-chardet==5.1.0
+chardet==5.2.0
     # via frictionless
-charset-normalizer==3.1.0
+charset-normalizer==3.2.0
     # via requests
 ckanapi==4.7
     # via hdx-python-api
-click==8.1.3
+click==8.1.6
     # via typer
 colorama==0.4.6
     # via typer
 coverage[toml]==7.2.7
     # via pytest-cov
-cryptography==41.0.1
+cryptography==41.0.3
     # via pyopenssl
 decorator==5.1.1
     # via
@@ -37,9 +39,9 @@ decorator==5.1.1
     #   validators
 defopt==6.4.0
     # via hdx-python-api
-distlib==0.3.6
+distlib==0.3.7
     # via virtualenv
-dnspython==2.3.0
+dnspython==2.4.1
     # via email-validator
 docopt==0.6.2
     # via
@@ -53,33 +55,33 @@ et-xmlfile==1.1.0
     # via openpyxl
 filelock==3.12.2
     # via virtualenv
-frictionless==5.13.1
+frictionless==5.15.10
     # via hdx-python-utilities
-google-auth==2.21.0
+google-auth==2.22.0
     # via
     #   google-auth-oauthlib
     #   gspread
 google-auth-oauthlib==1.0.0
     # via gspread
-gspread==5.9.0
+gspread==5.10.0
     # via hdx-python-scraper (pyproject.toml)
-hdx-python-api==6.0.4
+hdx-python-api==6.0.8
     # via hdx-python-scraper (pyproject.toml)
-hdx-python-country==3.5.1
+hdx-python-country==3.5.2
     # via hdx-python-api
-hdx-python-utilities==3.6.1
+hdx-python-utilities==3.6.2
     # via hdx-python-country
-humanize==4.6.0
+humanize==4.7.0
     # via frictionless
-identify==2.5.24
+identify==2.5.26
     # via pre-commit
 idna==3.4
     # via
     #   email-validator
     #   requests
-ijson==3.2.2
+ijson==3.2.3
     # via hdx-python-utilities
-inflect==6.0.4
+inflect==7.0.0
     # via quantulum3
 iniconfig==2.0.0
     # via pytest
@@ -95,7 +97,7 @@ jsonschema==4.17.3
     # via
     #   frictionless
     #   tableschema-to-template
-libhxl==5.0.1
+libhxl==5.0.2
     # via hdx-python-country
 loguru==0.7.0
     # via hdx-python-utilities
@@ -115,7 +117,7 @@ nodeenv==1.8.0
     # via pre-commit
 num2words==0.5.12
     # via quantulum3
-numpy==1.25.0
+numpy==1.25.2
     # via pandas
 oauthlib==3.2.2
     # via requests-oauthlib
@@ -123,11 +125,11 @@ openpyxl==3.1.2
     # via hdx-python-utilities
 packaging==23.1
     # via pytest
-pandas==2.0.2
+pandas==2.0.3
     # via hdx-python-scraper (pyproject.toml)
 petl==1.7.12
     # via frictionless
-platformdirs==3.8.0
+platformdirs==3.10.0
     # via virtualenv
 pluggy==1.2.0
     # via pytest
@@ -149,11 +151,13 @@ pyasn1-modules==0.3.0
     # via google-auth
 pycparser==2.21
     # via cffi
-pydantic==1.10.9
+pydantic==2.1.1
     # via
     #   frictionless
     #   inflect
-pygments==2.15.1
+pydantic-core==2.4.0
+    # via pydantic
+pygments==2.16.1
     # via rich
 pyopenssl==23.2.0
     # via
@@ -184,7 +188,7 @@ python-slugify==8.0.1
     #   frictionless
 pytz==2023.3
     # via pandas
-pyyaml==6.0
+pyyaml==6.0.1
     # via
     #   frictionless
     #   pre-commit
@@ -193,7 +197,7 @@ quantulum3==0.9.0
     # via hdx-python-api
 ratelimit==2.2.1
     # via hdx-python-utilities
-regex==2023.6.3
+regex==2023.8.8
     # via hdx-python-scraper (pyproject.toml)
 requests==2.31.0
     # via
@@ -208,7 +212,7 @@ requests-oauthlib==1.3.1
     # via google-auth-oauthlib
 rfc3986==2.0.0
     # via frictionless
-rich==13.4.2
+rich==13.5.2
     # via typer
 rsa==4.9
     # via google-auth
@@ -244,10 +248,12 @@ text-unidecode==1.3
     # via python-slugify
 typer[all]==0.9.0
     # via frictionless
-typing-extensions==4.6.3
+typing-extensions==4.7.1
     # via
     #   frictionless
+    #   inflect
     #   pydantic
+    #   pydantic-core
     #   typer
 tzdata==2023.3
     # via pandas
@@ -262,9 +268,9 @@ urllib3==1.26.16
     #   requests
 validators==0.20.0
     # via frictionless
-virtualenv==20.23.1
+virtualenv==20.24.2
     # via pre-commit
-wheel==0.40.0
+wheel==0.41.1
     # via libhxl
 xlrd==2.0.1
     # via hdx-python-utilities
