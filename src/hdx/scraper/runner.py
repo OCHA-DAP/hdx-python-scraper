@@ -1142,3 +1142,26 @@ class Runner:
                 continue
             source_urls.update(scraper.get_source_urls())
         return sorted(source_urls)
+
+    def get_hapi_metadata(
+        self, names: Optional[ListTuple[str]] = None
+    ) -> List[Dict]:
+        """Get HAPI metadata for all datasets
+
+        Args:
+            names (Optional[ListTuple[str]]): Names of scrapers
+
+        Returns:
+            List[Dict]: HAPI metadata for all datasets
+        """
+        if not names:
+            names = self.scrapers.keys()
+        hapi_metadata_list = []
+        for name in names:
+            scraper = self.get_scraper(name)
+            if not scraper.has_run:
+                continue
+            hapi_metadata = scraper.get_hapi_metadata()
+            if hapi_metadata:
+                hapi_metadata_list.append(hapi_metadata)
+        return hapi_metadata_list

@@ -317,6 +317,14 @@ class Read(Retrieve):
         dataset_nameinfo = datasetinfo["dataset"]
         if isinstance(dataset_nameinfo, str):
             dataset = self.read_dataset(dataset_nameinfo)
+            hapi_metadata = {
+                "code": dataset["id"],
+                "title": dataset["title"],
+                "provider_code": dataset["organization"]["id"],
+                "provider_name": dataset["organization"]["name"],
+                "hdx_link": dataset.get_hdx_url(),
+                "api_link": dataset.get_api_url(),
+            }
             resource = None
             url = datasetinfo.get("url")
             if do_resource_check and not url:
@@ -327,12 +335,21 @@ class Read(Retrieve):
                         if resource_name and resource["name"] != resource_name:
                             continue
                         url = resource["url"]
+                        hapi_metadata["resource"] = {
+                            "code": resource["id"],
+                            "filename": resource["name"],
+                            "mime_type": resource["format"],
+                            "update_date": resource["last_modified"],
+                            "hdx_link": resource.get_hdx_url(),
+                            "api_link": resource.get_api_url(),
+                        }
                         break
                 if not url:
                     raise ValueError(
                         f"Cannot find {format} resource in {dataset_nameinfo}!"
                     )
                 datasetinfo["url"] = url
+            datasetinfo["hapi_metadata"] = hapi_metadata
             if "source_date" not in datasetinfo:
                 datasetinfo[
                     "source_date"

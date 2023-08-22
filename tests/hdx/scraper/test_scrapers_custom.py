@@ -41,6 +41,17 @@ class TestScrapersCustom:
             )
         ]
         check_scraper(name, runner, "national", headers, values, sources)
+        hapi_metadata = runner.get_hapi_metadata()[0]
+        assert hapi_metadata == [
+            {
+                "code": "6a41be98-75b9-4365-9ea3-e33d0dd2668b",
+                "title": "Global School Closures COVID-19",
+                "provider_code": "18f2d467-dcf8-4b7e-bffa-b3c338ba3a7c",
+                "provider_name": "unesco",
+                "hdx_link": "https://data.humdata.org/dataset/global-school-closures-covid19",
+                "api_link": "https://data.humdata.org/api/3/action/package_show?id=global-school-closures-covid19",
+            }
+        ]
         headers = (["No. closed countries"], ["#status+country+closed"])
         values = [{"ROAP": 1}]
         sources = [

@@ -17,7 +17,7 @@ certifi==2023.7.22
     # via requests
 cffi==1.15.1
     # via cryptography
-cfgv==3.3.1
+cfgv==3.4.0
     # via pre-commit
 chardet==5.2.0
     # via frictionless
@@ -25,23 +25,21 @@ charset-normalizer==3.2.0
     # via requests
 ckanapi==4.7
     # via hdx-python-api
-click==8.1.6
+click==8.1.7
     # via typer
 colorama==0.4.6
     # via typer
-coverage[toml]==7.2.7
+coverage[toml]==7.3.0
     # via pytest-cov
 cryptography==41.0.3
     # via pyopenssl
 decorator==5.1.1
-    # via
-    #   jsonpath-ng
-    #   validators
+    # via jsonpath-ng
 defopt==6.4.0
     # via hdx-python-api
 distlib==0.3.7
     # via virtualenv
-dnspython==2.4.1
+dnspython==2.4.2
     # via email-validator
 docopt==0.6.2
     # via
@@ -65,15 +63,15 @@ google-auth-oauthlib==1.0.0
     # via gspread
 gspread==5.10.0
     # via hdx-python-scraper (pyproject.toml)
-hdx-python-api==6.0.8
+hdx-python-api==6.0.9
     # via hdx-python-scraper (pyproject.toml)
 hdx-python-country==3.5.2
     # via hdx-python-api
 hdx-python-utilities==3.6.2
     # via hdx-python-country
-humanize==4.7.0
+humanize==4.8.0
     # via frictionless
-identify==2.5.26
+identify==2.5.27
     # via pre-commit
 idna==3.4
     # via
@@ -127,7 +125,7 @@ packaging==23.1
     # via pytest
 pandas==2.0.3
     # via hdx-python-scraper (pyproject.toml)
-petl==1.7.12
+petl==1.7.13
     # via frictionless
 platformdirs==3.10.0
     # via virtualenv
@@ -151,11 +149,11 @@ pyasn1-modules==0.3.0
     # via google-auth
 pycparser==2.21
     # via cffi
-pydantic==2.1.1
+pydantic==2.2.1
     # via
     #   frictionless
     #   inflect
-pydantic-core==2.4.0
+pydantic-core==2.6.1
     # via pydantic
 pygments==2.16.1
     # via rich
@@ -220,7 +218,7 @@ ruamel-yaml==0.17.32
     # via hdx-python-utilities
 ruamel-yaml-clib==0.2.7
     # via ruamel-yaml
-shellingham==1.5.0.post1
+shellingham==1.5.3
     # via typer
 simpleeval==0.9.13
     # via frictionless
@@ -266,9 +264,9 @@ urllib3==1.26.16
     #   google-auth
     #   libhxl
     #   requests
-validators==0.20.0
+validators==0.21.2
     # via frictionless
-virtualenv==20.24.2
+virtualenv==20.24.3
     # via pre-commit
 wheel==0.41.1
     # via libhxl
