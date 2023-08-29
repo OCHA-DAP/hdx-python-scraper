@@ -338,7 +338,7 @@ class Read(Retrieve):
                         hapi_metadata["resource"] = {
                             "code": resource["id"],
                             "filename": resource["name"],
-                            "mime_type": resource["format"],
+                            "format": resource["format"],
                             "update_date": resource["last_modified"],
                             "hdx_link": resource.get_hdx_url(),
                             "api_link": resource.get_api_url(),
