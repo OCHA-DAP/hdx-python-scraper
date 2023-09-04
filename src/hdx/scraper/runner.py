@@ -1,4 +1,5 @@
 import logging
+from copy import deepcopy
 from datetime import datetime
 from traceback import format_exc
 from typing import Any, Callable, Dict, List, Optional, Tuple, Union
@@ -1188,10 +1189,7 @@ class Runner:
         """
         if not names:
             names = self.scrapers.keys()
-        results = {
-            "headers": ([], []),
-            "values": [],
-        }
+        results = []
 
         def add_results(scraper_level, scrap, levels_used):
             nonlocal results
@@ -1201,22 +1199,12 @@ class Runner:
             headers = scrap.headers.get(scraper_level)
             if headers is None:
                 return
-            headings = headers[0]
-            hxltags = headers[1]
             values = scrap.get_values(scraper_level)
-            hapi_metadata = scrap.get_hapi_metadata()
-            result_headings = results["headers"][0]
-            results_hxltags = results["headers"][1]
-            results_values = results["values"]
-            for i, hxltag in enumerate(hxltags):
-                if hxltag in results_hxltags:
-                    index = results_hxltags.index(hxltag)
-                    results_values[index].update((values[i], hapi_metadata))
-                else:
-                    result_headings.append(headings[i])
-                    results_hxltags.append(hxltag)
-                    results_values.append((values[i], hapi_metadata))
+            hapi_metadata = deepcopy(scrap.get_hapi_metadata())
+            hapi_metadata["headers"] = headers
+            hapi_metadata["values"] = values
             levels_used.add(scraper_level)
+            results.append(hapi_metadata)
 
         for name in names:
             if self.scrapers_to_run and not any(
