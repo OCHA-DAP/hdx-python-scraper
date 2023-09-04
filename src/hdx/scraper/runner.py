@@ -1217,7 +1217,4 @@ class Runner:
             lvls_used = set()
             for scrap_level in scraper.headers:
                 add_results(scrap_level, scraper, lvls_used)
-
-        for level in results:
-            del results[level]["source_hxltags"]
         return results
