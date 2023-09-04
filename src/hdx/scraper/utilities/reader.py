@@ -324,6 +324,9 @@ class Read(Retrieve):
                 "provider_name": dataset["organization"]["name"],
                 "hdx_link": dataset.get_hdx_url(),
                 "api_link": dataset.get_api_url(),
+                "reference_period": dataset.get_reference_period(
+                    today=self.today
+                ),
             }
             resource = None
             url = datasetinfo.get("url")
