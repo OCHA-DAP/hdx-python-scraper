@@ -1165,3 +1165,71 @@ class Runner:
             if hapi_metadata:
                 hapi_metadata_list.append(hapi_metadata)
         return hapi_metadata_list
+
+    def get_hapi_results(
+        self,
+        names: Optional[ListTuple[str]] = None,
+        has_run: bool = True,
+    ) -> Dict:
+        """Get the results (headers, values and HAPi metadata) for scrapers limiting to those
+        in names if given and limiting further to those that have been set in the
+        constructor if previously given. By
+        default only scrapers marked as having run are returned unless has_run is set to
+        False. The results dictionary is a dictionary with keys headers, values, HAPI metadata and fallbacks. Headers is
+        a tuple of (column headers, hxl hashtags). Values, sources and fallbacks are all
+        lists.
+
+        Args:
+            names (Optional[ListTuple[str]]): Names of scrapers. Defaults to None (all scrapers).
+            has_run (bool): Only get results for scrapers marked as having run. Defaults to True.
+
+        Returns:
+            Dict: Results dictionary with headers, values and HAPI metadata
+        """
+        if not names:
+            names = self.scrapers.keys()
+        results = {
+            "headers": ([], []),
+            "values": [],
+        }
+
+        def add_results(scraper_level, scrap, levels_used):
+            nonlocal results
+
+            if scraper_level in levels_used:
+                return
+            headers = scrap.headers.get(scraper_level)
+            if headers is None:
+                return
+            headings = headers[0]
+            hxltags = headers[1]
+            values = scrap.get_values(scraper_level)
+            hapi_metadata = scrap.get_hapi_metadata()
+            result_headings = results["headers"][0]
+            results_hxltags = results["headers"][1]
+            results_values = results["values"]
+            for i, hxltag in enumerate(hxltags):
+                if hxltag in results_hxltags:
+                    index = results_hxltags.index(hxltag)
+                    results_values[index].update((values[i], hapi_metadata))
+                else:
+                    result_headings.append(headings[i])
+                    results_hxltags.append(hxltag)
+                    results_values.append((values[i], hapi_metadata))
+            levels_used.add(scraper_level)
+
+        for name in names:
+            if self.scrapers_to_run and not any(
+                x in name for x in self.scrapers_to_run
+            ):
+                continue
+            scraper = self.get_scraper(name)
+            if has_run and not scraper.has_run:
+                continue
+            lvls_used = set()
+            for scrap_level in scraper.headers:
+                add_results(scrap_level, scraper, lvls_used)
+
+        for level in results:
+            del results[level]["source_hxltags"]
+        return results
