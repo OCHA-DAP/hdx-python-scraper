@@ -12,6 +12,7 @@ from . import get_startend_dates_from_reference_period, match_template
 from .sources import Sources
 from hdx.data.dataset import Dataset
 from hdx.data.resource import Resource
+from hdx.utilities.dateparse import parse_date
 from hdx.utilities.downloader import Download
 from hdx.utilities.retriever import Retrieve
 from hdx.utilities.saver import save_json
@@ -341,7 +342,9 @@ class Read(Retrieve):
                             "hdx_id": resource["id"],
                             "filename": resource["name"],
                             "format": resource["format"],
-                            "update_date": resource["last_modified"],
+                            "update_date": parse_date(
+                                resource["last_modified"]
+                            ),
                             "download_url": resource["url"],
                         }
                         break
