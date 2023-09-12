@@ -318,12 +318,11 @@ class Read(Retrieve):
         if isinstance(dataset_nameinfo, str):
             dataset = self.read_dataset(dataset_nameinfo)
             hapi_metadata = {
-                "code": dataset["id"],
+                "hdx_id": dataset["id"],
+                "hdx_stub": dataset["name"],
                 "title": dataset["title"],
                 "provider_code": dataset["organization"]["id"],
                 "provider_name": dataset["organization"]["name"],
-                "hdx_link": dataset.get_hdx_url(),
-                "api_link": dataset.get_api_url(),
                 "reference_period": dataset.get_reference_period(
                     today=self.today
                 ),
@@ -339,12 +338,11 @@ class Read(Retrieve):
                             continue
                         url = resource["url"]
                         hapi_metadata["resource"] = {
-                            "code": resource["id"],
+                            "hdx_id": resource["id"],
                             "filename": resource["name"],
                             "format": resource["format"],
                             "update_date": resource["last_modified"],
-                            "hdx_link": resource.get_hdx_url(),
-                            "api_link": resource.get_api_url(),
+                            "download_url": resource["url"],
                         }
                         break
                 if not url:
