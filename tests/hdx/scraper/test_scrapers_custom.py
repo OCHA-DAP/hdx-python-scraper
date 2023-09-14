@@ -23,14 +23,22 @@ class TestScrapersCustom:
             iso3_to_region_and_hrp = {"AFG": ("ROAP",)}
 
         region = Region()
-        runner = Runner(("AFG",), today)
+        runner = Runner(("AFG",), today, scrapers_to_run=("lala",))
         datasetinfo = configuration["education_closures"]
         education_closures = EducationClosures(
             datasetinfo, today, countries, region
         )
         runner.add_custom(education_closures)
+        runner.run()
+        hapi_results = runner.get_hapi_results()
+        assert hapi_results == []
+
+        runner = Runner(("AFG",), today)
+        runner.add_custom(education_closures)
         hapi_metadata = runner.get_hapi_metadata()
         assert hapi_metadata == []
+        hapi_results = runner.get_hapi_results()
+        assert hapi_results == []
         runner.run()
         name = education_closures.name
         headers = (["School Closure"], ["#impact+type"])
