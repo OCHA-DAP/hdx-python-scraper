@@ -361,11 +361,13 @@ class TestScrapersCustom:
         today = parse_date("2022-09-30")
         countries = ("ETH", "KEN", "SOM")
         adminone = AdminLevel(configuration["admin1"])
+        adminone.setup_from_admin_info(configuration["admin1"]["admin_info"])
         admintwo = AdminLevel(
             configuration["admin2"],
             admin_level=2,
             admin_level_overrides={"KEN": 1},
         )
+        admintwo.setup_from_admin_info(configuration["admin2"]["admin_info"])
 
         runner = Runner(countries, today)
         datasetinfo = configuration["affected_targeted_reached"]

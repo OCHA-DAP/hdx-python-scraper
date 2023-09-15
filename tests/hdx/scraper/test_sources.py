@@ -109,6 +109,7 @@ class TestSources:
             "should_overwrite_sources": None,
         }
         adminlevel = AdminLevel(configuration)
+        adminlevel.setup_from_admin_info(configuration["admin_info"])
         d = adminlevel.pcode_to_iso3
         adminlevel.pcode_to_iso3 = {k: d[k] for k in list(d)[:5]}
         result = Sources.create_source_configuration(
@@ -131,6 +132,9 @@ class TestSources:
             "should_overwrite_sources": None,
         }
         adminlevel2 = AdminLevel(configuration["admin1"])
+        adminlevel2.setup_from_admin_info(
+            configuration["admin1"]["admin_info"]
+        )
         d = adminlevel2.pcode_to_iso3
         adminlevel2.pcode_to_iso3 = {k: d[k] for k in list(d)[:5]}
         result = Sources.create_source_configuration(
