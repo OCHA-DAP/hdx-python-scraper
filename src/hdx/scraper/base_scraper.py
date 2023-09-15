@@ -346,6 +346,15 @@ class BaseScraper(ABC):
         """
         return self.source_urls
 
+    def get_hapi_metadata(self) -> Optional[Dict]:
+        """
+        Get HAPI metadata
+
+        Returns:
+            Optional[Dict]: HAPI metadata
+        """
+        return self.datasetinfo.get("hapi_metadata")
+
     def add_population(self) -> None:
         """
         Add population data by looking for the #population HXL hashtag among the

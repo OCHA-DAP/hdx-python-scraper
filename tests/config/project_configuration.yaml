@@ -373,7 +373,6 @@ unhcr_myanmar_idps:
 education_closures:
     dataset: "global-school-closures-covid19"
     resource: "School Closures"
-    url: "https://data.humdata.org/dataset/6a41be98-75b9-4365-9ea3-e33d0dd2668b/resource/3b5baa74-c928-4cbc-adba-bf543c5d3050/download/covid_impact_education.csv"
     format: "csv"
 
 education_enrolment:

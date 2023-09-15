@@ -1,4 +1,5 @@
 import logging
+from copy import copy
 from datetime import datetime
 from traceback import format_exc
 from typing import Any, Callable, Dict, List, Optional, Tuple, Union
@@ -1142,3 +1143,79 @@ class Runner:
                 continue
             source_urls.update(scraper.get_source_urls())
         return sorted(source_urls)
+
+    def get_hapi_metadata(
+        self, names: Optional[ListTuple[str]] = None
+    ) -> List[Dict]:
+        """Get HAPI metadata for all datasets
+
+        Args:
+            names (Optional[ListTuple[str]]): Names of scrapers
+
+        Returns:
+            List[Dict]: HAPI metadata for all datasets
+        """
+        if not names:
+            names = self.scrapers.keys()
+        hapi_metadata_list = []
+        for name in names:
+            scraper = self.get_scraper(name)
+            if not scraper.has_run:
+                continue
+            hapi_metadata = scraper.get_hapi_metadata()
+            if hapi_metadata:
+                hapi_metadata_list.append(hapi_metadata)
+        return hapi_metadata_list
+
+    def get_hapi_results(
+        self,
+        names: Optional[ListTuple[str]] = None,
+        has_run: bool = True,
+    ) -> List[Dict]:
+        """Get the results (headers, values and HAPi metadata) for scrapers
+        limiting to those in names if given and limiting further to those that
+        have been set in the constructor if previously given. By default only
+        scrapers marked as having run are returned unless has_run is set to
+        False. A list of dictionaries is returned where each dictionary has
+        keys headers, values, HAPI metadata and fallbacks. Headers is
+        a tuple of (column headers, hxl hashtags). Values, sources and
+        fallbacks are all lists.
+
+        Args:
+            names (Optional[ListTuple[str]]): Names of scrapers. Defaults to None (all scrapers).
+            has_run (bool): Only get results for scrapers marked as having run. Defaults to True.
+
+        Returns:
+            List[Dict]: Headers, values and HAPI metadata for all datasets
+        """
+        if not names:
+            names = self.scrapers.keys()
+        results = []
+
+        def add_results(scraper_level, scrap, levels_used):
+            nonlocal results
+
+            if scraper_level in levels_used:
+                return
+            headers = scrap.headers.get(scraper_level)
+            if headers is None:
+                return
+            values = scrap.get_values(scraper_level)
+            hapi_metadata = copy(scrap.get_hapi_metadata())
+            hapi_metadata["headers"] = headers
+            hapi_metadata["values"] = values
+            levels_used.add(scraper_level)
+            results.append(hapi_metadata)
+
+        for name in names:
+            if self.scrapers_to_run and not any(
+                x in name for x in self.scrapers_to_run
+            ):
+                continue
+            scraper = self.get_scraper(name)
+            if has_run and not scraper.has_run:
+                continue
+            lvls_used = set()
+            for scrap_level in scraper.headers:
+                add_results(scrap_level, scraper, lvls_used)
+        return results
