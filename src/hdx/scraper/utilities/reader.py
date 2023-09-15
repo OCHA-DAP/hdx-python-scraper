@@ -301,6 +301,42 @@ class Read(Retrieve):
             logger.exception(f"Error reading {data_type} for {identifier}!")
             raise
 
+    def get_hapi_dataset_metadata(self, dataset: Dataset) -> Dict:
+        """Get HAPI dataset metadata from HDX dataset
+
+        Args:
+            dataset (Dataset): HDX dataset
+
+        Returns:
+            Dict: HAPI dataset metadata
+        """
+        return {
+            "hdx_id": dataset["id"],
+            "hdx_stub": dataset["name"],
+            "title": dataset["title"],
+            "provider_code": dataset["organization"]["id"],
+            "provider_name": dataset["organization"]["name"],
+            "reference_period": dataset.get_reference_period(today=self.today),
+        }
+
+    @staticmethod
+    def get_hapi_resource_metadata(resource: Resource) -> Dict:
+        """Get HAPI resource metadata from HDX resource
+
+        Args:
+            resource (Resource): HDX dataset
+
+        Returns:
+            Dict: HAPI resource metadata
+        """
+        return {
+            "hdx_id": resource["id"],
+            "filename": resource["name"],
+            "format": resource["format"],
+            "update_date": parse_date(resource["last_modified"]),
+            "download_url": resource["url"],
+        }
+
     def read_hdx_metadata(
         self, datasetinfo: Dict, do_resource_check: bool = True
     ) -> Optional[Resource]:
@@ -318,16 +354,7 @@ class Read(Retrieve):
         dataset_nameinfo = datasetinfo["dataset"]
         if isinstance(dataset_nameinfo, str):
             dataset = self.read_dataset(dataset_nameinfo)
-            hapi_metadata = {
-                "hdx_id": dataset["id"],
-                "hdx_stub": dataset["name"],
-                "title": dataset["title"],
-                "provider_code": dataset["organization"]["id"],
-                "provider_name": dataset["organization"]["name"],
-                "reference_period": dataset.get_reference_period(
-                    today=self.today
-                ),
-            }
+            hapi_metadata = self.get_hapi_dataset_metadata(dataset)
             resource = None
             url = datasetinfo.get("url")
             if do_resource_check and not url:
@@ -338,15 +365,9 @@ class Read(Retrieve):
                         if resource_name and resource["name"] != resource_name:
                             continue
                         url = resource["url"]
-                        hapi_metadata["resource"] = {
-                            "hdx_id": resource["id"],
-                            "filename": resource["name"],
-                            "format": resource["format"],
-                            "update_date": parse_date(
-                                resource["last_modified"]
-                            ),
-                            "download_url": resource["url"],
-                        }
+                        hapi_metadata[
+                            "resource"
+                        ] = self.get_hapi_resource_metadata(resource)
                         break
                 if not url:
                     raise ValueError(
@@ -366,6 +387,7 @@ class Read(Retrieve):
                 datasetinfo["source_url"] = dataset.get_hdx_url()
             Sources.standardise_datasetinfo_source_date(datasetinfo)
             return resource
+
         if "source_date" not in datasetinfo:
             source_date = {}
         else:
