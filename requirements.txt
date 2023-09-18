@@ -69,7 +69,7 @@ hdx-python-utilities==3.6.2
     # via hdx-python-country
 humanize==4.8.0
     # via frictionless
-identify==2.5.28
+identify==2.5.29
     # via pre-commit
 idna==3.4
     # via
@@ -113,7 +113,7 @@ nodeenv==1.8.0
     # via pre-commit
 num2words==0.5.12
     # via quantulum3
-numpy==1.25.2
+numpy==1.26.0
     # via pandas
 oauthlib==3.2.2
     # via requests-oauthlib
@@ -208,7 +208,7 @@ requests-oauthlib==1.3.1
     # via google-auth-oauthlib
 rfc3986==2.0.0
     # via frictionless
-rich==13.5.2
+rich==13.5.3
     # via typer
 rsa==4.9
     # via google-auth
