@@ -320,22 +320,28 @@ class Read(Retrieve):
         }
 
     @staticmethod
-    def get_hapi_resource_metadata(resource: Resource) -> Dict:
+    def add_hapi_resource_metadata(
+        hapi_metadata: Dict, resource: Resource
+    ) -> None:
         """Get HAPI resource metadata from HDX resource
 
         Args:
+            hapi_metadata (Dict): HAPI metadata
             resource (Resource): HDX dataset
 
         Returns:
-            Dict: HAPI resource metadata
+            None
         """
-        return {
-            "hdx_id": resource["id"],
+        hdx_id = resource["id"]
+        hapi_resources = hapi_metadata.get("resources", {})
+        hapi_resources[hdx_id] = {
+            "hdx_id": hdx_id,
             "filename": resource["name"],
             "format": resource["format"],
             "update_date": parse_date(resource["last_modified"]),
             "download_url": resource["url"],
         }
+        hapi_metadata["resources"] = hapi_resources
 
     def read_hdx_metadata(
         self, datasetinfo: Dict, do_resource_check: bool = True
@@ -365,9 +371,9 @@ class Read(Retrieve):
                         if resource_name and resource["name"] != resource_name:
                             continue
                         url = resource["url"]
-                        hapi_metadata[
-                            "resource"
-                        ] = self.get_hapi_resource_metadata(resource)
+                        self.add_hapi_resource_metadata(
+                            hapi_metadata, resource
+                        )
                         break
                 if not url:
                     raise ValueError(
