@@ -320,28 +320,22 @@ class Read(Retrieve):
         }
 
     @staticmethod
-    def add_hapi_resource_metadata(
-        hapi_metadata: Dict, resource: Resource
-    ) -> None:
+    def get_hapi_resource_metadata(resource: Resource) -> Dict:
         """Get HAPI resource metadata from HDX resource
 
         Args:
-            hapi_metadata (Dict): HAPI metadata
             resource (Resource): HDX dataset
 
         Returns:
-            None
+            Dict: HAPI resource metadata
         """
-        hdx_id = resource["id"]
-        hapi_resources = hapi_metadata.get("resources", {})
-        hapi_resources[hdx_id] = {
-            "hdx_id": hdx_id,
+        return {
+            "hdx_id": resource["id"],
             "filename": resource["name"],
             "format": resource["format"],
             "update_date": parse_date(resource["last_modified"]),
             "download_url": resource["url"],
         }
-        hapi_metadata["resources"] = hapi_resources
 
     def read_hdx_metadata(
         self, datasetinfo: Dict, do_resource_check: bool = True
@@ -360,7 +354,9 @@ class Read(Retrieve):
         dataset_nameinfo = datasetinfo["dataset"]
         if isinstance(dataset_nameinfo, str):
             dataset = self.read_dataset(dataset_nameinfo)
-            hapi_metadata = self.get_hapi_dataset_metadata(dataset)
+            datasetinfo[
+                "hapi_dataset_metadata"
+            ] = self.get_hapi_dataset_metadata(dataset)
             resource = None
             url = datasetinfo.get("url")
             if do_resource_check and not url:
@@ -371,16 +367,15 @@ class Read(Retrieve):
                         if resource_name and resource["name"] != resource_name:
                             continue
                         url = resource["url"]
-                        self.add_hapi_resource_metadata(
-                            hapi_metadata, resource
-                        )
+                        datasetinfo[
+                            "hapi_resource_metadata"
+                        ] = self.get_hapi_resource_metadata(resource)
                         break
                 if not url:
                     raise ValueError(
                         f"Cannot find {format} resource in {dataset_nameinfo}!"
                     )
                 datasetinfo["url"] = url
-            datasetinfo["hapi_metadata"] = hapi_metadata
             if "source_date" not in datasetinfo:
                 datasetinfo[
                     "source_date"

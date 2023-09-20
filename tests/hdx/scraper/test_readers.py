@@ -151,15 +151,15 @@ class TestReaders:
             "Targeted 2017": "             _",
             "% targeted": "0",
         }
-        date = {
+        {
             "default_date": {
                 "end": datetime(2016, 9, 1, 23, 59, 59, tzinfo=timezone.utc),
             }
         }
         assert datasetinfo == {
-            "name": "test",
             "dataset": "sahel-humanitarian-needs-overview",
-            "hapi_metadata": {
+            "format": "csv",
+            "hapi_dataset_metadata": {
                 "hdx_id": "47f6ef46-500f-421a-9fa2-fefd93facf95",
                 "hdx_stub": "sahel-humanitarian-needs-overview",
                 "provider_code": "ac91832d-2477-4e1f-8520-9a591a7c3d69",
@@ -175,21 +175,27 @@ class TestReaders:
                     ),
                     "startdate_str": "2016-09-01T00:00:00+00:00",
                 },
-                "resource": {
-                    "download_url": "https://data.humdata.org/dataset/47f6ef46-500f-421a-9fa2-fefd93facf95/resource/2527ac5b-66fe-46f0-8b9b-7086d2c4ddd3/download/hno-2017-sahel-nutrition.csv",
-                    "filename": "HNO -2017 -Sahel-nutrition.csv",
-                    "format": "csv",
-                    "hdx_id": "2527ac5b-66fe-46f0-8b9b-7086d2c4ddd3",
-                    "update_date": datetime(
-                        2017, 3, 10, 10, 8, 37, tzinfo=timezone.utc
-                    ),
-                },
                 "title": "Sahel : Humanitarian Needs Overview",
             },
-            "format": "csv",
+            "hapi_resource_metadata": {
+                "download_url": "https://data.humdata.org/dataset/47f6ef46-500f-421a-9fa2-fefd93facf95/resource/2527ac5b-66fe-46f0-8b9b-7086d2c4ddd3/download/hno-2017-sahel-nutrition.csv",
+                "filename": "HNO -2017 -Sahel-nutrition.csv",
+                "format": "csv",
+                "hdx_id": "2527ac5b-66fe-46f0-8b9b-7086d2c4ddd3",
+                "update_date": datetime(
+                    2017, 3, 10, 10, 8, 37, tzinfo=timezone.utc
+                ),
+            },
             "headers": 1,
-            "source_date": date,
+            "name": "test",
             "source": "Multiple organisations",
+            "source_date": {
+                "default_date": {
+                    "end": datetime(
+                        2016, 9, 1, 23, 59, 59, tzinfo=timezone.utc
+                    )
+                }
+            },
             "source_url": "https://data.humdata.org/dataset/sahel-humanitarian-needs-overview",
             "url": "https://data.humdata.org/dataset/47f6ef46-500f-421a-9fa2-fefd93facf95/resource/2527ac5b-66fe-46f0-8b9b-7086d2c4ddd3/download/hno-2017-sahel-nutrition.csv",
         }
@@ -220,9 +226,9 @@ class TestReaders:
             "Total population": 100000,
         }
         assert datasetinfo == {
-            "name": "test",
             "dataset": "sahel-humanitarian-needs-overview",
-            "hapi_metadata": {
+            "format": "xlsx",
+            "hapi_dataset_metadata": {
                 "hdx_id": "47f6ef46-500f-421a-9fa2-fefd93facf95",
                 "hdx_stub": "sahel-humanitarian-needs-overview",
                 "provider_code": "ac91832d-2477-4e1f-8520-9a591a7c3d69",
@@ -238,23 +244,29 @@ class TestReaders:
                     ),
                     "startdate_str": "2016-09-01T00:00:00+00:00",
                 },
-                "resource": {
-                    "download_url": "https://data.humdata.org/dataset/47f6ef46-500f-421a-9fa2-fefd93facf95/resource/d9248be4-7bfb-4a81-a7aa-c035dcb737a2/download/hno-2017-sahel-people-in-need.xlsx",
-                    "filename": "HNO-2017-Sahel- People in " "need.xlsx",
-                    "format": "xlsx",
-                    "hdx_id": "d9248be4-7bfb-4a81-a7aa-c035dcb737a2",
-                    "update_date": datetime(
-                        2017, 3, 10, 10, 8, 37, tzinfo=timezone.utc
-                    ),
-                },
                 "title": "Sahel : Humanitarian Needs Overview",
             },
-            "resource": "HNO-2017-Sahel- People in need.xlsx",
-            "format": "xlsx",
-            "sheet": 1,
+            "hapi_resource_metadata": {
+                "download_url": "https://data.humdata.org/dataset/47f6ef46-500f-421a-9fa2-fefd93facf95/resource/d9248be4-7bfb-4a81-a7aa-c035dcb737a2/download/hno-2017-sahel-people-in-need.xlsx",
+                "filename": "HNO-2017-Sahel- People in need.xlsx",
+                "format": "xlsx",
+                "hdx_id": "d9248be4-7bfb-4a81-a7aa-c035dcb737a2",
+                "update_date": datetime(
+                    2017, 3, 10, 10, 8, 37, tzinfo=timezone.utc
+                ),
+            },
             "headers": 1,
-            "source_date": date,
+            "name": "test",
+            "resource": "HNO-2017-Sahel- People in need.xlsx",
+            "sheet": 1,
             "source": "Multiple organisations",
+            "source_date": {
+                "default_date": {
+                    "end": datetime(
+                        2016, 9, 1, 23, 59, 59, tzinfo=timezone.utc
+                    )
+                }
+            },
             "source_url": "https://data.humdata.org/dataset/sahel-humanitarian-needs-overview",
             "url": "https://data.humdata.org/dataset/47f6ef46-500f-421a-9fa2-fefd93facf95/resource/d9248be4-7bfb-4a81-a7aa-c035dcb737a2/download/hno-2017-sahel-people-in-need.xlsx",
         }

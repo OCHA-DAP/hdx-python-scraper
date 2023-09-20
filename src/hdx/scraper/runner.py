@@ -1144,29 +1144,6 @@ class Runner:
             source_urls.update(scraper.get_source_urls())
         return sorted(source_urls)
 
-    def get_hapi_metadata(
-        self, names: Optional[ListTuple[str]] = None
-    ) -> List[Dict]:
-        """Get HAPI metadata for all datasets
-
-        Args:
-            names (Optional[ListTuple[str]]): Names of scrapers
-
-        Returns:
-            List[Dict]: HAPI metadata for all datasets
-        """
-        if not names:
-            names = self.scrapers.keys()
-        hapi_metadata_list = []
-        for name in names:
-            scraper = self.get_scraper(name)
-            if not scraper.has_run:
-                continue
-            hapi_metadata = scraper.get_hapi_metadata()
-            if hapi_metadata:
-                hapi_metadata_list.append(hapi_metadata)
-        return hapi_metadata_list
-
     def get_hapi_results(
         self,
         names: Optional[ListTuple[str]] = None,
@@ -1204,17 +1181,21 @@ class Runner:
             if headers is None:
                 return
             values = scrap.get_values(scraper_level)
-            scrap_hapi_metadata = scrap.get_hapi_metadata()
-            hdx_id = scrap_hapi_metadata["hdx_id"]
-            hapi_metadata = results.get(hdx_id, copy(scrap_hapi_metadata))
+            hapi_dataset_metadata = scrap.get_hapi_dataset_metadata()
+            hapi_resource_metadata = scrap.get_hapi_resource_metadata()
+            dataset_id = hapi_dataset_metadata["hdx_id"]
+            hapi_metadata = results.get(
+                dataset_id, copy(hapi_dataset_metadata)
+            )
             level_results = hapi_metadata.get("results", {})
             level_results[scraper_level] = {
                 "headers": headers,
                 "values": values,
+                "hapi_resource_metadata": hapi_resource_metadata,
             }
             hapi_metadata["results"] = level_results
             levels_used.add(scraper_level)
-            results[hdx_id] = hapi_metadata
+            results[dataset_id] = hapi_metadata
 
         for name in names:
             if self.scrapers_to_run and not any(
