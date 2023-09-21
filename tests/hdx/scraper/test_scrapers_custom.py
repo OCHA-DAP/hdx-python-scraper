@@ -30,6 +30,8 @@ class TestScrapersCustom:
         )
         runner.add_custom(education_closures)
         runner.run()
+        hapi_metadata = runner.get_hapi_metadata()
+        assert hapi_metadata == {}
         hapi_results = runner.get_hapi_results()
         assert hapi_results == {}
 
@@ -50,6 +52,38 @@ class TestScrapersCustom:
             )
         ]
         check_scraper(name, runner, "national", headers, values, sources)
+        hapi_metadata = runner.get_hapi_metadata()
+        assert hapi_metadata == {
+            "6a41be98-75b9-4365-9ea3-e33d0dd2668b": {
+                "hdx_id": "6a41be98-75b9-4365-9ea3-e33d0dd2668b",
+                "hdx_stub": "global-school-closures-covid19",
+                "provider_code": "18f2d467-dcf8-4b7e-bffa-b3c338ba3a7c",
+                "provider_name": "unesco",
+                "reference_period": {
+                    "enddate": datetime(
+                        2022, 4, 30, 23, 59, 59, tzinfo=timezone.utc
+                    ),
+                    "enddate_str": "2022-04-30T23:59:59+00:00",
+                    "ongoing": False,
+                    "startdate": datetime(
+                        2020, 2, 16, 0, 0, tzinfo=timezone.utc
+                    ),
+                    "startdate_str": "2020-02-16T00:00:00+00:00",
+                },
+                "resources": {
+                    "3b5baa74-c928-4cbc-adba-bf543c5d3050": {
+                        "download_url": "https://data.humdata.org/dataset/6a41be98-75b9-4365-9ea3-e33d0dd2668b/resource/3b5baa74-c928-4cbc-adba-bf543c5d3050/download/covid_impact_education.csv",
+                        "filename": "School " "Closures",
+                        "format": "csv",
+                        "hdx_id": "3b5baa74-c928-4cbc-adba-bf543c5d3050",
+                        "update_date": datetime(
+                            2022, 4, 4, 9, 56, 5, tzinfo=timezone.utc
+                        ),
+                    }
+                },
+                "title": "Global School Closures " "COVID-19",
+            }
+        }
         hapi_results = runner.get_hapi_results()
         assert next(iter(hapi_results.values())) == {
             "hdx_id": "6a41be98-75b9-4365-9ea3-e33d0dd2668b",
