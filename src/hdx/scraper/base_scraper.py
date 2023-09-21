@@ -346,14 +346,23 @@ class BaseScraper(ABC):
         """
         return self.source_urls
 
-    def get_hapi_metadata(self) -> Optional[Dict]:
+    def get_hapi_dataset_metadata(self) -> Optional[Dict]:
         """
-        Get HAPI metadata
+        Get HAPI dataset metadata
 
         Returns:
-            Optional[Dict]: HAPI metadata
+            Optional[Dict]: HAPI dataset metadata
         """
-        return self.datasetinfo.get("hapi_metadata")
+        return self.datasetinfo.get("hapi_dataset_metadata")
+
+    def get_hapi_resource_metadata(self) -> Optional[Dict]:
+        """
+        Get HAPI resource metadata
+
+        Returns:
+            Optional[Dict]: HAPI resource metadata
+        """
+        return self.datasetinfo.get("hapi_resource_metadata")
 
     def add_population(self) -> None:
         """

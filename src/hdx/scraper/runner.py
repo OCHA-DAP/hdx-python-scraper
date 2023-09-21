@@ -1146,51 +1146,61 @@ class Runner:
 
     def get_hapi_metadata(
         self, names: Optional[ListTuple[str]] = None
-    ) -> List[Dict]:
+    ) -> Dict:
         """Get HAPI metadata for all datasets
 
         Args:
             names (Optional[ListTuple[str]]): Names of scrapers
 
         Returns:
-            List[Dict]: HAPI metadata for all datasets
+            Dict: HAPI metadata for all datasets
         """
         if not names:
             names = self.scrapers.keys()
-        hapi_metadata_list = []
+        results = {}
         for name in names:
             scraper = self.get_scraper(name)
             if not scraper.has_run:
                 continue
-            hapi_metadata = scraper.get_hapi_metadata()
-            if hapi_metadata:
-                hapi_metadata_list.append(hapi_metadata)
-        return hapi_metadata_list
+            hapi_dataset_metadata = scraper.get_hapi_dataset_metadata()
+            hapi_resource_metadata = scraper.get_hapi_resource_metadata()
+            dataset_id = hapi_dataset_metadata["hdx_id"]
+            resource_id = hapi_resource_metadata["hdx_id"]
+            hapi_metadata = results.get(
+                dataset_id, copy(hapi_dataset_metadata)
+            )
+            hapi_resources = hapi_metadata.get("resources", {})
+            hapi_resources[resource_id] = hapi_resource_metadata
+            hapi_metadata["resources"] = hapi_resources
+            results[dataset_id] = hapi_metadata
+        return results
 
     def get_hapi_results(
         self,
         names: Optional[ListTuple[str]] = None,
         has_run: bool = True,
-    ) -> List[Dict]:
-        """Get the results (headers, values and HAPi metadata) for scrapers
-        limiting to those in names if given and limiting further to those that
-        have been set in the constructor if previously given. By default only
-        scrapers marked as having run are returned unless has_run is set to
-        False. A list of dictionaries is returned where each dictionary has
-        keys headers, values, HAPI metadata and fallbacks. Headers is
-        a tuple of (column headers, hxl hashtags). Values, sources and
-        fallbacks are all lists.
+    ) -> Dict:
+        """Get the results (headers and values per admin level and HAPI
+        metadata) for scrapers limiting to those in names if given and limiting
+        further to those that have been set in the constructor if previously
+        given. By default, only scrapers marked as having run are returned
+        unless has_run is set to False. A dictionary is returned where key is
+        HDX dataset id and value is a dictionary that has HAPI dataset metadata
+        as well as a results key. The value associated with the results key is
+        a dictionary where each key is an admin level. Each admin level key has
+        a value dictionary with headers, values and HAPI resource metadata.
+        Headers is a tuple of (column headers, hxl hashtags). Values is a list.
 
         Args:
             names (Optional[ListTuple[str]]): Names of scrapers. Defaults to None (all scrapers).
             has_run (bool): Only get results for scrapers marked as having run. Defaults to True.
 
         Returns:
-            List[Dict]: Headers, values and HAPI metadata for all datasets
+            Dict: Headers and values per admin level and HAPI metadata for all datasets
         """
         if not names:
             names = self.scrapers.keys()
-        results = []
+        results = {}
 
         def add_results(scraper_level, scrap, levels_used):
             nonlocal results
@@ -1201,11 +1211,21 @@ class Runner:
             if headers is None:
                 return
             values = scrap.get_values(scraper_level)
-            hapi_metadata = copy(scrap.get_hapi_metadata())
-            hapi_metadata["headers"] = headers
-            hapi_metadata["values"] = values
+            hapi_dataset_metadata = scrap.get_hapi_dataset_metadata()
+            hapi_resource_metadata = scrap.get_hapi_resource_metadata()
+            dataset_id = hapi_dataset_metadata["hdx_id"]
+            hapi_metadata = results.get(
+                dataset_id, copy(hapi_dataset_metadata)
+            )
+            level_results = hapi_metadata.get("results", {})
+            level_results[scraper_level] = {
+                "headers": headers,
+                "values": values,
+                "hapi_resource_metadata": hapi_resource_metadata,
+            }
+            hapi_metadata["results"] = level_results
             levels_used.add(scraper_level)
-            results.append(hapi_metadata)
+            results[dataset_id] = hapi_metadata
 
         for name in names:
             if self.scrapers_to_run and not any(

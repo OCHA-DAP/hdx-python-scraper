@@ -354,7 +354,9 @@ class Read(Retrieve):
         dataset_nameinfo = datasetinfo["dataset"]
         if isinstance(dataset_nameinfo, str):
             dataset = self.read_dataset(dataset_nameinfo)
-            hapi_metadata = self.get_hapi_dataset_metadata(dataset)
+            datasetinfo[
+                "hapi_dataset_metadata"
+            ] = self.get_hapi_dataset_metadata(dataset)
             resource = None
             url = datasetinfo.get("url")
             if do_resource_check and not url:
@@ -365,8 +367,8 @@ class Read(Retrieve):
                         if resource_name and resource["name"] != resource_name:
                             continue
                         url = resource["url"]
-                        hapi_metadata[
-                            "resource"
+                        datasetinfo[
+                            "hapi_resource_metadata"
                         ] = self.get_hapi_resource_metadata(resource)
                         break
                 if not url:
@@ -374,7 +376,6 @@ class Read(Retrieve):
                         f"Cannot find {format} resource in {dataset_nameinfo}!"
                     )
                 datasetinfo["url"] = url
-            datasetinfo["hapi_metadata"] = hapi_metadata
             if "source_date" not in datasetinfo:
                 datasetinfo[
                     "source_date"
