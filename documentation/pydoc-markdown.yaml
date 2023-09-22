@@ -29,13 +29,13 @@ renderer:
             - hdx.scraper.configurable.*
         - title: Base Class for Scrapers
           contents:
-            - hdx.scraper.base_scraper.BaseScraper
+            - hdx.scraper.base_scraper.BaseScraper.*
         - title: Fallbacks
           contents:
             - hdx.scraper.utilities.fallbacks.Fallbacks
         - title: Run Scrapers
           contents:
-            - hdx.scraper.runner.Runner
+            - hdx.scraper.runner.Runner.*
         - title: Outputs
           contents:
             - hdx.scraper.outputs.*
