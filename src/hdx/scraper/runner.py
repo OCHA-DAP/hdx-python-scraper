@@ -1147,7 +1147,10 @@ class Runner:
     def get_hapi_metadata(
         self, names: Optional[ListTuple[str]] = None
     ) -> Dict:
-        """Get HAPI metadata for all datasets
+        """Get HAPI metadata for all datasets. A dictionary is returned that
+        maps from dataset ids to a dictionary. The dictionary has keys for
+        dataset metadata and a key resources under which is a dictionary that
+        maps from resource ids to resource metadata.
 
         Args:
             names (Optional[ListTuple[str]]): Names of scrapers
@@ -1184,12 +1187,15 @@ class Runner:
         metadata) for scrapers limiting to those in names if given and limiting
         further to those that have been set in the constructor if previously
         given. By default, only scrapers marked as having run are returned
-        unless has_run is set to False. A dictionary is returned where key is
-        HDX dataset id and value is a dictionary that has HAPI dataset metadata
-        as well as a results key. The value associated with the results key is
-        a dictionary where each key is an admin level. Each admin level key has
-        a value dictionary with headers, values and HAPI resource metadata.
-        Headers is a tuple of (column headers, hxl hashtags). Values is a list.
+        unless has_run is set to False.
+
+        A dictionary is returned where key is HDX dataset id and value is a
+        dictionary that has HAPI dataset metadata as well as a results key.
+        The value associated with the results key is a dictionary where each
+        key is an admin level. Each admin level key has a value dictionary with
+        headers, values and HAPI resource metadata. Headers is a tuple of
+        (column headers, hxl hashtags). Values is a list. HAPI resource
+        metadata is a dictionary.
 
         Args:
             names (Optional[ListTuple[str]]): Names of scrapers. Defaults to None (all scrapers).

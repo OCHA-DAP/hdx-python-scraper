@@ -340,9 +340,16 @@ class Read(Retrieve):
     def read_hdx_metadata(
         self, datasetinfo: Dict, do_resource_check: bool = True
     ) -> Optional[Resource]:
-        """Read metadata from HDX dataset and add to input dictionary. If url is not
-        supplied, will look through resources for one that matches specified format and
-        use its url unless do_resource_check is False.
+        """Read metadata from HDX dataset and add to input dictionary. If url
+        is not supplied, will look through resources for one that matches
+        specified format and use its url unless do_resource_check is False.
+        The dataset key of the parameter datasetinfo will usually point to a
+        string (single dataset) but where sources vary across HXL tags can be
+        a dictionary that maps from HXL tags to datasets with the key
+        default_dataset setting a default for HXL tags. For a single dataset,
+        the keys hapi_dataset_metadata and hapi_resource_metadata will be
+        populated with more detailed dataset and resource information required
+        by HAPI.
 
         Args:
             datasetinfo (Dict): Dictionary of information about dataset
