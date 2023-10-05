@@ -122,6 +122,7 @@ class ConfigurableScraper(BaseScraper):
                     "input": datasetinfo.get("input", []),
                     "transform": datasetinfo.get("transform", {}),
                     "population_key": datasetinfo.get("population_key"),
+                    "list": datasetinfo.get("list", []),
                     "process": datasetinfo.get("process", []),
                     "input_keep": datasetinfo.get("input_keep", []),
                     "input_append": datasetinfo.get("input_append", []),
@@ -292,6 +293,7 @@ class ConfigurableScraper(BaseScraper):
                 filter = subset["filter"]
                 input_ignore_vals = subset.get("input_ignore_vals", [])
                 input_transforms = subset.get("transform", {})
+                list_cols = subset.get("list")
                 sum_cols = subset.get("sum")
                 process_cols = subset.get("process")
                 input_append = subset.get("input_append", [])
@@ -303,6 +305,8 @@ class ConfigurableScraper(BaseScraper):
                     if input_transform and val not in input_ignore_vals:
                         val = eval(input_transform.replace(valcol, "val"))
                     if sum_cols or process_cols:
+                        dict_of_lists_add(valuedict, adm, val)
+                    elif list_cols and valcol in list_cols:
                         dict_of_lists_add(valuedict, adm, val)
                     else:
                         curval = valuedict.get(adm)
@@ -326,6 +330,7 @@ class ConfigurableScraper(BaseScraper):
                 population_str = "self.population_lookup[adm]"
             else:
                 population_str = "self.population_lookup[population_key]"
+            subset.get("list")
             process_cols = subset.get("process")
             input_keep = subset.get("input_keep", [])
             sum_cols = subset.get("sum")
@@ -440,7 +445,7 @@ class ConfigurableScraper(BaseScraper):
                             valcols[i], f"newvaldicts[{i}][adm]"
                         )
                     formula = formula.replace("#pzbgvjh", population_str)
-                    for adm in valdicts[0].keys():
+                    for adm in valdicts[0]:
                         try:
                             val = eval(formula)
                         except (ValueError, TypeError, KeyError):

@@ -510,8 +510,8 @@ this case, the value is converted to either an int or float if it is possible.
           - "#population"
 
 The travel configurable scraper reads values from the “info” and “published” columns of
-the source. append_cols defines any columns where if the same admin appears again (in
-this case, the same country), then that data is appended to the existing. `keep_cols`
+the source. `input_append` defines any columns where if the same admin appears again (in
+this case, the same country), then that data is appended to the existing. `input_keep`
 defines any columns where if the same admin appears again, the existing value is kept
 rather than replaced.
 
@@ -523,9 +523,9 @@ rather than replaced.
         input:
           - "info"
           - "published"
-        append_cols:
+        input_append:
           - "info"
-        keep_cols:
+        input_keep:
           - "published"
         output:
           - "TravelRestrictions"

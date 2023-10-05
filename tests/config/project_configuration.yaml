@@ -124,6 +124,29 @@ scraper_national:
         output_hxl:
           - "#affected+infected+2+per100000"
           - "#affected+killed+2+per100000"
+  # A fake one where we create a list of values
+  who_national3:
+    source: "WHO"
+    url: "https://covid19.who.int/WHO-COVID-19-global-data.csv"
+    format: "csv"
+    admin:
+      - "Country_code"
+    date: "Date_reported"
+    date_type: "date"
+    use_date: True
+    subsets:
+      - filter: "Date_reported > '2020-08-03'"
+        input:
+          - "Cumulative_cases"
+          - "Cumulative_deaths"
+        list:
+          - "Cumulative_cases"
+        output:
+          - "Cases3Per100000"
+          - "Deaths3Per100000"
+        output_hxl:
+          - "#affected+infected+3+per100000"
+          - "#affected+killed+3+per100000"
   access:
     source:
       "#access+visas+pct": "OCHA"
