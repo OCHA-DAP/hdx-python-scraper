@@ -510,8 +510,8 @@ this case, the value is converted to either an int or float if it is possible.
           - "#population"
 
 The travel configurable scraper reads values from the “info” and “published” columns of
-the source. append_cols defines any columns where if the same admin appears again (in
-this case, the same country), then that data is appended to the existing. `keep_cols`
+the source. `input_append` defines any columns where if the same admin appears again (in
+this case, the same country), then that data is appended to the existing. `input_keep`
 defines any columns where if the same admin appears again, the existing value is kept
 rather than replaced.
 
@@ -523,9 +523,9 @@ rather than replaced.
         input:
           - "info"
           - "published"
-        append_cols:
+        input_append:
           - "info"
-        keep_cols:
+        input_keep:
           - "published"
         output:
           - "TravelRestrictions"
@@ -533,6 +533,42 @@ rather than replaced.
         output_hxl:
           - "#severity+travel"
           - "#severity+date+travel"
+
+The operational presence scraper reads organisation and sector information.
+`list` defines columns for which a list of values corresponds to an admin unit.
+What is returned per admin unit is a list not rather than just a single value
+such as a number or string.
+
+    operational_presence_afg:
+        dataset: "afghanistan-who-does-what-where-january-to-march-2023"
+        resource: "afghanistan-3w-operational-presence-january-march-2023.csv"
+        format: "csv"
+        headers: 1
+        use_hxl: True
+        admin:
+          - ~
+          - "#adm2+code"
+        admin_exact: True
+        input:
+          - "#org +name"
+          - "#org +acronym"
+          - "#org +type +name"
+          - "#sector +cluster +name"
+        list:
+          - "#org +name"
+          - "#org +acronym"
+          - "#org +type +name"
+          - "#sector +cluster +name"
+        output:
+          - "org_name"
+          - "org_acronym"
+          - "org_type_name"
+          - "sector_name"
+        output_hxl:
+          - "#org+name"
+          - "#org+acronym"
+          - "#org+type+name"
+          - "#sector+name"
 
 The gam configurable scraper reads from a spreadsheet that has a multiline header
 (headers defined as rows 3 and 4). Experimentation is often needed with row numbers

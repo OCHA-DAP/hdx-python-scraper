@@ -22,6 +22,7 @@ class TestScrapersNational:
             "population",
             "who_national",
             "who_national2",
+            "who_national3",
             "access",
             "sadd",
             "ourworldindata",
@@ -76,19 +77,23 @@ class TestScrapersNational:
             ],
         )
 
-        names = ("who_national", "who_national2")
+        names = ("who_national", "who_national2", "who_national3")
         headers = (
             [
                 "CasesPer100000",
                 "DeathsPer100000",
                 "Cases2Per100000",
                 "Deaths2Per100000",
+                "Cases3Per100000",
+                "Deaths3Per100000",
             ],
             [
                 "#affected+infected+per100000",
                 "#affected+killed+per100000",
                 "#affected+infected+2+per100000",
                 "#affected+killed+2+per100000",
+                "#affected+infected+3+per100000",
+                "#affected+killed+3+per100000",
             ],
         )
         values = [
@@ -96,6 +101,8 @@ class TestScrapersNational:
             {"AFG": "3.41"},
             {"AFG": "96.99"},
             {"AFG": "3.41"},
+            {"AFG": ["36747", "36829", "36896"]},
+            {"AFG": "1298"},
         ]
         sources = [
             (
@@ -118,6 +125,18 @@ class TestScrapersNational:
             ),
             (
                 "#affected+killed+2+per100000",
+                "Aug 6, 2020",
+                "WHO",
+                "https://covid19.who.int/WHO-COVID-19-global-data.csv",
+            ),
+            (
+                "#affected+infected+3+per100000",
+                "Aug 6, 2020",
+                "WHO",
+                "https://covid19.who.int/WHO-COVID-19-global-data.csv",
+            ),
+            (
+                "#affected+killed+3+per100000",
                 "Aug 6, 2020",
                 "WHO",
                 "https://covid19.who.int/WHO-COVID-19-global-data.csv",
@@ -150,6 +169,8 @@ class TestScrapersNational:
                 "DeathsPer100000",
                 "Cases2Per100000",
                 "Deaths2Per100000",
+                "Cases3Per100000",
+                "Deaths3Per100000",
             ],
             [
                 "#country+code",
@@ -157,8 +178,18 @@ class TestScrapersNational:
                 "#affected+killed+per100000",
                 "#affected+infected+2+per100000",
                 "#affected+killed+2+per100000",
+                "#affected+infected+3+per100000",
+                "#affected+killed+3+per100000",
             ],
-            ["AFG", "96.99", "3.41", "96.99", "3.41"],
+            [
+                "AFG",
+                "96.99",
+                "3.41",
+                "96.99",
+                "3.41",
+                ["36747", "36829", "36896"],
+                "1298",
+            ],
         ]
         combined_sources = (
             [
@@ -656,9 +687,11 @@ class TestScrapersNational:
                 "#affected+f+infected+pct": "0.2956",
                 "#affected+f+killed+pct": "0.2502",
                 "#affected+infected+2+per100000": "96.99",
+                "#affected+infected+3+per100000": "['36747', '36829', '36896']",
                 "#affected+infected+m+pct": "0.7044",
                 "#affected+infected+per100000": "96.99",
                 "#affected+killed+2+per100000": "3.41",
+                "#affected+killed+3+per100000": "1298",
                 "#affected+killed+m+pct": "0.7498",
                 "#affected+killed+per100000": "3.41",
                 "#capacity+doses+administered+coverage+pct": "0.0032",
