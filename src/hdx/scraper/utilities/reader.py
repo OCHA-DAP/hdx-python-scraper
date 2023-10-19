@@ -314,8 +314,8 @@ class Read(Retrieve):
             "hdx_id": dataset["id"],
             "hdx_stub": dataset["name"],
             "title": dataset["title"],
-            "provider_code": dataset["organization"]["id"],
-            "provider_name": dataset["organization"]["name"],
+            "hdx_provider_stub": dataset["organization"]["name"],
+            "hdx_provider_name": dataset["organization"]["title"],
             "reference_period": dataset.get_reference_period(today=self.today),
         }
 
