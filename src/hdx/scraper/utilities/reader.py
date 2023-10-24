@@ -331,7 +331,7 @@ class Read(Retrieve):
         """
         return {
             "hdx_id": resource["id"],
-            "filename": resource["name"],
+            "name": resource["name"],
             "format": resource["format"],
             "update_date": parse_date(resource["last_modified"]),
             "download_url": resource["url"],

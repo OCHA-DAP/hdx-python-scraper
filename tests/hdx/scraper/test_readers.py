@@ -179,7 +179,7 @@ class TestReaders:
             },
             "hapi_resource_metadata": {
                 "download_url": "https://data.humdata.org/dataset/47f6ef46-500f-421a-9fa2-fefd93facf95/resource/2527ac5b-66fe-46f0-8b9b-7086d2c4ddd3/download/hno-2017-sahel-nutrition.csv",
-                "filename": "HNO -2017 -Sahel-nutrition.csv",
+                "name": "HNO -2017 -Sahel-nutrition.csv",
                 "format": "csv",
                 "hdx_id": "2527ac5b-66fe-46f0-8b9b-7086d2c4ddd3",
                 "update_date": datetime(
@@ -248,7 +248,7 @@ class TestReaders:
             },
             "hapi_resource_metadata": {
                 "download_url": "https://data.humdata.org/dataset/47f6ef46-500f-421a-9fa2-fefd93facf95/resource/d9248be4-7bfb-4a81-a7aa-c035dcb737a2/download/hno-2017-sahel-people-in-need.xlsx",
-                "filename": "HNO-2017-Sahel- People in need.xlsx",
+                "name": "HNO-2017-Sahel- People in need.xlsx",
                 "format": "xlsx",
                 "hdx_id": "d9248be4-7bfb-4a81-a7aa-c035dcb737a2",
                 "update_date": datetime(
