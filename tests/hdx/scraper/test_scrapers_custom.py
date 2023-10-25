@@ -73,7 +73,7 @@ class TestScrapersCustom:
                 "resources": {
                     "3b5baa74-c928-4cbc-adba-bf543c5d3050": {
                         "download_url": "https://data.humdata.org/dataset/6a41be98-75b9-4365-9ea3-e33d0dd2668b/resource/3b5baa74-c928-4cbc-adba-bf543c5d3050/download/covid_impact_education.csv",
-                        "filename": "School " "Closures",
+                        "name": "School " "Closures",
                         "format": "csv",
                         "hdx_id": "3b5baa74-c928-4cbc-adba-bf543c5d3050",
                         "update_date": datetime(
@@ -103,7 +103,7 @@ class TestScrapersCustom:
                 "national": {
                     "hapi_resource_metadata": {
                         "download_url": "https://data.humdata.org/dataset/6a41be98-75b9-4365-9ea3-e33d0dd2668b/resource/3b5baa74-c928-4cbc-adba-bf543c5d3050/download/covid_impact_education.csv",
-                        "filename": "School " "Closures",
+                        "name": "School " "Closures",
                         "format": "csv",
                         "hdx_id": "3b5baa74-c928-4cbc-adba-bf543c5d3050",
                         "update_date": datetime(
@@ -116,7 +116,7 @@ class TestScrapersCustom:
                 "regional": {
                     "hapi_resource_metadata": {
                         "download_url": "https://data.humdata.org/dataset/6a41be98-75b9-4365-9ea3-e33d0dd2668b/resource/3b5baa74-c928-4cbc-adba-bf543c5d3050/download/covid_impact_education.csv",
-                        "filename": "School " "Closures",
+                        "name": "School " "Closures",
                         "format": "csv",
                         "hdx_id": "3b5baa74-c928-4cbc-adba-bf543c5d3050",
                         "update_date": datetime(
