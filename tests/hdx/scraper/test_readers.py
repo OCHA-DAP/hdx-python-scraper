@@ -162,8 +162,8 @@ class TestReaders:
             "hapi_dataset_metadata": {
                 "hdx_id": "47f6ef46-500f-421a-9fa2-fefd93facf95",
                 "hdx_stub": "sahel-humanitarian-needs-overview",
-                "provider_code": "ac91832d-2477-4e1f-8520-9a591a7c3d69",
-                "provider_name": "ocha-rowca",
+                "hdx_provider_stub": "ocha-rowca",
+                "hdx_provider_name": "OCHA West and Central Africa (ROWCA)",
                 "reference_period": {
                     "enddate": datetime(
                         2016, 9, 1, 23, 59, 59, tzinfo=timezone.utc
@@ -231,8 +231,8 @@ class TestReaders:
             "hapi_dataset_metadata": {
                 "hdx_id": "47f6ef46-500f-421a-9fa2-fefd93facf95",
                 "hdx_stub": "sahel-humanitarian-needs-overview",
-                "provider_code": "ac91832d-2477-4e1f-8520-9a591a7c3d69",
-                "provider_name": "ocha-rowca",
+                "hdx_provider_stub": "ocha-rowca",
+                "hdx_provider_name": "OCHA West and Central Africa (ROWCA)",
                 "reference_period": {
                     "enddate": datetime(
                         2016, 9, 1, 23, 59, 59, tzinfo=timezone.utc

@@ -57,8 +57,8 @@ class TestScrapersCustom:
             "6a41be98-75b9-4365-9ea3-e33d0dd2668b": {
                 "hdx_id": "6a41be98-75b9-4365-9ea3-e33d0dd2668b",
                 "hdx_stub": "global-school-closures-covid19",
-                "provider_code": "18f2d467-dcf8-4b7e-bffa-b3c338ba3a7c",
-                "provider_name": "unesco",
+                "hdx_provider_stub": "unesco",
+                "hdx_provider_name": "UNESCO",
                 "reference_period": {
                     "enddate": datetime(
                         2022, 4, 30, 23, 59, 59, tzinfo=timezone.utc
@@ -88,8 +88,8 @@ class TestScrapersCustom:
         assert next(iter(hapi_results.values())) == {
             "hdx_id": "6a41be98-75b9-4365-9ea3-e33d0dd2668b",
             "hdx_stub": "global-school-closures-covid19",
-            "provider_code": "18f2d467-dcf8-4b7e-bffa-b3c338ba3a7c",
-            "provider_name": "unesco",
+            "hdx_provider_stub": "unesco",
+            "hdx_provider_name": "UNESCO",
             "reference_period": {
                 "enddate": datetime(
                     2022, 4, 30, 23, 59, 59, tzinfo=timezone.utc
