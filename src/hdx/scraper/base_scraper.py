@@ -99,7 +99,9 @@ class BaseScraper(ABC):
         reader = Read.get_reader(name)
         if not prefix:
             prefix = name
-        reader.prefix = prefix
+        if reader.prefix != prefix:
+            reader = reader.clone(reader.downloader)
+            reader.prefix = prefix
         return reader
 
     def get_headers(self, level: str) -> Optional[Tuple[Tuple]]:
