@@ -1167,6 +1167,17 @@ class Runner:
                 continue
             hapi_dataset_metadata = scraper.get_hapi_dataset_metadata()
             hapi_resource_metadata = scraper.get_hapi_resource_metadata()
+            reader = scraper.get_reader(name)
+            hxl_info = reader.hxl_info_hapi_resource_metadata(
+                hapi_resource_metadata
+            )
+            is_hxl = False
+            if hxl_info:
+                for sheet in hxl_info.get("sheets", ()):
+                    if sheet["is_hxlated"]:
+                        is_hxl = True
+                        break
+            hapi_resource_metadata["is_hxl"] = is_hxl
             dataset_id = hapi_dataset_metadata["hdx_id"]
             resource_id = hapi_resource_metadata["hdx_id"]
             hapi_metadata = results.get(

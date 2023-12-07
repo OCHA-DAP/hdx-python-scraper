@@ -249,57 +249,65 @@ class Read(Retrieve):
                     dataset.save_to_json(saved_path, follow_urls=True)
         return dataset
 
-    def download_resource(
-        self, identifier: str, resource: Resource
-    ) -> Tuple[str, str]:
-        """Download HDX resource os a file and return the url downloaded and the path
-        of the file. The identifier is information to identify what called
-        this function and is used to prefix the filename of the file.
+    @staticmethod
+    def construct_filename(name: str, file_type: str):
+        """Construct filename from name and file_type. The filename of the file
+        comes from the name and file_type.
 
         Args:
-            identifier (str): Information to identify caller
-            resource (Resource): HDX resource
+            name (str): Name for the download
+            file_type (str): File type of download
+
+        Returns:
+            str: Filename of file
+        """
+        filename = name.lower()
+        file_type = f".{file_type}"
+        if filename.endswith(file_type):
+            filename = filename[: -len(file_type)]
+        return f"{slugify(filename, separator='_')}{file_type}"
+
+    def construct_filename_and_download(
+        self, name: str, file_type: str, url: str, **kwargs: Any
+    ) -> Tuple[str, str]:
+        """Construct filename, download file and return the url downloaded and
+        the path of the file. The filename of the file comes from the name and
+        file_type.
+
+        Args:
+            name (str): Name for the download
+            file_type (str): File type of download
+            url (str): URL of download
+            **kwargs: Parameters to pass to download_file call
 
         Returns:
             Tuple[str, str]: (URL that was downloaded, path to downloaded file)
         """
-        filename = f"{identifier}_{resource['name'].lower()}"
-        file_type = f".{resource.get_file_type()}"
-        if filename.endswith(file_type):
-            filename = filename[: -len(file_type)]
-        filename = f"{slugify(filename, separator='_')}{file_type}"
-        url = munge_url(resource["url"], InputOptions())
-        path = self.download_file(url, filename=filename)
+        filename = self.construct_filename(name, file_type)
+        url = munge_url(url, InputOptions())
+        path = self.download_file(url, filename=filename, **kwargs)
         return url, path
 
-    def read_hxl_resource(
-        self, identifier: str, resource: Resource, data_type: str
-    ) -> Optional[hxl.Dataset]:
-        """Read HDX resource as a HXL dataset. The identifier is information to identify
-        what called this function and is used to prefix the filename of the file and for
-        logging.
+    def download_resource(
+        self, resource: Resource, **kwargs: Any
+    ) -> Tuple[str, str]:
+        """Download HDX resource os a file and return the url downloaded and
+        the path of the file. The filename of the file comes from the name and
+        file_type.
 
         Args:
-            identifier (str): Information to identify caller
             resource (Resource): HDX resource
-            data_type (str): Description of the type of data for logging
+            **kwargs: Parameters to pass to download_file call
 
         Returns:
-            Optional[hxl.Dataset]: HXL dataset or None
+            Tuple[str, str]: (URL that was downloaded, path to downloaded file)
         """
-        try:
-            _, path = self.download_resource(identifier, resource)
-            data = hxl.data(path, InputOptions(allow_local=True)).cache()
-            data.display_tags
-            return data
-        except hxl.HXLException:
-            logger.warning(
-                f"Could not process {data_type} for {identifier}. Maybe there are no HXL tags?"
-            )
-            return None
-        except Exception:
-            logger.exception(f"Error reading {data_type} for {identifier}!")
-            raise
+        return self.construct_filename_and_download(
+            resource["name"],
+            resource.get_file_type(),
+            resource["url"],
+            **kwargs,
+        )
 
     def get_hapi_dataset_metadata(self, dataset: Dataset) -> Dict:
         """Get HAPI dataset metadata from HDX dataset
@@ -336,6 +344,80 @@ class Read(Retrieve):
             "update_date": parse_date(resource["last_modified"]),
             "download_url": resource["url"],
         }
+
+    def read_hxl_resource(
+        self, resource: Resource, **kwargs: Any
+    ) -> Optional[hxl.Dataset]:
+        """Read HDX resource as a HXL dataset.
+
+        Args:
+            resource (Resource): HDX resource
+            **kwargs: Parameters to pass to download_file call
+
+        Returns:
+            Optional[hxl.Dataset]: HXL dataset or None
+        """
+        url = resource["url"]
+        try:
+            _, path = self.download_resource(resource, **kwargs)
+            data = hxl.data(path, InputOptions(allow_local=True)).cache()
+            data.display_tags
+            return data
+        except hxl.HXLException:
+            logger.warning(
+                f"Could not process {url}. Maybe there are no HXL tags?"
+            )
+            return None
+        except Exception:
+            logger.exception(f"Error reading {url}!")
+            raise
+
+    def hxl_info_file(
+        self, name: str, file_type: str, url: str
+    ) -> Optional[hxl.Dataset]:
+        """Get HXL info on file. The filename comes from the name and
+        file_type.
+
+        Args:
+            name (str): Name for the download
+            file_type (str): File type of download
+            url (str): URL of download
+
+        Returns:
+            Optional[hxl.Dataset]: HXL dataset or None
+        """
+        try:
+            _, path = self.construct_filename_and_download(
+                name, file_type, url
+            )
+            return hxl.info(path, InputOptions(allow_local=True))
+        except hxl.HXLException:
+            logger.warning(
+                f"Could not process {url}. Maybe there are no HXL tags?"
+            )
+            return None
+        except Exception:
+            logger.exception(f"Error reading {url}!")
+            raise
+
+    def hxl_info_hapi_resource_metadata(
+        self, hapi_resource_metadata: Dict
+    ) -> Optional[hxl.Dataset]:
+        """Get HXL info on HAPI resource. The filename comes from the name and
+        file_type.
+
+        Args:
+            name (str): Name for the download
+            file_type (str): File type of download
+            url (str): URL of download
+
+        Returns:
+            Optional[hxl.Dataset]: HXL dataset or None
+        """
+        name = hapi_resource_metadata["name"]
+        file_type = hapi_resource_metadata["format"]
+        url = hapi_resource_metadata["download_url"]
+        return self.hxl_info_file(name, file_type, url)
 
     def read_hdx_metadata(
         self, datasetinfo: Dict, do_resource_check: bool = True
@@ -457,7 +539,13 @@ class Read(Retrieve):
         Returns:
             Tuple[List[str],Iterator[Dict]]: Tuple (headers, iterator where each row is a dictionary)
         """
-        self.read_hdx_metadata(datasetinfo)
+        resource = self.read_hdx_metadata(datasetinfo)
+        if resource and "filename" not in kwargs:
+            # prefix is added later
+            filename = self.construct_filename(
+                resource["name"], resource.get_file_type()
+            )
+            kwargs["filename"] = filename
         return self.read_tabular(datasetinfo, **kwargs)
 
     def read(

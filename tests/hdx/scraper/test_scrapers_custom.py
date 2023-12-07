@@ -73,9 +73,10 @@ class TestScrapersCustom:
                 "resources": {
                     "3b5baa74-c928-4cbc-adba-bf543c5d3050": {
                         "download_url": "https://data.humdata.org/dataset/6a41be98-75b9-4365-9ea3-e33d0dd2668b/resource/3b5baa74-c928-4cbc-adba-bf543c5d3050/download/covid_impact_education.csv",
-                        "name": "School " "Closures",
+                        "name": "School Closures",
                         "format": "csv",
                         "hdx_id": "3b5baa74-c928-4cbc-adba-bf543c5d3050",
+                        "is_hxl": False,
                         "update_date": datetime(
                             2022, 4, 4, 9, 56, 5, tzinfo=timezone.utc
                         ),
@@ -106,6 +107,7 @@ class TestScrapersCustom:
                         "name": "School " "Closures",
                         "format": "csv",
                         "hdx_id": "3b5baa74-c928-4cbc-adba-bf543c5d3050",
+                        "is_hxl": False,
                         "update_date": datetime(
                             2022, 4, 4, 9, 56, 5, tzinfo=timezone.utc
                         ),
@@ -119,6 +121,7 @@ class TestScrapersCustom:
                         "name": "School " "Closures",
                         "format": "csv",
                         "hdx_id": "3b5baa74-c928-4cbc-adba-bf543c5d3050",
+                        "is_hxl": False,
                         "update_date": datetime(
                             2022, 4, 4, 9, 56, 5, tzinfo=timezone.utc
                         ),

@@ -106,15 +106,17 @@ class TestReaders:
                         }
                     )
                     resource.set_file_type("csv")
-                    data = reader.read_hxl_resource("AFG", resource, "3w data")
+                    data = reader.read_hxl_resource(
+                        resource, file_prefix="whowhatwhere_afg"
+                    )
                     assert len(data.headers) == 15
                     data = reader.read_hxl_resource(
-                        "notags", resource, "3w data"
+                        resource, file_prefix="whowhatwhere_notags"
                     )
                     assert data is None
                     with pytest.raises(FileNotFoundError):
                         reader.read_hxl_resource(
-                            "not exist", resource, "3w data"
+                            resource, file_prefix="whowhatwhere_not_exist"
                         )
 
     def test_read(self, configuration):

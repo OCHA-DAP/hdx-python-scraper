@@ -37,7 +37,7 @@ class EducationClosures(BaseScraper):
 
     def run(self) -> None:
         closures_headers, closures_iterator = self.get_reader().read(
-            self.datasetinfo,
+            self.datasetinfo, file_prefix=self.name
         )
         closures = self.get_values("national")[0]
         closed_countries = self.get_values("regional")[0]

@@ -26,6 +26,9 @@ install with:
     pip install hdx-python-scraper[pandas]
 
 ## Breaking Changes
+From 2.2.7, resource name is used when available instead of creating name from
+url so tests that use saved data from the Read class may break
+
 From 2.1.2, Python 3.7 no longer supported
 
 From 2.0.1, all functions in outputs.update_tabs are methods in the new Writer class

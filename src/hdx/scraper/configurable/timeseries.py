@@ -50,7 +50,9 @@ class TimeSeries(BaseScraper):
             "output_hxl"
         ]
         rows = [headers, hxltags]
-        file_headers, iterator = self.get_reader().read(self.datasetinfo)
+        file_headers, iterator = self.get_reader(self.name).read(
+            self.datasetinfo
+        )
         for inrow in iterator:
             if isinstance(datecol, list):
                 dates = [str(inrow[x]) for x in datecol]

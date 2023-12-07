@@ -33,7 +33,7 @@ class ResourceDownloader(BaseScraper):
         """
         reader = self.get_reader("hdx")
         resource = reader.read_hdx_metadata(self.datasetinfo)
-        url, path = reader.download_resource(self.name, resource)
+        url, path = reader.download_resource(resource, file_prefix=self.name)
         logger.info(f"Downloading {url} to {path}")
         copy2(path, join(self.folder, self.datasetinfo["filename"]))
 
