@@ -320,6 +320,12 @@ scraper_national:
     output_hxl:
       - "#affected+killed"
       - "#affected+injured"
+#  oxcgrt:
+#    dataset: "oxford-covid-19-government-response-tracker"
+#    format: "csv"
+#    use_hxl: True
+#    date: "#date"
+#    date_type: "date"
 
 scraper_multiple_urls:
   key_figures:

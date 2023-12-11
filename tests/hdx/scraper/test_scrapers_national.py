@@ -30,6 +30,7 @@ class TestScrapersNational:
             "covidtests",
             "idps",
             "casualties",
+            #            "oxcgrt",
         ]
 
         def assert_auth_header(name, expected):
@@ -569,7 +570,7 @@ class TestScrapersNational:
         error = errors_on_exit.errors[0]
         assert "Using fallbacks for broken_owd_url!" in error
         assert (
-            "No such file or directory: 'tests/fixtures/broken_owd_url_notexist.csv'"
+            "No such file or directory: 'tests/fixtures/input/broken_owd_url_notexist.csv'"
             in error
         )
 
@@ -654,7 +655,7 @@ class TestScrapersNational:
             ],
         )
         assert errors_on_exit.errors == [
-            "Not using UNHCR Myanmar IDPs override! Error: [Errno 2] No such file or directory: 'tests/fixtures/idps_override_not-exist.json'",
+            "Not using UNHCR Myanmar IDPs override! Error: [Errno 2] No such file or directory: 'tests/fixtures/input/idps_override_not-exist.json'",
         ]
         runner.run()
         jsonout = JsonFile(configuration["json"], [level])

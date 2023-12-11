@@ -86,13 +86,13 @@ class TestReaders:
                     assert dataset["name"] == dataset_name
                     assert dataset.get_resource()["url"] == munged_url
 
-    def test_read_hxl_resource(self, fixtures):
+    def test_read_hxl_resource(self, input_folder):
         with temp_dir("TestReader") as temp_folder:
             with Download(user_agent="test") as downloader:
                 with Read(
                     downloader,
                     temp_folder,
-                    fixtures,
+                    input_folder,
                     temp_folder,
                     save=False,
                     use_saved=True,
