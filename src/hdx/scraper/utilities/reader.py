@@ -194,7 +194,7 @@ class Read(Retrieve):
 
         Args:
             datasetinfo (Dict): Dictionary of information about dataset
-            **kwargs: Variables to use when evaluating template arguments
+            **kwargs: Parameters to pass to download_file call
 
         Returns:
             Tuple[List[str],Iterator[Dict]]: Tuple (headers, iterator where each row is a dictionary)
@@ -219,6 +219,11 @@ class Read(Retrieve):
         url = datasetinfo["url"]
         if isinstance(url, list):
             url = [self.get_url(x, **kwargs) for x in url]
+        filename = kwargs.get("filename")
+        if not filename:
+            filename = datasetinfo.get("filename")
+            if filename:
+                kwargs["filename"] = filename
         return self.get_tabular_rows(
             url,
             dict_form=True,
@@ -534,18 +539,23 @@ class Read(Retrieve):
 
         Args:
             datasetinfo (Dict): Dictionary of information about dataset
-            **kwargs: Variables to use when evaluating template arguments
+            **kwargs: Parameters to pass to download_file call
 
         Returns:
             Tuple[List[str],Iterator[Dict]]: Tuple (headers, iterator where each row is a dictionary)
         """
         resource = self.read_hdx_metadata(datasetinfo)
-        if resource and "filename" not in kwargs:
+        filename = kwargs.get("filename")
+        if filename:
+            del kwargs["filename"]
+            datasetinfo["filename"] = filename
+        filename = datasetinfo.get("filename")
+        if resource and not filename:
             # prefix is added later
             filename = self.construct_filename(
                 resource["name"], resource.get_file_type()
             )
-            kwargs["filename"] = filename
+            datasetinfo["filename"] = filename
         return self.read_tabular(datasetinfo, **kwargs)
 
     def read(
@@ -557,7 +567,7 @@ class Read(Retrieve):
 
         Args:
             datasetinfo (Dict): Dictionary of information about dataset
-            **kwargs: Variables to use when evaluating template arguments in urls
+            **kwargs: Parameters to pass to download_file call
 
         Returns:
             Tuple[List[str],Iterator[Dict]]: Tuple (headers, iterator where each row is a dictionary)

@@ -160,6 +160,7 @@ class TestReaders:
         }
         assert datasetinfo == {
             "dataset": "sahel-humanitarian-needs-overview",
+            "filename": "hno_2017_sahel_nutrition.csv",
             "format": "csv",
             "hapi_dataset_metadata": {
                 "hdx_id": "47f6ef46-500f-421a-9fa2-fefd93facf95",
@@ -229,6 +230,7 @@ class TestReaders:
         }
         assert datasetinfo == {
             "dataset": "sahel-humanitarian-needs-overview",
+            "filename": "hno_2017_sahel_people_in_need.xlsx",
             "format": "xlsx",
             "hapi_dataset_metadata": {
                 "hdx_id": "47f6ef46-500f-421a-9fa2-fefd93facf95",
