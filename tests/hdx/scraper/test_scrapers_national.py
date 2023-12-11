@@ -30,7 +30,7 @@ class TestScrapersNational:
             "covidtests",
             "idps",
             "casualties",
-            #            "oxcgrt",
+            "oxcgrt",
         ]
 
         def assert_auth_header(name, expected):
@@ -732,3 +732,24 @@ class TestScrapersNational:
                 "#region+name": "Region3",
             },
         ]
+
+    def test_get_national_use_hxl(self, configuration):
+        BaseScraper.population_lookup = {}
+        today = parse_date("2022-06-03")
+        level = "national"
+        scraper_configuration = configuration[f"scraper_{level}"]
+        iso3s = ("AFG",)
+        runner = Runner(iso3s, today)
+        runner.add_configurables(scraper_configuration, level)
+        name = "oxcgrt"
+        headers = (["StringencyIndexForDisplay"], ["#severity+stringency+num"])
+        values = [{"AFG": "11.11"}]
+        sources = [
+            (
+                "#severity+stringency+num",
+                "Oct 1, 2020",
+                "Blavatnik School of Government, University of Oxford",
+                "https://data.humdata.org/dataset/oxford-covid-19-government-response-tracker",
+            )
+        ]
+        run_check_scraper(name, runner, level, headers, values, sources)
