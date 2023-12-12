@@ -255,42 +255,44 @@ class Read(Retrieve):
         return dataset
 
     @staticmethod
-    def construct_filename(name: str, file_type: str):
-        """Construct filename from name and file_type. The filename of the file
-        comes from the name and file_type.
+    def construct_filename(name: str, format: str):
+        """Construct filename from name and format. The filename of the file
+        comes from the name and format.
 
         Args:
             name (str): Name for the download
-            file_type (str): File type of download
+            format (str): Format of download
 
         Returns:
             str: Filename of file
         """
         filename = name.lower()
-        file_type = f".{file_type}"
+        file_type = f".{format}"
         if filename.endswith(file_type):
             filename = filename[: -len(file_type)]
         return f"{slugify(filename, separator='_')}{file_type}"
 
     def construct_filename_and_download(
-        self, name: str, file_type: str, url: str, **kwargs: Any
+        self, name: str, format: str, url: str, **kwargs: Any
     ) -> Tuple[str, str]:
         """Construct filename, download file and return the url downloaded and
         the path of the file. The filename of the file comes from the name and
-        file_type.
+        format.
 
         Args:
             name (str): Name for the download
-            file_type (str): File type of download
+            format (str): Format of download
             url (str): URL of download
             **kwargs: Parameters to pass to download_file call
 
         Returns:
             Tuple[str, str]: (URL that was downloaded, path to downloaded file)
         """
-        filename = self.construct_filename(name, file_type)
+        filename = kwargs.get("filename")
+        if not filename:
+            kwargs["filename"] = self.construct_filename(name, format)
         url = munge_url(url, InputOptions())
-        path = self.download_file(url, filename=filename, **kwargs)
+        path = self.download_file(url, **kwargs)
         return url, path
 
     def download_resource(
@@ -298,7 +300,7 @@ class Read(Retrieve):
     ) -> Tuple[str, str]:
         """Download HDX resource os a file and return the url downloaded and
         the path of the file. The filename of the file comes from the name and
-        file_type.
+        format.
 
         Args:
             resource (Resource): HDX resource
@@ -378,22 +380,23 @@ class Read(Retrieve):
             raise
 
     def hxl_info_file(
-        self, name: str, file_type: str, url: str
-    ) -> Optional[hxl.Dataset]:
+        self, name: str, format: str, url: str, **kwargs: Any
+    ) -> Optional[Dict]:
         """Get HXL info on file. The filename comes from the name and
-        file_type.
+        format.
 
         Args:
             name (str): Name for the download
-            file_type (str): File type of download
+            format (str): Format of download
             url (str): URL of download
+            **kwargs (Any): Parameters to pass to download_file call
 
         Returns:
-            Optional[hxl.Dataset]: HXL dataset or None
+            Optional[Dict]: Information about file or None
         """
         try:
             _, path = self.construct_filename_and_download(
-                name, file_type, url
+                name, format, url, **kwargs
             )
             return hxl.info(path, InputOptions(allow_local=True))
         except hxl.HXLException:
@@ -406,23 +409,24 @@ class Read(Retrieve):
             raise
 
     def hxl_info_hapi_resource_metadata(
-        self, hapi_resource_metadata: Dict
-    ) -> Optional[hxl.Dataset]:
+        self,
+        hapi_resource_metadata: Dict,
+        **kwargs: Any,
+    ) -> Optional[Dict]:
         """Get HXL info on HAPI resource. The filename comes from the name and
-        file_type.
+        format.
 
         Args:
-            name (str): Name for the download
-            file_type (str): File type of download
-            url (str): URL of download
+            hapi_resource_metadata (Dict): HAPI resource metadata
+            **kwargs (Any): Parameters to pass to download_file call
 
         Returns:
-            Optional[hxl.Dataset]: HXL dataset or None
+            Optional[Dict]: Information about file or None
         """
         name = hapi_resource_metadata["name"]
-        file_type = hapi_resource_metadata["format"]
+        format = hapi_resource_metadata["format"]
         url = hapi_resource_metadata["download_url"]
-        return self.hxl_info_file(name, file_type, url)
+        return self.hxl_info_file(name, format, url, **kwargs)
 
     def read_hdx_metadata(
         self, datasetinfo: Dict, do_resource_check: bool = True

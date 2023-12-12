@@ -147,6 +147,7 @@ class ConfigurableScraper(BaseScraper):
         """
         return self.get_reader(name).read(
             self.datasetinfo,
+            file_prefix=name,
             **self.variables,
         )
 

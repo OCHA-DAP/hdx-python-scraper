@@ -51,7 +51,7 @@ class TimeSeries(BaseScraper):
         ]
         rows = [headers, hxltags]
         file_headers, iterator = self.get_reader(self.name).read(
-            self.datasetinfo
+            self.datasetinfo, file_prefix=self.name
         )
         for inrow in iterator:
             if isinstance(datecol, list):
