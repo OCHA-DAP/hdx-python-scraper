@@ -359,13 +359,12 @@ class BaseScraper(ABC):
         hapi_resource_metadata = self.datasetinfo.get("hapi_resource_metadata")
         if not hapi_resource_metadata:
             return None
+        if "is_hxl" in hapi_resource_metadata:
+            return hapi_resource_metadata
         reader = self.get_reader(self.name)
-        kwargs = {}
         filename = self.datasetinfo.get("filename")
-        if filename:
-            kwargs["filename"] = filename
         hxl_info = reader.hxl_info_hapi_resource_metadata(
-            hapi_resource_metadata, file_prefix=self.name, **kwargs
+            hapi_resource_metadata, filename=filename, file_prefix=self.name
         )
         is_hxl = False
         if hxl_info:
