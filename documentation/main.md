@@ -26,7 +26,7 @@ install with:
     pip install hdx-python-scraper[pandas]
 
 ## Breaking Changes
-From 2.2.7, resource name is used when available instead of creating name from
+From 2.3.0, resource name is used when available instead of creating name from
 url so tests that use saved data from the Read class may break. file_type
 parameters in various Read methods renamed to format.
 

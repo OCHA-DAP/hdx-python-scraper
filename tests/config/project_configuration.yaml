@@ -181,7 +181,7 @@ scraper_national:
     url: "https://globalhealth5050.org/?_covid-data=dataset-fullvars&_extype=csv"
     format: "csv"
     external_filter:
-      url: "https://github.com/mcarans/hdx-python-scraper/raw/main/tests/fixtures/sadd-countries-to-include.csv"
+      url: "https://github.com/OCHA-DAP/hdx-python-scraper/raw/main/tests/fixtures/input/sadd-countries-to-include.csv"
       hxl:
         - "#country+code+v_iso2"
     admin:
@@ -217,7 +217,7 @@ scraper_national:
     format: "csv"
     use_hxl: True
     external_filter:
-      url: "https://github.com/OCHA-DAP/hdx-python-scraper/raw/main/tests/fixtures/covax_2pacx-1vtvzu79pptfaa2syevoqfyrrjy63djwitqu0ffbxiqczoun9k9timwmrvfgg1rbsnlmgyugzseiaye2-pub-gid-992438980-single-true-output-csv.csv"
+      url: "https://github.com/OCHA-DAP/hdx-python-scraper/raw/main/tests/fixtures/input/covax_2pacx-1vtvzu79pptfaa2syevoqfyrrjy63djwitqu0ffbxiqczoun9k9timwmrvfgg1rbsnlmgyugzseiaye2-pub-gid-992438980-single-true-output-csv.csv"
       hxl:
        - "#country+code"
     admin:
@@ -242,7 +242,7 @@ scraper_national:
     format: "csv"
     use_hxl: True
     external_filter:
-      url: "https://github.com/OCHA-DAP/hdx-python-scraper/raw/main/tests/fixtures/covax_2pacx-1vtvzu79pptfaa2syevoqfyrrjy63djwitqu0ffbxiqczoun9k9timwmrvfgg1rbsnlmgyugzseiaye2-pub-gid-992438980-single-true-output-csv.csv"
+      url: "https://github.com/OCHA-DAP/hdx-python-scraper/raw/main/tests/fixtures/input/covax_2pacx-1vtvzu79pptfaa2syevoqfyrrjy63djwitqu0ffbxiqczoun9k9timwmrvfgg1rbsnlmgyugzseiaye2-pub-gid-992438980-single-true-output-csv.csv"
       hxl:
        - "#country+code"
     admin:
