@@ -20,7 +20,12 @@ def fixtures():
 
 
 @pytest.fixture(scope="session")
-def configuration(fixtures):
+def input_folder(fixtures):
+    return join(fixtures, "input")
+
+
+@pytest.fixture(scope="session")
+def configuration(fixtures, input_folder):
     Configuration._create(
         hdx_read_only=True,
         hdx_site="prod",
@@ -65,7 +70,7 @@ def configuration(fixtures):
     else:
         Read.create_readers(
             "",
-            fixtures,
+            input_folder,
             "",
             save=False,
             use_saved=True,
@@ -80,8 +85,8 @@ def configuration(fixtures):
 
 
 @pytest.fixture(scope="function")
-def fallbacks_json(fixtures):
-    path = join(fixtures, "fallbacks.json")
+def fallbacks_json(input_folder):
+    path = join(input_folder, "fallbacks.json")
     Fallbacks.add(path, sources_key="sources")
     return path
 

@@ -1,0 +1,3 @@
+﻿"Country code",Country,"Case & death data by sex?","Cases date","Cases where sex-disaggregated data is available","Cases (% male)","Cases (% female)","Deaths date","Deaths where sex-disaggregated data is available","Deaths (% male)","Deaths (% female)","Deaths in confirmed cases date","Proportion of deaths in confirmed cases (male)","Proportion of deaths in confirmed cases (female)","Proportion of deaths in confirmed cases (Male:female ratio)",Source
+AF,Afghanistan,Yes,2020/09/01,36332,70.44%,29.56%,2020/09/01,1099,74.98%,25.02%,2020/09/01,3.22%,2.56%,1.26,http://covid.moph-dw.org/#/
+PS,Palestine,No,,,,,,,,,,,,,https://corona.ps/

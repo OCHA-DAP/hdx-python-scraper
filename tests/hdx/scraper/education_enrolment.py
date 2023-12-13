@@ -42,7 +42,7 @@ class EducationEnrolment(BaseScraper):
 
     def run(self) -> None:
         learners_headers, learners_iterator = self.get_reader().read(
-            self.datasetinfo,
+            self.datasetinfo, file_prefix=self.name
         )
         learners_012, learners_3, affected_learners = self.get_values(
             "national"

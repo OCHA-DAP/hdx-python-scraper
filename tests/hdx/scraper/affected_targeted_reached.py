@@ -81,9 +81,7 @@ class AffectedTargetedReached(BaseScraper):
             source_dates[f"CUSTOM_{countryiso3}"] = source_default_date
             sources[f"CUSTOM_{countryiso3}"] = datasetinfo["source"]
             source_urls[f"CUSTOM_{countryiso3}"] = datasetinfo["source_url"]
-            data = reader.read_hxl_resource(
-                f"{self.name}-{countryiso3}", resource, self.name
-            )
+            data = reader.read_hxl_resource(resource)
             admin_level1 = self.adminone.get_admin_level(countryiso3)
             admin_level2 = self.admintwo.get_admin_level(countryiso3)
             for row in data:

@@ -86,13 +86,13 @@ class TestReaders:
                     assert dataset["name"] == dataset_name
                     assert dataset.get_resource()["url"] == munged_url
 
-    def test_read_hxl_resource(self, fixtures):
+    def test_read_hxl_resource(self, input_folder):
         with temp_dir("TestReader") as temp_folder:
             with Download(user_agent="test") as downloader:
                 with Read(
                     downloader,
                     temp_folder,
-                    fixtures,
+                    input_folder,
                     temp_folder,
                     save=False,
                     use_saved=True,
@@ -106,15 +106,17 @@ class TestReaders:
                         }
                     )
                     resource.set_file_type("csv")
-                    data = reader.read_hxl_resource("AFG", resource, "3w data")
+                    data = reader.read_hxl_resource(
+                        resource, file_prefix="whowhatwhere_afg"
+                    )
                     assert len(data.headers) == 15
                     data = reader.read_hxl_resource(
-                        "notags", resource, "3w data"
+                        resource, file_prefix="whowhatwhere_notags"
                     )
                     assert data is None
                     with pytest.raises(FileNotFoundError):
                         reader.read_hxl_resource(
-                            "not exist", resource, "3w data"
+                            resource, file_prefix="whowhatwhere_not_exist"
                         )
 
     def test_read(self, configuration):
@@ -126,7 +128,7 @@ class TestReaders:
             "format": "csv",
         }
         reader = Read.get_reader()
-        headers, iterator = reader.read(datasetinfo, file_type="csv")
+        headers, iterator = reader.read(datasetinfo, format="csv")
         assert headers == [
             "Country",
             "nutrition",
@@ -158,6 +160,7 @@ class TestReaders:
         }
         assert datasetinfo == {
             "dataset": "sahel-humanitarian-needs-overview",
+            "filename": "hno_2017_sahel_nutrition.csv",
             "format": "csv",
             "hapi_dataset_metadata": {
                 "hdx_id": "47f6ef46-500f-421a-9fa2-fefd93facf95",
@@ -199,6 +202,14 @@ class TestReaders:
             "source_url": "https://data.humdata.org/dataset/sahel-humanitarian-needs-overview",
             "url": "https://data.humdata.org/dataset/47f6ef46-500f-421a-9fa2-fefd93facf95/resource/2527ac5b-66fe-46f0-8b9b-7086d2c4ddd3/download/hno-2017-sahel-nutrition.csv",
         }
+
+        headers, iterator = reader.read(
+            datasetinfo,
+            filename="education_closures_school_closures.csv",
+            format="csv",
+        )
+        assert headers == ["Date", "ISO", "Country", "Status", "Note"]
+
         datasetinfo = {
             "name": "test",
             "dataset": "sahel-humanitarian-needs-overview",
@@ -227,6 +238,7 @@ class TestReaders:
         }
         assert datasetinfo == {
             "dataset": "sahel-humanitarian-needs-overview",
+            "filename": "hno_2017_sahel_people_in_need.xlsx",
             "format": "xlsx",
             "hapi_dataset_metadata": {
                 "hdx_id": "47f6ef46-500f-421a-9fa2-fefd93facf95",
@@ -280,3 +292,60 @@ class TestReaders:
                 "format": "json",
             }
             reader.read(datasetinfo)
+
+    def test_hxl_info_file(self, input_folder):
+        with temp_dir("TestReader") as temp_folder:
+            with Download(user_agent="test") as downloader:
+                with Read(
+                    downloader,
+                    temp_folder,
+                    input_folder,
+                    temp_folder,
+                    save=False,
+                    use_saved=True,
+                    today=parse_date("2021-02-01"),
+                ) as reader:
+                    result = reader.hxl_info_file(
+                        "school_closures",
+                        "csv",
+                        "http://lala",
+                        file_prefix="education_closures",
+                    )
+                    assert result == {
+                        "format": "CSV",
+                        "sheets": [
+                            {
+                                "has_merged_cells": False,
+                                "header_hash": "25b5a88ea9ae5b8c72b5c91a2326a277",
+                                "headers": [
+                                    "Date",
+                                    "ISO",
+                                    "Country",
+                                    "Status",
+                                    "Note",
+                                ],
+                                "hxl_header_hash": None,
+                                "hxl_headers": None,
+                                "is_hidden": False,
+                                "is_hxlated": False,
+                                "name": "__DEFAULT__",
+                                "ncols": 5,
+                                "nrows": 4,
+                            }
+                        ],
+                        "url_or_filename": "tests/fixtures/input/education_closures_school_closures.csv",
+                    }
+                    result = reader.hxl_info_file(
+                        "broken",
+                        "xls",
+                        "http://lala",
+                        file_prefix="education_closures",
+                    )
+                    assert result is None
+                    with pytest.raises(IOError):
+                        reader.hxl_info_file(
+                            "school_closures1",
+                            "csv",
+                            "http://lala",
+                            file_prefix="education_closures",
+                        )

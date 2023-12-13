@@ -308,7 +308,7 @@ class TestScraperGlobal:
         run_check_scraper(name, runner, level_name, headers, values, sources)
 
     def test_get_global_2021(
-        self, cerf_headers, caplog, configuration, fallbacks_json, fixtures
+        self, cerf_headers, caplog, configuration, fallbacks_json
     ):
         BaseScraper.population_lookup = {}
         today = parse_date("2021-05-03")
@@ -461,7 +461,7 @@ class TestScraperGlobal:
             )
             assert f"Using fallbacks for {name}!" in caplog.text
             assert (
-                "No such file or directory: 'tests/fixtures/broken_cerf_url_notexist.csv'"
+                "No such file or directory: 'tests/fixtures/input/broken_cerf_url_notexist.csv'"
                 in caplog.text
             )
 

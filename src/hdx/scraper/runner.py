@@ -1145,7 +1145,9 @@ class Runner:
         return sorted(source_urls)
 
     def get_hapi_metadata(
-        self, names: Optional[ListTuple[str]] = None
+        self,
+        names: Optional[ListTuple[str]] = None,
+        has_run: bool = True,
     ) -> Dict:
         """Get HAPI metadata for all datasets. A dictionary is returned that
         maps from dataset ids to a dictionary. The dictionary has keys for
@@ -1154,6 +1156,7 @@ class Runner:
 
         Args:
             names (Optional[ListTuple[str]]): Names of scrapers
+            has_run (bool): Only get results for scrapers marked as having run. Defaults to True.
 
         Returns:
             Dict: HAPI metadata for all datasets
@@ -1163,7 +1166,7 @@ class Runner:
         results = {}
         for name in names:
             scraper = self.get_scraper(name)
-            if not scraper.has_run:
+            if has_run and not scraper.has_run:
                 continue
             hapi_dataset_metadata = scraper.get_hapi_dataset_metadata()
             hapi_resource_metadata = scraper.get_hapi_resource_metadata()

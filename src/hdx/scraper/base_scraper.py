@@ -81,15 +81,12 @@ class BaseScraper(ABC):
         self.sources: Dict[str, List] = {level: [] for level in self.headers}
         self.source_configuration = deepcopy(source_configuration)
 
-    def get_reader(
-        self, name: Optional[str] = None, prefix: Optional[str] = None
-    ):
-        """Get reader given name if provided or using name member variable if not.
-        Set reader prefix to given prefix or name if not provided.
+    def get_reader(self, name: Optional[str] = None):
+        """Get reader given name if provided or using name member variable if
+        not.
 
         Args:
             name (str): Name of scraper
-            prefix (Optional[str]): Prefix to use. Defaults to None (use scraper name).
 
         Returns:
              None
@@ -97,11 +94,6 @@ class BaseScraper(ABC):
         if not name:
             name = self.name
         reader = Read.get_reader(name)
-        if not prefix:
-            prefix = name
-        if reader.prefix != prefix:
-            reader = reader.clone(reader.downloader)
-            reader.prefix = prefix
         return reader
 
     def get_headers(self, level: str) -> Optional[Tuple[Tuple]]:
@@ -364,6 +356,24 @@ class BaseScraper(ABC):
         Returns:
             Optional[Dict]: HAPI resource metadata
         """
+        hapi_resource_metadata = self.datasetinfo.get("hapi_resource_metadata")
+        if not hapi_resource_metadata:
+            return None
+        if "is_hxl" in hapi_resource_metadata:
+            return hapi_resource_metadata
+        reader = self.get_reader(self.name)
+        filename = self.datasetinfo.get("filename")
+        hxl_info = reader.hxl_info_hapi_resource_metadata(
+            hapi_resource_metadata, filename=filename, file_prefix=self.name
+        )
+        is_hxl = False
+        if hxl_info:
+            for sheet in hxl_info.get("sheets", ()):
+                if sheet["is_hxlated"]:
+                    is_hxl = True
+                    break
+        hapi_resource_metadata["is_hxl"] = is_hxl
+
         return self.datasetinfo.get("hapi_resource_metadata")
 
     def add_population(self) -> None:

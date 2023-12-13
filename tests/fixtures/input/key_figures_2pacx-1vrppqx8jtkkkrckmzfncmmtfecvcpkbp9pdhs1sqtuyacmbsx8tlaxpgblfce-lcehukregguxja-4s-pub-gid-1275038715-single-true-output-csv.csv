@@ -1,0 +1,3 @@
+Country,Total Fund Requirement,Funded,Funded %,PiN,Total Targeted,Targeted %,Total Reached,Reached %,Food Insecurity,Malnutrition,SAM,MAM,GAM,PLW,Internal Displacement,School Dropout,Livestock Deaths,Water Insecurity,Diseases: AWD/Cholera,Diseases: Measles
+#country+code,#value+funding+required+usd,#value+funding+total+usd,#value+funding+pct,#inneed+total,#targeted+total,#targeted+pct,#reached+total,#reached+pct,#affected+food,,#affected+sam,#affected+mam,#affected+gam,,#affected+idps,,,#affected+water,,
+KEN,250461585,329014517,1.31,4200000,2000000,0.48,533694,0.27,3500000,1076272,222720,661744,884464,115725,,1200000,2400000,4100000,319,19

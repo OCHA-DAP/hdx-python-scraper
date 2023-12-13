@@ -30,6 +30,7 @@ class TestScrapersNational:
             "covidtests",
             "idps",
             "casualties",
+            "oxcgrt",
         ]
 
         def assert_auth_header(name, expected):
@@ -569,7 +570,7 @@ class TestScrapersNational:
         error = errors_on_exit.errors[0]
         assert "Using fallbacks for broken_owd_url!" in error
         assert (
-            "No such file or directory: 'tests/fixtures/broken_owd_url_notexist.csv'"
+            "No such file or directory: 'tests/fixtures/input/broken_owd_url_notexist.csv'"
             in error
         )
 
@@ -654,7 +655,7 @@ class TestScrapersNational:
             ],
         )
         assert errors_on_exit.errors == [
-            "Not using UNHCR Myanmar IDPs override! Error: [Errno 2] No such file or directory: 'tests/fixtures/idps_override_not-exist.json'",
+            "Not using UNHCR Myanmar IDPs override! Error: [Errno 2] No such file or directory: 'tests/fixtures/input/idps_override_not-exist.json'",
         ]
         runner.run()
         jsonout = JsonFile(configuration["json"], [level])
@@ -731,3 +732,24 @@ class TestScrapersNational:
                 "#region+name": "Region3",
             },
         ]
+
+    def test_get_national_use_hxl(self, configuration):
+        BaseScraper.population_lookup = {}
+        today = parse_date("2022-06-03")
+        level = "national"
+        scraper_configuration = configuration[f"scraper_{level}"]
+        iso3s = ("AFG",)
+        runner = Runner(iso3s, today)
+        runner.add_configurables(scraper_configuration, level)
+        name = "oxcgrt"
+        headers = (["StringencyIndexForDisplay"], ["#severity+stringency+num"])
+        values = [{"AFG": "11.11"}]
+        sources = [
+            (
+                "#severity+stringency+num",
+                "Oct 1, 2020",
+                "Blavatnik School of Government, University of Oxford",
+                "https://data.humdata.org/dataset/oxford-covid-19-government-response-tracker",
+            )
+        ]
+        run_check_scraper(name, runner, level, headers, values, sources)

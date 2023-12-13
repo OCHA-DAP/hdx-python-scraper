@@ -1,0 +1,132 @@
+{
+  "global_data": [
+    {
+      "#value+cbpf+funding+total+usd": 7811775.670000001,
+      "#value+cbpf+funding+gmempty+total+usd": 7811775.670000001,
+      "#value+cerf+funding+total+usd": 89298924.0,
+      "#value+cerf+funding+gmempty+total+usd": 6747035.0,
+      "#value+cerf+funding+gm1+total+usd": 2549856.0,
+      "#value+cerf+funding+gm2+total+usd": 10552573.0,
+      "#value+cerf+funding+gm3+total+usd": 26098817.0,
+      "#value+cerf+funding+gm4+total+usd": 43350643.0
+    }
+  ],
+  "regional_data": [
+    {
+      "#region+name": "ROAP",
+      "#status+country+closed": 3
+    }
+  ],
+  "national_data": [
+    {
+      "#country+code": "AFG",
+      "#capacity+doses+administered+total": "230000",
+      "#impact+type": "Closed due to COVID-19"
+    }
+  ],
+  "subnational_data": [],
+  "sources": [
+    {
+      "#indicator+name": "#capacity+doses+administered+total",
+      "#date": "2020-09-01",
+      "#meta+source": "Our World in Data",
+      "#meta+url": "tests/fixtures/input/fallbacks.json"
+    },
+    {
+      "#indicator+name": "#value+cbpf+funding+total+usd",
+      "#date": "2020-09-01",
+      "#meta+source": "CERF and CBPF",
+      "#meta+url": "tests/fixtures/input/fallbacks.json"
+    },
+    {
+      "#indicator+name": "#value+cbpf+funding+gmempty+total+usd",
+      "#date": "2020-09-01",
+      "#meta+source": "CERF and CBPF",
+      "#meta+url": "tests/fixtures/input/fallbacks.json"
+    },
+    {
+      "#indicator+name": "#value+cbpf+funding+gm0+total+usd",
+      "#date": "2020-09-01",
+      "#meta+source": "CERF and CBPF",
+      "#meta+url": "tests/fixtures/input/fallbacks.json"
+    },
+    {
+      "#indicator+name": "#value+cbpf+funding+gm1+total+usd",
+      "#date": "2020-09-01",
+      "#meta+source": "CERF and CBPF",
+      "#meta+url": "tests/fixtures/input/fallbacks.json"
+    },
+    {
+      "#indicator+name": "#value+cbpf+funding+gm2+total+usd",
+      "#date": "2020-09-01",
+      "#meta+source": "CERF and CBPF",
+      "#meta+url": "tests/fixtures/input/fallbacks.json"
+    },
+    {
+      "#indicator+name": "#value+cbpf+funding+gm3+total+usd",
+      "#date": "2020-09-01",
+      "#meta+source": "CERF and CBPF",
+      "#meta+url": "tests/fixtures/input/fallbacks.json"
+    },
+    {
+      "#indicator+name": "#value+cbpf+funding+gm4+total+usd",
+      "#date": "2020-09-01",
+      "#meta+source": "CERF and CBPF",
+      "#meta+url": "tests/fixtures/input/fallbacks.json"
+    },
+    {
+      "#indicator+name": "#value+cerf+funding+total+usd",
+      "#date": "2020-09-01",
+      "#meta+source": "CERF and CBPF",
+      "#meta+url": "tests/fixtures/input/fallbacks.json"
+    },
+    {
+      "#indicator+name": "#value+cerf+funding+gmempty+total+usd",
+      "#date": "2020-09-01",
+      "#meta+source": "CERF and CBPF",
+      "#meta+url": "tests/fixtures/input/fallbacks.json"
+    },
+    {
+      "#indicator+name": "#value+cerf+funding+gm0+total+usd",
+      "#date": "2020-09-01",
+      "#meta+source": "CERF and CBPF",
+      "#meta+url": "tests/fixtures/input/fallbacks.json"
+    },
+    {
+      "#indicator+name": "#value+cerf+funding+gm1+total+usd",
+      "#date": "2020-09-01",
+      "#meta+source": "CERF and CBPF",
+      "#meta+url": "tests/fixtures/input/fallbacks.json"
+    },
+    {
+      "#indicator+name": "#value+cerf+funding+gm2+total+usd",
+      "#date": "2020-09-01",
+      "#meta+source": "CERF and CBPF",
+      "#meta+url": "tests/fixtures/input/fallbacks.json"
+    },
+    {
+      "#indicator+name": "#value+cerf+funding+gm3+total+usd",
+      "#date": "2020-09-01",
+      "#meta+source": "CERF and CBPF",
+      "#meta+url": "tests/fixtures/input/fallbacks.json"
+    },
+    {
+      "#indicator+name": "#value+cerf+funding+gm4+total+usd",
+      "#date": "2020-09-01",
+      "#meta+source": "CERF and CBPF",
+      "#meta+url": "tests/fixtures/input/fallbacks.json"
+    },
+    {
+      "#indicator+name": "#impact+type",
+      "#date": "2020-09-01",
+      "#meta+source": "UNESCO",
+      "#meta+url": "tests/fixtures/input/fallbacks.json"
+    },
+    {
+      "#indicator+name": "#status+country+closed",
+      "#date": "2020-09-01",
+      "#meta+source": "UNESCO",
+      "#meta+url": "tests/fixtures/input/fallbacks.json"
+    }
+  ]
+}
