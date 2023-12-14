@@ -35,7 +35,7 @@ cryptography==41.0.7
     # via pyopenssl
 defopt==6.4.0
     # via hdx-python-api
-distlib==0.3.7
+distlib==0.3.8
     # via virtualenv
 dnspython==2.4.2
     # via email-validator
@@ -57,17 +57,17 @@ google-auth==2.25.2
     # via
     #   google-auth-oauthlib
     #   gspread
-google-auth-oauthlib==1.1.0
+google-auth-oauthlib==1.2.0
     # via gspread
 gspread==5.12.2
     # via hdx-python-scraper (pyproject.toml)
-hdx-python-api==6.1.4
+hdx-python-api==6.2.0
     # via hdx-python-scraper (pyproject.toml)
 hdx-python-country==3.6.3
     # via
     #   hdx-python-api
     #   hdx-python-scraper (pyproject.toml)
-hdx-python-utilities==3.6.2
+hdx-python-utilities==3.6.3
     # via
     #   hdx-python-api
     #   hdx-python-country
