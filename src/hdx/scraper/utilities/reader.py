@@ -8,7 +8,7 @@ import hxl
 from hxl.input import InputOptions, munge_url
 from slugify import slugify
 
-from . import get_startend_dates_from_reference_period, match_template
+from . import get_startend_dates_from_time_period, match_template
 from .sources import Sources
 from hdx.data.dataset import Dataset
 from hdx.data.resource import Resource
@@ -477,7 +477,7 @@ class Read(Retrieve):
             if "source_date" not in datasetinfo:
                 datasetinfo[
                     "source_date"
-                ] = get_startend_dates_from_reference_period(
+                ] = get_startend_dates_from_time_period(
                     dataset, today=self.today
                 )
             if "source" not in datasetinfo:
@@ -510,7 +510,7 @@ class Read(Retrieve):
                     key = "default_date"
                 else:
                     key = hxltag
-                source_date[key] = get_startend_dates_from_reference_period(
+                source_date[key] = get_startend_dates_from_time_period(
                     dataset, today=self.today
                 )
             if source is not None:

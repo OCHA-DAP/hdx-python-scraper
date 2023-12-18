@@ -438,7 +438,7 @@ configured:
 
 The economicindex configurable scraper reads the dataset
 “covid-19-economic-exposure-index” on HDX, taking from it dataset source,
-reference period and using the url of the dataset in HDX as the source url. (In HDX data
+time period and using the url of the dataset in HDX as the source url. (In HDX data
 explorers, these are used by the DATA links.) The scraper framework finds the first
 resource that is of format `xlsx`, reads the “economic exposure” sheet and looks for the
 headers in row 1 (by default). Note that it is possible to specify a specific resource

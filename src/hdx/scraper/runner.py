@@ -10,7 +10,7 @@ from .configurable.resource_downloader import ResourceDownloader
 from .configurable.scraper import ConfigurableScraper
 from .configurable.timeseries import TimeSeries
 from .outputs.base import BaseOutput
-from .utilities import get_startend_dates_from_reference_period
+from .utilities import get_startend_dates_from_time_period
 from .utilities.fallbacks import Fallbacks
 from .utilities.reader import Read
 from .utilities.sources import Sources
@@ -1061,7 +1061,7 @@ class Runner:
                 if dataset_name:
                     dataset = reader.read_dataset(dataset_name)
                     if date is None:
-                        date = get_startend_dates_from_reference_period(
+                        date = get_startend_dates_from_time_period(
                             dataset, today=self.today
                         )
                     if source_name is None:
