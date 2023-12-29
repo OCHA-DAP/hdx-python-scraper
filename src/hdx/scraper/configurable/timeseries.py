@@ -50,7 +50,7 @@ class TimeSeries(BaseScraper):
             "output_hxl"
         ]
         rows = [headers, hxltags]
-        file_headers, iterator = self.get_reader(self.name).read(
+        file_headers, iterator = self.get_reader().read(
             self.datasetinfo, file_prefix=self.name
         )
         for inrow in iterator:

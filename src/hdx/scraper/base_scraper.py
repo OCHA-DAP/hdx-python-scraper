@@ -16,6 +16,7 @@ class BaseScraper(ABC):
         datasetinfo (Dict): Information about dataset
         headers (Dict[str, Tuple]): Headers to be oytput at each level_name
         source_configuration (Dict): Configuration for sources. Defaults to empty dict (use defaults).
+        reader (str): Reader to use. Defaults to "" (datasetinfo reader falling back on name).
     """
 
     population_lookup = {}
@@ -26,15 +27,20 @@ class BaseScraper(ABC):
         datasetinfo: Dict,
         headers: Dict[str, Tuple],
         source_configuration: Dict = {},
+        reader: str = "",
     ) -> None:
-        self.setup(name, headers, source_configuration)
+        self.name = name
+        if reader:
+            self.reader = reader
+        else:
+            self.reader = datasetinfo.get("reader", name)
+        self.setup(headers, source_configuration)
         self.datasetinfo = deepcopy(datasetinfo)
         self.errors_on_exit = None
         self.can_fallback = True
 
     def setup(
         self,
-        name: str,
         headers: Dict[str, Tuple],
         source_configuration: Dict = {},
     ) -> None:
@@ -42,14 +48,12 @@ class BaseScraper(ABC):
         {"national": (("School Closure",), ("#impact+type",)), ...},
 
         Args:
-            name (str): Name of scraper
             headers (Dict[str, Tuple]): Headers to be output at each level_name
             source_configuration (Dict): Configuration for sources. Defaults to empty dict (use defaults).
 
         Returns:
              None
         """
-        self.name = name
         self.headers = headers
         self.initialise_values_sources(source_configuration)
         self.has_run = False
@@ -92,7 +96,7 @@ class BaseScraper(ABC):
              None
         """
         if not name:
-            name = self.name
+            name = self.reader
         reader = Read.get_reader(name)
         return reader
 
@@ -361,10 +365,16 @@ class BaseScraper(ABC):
             return None
         if "is_hxl" in hapi_resource_metadata:
             return hapi_resource_metadata
-        reader = self.get_reader(self.name)
+        reader = self.get_reader()
         filename = self.datasetinfo.get("filename")
+        file_prefix = self.datasetinfo.get("file_prefix", self.name)
+        if filename:
+            kwargs = {"filename": filename}
+        else:
+            kwargs = {"file_prefix": file_prefix}
         hxl_info = reader.hxl_info_hapi_resource_metadata(
-            hapi_resource_metadata, filename=filename, file_prefix=self.name
+            hapi_resource_metadata,
+            **kwargs,
         )
         is_hxl = False
         if hxl_info:
