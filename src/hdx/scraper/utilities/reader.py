@@ -227,12 +227,10 @@ class Read(Retrieve):
         if filename:
             # remove file_prefix if filename provided
             kwargs.pop("file_prefix", None)
-        else:
-            file_prefix = kwargs.get("file_prefix")
-            if not file_prefix:
-                file_prefix = datasetinfo.get("file_prefix")
-                if file_prefix:
-                    kwargs["file_prefix"] = file_prefix
+        elif "file_prefix" not in kwargs:
+            file_prefix = datasetinfo.get("file_prefix")
+            if file_prefix:
+                kwargs["file_prefix"] = file_prefix
         return self.get_tabular_rows(
             url,
             dict_form=True,
