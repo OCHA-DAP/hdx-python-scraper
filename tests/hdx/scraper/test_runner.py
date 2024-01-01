@@ -15,7 +15,7 @@ class TestRunner:
             "name": "hno",
             "dataset": "sahel-humanitarian-needs-overview",
             "resource": "HNO-2017-Sahel- People in need.xlsx",
-            "filename": "2017_sahel_people_in_need.xlsx",
+            "filename": "hno_2017_sahel_people_in_need.xlsx",
             "format": "xlsx",
             "sheet": 1,
             "headers": 1,

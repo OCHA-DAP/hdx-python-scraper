@@ -40,7 +40,7 @@ class TestReaders:
                     "url": "https://docs.google.com/spreadsheets/d/1NjSI2LaS3SqbgYc0HdD8oIb7lofGtiHgoKKATCpwVdY/edit#gid=1088874596",
                 }
             )
-            resource.set_file_type("csv")
+            resource.set_format("csv")
             dataset.add_update_resource(resource)
             return dataset
 
@@ -105,7 +105,7 @@ class TestReaders:
                             "url": "https://docs.google.com/spreadsheets/d/1NjSI2LaS3SqbgYc0HdD8oIb7lofGtiHgoKKATCpwVdY/edit#gid=1088874596",
                         }
                     )
-                    resource.set_file_type("csv")
+                    resource.set_format("csv")
                     data = reader.read_hxl_resource(
                         resource, file_prefix="whowhatwhere_afg"
                     )
