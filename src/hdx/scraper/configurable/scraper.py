@@ -70,6 +70,8 @@ class ConfigurableScraper(BaseScraper):
         errors_on_exit: Optional[ErrorsOnExit] = None,
         **kwargs: Any,
     ):
+        self.name = name
+        self.reader = datasetinfo.get("reader", name)
         self.level = level
         datelevel = datasetinfo.get("date_level")
         if datelevel is None:
@@ -98,11 +100,11 @@ class ConfigurableScraper(BaseScraper):
             use_hxl = self.datasetinfo.get("use_hxl", False)
             if use_hxl:
                 try:
-                    file_headers, iterator = self.get_iterator(name)
+                    file_headers, iterator = self.get_iterator()
                     self.use_hxl(headers, file_headers, iterator)
                 except DownloadError:
                     self.can_fallback = False
-        self.setup(name, headers, source_configuration)
+        self.setup(headers, source_configuration)
 
     @staticmethod
     def get_subsets_from_datasetinfo(datasetinfo: Dict) -> List[Dict]:
@@ -136,20 +138,18 @@ class ConfigurableScraper(BaseScraper):
             ]
         return subsets
 
-    def get_iterator(self, name: str) -> Tuple[List[str], Iterator[Dict]]:
-        """Get the iterator from the preconfigured reader for the given scraper name
-
-        Args:
-            name (str): Name of scraper
+    def get_iterator(self) -> Tuple[List[str], Iterator[Dict]]:
+        """Get the iterator from the preconfigured reader for this scraper
 
         Returns:
             Tuple[List[str],Iterator[Dict]]: Tuple (headers, iterator where each row is a dictionary)
         """
-        return self.get_reader(name).read(
-            self.datasetinfo,
-            file_prefix=name,
-            **self.variables,
-        )
+        if (
+            "filename" not in self.datasetinfo
+            and "file_prefix" not in self.datasetinfo
+        ):
+            self.datasetinfo["file_prefix"] = self.name
+        return self.get_reader().read(self.datasetinfo, **self.variables)
 
     def add_sources(self) -> None:
         """Add source for each HXL hashtag
@@ -466,7 +466,7 @@ class ConfigurableScraper(BaseScraper):
         Returns:
             None
         """
-        file_headers, iterator = self.get_iterator(self.name)
+        file_headers, iterator = self.get_iterator()
         header_to_hxltag = self.use_hxl(None, file_headers, iterator)
         if "source_url" not in self.datasetinfo:
             self.datasetinfo["source_url"] = self.datasetinfo["url"]

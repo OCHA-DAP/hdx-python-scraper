@@ -29,7 +29,7 @@ class Runner:
         countryiso3s (ListTuple[str]): List of ISO3 country codes to process
         today (datetime): Value to use for today. Defaults to now_utc().
         errors_on_exit (ErrorsOnExit): ErrorsOnExit object that logs errors on exit
-        scrapers_to_run (Optional[ListTuple[str]]): Scrapers to run. Defaults to None.
+        scrapers_to_run (Optional[ListTuple[str]]): Scrapers to run. Defaults to None (all scrapers).
     """
 
     def __init__(

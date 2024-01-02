@@ -224,6 +224,13 @@ class Read(Retrieve):
             filename = datasetinfo.get("filename")
             if filename:
                 kwargs["filename"] = filename
+        if filename:
+            # remove file_prefix if filename provided
+            kwargs.pop("file_prefix", None)
+        elif "file_prefix" not in kwargs:
+            file_prefix = datasetinfo.get("file_prefix")
+            if file_prefix:
+                kwargs["file_prefix"] = file_prefix
         return self.get_tabular_rows(
             url,
             dict_form=True,
@@ -311,7 +318,7 @@ class Read(Retrieve):
         """
         return self.construct_filename_and_download(
             resource["name"],
-            resource.get_file_type(),
+            resource.get_format(),
             resource["url"],
             **kwargs,
         )
@@ -331,7 +338,7 @@ class Read(Retrieve):
             "title": dataset["title"],
             "hdx_provider_stub": dataset["organization"]["name"],
             "hdx_provider_name": dataset["organization"]["title"],
-            "reference_period": dataset.get_reference_period(today=self.today),
+            "reference_period": dataset.get_time_period(today=self.today),
         }
 
     @staticmethod
@@ -555,10 +562,14 @@ class Read(Retrieve):
             datasetinfo["filename"] = filename
         filename = datasetinfo.get("filename")
         if resource and not filename:
-            # prefix is added later
             filename = self.construct_filename(
-                resource["name"], resource.get_file_type()
+                resource["name"], resource.get_format()
             )
+            file_prefix = kwargs.get("file_prefix")
+            if not file_prefix:
+                file_prefix = datasetinfo.get("file_prefix")
+            if file_prefix:
+                filename = f"{file_prefix}_{filename}"
             datasetinfo["filename"] = filename
         return self.read_tabular(datasetinfo, **kwargs)
 

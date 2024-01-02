@@ -19,6 +19,7 @@ class EducationClosures(BaseScraper):
                     ("#status+country+closed",),
                 ),
             },
+            reader="hdx",  # Just to test passing a specific reader to use
         )
         self.today = today
         self.countryiso3s = countryiso3s
