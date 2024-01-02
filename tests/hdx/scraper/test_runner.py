@@ -1,3 +1,4 @@
+from copy import copy
 from datetime import datetime, timezone
 
 from .conftest import run_check_scrapers
@@ -7,6 +8,37 @@ from hdx.utilities.dateparse import parse_date
 
 
 class TestRunner:
+    expected_results = {
+        "47f6ef46-500f-421a-9fa2-fefd93facf95": {
+            "hdx_id": "47f6ef46-500f-421a-9fa2-fefd93facf95",
+            "hdx_provider_name": "OCHA West and " "Central Africa " "(ROWCA)",
+            "hdx_provider_stub": "ocha-rowca",
+            "hdx_stub": "sahel-humanitarian-needs-overview",
+            "reference_period": {
+                "enddate": datetime(
+                    2016, 9, 1, 23, 59, 59, tzinfo=timezone.utc
+                ),
+                "enddate_str": "2016-09-01T23:59:59+00:00",
+                "ongoing": False,
+                "startdate": datetime(2016, 9, 1, 0, 0, tzinfo=timezone.utc),
+                "startdate_str": "2016-09-01T00:00:00+00:00",
+            },
+            "resources": {
+                "d9248be4-7bfb-4a81-a7aa-c035dcb737a2": {
+                    "download_url": "https://data.humdata.org/dataset/47f6ef46-500f-421a-9fa2-fefd93facf95/resource/d9248be4-7bfb-4a81-a7aa-c035dcb737a2/download/hno-2017-sahel-people-in-need.xlsx",
+                    "format": "xlsx",
+                    "hdx_id": "d9248be4-7bfb-4a81-a7aa-c035dcb737a2",
+                    "is_hxl": True,
+                    "name": "HNO-2017-Sahel- People in need.xlsx",
+                    "update_date": datetime(
+                        2017, 3, 10, 10, 8, 37, tzinfo=timezone.utc
+                    ),
+                }
+            },
+            "title": "Sahel : Humanitarian Needs " "Overview",
+        }
+    }
+
     def test_get_hapi_metadata(self, configuration):
         today = parse_date("2020-10-01")
         iso3s = ("MLI", "NER", "CMR", "SEN", "BFA", "MRT", "TCD")
@@ -25,40 +57,40 @@ class TestRunner:
         runner.add_configurable("hno", datasetinfo, "national")
         runner.run()
         results = runner.get_hapi_metadata(["hno"])
-        assert results == {
-            "47f6ef46-500f-421a-9fa2-fefd93facf95": {
-                "hdx_id": "47f6ef46-500f-421a-9fa2-fefd93facf95",
-                "hdx_provider_name": "OCHA West and "
-                "Central Africa "
-                "(ROWCA)",
-                "hdx_provider_stub": "ocha-rowca",
-                "hdx_stub": "sahel-humanitarian-needs-overview",
-                "reference_period": {
-                    "enddate": datetime(
-                        2016, 9, 1, 23, 59, 59, tzinfo=timezone.utc
-                    ),
-                    "enddate_str": "2016-09-01T23:59:59+00:00",
-                    "ongoing": False,
-                    "startdate": datetime(
-                        2016, 9, 1, 0, 0, tzinfo=timezone.utc
-                    ),
-                    "startdate_str": "2016-09-01T00:00:00+00:00",
-                },
-                "resources": {
-                    "d9248be4-7bfb-4a81-a7aa-c035dcb737a2": {
-                        "download_url": "https://data.humdata.org/dataset/47f6ef46-500f-421a-9fa2-fefd93facf95/resource/d9248be4-7bfb-4a81-a7aa-c035dcb737a2/download/hno-2017-sahel-people-in-need.xlsx",
-                        "format": "xlsx",
-                        "hdx_id": "d9248be4-7bfb-4a81-a7aa-c035dcb737a2",
-                        "is_hxl": True,
-                        "name": "HNO-2017-Sahel- " "People " "in " "need.xlsx",
-                        "update_date": datetime(
-                            2017, 3, 10, 10, 8, 37, tzinfo=timezone.utc
-                        ),
-                    }
-                },
-                "title": "Sahel : Humanitarian Needs " "Overview",
-            }
+        assert results == self.expected_results
+
+        runner = Runner(iso3s, today)
+        datasetinfo = {
+            "reader": "hno_reader",
+            "name": "hno",
+            "dataset": "sahel-humanitarian-needs-overview_prefix",
+            "resource": "2017-Sahel- People in need.xlsx",
+            "file_prefix": "hno",
+            "format": "xlsx",
+            "sheet": 1,
+            "headers": 1,
+            "use_hxl": True,
+            "admin": ["#country"],
         }
+        runner.add_configurable(
+            "hno", datasetinfo, "national", suffix="_sahel"
+        )
+        runner.run()
+        results = runner.get_hapi_metadata(["hno_sahel"])
+        expected_results = copy(self.expected_results)
+        expected_results["47f6ef46-500f-421a-9fa2-fefd93facf95"]["resources"][
+            "d9248be4-7bfb-4a81-a7aa-c035dcb737a2"
+        ]["name"] = "2017-Sahel- People in need.xlsx"
+        assert results == expected_results
+
+        runner = Runner(iso3s, today)
+        runner.add_configurable(
+            "hno", datasetinfo, "national", suffix="_sahel"
+        )
+        runner.run()
+        del runner.get_scraper("hno_sahel").datasetinfo["filename"]
+        results = runner.get_hapi_metadata(["hno_sahel"])
+        assert results == expected_results
 
     def test_get_results(self, configuration):
         BaseScraper.population_lookup = {}
