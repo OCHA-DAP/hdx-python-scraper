@@ -1209,32 +1209,52 @@ class Runner:
         """
         if not names:
             names = self.scrapers.keys()
-        results = {}
+        hapi_results = {}
 
         def add_results(scraper_level, scrap, levels_used):
-            nonlocal results
+            nonlocal hapi_results
 
             if scraper_level in levels_used:
                 return
             headers = scrap.headers.get(scraper_level)
             if headers is None:
                 return
+            headings = headers[0]
+            hxltags = headers[1]
             values = scrap.get_values(scraper_level)
             hapi_dataset_metadata = scrap.get_hapi_dataset_metadata()
+            if not hapi_dataset_metadata:
+                return
             hapi_resource_metadata = scrap.get_hapi_resource_metadata()
+            if not hapi_resource_metadata:
+                return
             dataset_id = hapi_dataset_metadata["hdx_id"]
-            hapi_metadata = results.get(
+            hapi_metadata = hapi_results.get(
                 dataset_id, copy(hapi_dataset_metadata)
             )
-            level_results = hapi_metadata.get("results", {})
-            level_results[scraper_level] = {
-                "headers": headers,
-                "values": values,
-                "hapi_resource_metadata": hapi_resource_metadata,
-            }
-            hapi_metadata["results"] = level_results
+            results = hapi_metadata.get("results", {})
+            level_results = results.get(scraper_level)
+            if level_results is None:
+                level_results = {
+                    "headers": ([], []),
+                    "values": [],
+                    "hapi_resource_metadata": hapi_resource_metadata,
+                }
+                results[scraper_level] = level_results
+            lev_headings = level_results["headers"][0]
+            lev_hxltags = level_results["headers"][1]
+            lev_values = level_results["values"]
+            for i, hxltag in enumerate(hxltags):
+                if hxltag in lev_hxltags:
+                    index = lev_hxltags.index(hxltag)
+                    lev_values[index].update(values[i])
+                else:
+                    lev_headings.append(headings[i])
+                    lev_hxltags.append(hxltag)
+                    lev_values.append(values[i])
+            hapi_metadata["results"] = results
             levels_used.add(scraper_level)
-            results[dataset_id] = hapi_metadata
+            hapi_results[dataset_id] = hapi_metadata
 
         for name in names:
             if self.scrapers_to_run and not any(
@@ -1247,4 +1267,4 @@ class Runner:
             lvls_used = set()
             for scrap_level in scraper.headers:
                 add_results(scrap_level, scraper, lvls_used)
-        return results
+        return hapi_results
