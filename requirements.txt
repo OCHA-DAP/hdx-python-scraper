@@ -6,7 +6,7 @@
 #
 annotated-types==0.6.0
     # via pydantic
-attrs==23.1.0
+attrs==23.2.0
     # via
     #   frictionless
     #   jsonlines
@@ -29,7 +29,7 @@ click==8.1.7
     # via typer
 colorama==0.4.6
     # via typer
-coverage[toml]==7.3.2
+coverage[toml]==7.4.0
     # via pytest-cov
 cryptography==41.0.7
     # via pyopenssl
@@ -59,7 +59,7 @@ google-auth==2.25.2
     #   gspread
 google-auth-oauthlib==1.2.0
     # via gspread
-gspread==5.12.2
+gspread==5.12.4
     # via hdx-python-scraper (pyproject.toml)
 hdx-python-api==6.2.0
     # via hdx-python-scraper (pyproject.toml)
@@ -119,7 +119,7 @@ nodeenv==1.8.0
     # via pre-commit
 num2words==0.5.13
     # via quantulum3
-numpy==1.26.2
+numpy==1.26.3
     # via pandas
 oauthlib==3.2.2
     # via requests-oauthlib
@@ -153,11 +153,11 @@ pyasn1-modules==0.3.0
     # via google-auth
 pycparser==2.21
     # via cffi
-pydantic==2.5.2
+pydantic==2.5.3
     # via
     #   frictionless
     #   inflect
-pydantic-core==2.14.5
+pydantic-core==2.14.6
     # via pydantic
 pygments==2.17.2
     # via rich
@@ -169,7 +169,7 @@ pyphonetics==0.5.3
     # via hdx-python-country
 pyrsistent==0.20.0
     # via jsonschema
-pytest==7.4.3
+pytest==7.4.4
     # via
     #   hdx-python-scraper (pyproject.toml)
     #   pytest-cov
@@ -198,7 +198,7 @@ quantulum3==0.9.0
     # via hdx-python-api
 ratelimit==2.2.1
     # via hdx-python-utilities
-regex==2023.10.3
+regex==2023.12.25
     # via hdx-python-scraper (pyproject.toml)
 requests==2.31.0
     # via
@@ -238,7 +238,7 @@ sphinxcontrib-napoleon==0.7
     # via defopt
 stringcase==1.2.0
     # via frictionless
-structlog==23.2.0
+structlog==23.3.0
     # via libhxl
 tableschema-to-template==0.0.13
     # via hdx-python-utilities
@@ -255,7 +255,7 @@ typing-extensions==4.9.0
     #   pydantic
     #   pydantic-core
     #   typer
-tzdata==2023.3
+tzdata==2023.4
     # via pandas
 unidecode==1.3.7
     # via

@@ -1,4 +1,4 @@
-from copy import deepcopy
+from copy import copy, deepcopy
 from datetime import datetime, timezone
 
 from .affected_targeted_reached import AffectedTargetedReached
@@ -12,6 +12,54 @@ from hdx.utilities.dateparse import parse_date
 
 
 class TestScrapersCustom:
+    hapi_values = {
+        "hdx_id": "6a41be98-75b9-4365-9ea3-e33d0dd2668b",
+        "hdx_stub": "global-school-closures-covid19",
+        "hdx_provider_stub": "unesco",
+        "hdx_provider_name": "UNESCO",
+        "reference_period": {
+            "enddate": datetime(2022, 4, 30, 23, 59, 59, tzinfo=timezone.utc),
+            "enddate_str": "2022-04-30T23:59:59+00:00",
+            "ongoing": False,
+            "startdate": datetime(2020, 2, 16, 0, 0, tzinfo=timezone.utc),
+            "startdate_str": "2020-02-16T00:00:00+00:00",
+        },
+        "results": {
+            "national": {
+                "hapi_resource_metadata": {
+                    "download_url": "https://data.humdata.org/dataset/6a41be98-75b9-4365-9ea3-e33d0dd2668b/resource/3b5baa74-c928-4cbc-adba-bf543c5d3050/download/covid_impact_education.csv",
+                    "name": "School " "Closures",
+                    "format": "csv",
+                    "hdx_id": "3b5baa74-c928-4cbc-adba-bf543c5d3050",
+                    "is_hxl": False,
+                    "update_date": datetime(
+                        2022, 4, 4, 9, 56, 5, tzinfo=timezone.utc
+                    ),
+                },
+                "headers": (["School Closure"], ["#impact+type"]),
+                "values": [{"AFG": "Closed due to COVID-19"}],
+            },
+            "regional": {
+                "hapi_resource_metadata": {
+                    "download_url": "https://data.humdata.org/dataset/6a41be98-75b9-4365-9ea3-e33d0dd2668b/resource/3b5baa74-c928-4cbc-adba-bf543c5d3050/download/covid_impact_education.csv",
+                    "name": "School " "Closures",
+                    "format": "csv",
+                    "hdx_id": "3b5baa74-c928-4cbc-adba-bf543c5d3050",
+                    "is_hxl": False,
+                    "update_date": datetime(
+                        2022, 4, 4, 9, 56, 5, tzinfo=timezone.utc
+                    ),
+                },
+                "headers": (
+                    ["No. closed countries"],
+                    ["#status+country+closed"],
+                ),
+                "values": [{"ROAP": 1}],
+            },
+        },
+        "title": "Global School Closures COVID-19",
+    }
+
     def test_get_custom(self, configuration, fallbacks_json):
         BaseScraper.population_lookup = {}
         source_date = "Apr 30, 2022"
@@ -86,55 +134,7 @@ class TestScrapersCustom:
             }
         }
         hapi_results = runner.get_hapi_results()
-        assert next(iter(hapi_results.values())) == {
-            "hdx_id": "6a41be98-75b9-4365-9ea3-e33d0dd2668b",
-            "hdx_stub": "global-school-closures-covid19",
-            "hdx_provider_stub": "unesco",
-            "hdx_provider_name": "UNESCO",
-            "reference_period": {
-                "enddate": datetime(
-                    2022, 4, 30, 23, 59, 59, tzinfo=timezone.utc
-                ),
-                "enddate_str": "2022-04-30T23:59:59+00:00",
-                "ongoing": False,
-                "startdate": datetime(2020, 2, 16, 0, 0, tzinfo=timezone.utc),
-                "startdate_str": "2020-02-16T00:00:00+00:00",
-            },
-            "results": {
-                "national": {
-                    "hapi_resource_metadata": {
-                        "download_url": "https://data.humdata.org/dataset/6a41be98-75b9-4365-9ea3-e33d0dd2668b/resource/3b5baa74-c928-4cbc-adba-bf543c5d3050/download/covid_impact_education.csv",
-                        "name": "School " "Closures",
-                        "format": "csv",
-                        "hdx_id": "3b5baa74-c928-4cbc-adba-bf543c5d3050",
-                        "is_hxl": False,
-                        "update_date": datetime(
-                            2022, 4, 4, 9, 56, 5, tzinfo=timezone.utc
-                        ),
-                    },
-                    "headers": (("School Closure",), ("#impact+type",)),
-                    "values": ({"AFG": "Closed due to COVID-19"},),
-                },
-                "regional": {
-                    "hapi_resource_metadata": {
-                        "download_url": "https://data.humdata.org/dataset/6a41be98-75b9-4365-9ea3-e33d0dd2668b/resource/3b5baa74-c928-4cbc-adba-bf543c5d3050/download/covid_impact_education.csv",
-                        "name": "School " "Closures",
-                        "format": "csv",
-                        "hdx_id": "3b5baa74-c928-4cbc-adba-bf543c5d3050",
-                        "is_hxl": False,
-                        "update_date": datetime(
-                            2022, 4, 4, 9, 56, 5, tzinfo=timezone.utc
-                        ),
-                    },
-                    "headers": (
-                        ("No. closed countries",),
-                        ("#status+country+closed",),
-                    ),
-                    "values": ({"ROAP": 1},),
-                },
-            },
-            "title": "Global School Closures COVID-19",
-        }
+        assert next(iter(hapi_results.values())) == self.hapi_values
 
         headers = (["No. closed countries"], ["#status+country+closed"])
         values = [{"ROAP": 1}]
@@ -200,6 +200,50 @@ class TestScrapersCustom:
             "https://data.humdata.org/dataset/global-school-closures-covid19",
             "https://data.humdata.org/organization/world-bank-group",
         ]
+        hapi_results = runner.get_hapi_results()
+        assert next(iter(hapi_results.values())) == self.hapi_values
+        edu_dsinfo = runner.get_scraper(name).datasetinfo
+        pop_dsinfo = runner.get_scraper("population").datasetinfo
+        # pretend population uses same dataset as education for testing
+        pop_dsinfo["hapi_dataset_metadata"] = edu_dsinfo[
+            "hapi_dataset_metadata"
+        ]
+        hapi_results = runner.get_hapi_results()
+        assert next(iter(hapi_results.values())) == self.hapi_values
+        # pretend population uses same resource as education for testing
+        pop_dsinfo["hapi_resource_metadata"] = edu_dsinfo[
+            "hapi_resource_metadata"
+        ]
+        hapi_results = runner.get_hapi_results()
+        hapi_values = copy(self.hapi_values)
+        hapi_values["results"]["national"]["headers"] = (
+            ["School Closure", "Population"],
+            ["#impact+type", "#population"],
+        )
+        hapi_values["results"]["national"]["values"] = [
+            {"AFG": "Closed due to COVID-19"},
+            {"AFG": 38041754},
+        ]
+        assert next(iter(hapi_results.values())) == hapi_values
+
+        education_closures2 = EducationClosures(
+            datasetinfo, today, countries, region
+        )
+        # give it a unique name
+        education_closures2.name = f"{education_closures2.name}2"
+        runner.add_custom(education_closures2)
+        runner.run_one(education_closures2.name)
+        # give it a unique result
+        del education_closures2.values["national"][0]["AFG"]
+        education_closures2.values["national"][0][
+            "SDN"
+        ] = "Closed due to COVID-19"
+        hapi_results = runner.get_hapi_results()
+        hapi_values["results"]["national"]["values"] = [
+            {"AFG": "Closed due to COVID-19", "SDN": "Closed due to COVID-19"},
+            {"AFG": 38041754},
+        ]
+        assert next(iter(hapi_results.values())) == hapi_values
 
         runner = Runner(("AFG",), today)
         datasetinfo = deepcopy(datasetinfo)
