@@ -323,11 +323,14 @@ class Read(Retrieve):
             **kwargs,
         )
 
-    def get_hapi_dataset_metadata(self, dataset: Dataset) -> Dict:
+    def get_hapi_dataset_metadata(
+        self, dataset: Dataset, datasetinfo: Dict
+    ) -> Dict:
         """Get HAPI dataset metadata from HDX dataset
 
         Args:
             dataset (Dataset): HDX dataset
+            datasetinfo (Dict): Dictionary of information about dataset
 
         Returns:
             Dict: HAPI dataset metadata
@@ -338,7 +341,7 @@ class Read(Retrieve):
             "title": dataset["title"],
             "hdx_provider_stub": dataset["organization"]["name"],
             "hdx_provider_name": dataset["organization"]["title"],
-            "reference_period": dataset.get_time_period(today=self.today),
+            "time_period": datasetinfo["time_period"],
         }
 
     @staticmethod
@@ -459,9 +462,6 @@ class Read(Retrieve):
         dataset_nameinfo = datasetinfo["dataset"]
         if isinstance(dataset_nameinfo, str):
             dataset = self.read_dataset(dataset_nameinfo)
-            datasetinfo[
-                "hapi_dataset_metadata"
-            ] = self.get_hapi_dataset_metadata(dataset)
             resource = None
             url = datasetinfo.get("url")
             if do_resource_check and not url:
@@ -492,6 +492,9 @@ class Read(Retrieve):
             if "source_url" not in datasetinfo:
                 datasetinfo["source_url"] = dataset.get_hdx_url()
             Sources.standardise_datasetinfo_source_date(datasetinfo)
+            datasetinfo[
+                "hapi_dataset_metadata"
+            ] = self.get_hapi_dataset_metadata(dataset, datasetinfo)
             return resource
 
         if "source_date" not in datasetinfo:

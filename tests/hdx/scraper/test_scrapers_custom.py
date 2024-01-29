@@ -17,12 +17,9 @@ class TestScrapersCustom:
         "hdx_stub": "global-school-closures-covid19",
         "hdx_provider_stub": "unesco",
         "hdx_provider_name": "UNESCO",
-        "reference_period": {
-            "enddate": datetime(2022, 4, 30, 23, 59, 59, tzinfo=timezone.utc),
-            "enddate_str": "2022-04-30T23:59:59+00:00",
-            "ongoing": False,
-            "startdate": datetime(2020, 2, 16, 0, 0, tzinfo=timezone.utc),
-            "startdate_str": "2020-02-16T00:00:00+00:00",
+        "time_period": {
+            "end": datetime(2022, 4, 30, 23, 59, 59, tzinfo=timezone.utc),
+            "start": datetime(2020, 2, 16, 0, 0, tzinfo=timezone.utc),
         },
         "results": {
             "national": {
@@ -107,16 +104,11 @@ class TestScrapersCustom:
                 "hdx_stub": "global-school-closures-covid19",
                 "hdx_provider_stub": "unesco",
                 "hdx_provider_name": "UNESCO",
-                "reference_period": {
-                    "enddate": datetime(
+                "time_period": {
+                    "end": datetime(
                         2022, 4, 30, 23, 59, 59, tzinfo=timezone.utc
                     ),
-                    "enddate_str": "2022-04-30T23:59:59+00:00",
-                    "ongoing": False,
-                    "startdate": datetime(
-                        2020, 2, 16, 0, 0, tzinfo=timezone.utc
-                    ),
-                    "startdate_str": "2020-02-16T00:00:00+00:00",
+                    "start": datetime(2020, 2, 16, 0, 0, tzinfo=timezone.utc),
                 },
                 "resources": {
                     "3b5baa74-c928-4cbc-adba-bf543c5d3050": {

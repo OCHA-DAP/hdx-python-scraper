@@ -77,6 +77,4 @@ def get_startend_dates_from_time_period(
     enddate = date_info.get("enddate")
     if enddate is None:
         return None
-    if startdate.date() == enddate.date():
-        return {"end": enddate}
     return {"start": startdate, "end": enddate}

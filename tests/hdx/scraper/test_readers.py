@@ -153,11 +153,6 @@ class TestReaders:
             "Targeted 2017": "             _",
             "% targeted": "0",
         }
-        {
-            "default_date": {
-                "end": datetime(2016, 9, 1, 23, 59, 59, tzinfo=timezone.utc),
-            }
-        }
         assert datasetinfo == {
             "dataset": "sahel-humanitarian-needs-overview",
             "filename": "hno_2017_sahel_nutrition.csv",
@@ -167,16 +162,11 @@ class TestReaders:
                 "hdx_stub": "sahel-humanitarian-needs-overview",
                 "hdx_provider_stub": "ocha-rowca",
                 "hdx_provider_name": "OCHA West and Central Africa (ROWCA)",
-                "reference_period": {
-                    "enddate": datetime(
+                "time_period": {
+                    "end": datetime(
                         2016, 9, 1, 23, 59, 59, tzinfo=timezone.utc
                     ),
-                    "enddate_str": "2016-09-01T23:59:59+00:00",
-                    "ongoing": False,
-                    "startdate": datetime(
-                        2016, 9, 1, 0, 0, tzinfo=timezone.utc
-                    ),
-                    "startdate_str": "2016-09-01T00:00:00+00:00",
+                    "start": datetime(2016, 9, 1, 0, 0, tzinfo=timezone.utc),
                 },
                 "title": "Sahel : Humanitarian Needs Overview",
             },
@@ -196,10 +186,15 @@ class TestReaders:
                 "default_date": {
                     "end": datetime(
                         2016, 9, 1, 23, 59, 59, tzinfo=timezone.utc
-                    )
+                    ),
+                    "start": datetime(2016, 9, 1, 0, 0, tzinfo=timezone.utc),
                 }
             },
             "source_url": "https://data.humdata.org/dataset/sahel-humanitarian-needs-overview",
+            "time_period": {
+                "end": datetime(2016, 9, 1, 23, 59, 59, tzinfo=timezone.utc),
+                "start": datetime(2016, 9, 1, 0, 0, tzinfo=timezone.utc),
+            },
             "url": "https://data.humdata.org/dataset/47f6ef46-500f-421a-9fa2-fefd93facf95/resource/2527ac5b-66fe-46f0-8b9b-7086d2c4ddd3/download/hno-2017-sahel-nutrition.csv",
         }
 
@@ -245,16 +240,11 @@ class TestReaders:
                 "hdx_stub": "sahel-humanitarian-needs-overview",
                 "hdx_provider_stub": "ocha-rowca",
                 "hdx_provider_name": "OCHA West and Central Africa (ROWCA)",
-                "reference_period": {
-                    "enddate": datetime(
+                "time_period": {
+                    "end": datetime(
                         2016, 9, 1, 23, 59, 59, tzinfo=timezone.utc
                     ),
-                    "enddate_str": "2016-09-01T23:59:59+00:00",
-                    "ongoing": False,
-                    "startdate": datetime(
-                        2016, 9, 1, 0, 0, tzinfo=timezone.utc
-                    ),
-                    "startdate_str": "2016-09-01T00:00:00+00:00",
+                    "start": datetime(2016, 9, 1, 0, 0, tzinfo=timezone.utc),
                 },
                 "title": "Sahel : Humanitarian Needs Overview",
             },
@@ -276,10 +266,15 @@ class TestReaders:
                 "default_date": {
                     "end": datetime(
                         2016, 9, 1, 23, 59, 59, tzinfo=timezone.utc
-                    )
+                    ),
+                    "start": datetime(2016, 9, 1, 0, 0, tzinfo=timezone.utc),
                 }
             },
             "source_url": "https://data.humdata.org/dataset/sahel-humanitarian-needs-overview",
+            "time_period": {
+                "end": datetime(2016, 9, 1, 23, 59, 59, tzinfo=timezone.utc),
+                "start": datetime(2016, 9, 1, 0, 0, tzinfo=timezone.utc),
+            },
             "url": "https://data.humdata.org/dataset/47f6ef46-500f-421a-9fa2-fefd93facf95/resource/d9248be4-7bfb-4a81-a7aa-c035dcb737a2/download/hno-2017-sahel-people-in-need.xlsx",
         }
         with pytest.raises(ValueError):
