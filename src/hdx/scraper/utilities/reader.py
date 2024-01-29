@@ -465,17 +465,20 @@ class Read(Retrieve):
             resource = None
             url = datasetinfo.get("url")
             resource_name = datasetinfo.get("resource")
+            # Only loop through resources if do_resource_check is True and
+            # either there is no url in the datasetinfo dictionary or a
+            # resource name has been specified in there
             if do_resource_check and (not url or resource_name):
                 format = datasetinfo["format"].lower()
                 found = False
                 for resource in dataset.get_resources():
                     if resource["format"].lower() == format:
-                        if resource_name:
-                            if resource["name"] == resource_name:
+                        if resource_name:  # if resource is specified,
+                            if resource["name"] == resource_name:  # match it
                                 found = True
                                 break
                             continue
-                        else:
+                        else:  # if resource is not specified, use first one
                             found = True
                             break
                 if not found:
@@ -484,10 +487,11 @@ class Read(Retrieve):
                         error.append(f"with name {resource_name}")
                     error.append(f"in {dataset_nameinfo}!")
                     raise ValueError(" ".join(error))
-                if url:
-                    resource["url"] = url
+                if url:  # if there is a url in the datasetinfo dictionary,
+                    resource["url"] = url  # set the resource url to it
                 else:
-                    url = resource["url"]
+                    url = resource["url"]  # otherwise set the url key in
+                    # datasetinfo to the resource url (by setting url here)
                 datasetinfo[
                     "hapi_resource_metadata"
                 ] = self.get_hapi_resource_metadata(resource)
