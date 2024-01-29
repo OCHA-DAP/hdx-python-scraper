@@ -464,22 +464,33 @@ class Read(Retrieve):
             dataset = self.read_dataset(dataset_nameinfo)
             resource = None
             url = datasetinfo.get("url")
-            if do_resource_check and not url:
-                resource_name = datasetinfo.get("resource")
+            resource_name = datasetinfo.get("resource")
+            if do_resource_check and (not url or resource_name):
                 format = datasetinfo["format"].lower()
+                found = False
                 for resource in dataset.get_resources():
                     if resource["format"].lower() == format:
-                        if resource_name and resource["name"] != resource_name:
+                        if resource_name:
+                            if resource["name"] == resource_name:
+                                found = True
+                                break
                             continue
-                        url = resource["url"]
-                        datasetinfo[
-                            "hapi_resource_metadata"
-                        ] = self.get_hapi_resource_metadata(resource)
-                        break
-                if not url:
-                    raise ValueError(
-                        f"Cannot find {format} resource in {dataset_nameinfo}!"
-                    )
+                        else:
+                            found = True
+                            break
+                if not found:
+                    error = [f"Cannot find {format} resource"]
+                    if resource_name:
+                        error.append(f"with name {resource_name}")
+                    error.append(f"in {dataset_nameinfo}!")
+                    raise ValueError(" ".join(error))
+                if url:
+                    resource["url"] = url
+                else:
+                    url = resource["url"]
+                datasetinfo[
+                    "hapi_resource_metadata"
+                ] = self.get_hapi_resource_metadata(resource)
                 datasetinfo["url"] = url
             if "source_date" not in datasetinfo:
                 datasetinfo[
