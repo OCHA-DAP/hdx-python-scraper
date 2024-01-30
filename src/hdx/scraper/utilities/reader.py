@@ -323,11 +323,14 @@ class Read(Retrieve):
             **kwargs,
         )
 
-    def get_hapi_dataset_metadata(self, dataset: Dataset) -> Dict:
+    def get_hapi_dataset_metadata(
+        self, dataset: Dataset, datasetinfo: Dict
+    ) -> Dict:
         """Get HAPI dataset metadata from HDX dataset
 
         Args:
             dataset (Dataset): HDX dataset
+            datasetinfo (Dict): Dictionary of information about dataset
 
         Returns:
             Dict: HAPI dataset metadata
@@ -338,7 +341,7 @@ class Read(Retrieve):
             "title": dataset["title"],
             "hdx_provider_stub": dataset["organization"]["name"],
             "hdx_provider_name": dataset["organization"]["title"],
-            "reference_period": dataset.get_time_period(today=self.today),
+            "time_period": datasetinfo["time_period"],
         }
 
     @staticmethod
@@ -459,27 +462,39 @@ class Read(Retrieve):
         dataset_nameinfo = datasetinfo["dataset"]
         if isinstance(dataset_nameinfo, str):
             dataset = self.read_dataset(dataset_nameinfo)
-            datasetinfo[
-                "hapi_dataset_metadata"
-            ] = self.get_hapi_dataset_metadata(dataset)
             resource = None
             url = datasetinfo.get("url")
-            if do_resource_check and not url:
-                resource_name = datasetinfo.get("resource")
+            resource_name = datasetinfo.get("resource")
+            # Only loop through resources if do_resource_check is True and
+            # either there is no url in the datasetinfo dictionary or a
+            # resource name has been specified in there
+            if do_resource_check and (not url or resource_name):
                 format = datasetinfo["format"].lower()
+                found = False
                 for resource in dataset.get_resources():
                     if resource["format"].lower() == format:
-                        if resource_name and resource["name"] != resource_name:
+                        if resource_name:  # if resource is specified,
+                            if resource["name"] == resource_name:  # match it
+                                found = True
+                                break
                             continue
-                        url = resource["url"]
-                        datasetinfo[
-                            "hapi_resource_metadata"
-                        ] = self.get_hapi_resource_metadata(resource)
-                        break
-                if not url:
-                    raise ValueError(
-                        f"Cannot find {format} resource in {dataset_nameinfo}!"
-                    )
+                        else:  # if resource is not specified, use first one
+                            found = True
+                            break
+                if not found:
+                    error = [f"Cannot find {format} resource"]
+                    if resource_name:
+                        error.append(f"with name {resource_name}")
+                    error.append(f"in {dataset_nameinfo}!")
+                    raise ValueError(" ".join(error))
+                if url:  # if there is a url in the datasetinfo dictionary,
+                    resource["url"] = url  # set the resource url to it
+                else:
+                    url = resource["url"]  # otherwise set the url key in
+                    # datasetinfo to the resource url (by setting url here)
+                datasetinfo[
+                    "hapi_resource_metadata"
+                ] = self.get_hapi_resource_metadata(resource)
                 datasetinfo["url"] = url
             if "source_date" not in datasetinfo:
                 datasetinfo[
@@ -492,6 +507,9 @@ class Read(Retrieve):
             if "source_url" not in datasetinfo:
                 datasetinfo["source_url"] = dataset.get_hdx_url()
             Sources.standardise_datasetinfo_source_date(datasetinfo)
+            datasetinfo[
+                "hapi_dataset_metadata"
+            ] = self.get_hapi_dataset_metadata(dataset, datasetinfo)
             return resource
 
         if "source_date" not in datasetinfo:

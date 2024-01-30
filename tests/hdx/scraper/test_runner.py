@@ -14,14 +14,9 @@ class TestRunner:
             "hdx_provider_name": "OCHA West and " "Central Africa " "(ROWCA)",
             "hdx_provider_stub": "ocha-rowca",
             "hdx_stub": "sahel-humanitarian-needs-overview",
-            "reference_period": {
-                "enddate": datetime(
-                    2016, 9, 1, 23, 59, 59, tzinfo=timezone.utc
-                ),
-                "enddate_str": "2016-09-01T23:59:59+00:00",
-                "ongoing": False,
-                "startdate": datetime(2016, 9, 1, 0, 0, tzinfo=timezone.utc),
-                "startdate_str": "2016-09-01T00:00:00+00:00",
+            "time_period": {
+                "end": datetime(2016, 9, 1, 23, 59, 59, tzinfo=timezone.utc),
+                "start": datetime(2016, 9, 1, 0, 0, tzinfo=timezone.utc),
             },
             "resources": {
                 "d9248be4-7bfb-4a81-a7aa-c035dcb737a2": {

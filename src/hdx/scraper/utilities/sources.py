@@ -95,6 +95,7 @@ class Sources:
             default_end_date = default_date.get("end")
             if default_end_date:
                 datasetinfo["source_date"] = output_source_date
+                datasetinfo["time_period"] = default_date
                 return default_end_date
         datasetinfo["source_date"] = None
         return None

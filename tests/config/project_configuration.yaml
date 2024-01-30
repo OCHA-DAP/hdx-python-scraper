@@ -405,6 +405,9 @@ education_closures:
     format: "csv"
 
 education_enrolment:
+    source_date:  # Just to test source_date and flow to HAPI
+      start: "2023-03-04"
+      end: "2023-05-11"
     dataset: "global-school-closures-covid19"
     resource: "Enrollment data"
     url: "https://data.humdata.org/dataset/6a41be98-75b9-4365-9ea3-e33d0dd2668b/resource/cdd903ea-d1c0-461e-8c6e-08feb102f9cb/download/countries-enrollment-data-uis-feb-22.xlsx"
