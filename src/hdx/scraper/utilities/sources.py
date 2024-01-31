@@ -72,6 +72,14 @@ class Sources:
         def set_source_date(date, hxltag="default_date", startend="end"):
             if isinstance(date, str):
                 date = parse_date(date)
+                if startend == "end":
+                    date = date.replace(
+                        hour=23,
+                        minute=59,
+                        second=59,
+                        microsecond=999999,
+                    )
+
             if hxltag not in output_source_date:
                 output_source_date[hxltag] = {}
             output_source_date[hxltag][startend] = date

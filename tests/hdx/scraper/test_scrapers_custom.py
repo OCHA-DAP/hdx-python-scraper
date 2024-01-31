@@ -59,15 +59,17 @@ class TestScrapersCustom:
         },
         "title": "Global School Closures COVID-19",
     }
-    hapi_values_enrolment = {
+    hapi_values_both = {
         "hdx_id": "6a41be98-75b9-4365-9ea3-e33d0dd2668b",
         "hdx_stub": "global-school-closures-covid19",
         "title": "Global School Closures COVID-19",
         "hdx_provider_stub": "unesco",
         "hdx_provider_name": "UNESCO",
         "time_period": {
-            "start": datetime(2020, 2, 16, 0, 0, tzinfo=timezone.utc),
-            "end": datetime(2022, 4, 30, 23, 59, 59, tzinfo=timezone.utc),
+            "end": datetime(
+                2023, 5, 11, 23, 59, 59, 999999, tzinfo=timezone.utc
+            ),
+            "start": datetime(2019, 3, 4, 0, 0, tzinfo=timezone.utc),
         },
         "results": {
             "national": {
@@ -446,10 +448,10 @@ class TestScrapersCustom:
                 "hdx_provider_stub": "unesco",
                 "hdx_provider_name": "UNESCO",
                 "time_period": {
-                    "start": datetime(2020, 2, 16, 0, 0, tzinfo=timezone.utc),
                     "end": datetime(
-                        2022, 4, 30, 23, 59, 59, tzinfo=timezone.utc
+                        2023, 5, 11, 23, 59, 59, 999999, tzinfo=timezone.utc
                     ),
+                    "start": datetime(2019, 3, 4, 0, 0, tzinfo=timezone.utc),
                 },
                 "resources": {
                     "3b5baa74-c928-4cbc-adba-bf543c5d3050": {
@@ -482,7 +484,7 @@ class TestScrapersCustom:
             }
         }
         hapi_results = runner.get_hapi_results()
-        assert next(iter(hapi_results.values())) == self.hapi_values_enrolment
+        assert next(iter(hapi_results.values())) == self.hapi_values_both
         headers = (
             ["No. affected learners", "Percentage affected learners"],
             ["#affected+learners", "#affected+learners+pct"],

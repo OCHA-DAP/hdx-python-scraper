@@ -33,7 +33,7 @@ coverage[toml]==7.4.1
     # via
     #   coverage
     #   pytest-cov
-cryptography==42.0.1
+cryptography==42.0.2
     # via pyopenssl
 defopt==6.4.0
     # via hdx-python-api
@@ -133,7 +133,7 @@ pandas==2.2.0
     # via hdx-python-scraper (pyproject.toml)
 petl==1.7.14
     # via frictionless
-platformdirs==4.1.0
+platformdirs==4.2.0
     # via virtualenv
 pluggy==1.4.0
     # via pytest
@@ -266,7 +266,7 @@ unidecode==1.3.8
     # via
     #   libhxl
     #   pyphonetics
-urllib3==2.1.0
+urllib3==2.2.0
     # via
     #   libhxl
     #   requests

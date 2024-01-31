@@ -323,9 +323,8 @@ class Read(Retrieve):
             **kwargs,
         )
 
-    def get_hapi_dataset_metadata(
-        self, dataset: Dataset, datasetinfo: Dict
-    ) -> Dict:
+    @staticmethod
+    def get_hapi_dataset_metadata(dataset: Dataset, datasetinfo: Dict) -> Dict:
         """Get HAPI dataset metadata from HDX dataset
 
         Args:
