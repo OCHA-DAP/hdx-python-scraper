@@ -1172,9 +1172,18 @@ class Runner:
             hapi_resource_metadata = scraper.get_hapi_resource_metadata()
             dataset_id = hapi_dataset_metadata["hdx_id"]
             resource_id = hapi_resource_metadata["hdx_id"]
-            hapi_metadata = results.get(
-                dataset_id, copy(hapi_dataset_metadata)
-            )
+            hapi_metadata = results.get(dataset_id)
+            if hapi_metadata:
+                hapi_dataset_time_period = hapi_dataset_metadata["time_period"]
+                start = hapi_dataset_time_period["start"]
+                end = hapi_dataset_time_period["end"]
+                time_period = hapi_metadata["time_period"]
+                if start < time_period["start"]:
+                    time_period["start"] = start
+                if end > time_period["end"]:
+                    time_period["end"] = end
+            else:
+                hapi_metadata = copy(hapi_dataset_metadata)
             hapi_resources = hapi_metadata.get("resources", {})
             hapi_resources[resource_id] = hapi_resource_metadata
             hapi_metadata["resources"] = hapi_resources

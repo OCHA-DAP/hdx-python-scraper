@@ -406,7 +406,7 @@ education_closures:
 
 education_enrolment:
     source_date:  # Just to test source_date and flow to HAPI
-      start: "2023-03-04"
+      start: "2019-03-04"
       end: "2023-05-11"
     dataset: "global-school-closures-covid19"
     resource: "Enrollment data"
