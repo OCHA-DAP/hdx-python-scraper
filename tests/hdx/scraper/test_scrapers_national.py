@@ -738,9 +738,12 @@ class TestScrapersNational:
         today = parse_date("2022-06-03")
         level = "national"
         scraper_configuration = configuration[f"scraper_{level}"]
-        iso3s = ("AFG",)
+        iso3s = ("AFG", "PHL", "ZMB")
         runner = Runner(iso3s, today)
-        runner.add_configurables(scraper_configuration, level)
+        # We also test overriding the Runner country isos here
+        runner.add_configurables(
+            scraper_configuration, level, countryiso3s=("AFG",)
+        )
         name = "oxcgrt"
         headers = (["StringencyIndexForDisplay"], ["#severity+stringency+num"])
         values = [{"AFG": "11.11"}]
