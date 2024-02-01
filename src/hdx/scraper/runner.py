@@ -523,6 +523,21 @@ class Runner:
             raise ValueError(f"No such scraper {name}!")
         return scraper
 
+    def delete_scraper(self, name: str) -> bool:
+        """Delete scraper with given name
+
+        Args:
+            name (str): Name of scraper
+
+        Returns:
+            bool: True if the scraper was present, False if not
+        """
+        if name not in self.scraper_names:
+            return False
+        self.scraper_names.remove(name)
+        del self.scrapers[name]
+        return True
+
     def add_instance_variables(self, name: str, **kwargs: Any) -> None:
         """Add instance variables to scraper instance given scraper name
 
