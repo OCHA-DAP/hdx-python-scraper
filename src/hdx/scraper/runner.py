@@ -106,6 +106,7 @@ class Runner:
         source_configuration: Dict = {},
         suffix: Optional[str] = None,
         force_add_to_run: bool = False,
+        countryiso3s: Optional[List[str]] = None,
     ) -> str:
         """Add configurable scraper to the run. If running specific scrapers rather than
         all, and you want to force the inclusion of the scraper in the run regardless of
@@ -121,6 +122,7 @@ class Runner:
             source_configuration (Dict): Configuration for sources. Defaults to empty dict (use defaults).
             suffix (Optional[str]): Suffix to add to the scraper name
             force_add_to_run (bool): Whether to force include the scraper in the next run
+            countryiso3s (Optional[List[str]]): Override list of country iso3s. Defaults to None.
 
         Returns:
             str: scraper name (including suffix if set)
@@ -129,11 +131,13 @@ class Runner:
             scraper_name = f"{name}{suffix}"
         else:
             scraper_name = name
+        if not countryiso3s:
+            countryiso3s = self.countryiso3s
         self.scrapers[scraper_name] = ConfigurableScraper(
             name,
             datasetinfo,
             level,
-            self.countryiso3s,
+            countryiso3s,
             adminlevel,
             level_name,
             source_configuration,
@@ -159,6 +163,7 @@ class Runner:
         source_configuration: Dict = {},
         suffix: Optional[str] = None,
         force_add_to_run: bool = False,
+        countryiso3s: Optional[List[str]] = None,
     ) -> List[str]:
         """Add multiple configurable scrapers to the run. If running specific scrapers
         rather than all, and you want to force the inclusion of the scraper in the run
@@ -173,6 +178,7 @@ class Runner:
             source_configuration (Dict): Configuration for sources. Defaults to empty dict (use defaults).
             suffix (Optional[str]): Suffix to add to the scraper name
             force_add_to_run (bool): Whether to force include the scraper in the next run
+            countryiso3s (Optional[List[str]]): Override list of country iso3s. Defaults to None.
 
         Returns:
             List[str]: scraper names (including suffix if set)
@@ -190,6 +196,7 @@ class Runner:
                     source_configuration,
                     suffix,
                     force_add_to_run,
+                    countryiso3s,
                 )
             )
         return keys
@@ -515,6 +522,21 @@ class Runner:
         if not scraper:
             raise ValueError(f"No such scraper {name}!")
         return scraper
+
+    def delete_scraper(self, name: str) -> bool:
+        """Delete scraper with given name
+
+        Args:
+            name (str): Name of scraper
+
+        Returns:
+            bool: True if the scraper was present, False if not
+        """
+        if name not in self.scraper_names:
+            return False
+        self.scraper_names.remove(name)
+        del self.scrapers[name]
+        return True
 
     def add_instance_variables(self, name: str, **kwargs: Any) -> None:
         """Add instance variables to scraper instance given scraper name

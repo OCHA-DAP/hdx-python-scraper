@@ -738,9 +738,27 @@ class TestScrapersNational:
         today = parse_date("2022-06-03")
         level = "national"
         scraper_configuration = configuration[f"scraper_{level}"]
-        iso3s = ("AFG",)
+        iso3s = ("AFG", "PHL", "ZMB")
         runner = Runner(iso3s, today)
-        runner.add_configurables(scraper_configuration, level)
+        # We also test overriding the Runner country isos here
+        keys = runner.add_configurables(
+            scraper_configuration, level, countryiso3s=("AFG",)
+        )
+        expected_keys = [
+            "population",
+            "who_national",
+            "who_national2",
+            "who_national3",
+            "access",
+            "sadd",
+            "ourworldindata",
+            "broken_owd_url",
+            "covidtests",
+            "idps",
+            "casualties",
+            "oxcgrt",
+        ]
+        assert keys == expected_keys
         name = "oxcgrt"
         headers = (["StringencyIndexForDisplay"], ["#severity+stringency+num"])
         values = [{"AFG": "11.11"}]
@@ -753,3 +771,8 @@ class TestScrapersNational:
             )
         ]
         run_check_scraper(name, runner, level, headers, values, sources)
+
+        assert runner.delete_scraper("sadd") is True
+        expected_keys.remove("sadd")
+        assert runner.get_scraper_names() == expected_keys
+        assert runner.get_scraper("sadd") is None
