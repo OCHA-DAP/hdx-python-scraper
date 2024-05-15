@@ -282,9 +282,9 @@ class Sources:
         if no_sources:
             source_configuration["no_sources"] = True
             return source_configuration
-        source_configuration[
-            "should_overwrite_sources"
-        ] = should_overwrite_sources
+        source_configuration["should_overwrite_sources"] = (
+            should_overwrite_sources
+        )
         if suffix_attribute:
             source_configuration["suffix_attribute"] = suffix_attribute
             return source_configuration

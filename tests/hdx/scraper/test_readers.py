@@ -30,7 +30,7 @@ class TestReaders:
                     assert getattr(clone_reader, property) == value
 
     def test_read_dataset(self, configuration, monkeypatch):
-        def test_read_from_hdx(dataset_name):
+        def test_read_from_hdx(dataset_name, _):
             if dataset_name == "None":
                 return None
             dataset = Dataset({"name": dataset_name})
