@@ -1,3 +1,4 @@
+import glob
 import logging
 from datetime import datetime
 from os.path import join
@@ -264,6 +265,59 @@ class Read(Retrieve):
                 else:
                     dataset.save_to_json(saved_path, follow_urls=True)
         return dataset
+
+    def search_datasets(
+        self,
+        filename: str,
+        query: Optional[str] = "*:*",
+        configuration: Optional[Configuration] = None,
+        page_size: int = 1000,
+        **kwargs: Any,
+    ) -> List[Dataset]:
+        """Read HDX dataset
+
+        Args:
+            filename (str): Filename for saved files. Will be prefixed by underscore and a number.
+            query (Optional[str]): Query (in Solr format). Defaults to '*:*'.
+            configuration (Optional[Configuration]): HDX configuration. Defaults to global configuration.
+            page_size (int): Size of page to return. Defaults to 1000.
+            **kwargs: See below
+            fq (string): Any filter queries to apply
+            rows (int): Number of matching rows to return. Defaults to all datasets (sys.maxsize).
+            start (int): Offset in the complete result for where the set of returned datasets should begin
+            sort (string): Sorting of results. Defaults to 'relevance asc, metadata_modified desc' if rows<=page_size or 'metadata_modified asc' if rows>page_size.
+            facet (string): Whether to enable faceted results. Default to True.
+            facet.mincount (int): Minimum counts for facet fields should be included in the results
+            facet.limit (int): Maximum number of values the facet fields return (- = unlimited). Defaults to 50.
+            facet.field (List[str]): Fields to facet upon. Default is empty.
+            use_default_schema (bool): Use default package schema instead of custom schema. Defaults to False.
+
+        Returns:
+            List[Dataset]: list of datasets resulting from query
+        """
+
+        if self.use_saved:
+            logger.info(
+                f"Using saved datasets in {filename}_n.json in {self.saved_dir}"
+            )
+            saved_path = join(self.saved_dir, filename)
+            datasets = []
+            for file_path in glob.glob(f"{saved_path}_*.json"):
+                datasets.append(Dataset.load_from_json(file_path))
+        else:
+            datasets = Dataset.search_in_hdx(
+                query, configuration, page_size, **kwargs
+            )
+            if self.save:
+                for i, dataset in enumerate(datasets):
+                    saved_path = join(self.saved_dir, f"{filename}_{i}.json")
+                    name = dataset["name"]
+                    logger.info(f"Saving dataset {name} in {saved_path}")
+                    if dataset is None:
+                        save_json(None, saved_path)
+                    else:
+                        dataset.save_to_json(saved_path, follow_urls=True)
+        return datasets
 
     @staticmethod
     def construct_filename(name: str, format: str):
