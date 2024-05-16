@@ -320,9 +320,9 @@ class TestScrapersCustom:
         runner.run_one(education_closures2.name)
         # give it a unique result
         del education_closures2.values["national"][0]["AFG"]
-        education_closures2.values["national"][0][
-            "SDN"
-        ] = "Closed due to COVID-19"
+        education_closures2.values["national"][0]["SDN"] = (
+            "Closed due to COVID-19"
+        )
         hapi_results = runner.get_hapi_results()
         hapi_values["results"]["national"]["values"] = [
             {"AFG": "Closed due to COVID-19", "SDN": "Closed due to COVID-19"},

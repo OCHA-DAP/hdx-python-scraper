@@ -1,3 +1,4 @@
+import glob
 import logging
 from datetime import datetime
 from os.path import join
@@ -10,6 +11,7 @@ from slugify import slugify
 
 from . import get_startend_dates_from_time_period, match_template
 from .sources import Sources
+from hdx.api.configuration import Configuration
 from hdx.data.dataset import Dataset
 from hdx.data.resource import Resource
 from hdx.utilities.dateparse import parse_date
@@ -238,11 +240,14 @@ class Read(Retrieve):
             **kwargs,
         )
 
-    def read_dataset(self, dataset_name: str) -> Optional[Dataset]:
+    def read_dataset(
+        self, dataset_name: str, configuration: Optional[Configuration] = None
+    ) -> Optional[Dataset]:
         """Read HDX dataset
 
         Args:
             dataset_name (str): Dataset name
+            configuration (Optional[Configuration]): HDX configuration. Defaults to global configuration.
 
         Returns:
             Optional[Dataset]: The dataset that was read or None
@@ -252,7 +257,7 @@ class Read(Retrieve):
             logger.info(f"Using saved dataset {dataset_name} in {saved_path}")
             dataset = Dataset.load_from_json(saved_path)
         else:
-            dataset = Dataset.read_from_hdx(dataset_name)
+            dataset = Dataset.read_from_hdx(dataset_name, configuration)
             if self.save:
                 logger.info(f"Saving dataset {dataset_name} in {saved_path}")
                 if dataset is None:
@@ -260,6 +265,56 @@ class Read(Retrieve):
                 else:
                     dataset.save_to_json(saved_path, follow_urls=True)
         return dataset
+
+    def search_datasets(
+        self,
+        filename: str,
+        query: Optional[str] = "*:*",
+        configuration: Optional[Configuration] = None,
+        page_size: int = 1000,
+        **kwargs: Any,
+    ) -> List[Dataset]:
+        """Read HDX dataset
+
+        Args:
+            filename (str): Filename for saved files. Will be prefixed by underscore and a number.
+            query (Optional[str]): Query (in Solr format). Defaults to '*:*'.
+            configuration (Optional[Configuration]): HDX configuration. Defaults to global configuration.
+            page_size (int): Size of page to return. Defaults to 1000.
+            **kwargs: See below
+            fq (string): Any filter queries to apply
+            rows (int): Number of matching rows to return. Defaults to all datasets (sys.maxsize).
+            start (int): Offset in the complete result for where the set of returned datasets should begin
+            sort (string): Sorting of results. Defaults to 'relevance asc, metadata_modified desc' if rows<=page_size or 'metadata_modified asc' if rows>page_size.
+            facet (string): Whether to enable faceted results. Default to True.
+            facet.mincount (int): Minimum counts for facet fields should be included in the results
+            facet.limit (int): Maximum number of values the facet fields return (- = unlimited). Defaults to 50.
+            facet.field (List[str]): Fields to facet upon. Default is empty.
+            use_default_schema (bool): Use default package schema instead of custom schema. Defaults to False.
+
+        Returns:
+            List[Dataset]: list of datasets resulting from query
+        """
+
+        saved_path = join(self.saved_dir, filename)
+        if self.use_saved:
+            logger.info(
+                f"Using saved datasets in {filename}_n.json in {self.saved_dir}"
+            )
+            datasets = []
+            for file_path in glob.glob(f"{saved_path}_*.json"):
+                datasets.append(Dataset.load_from_json(file_path))
+        else:
+            datasets = Dataset.search_in_hdx(
+                query, configuration, page_size, **kwargs
+            )
+            if self.save:
+                for i, dataset in enumerate(datasets):
+                    file_path = f"{saved_path}_{i}.json"
+                    name = dataset["name"]
+                    logger.info(f"Saving dataset {name} in {file_path}")
+                    dataset.save_to_json(file_path, follow_urls=True)
+        return datasets
 
     @staticmethod
     def construct_filename(name: str, format: str):
@@ -438,7 +493,10 @@ class Read(Retrieve):
         return self.hxl_info_file(name, format, url, **kwargs)
 
     def read_hdx_metadata(
-        self, datasetinfo: Dict, do_resource_check: bool = True
+        self,
+        datasetinfo: Dict,
+        do_resource_check: bool = True,
+        configuration: Optional[Configuration] = None,
     ) -> Optional[Resource]:
         """Read metadata from HDX dataset and add to input dictionary. If url
         is not supplied, will look through resources for one that matches
@@ -454,13 +512,14 @@ class Read(Retrieve):
         Args:
             datasetinfo (Dict): Dictionary of information about dataset
             do_resource_check (bool): Whether to check resources. Defaults to False.
+            configuration (Optional[Configuration]): HDX configuration. Defaults to global configuration.
 
         Returns:
             Optional[Resource]: The resource if a url was not given
         """
         dataset_nameinfo = datasetinfo["dataset"]
         if isinstance(dataset_nameinfo, str):
-            dataset = self.read_dataset(dataset_nameinfo)
+            dataset = self.read_dataset(dataset_nameinfo, configuration)
             resource = None
             url = datasetinfo.get("url")
             resource_name = datasetinfo.get("resource")
@@ -491,24 +550,24 @@ class Read(Retrieve):
                 else:
                     url = resource["url"]  # otherwise set the url key in
                     # datasetinfo to the resource url (by setting url here)
-                datasetinfo[
-                    "hapi_resource_metadata"
-                ] = self.get_hapi_resource_metadata(resource)
+                datasetinfo["hapi_resource_metadata"] = (
+                    self.get_hapi_resource_metadata(resource)
+                )
                 datasetinfo["url"] = url
             if "source_date" not in datasetinfo:
-                datasetinfo[
-                    "source_date"
-                ] = get_startend_dates_from_time_period(
-                    dataset, today=self.today
+                datasetinfo["source_date"] = (
+                    get_startend_dates_from_time_period(
+                        dataset, today=self.today
+                    )
                 )
             if "source" not in datasetinfo:
                 datasetinfo["source"] = dataset["dataset_source"]
             if "source_url" not in datasetinfo:
                 datasetinfo["source_url"] = dataset.get_hdx_url()
             Sources.standardise_datasetinfo_source_date(datasetinfo)
-            datasetinfo[
-                "hapi_dataset_metadata"
-            ] = self.get_hapi_dataset_metadata(dataset, datasetinfo)
+            datasetinfo["hapi_dataset_metadata"] = (
+                self.get_hapi_dataset_metadata(dataset, datasetinfo)
+            )
             return resource
 
         if "source_date" not in datasetinfo:
@@ -527,7 +586,7 @@ class Read(Retrieve):
         for hxltag, dataset_name in dataset_nameinfo.items():
             dataset = datasets.get(dataset_name)
             if not dataset:
-                dataset = self.read_dataset(dataset_name)
+                dataset = self.read_dataset(dataset_name, configuration)
                 datasets[dataset_name] = dataset
             if source_date is not None:
                 if hxltag == "default_dataset":
@@ -561,18 +620,22 @@ class Read(Retrieve):
     def read_hdx(
         self,
         datasetinfo: Dict,
+        configuration: Optional[Configuration] = None,
         **kwargs: Any,
     ) -> Tuple[List[str], Iterator[Dict]]:
         """Read data and metadata from HDX dataset
 
         Args:
             datasetinfo (Dict): Dictionary of information about dataset
+            configuration (Optional[Configuration]): HDX configuration. Defaults to global configuration.
             **kwargs: Parameters to pass to download_file call
 
         Returns:
             Tuple[List[str],Iterator[Dict]]: Tuple (headers, iterator where each row is a dictionary)
         """
-        resource = self.read_hdx_metadata(datasetinfo)
+        resource = self.read_hdx_metadata(
+            datasetinfo, configuration=configuration
+        )
         filename = kwargs.get("filename")
         if filename:
             del kwargs["filename"]
@@ -593,12 +656,14 @@ class Read(Retrieve):
     def read(
         self,
         datasetinfo: Dict,
+        configuration: Optional[Configuration] = None,
         **kwargs: Any,
     ) -> Tuple[List[str], Iterator[Dict]]:
         """Read data and metadata from HDX dataset
 
         Args:
             datasetinfo (Dict): Dictionary of information about dataset
+            configuration (Optional[Configuration]): HDX configuration. Defaults to global configuration.
             **kwargs: Parameters to pass to download_file call
 
         Returns:
@@ -607,7 +672,9 @@ class Read(Retrieve):
         format = datasetinfo["format"]
         if format in ["json", "csv", "xls", "xlsx"]:
             if "dataset" in datasetinfo:
-                headers, iterator = self.read_hdx(datasetinfo, **kwargs)
+                headers, iterator = self.read_hdx(
+                    datasetinfo, configuration, **kwargs
+                )
             else:
                 headers, iterator = self.read_tabular(datasetinfo, **kwargs)
         else:

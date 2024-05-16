@@ -1,4 +1,5 @@
 """Global fixtures"""
+
 from os.path import join
 
 import pytest

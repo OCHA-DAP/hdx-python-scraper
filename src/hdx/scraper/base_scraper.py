@@ -141,9 +141,9 @@ class BaseScraper(ABC):
             "should_overwrite_sources"
         )
         if should_overwrite_sources is not None:
-            self.source_configuration[
-                "should_overwrite_sources"
-            ] = should_overwrite_sources
+            self.source_configuration["should_overwrite_sources"] = (
+                should_overwrite_sources
+            )
         source = self.datasetinfo["source"]
         if isinstance(source, str):
             source = {"default_source": source}
