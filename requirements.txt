@@ -64,6 +64,7 @@ hdx-python-country==3.7.0
     #   hdx-python-api
 hdx-python-utilities==3.6.8
     # via
+    #   hdx-python-scraper (pyproject.toml)
     #   hdx-python-api
     #   hdx-python-country
 humanize==4.9.0
