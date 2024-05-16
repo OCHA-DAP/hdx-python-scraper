@@ -54,7 +54,7 @@ google-auth==2.29.0
     #   gspread
 google-auth-oauthlib==1.2.0
     # via gspread
-gspread==6.1.0
+gspread==6.1.1
     # via hdx-python-scraper (pyproject.toml)
 hdx-python-api==6.2.8
     # via hdx-python-scraper (pyproject.toml)
@@ -197,7 +197,7 @@ referencing==0.35.1
     # via
     #   jsonschema
     #   jsonschema-specifications
-regex==2024.5.10
+regex==2024.5.15
     # via hdx-python-scraper (pyproject.toml)
 requests==2.31.0
     # via
@@ -244,8 +244,6 @@ six==1.16.0
     #   sphinxcontrib-napoleon
 sphinxcontrib-napoleon==0.7
     # via defopt
-strenum==0.4.15
-    # via gspread
 stringcase==1.2.0
     # via frictionless
 structlog==24.1.0

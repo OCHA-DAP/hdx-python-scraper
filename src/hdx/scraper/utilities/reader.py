@@ -296,11 +296,11 @@ class Read(Retrieve):
             List[Dataset]: list of datasets resulting from query
         """
 
+        saved_path = join(self.saved_dir, filename)
         if self.use_saved:
             logger.info(
                 f"Using saved datasets in {filename}_n.json in {self.saved_dir}"
             )
-            saved_path = join(self.saved_dir, filename)
             datasets = []
             for file_path in glob.glob(f"{saved_path}_*.json"):
                 datasets.append(Dataset.load_from_json(file_path))
@@ -310,13 +310,13 @@ class Read(Retrieve):
             )
             if self.save:
                 for i, dataset in enumerate(datasets):
-                    saved_path = join(self.saved_dir, f"{filename}_{i}.json")
+                    file_path = f"{saved_path}_{i}.json"
                     name = dataset["name"]
-                    logger.info(f"Saving dataset {name} in {saved_path}")
+                    logger.info(f"Saving dataset {name} in {file_path}")
                     if dataset is None:
-                        save_json(None, saved_path)
+                        save_json(None, file_path)
                     else:
-                        dataset.save_to_json(saved_path, follow_urls=True)
+                        dataset.save_to_json(file_path, follow_urls=True)
         return datasets
 
     @staticmethod
