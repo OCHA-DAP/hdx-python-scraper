@@ -313,10 +313,7 @@ class Read(Retrieve):
                     file_path = f"{saved_path}_{i}.json"
                     name = dataset["name"]
                     logger.info(f"Saving dataset {name} in {file_path}")
-                    if dataset is None:
-                        save_json(None, file_path)
-                    else:
-                        dataset.save_to_json(file_path, follow_urls=True)
+                    dataset.save_to_json(file_path, follow_urls=True)
         return datasets
 
     @staticmethod

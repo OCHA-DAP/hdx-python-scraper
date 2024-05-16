@@ -132,6 +132,28 @@ class TestReaders:
                         dataset.get_resource()["url"] == f"{filename}_1.json"
                     )
                     monkeypatch.delattr(Dataset, "search_in_hdx")
+                with Read(
+                    downloader,
+                    temp_folder,
+                    temp_folder,
+                    temp_folder,
+                    save=False,
+                    use_saved=True,
+                    prefix="test",
+                    today=parse_date("2021-02-01"),
+                ) as reader:
+                    datasets = reader.search_datasets(filename)
+                    assert len(datasets) == 2
+                    dataset = datasets[0]
+                    assert dataset["name"] == f"{filename}_0"
+                    assert (
+                        dataset.get_resource()["url"] == f"{filename}_0.json"
+                    )
+                    dataset = datasets[1]
+                    assert dataset["name"] == f"{filename}_1"
+                    assert (
+                        dataset.get_resource()["url"] == f"{filename}_1.json"
+                    )
 
     def test_read_hxl_resource(self, input_folder):
         with temp_dir("TestReader") as temp_folder:
