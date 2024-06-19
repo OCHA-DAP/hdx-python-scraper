@@ -130,7 +130,7 @@ class TestOutput:
                 list(hxltags.keys()),
                 list(hxltags.values()),
                 ["AFG", "Afghanistan", 38041754],
-                ["BDI", "Burundi", np.NaN],
+                ["BDI", "Burundi", np.nan],
                 ["PAK", "Pakistan", -np.inf],
             ]
             df = pandas.DataFrame(output[1:], columns=output[0])
@@ -138,7 +138,7 @@ class TestOutput:
             result = googletab.get("A1:C5")
             result[2][2] = int(result[2][2])
             assert result[3][2] == "NaN"
-            result[3][2] = np.NaN
+            result[3][2] = np.nan
             assert result[4][2] == "-inf"
             result[4][2] = -np.inf
             assert result == output

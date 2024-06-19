@@ -314,7 +314,7 @@ class RowParser:
                     adms[i], exact = Country.get_iso3_country_code_fuzzy(adm)
                 elif i == 1:
                     adms[i], exact = self.adminlevel.get_pcode(
-                        adms[0], adm, self.name
+                        adms[0], adm, logname=self.name
                     )
                 if adms[i] not in self.adms[i]:
                     adms[i] = None
