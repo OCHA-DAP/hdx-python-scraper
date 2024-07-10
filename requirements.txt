@@ -10,7 +10,7 @@ attrs==23.2.0
     #   referencing
 cachetools==5.3.3
     # via google-auth
-certifi==2024.6.2
+certifi==2024.7.4
     # via requests
 cffi==1.16.0
     # via cryptography
@@ -24,7 +24,7 @@ ckanapi==4.8
     # via hdx-python-api
 click==8.1.7
     # via typer
-coverage==7.5.3
+coverage==7.5.4
     # via pytest-cov
 cryptography==42.0.8
     # via pyopenssl
@@ -40,36 +40,36 @@ docopt==0.6.2
     #   num2words
 docutils==0.21.2
     # via defopt
-email-validator==2.1.2
+email-validator==2.2.0
     # via hdx-python-api
 et-xmlfile==1.1.0
     # via openpyxl
-filelock==3.15.3
+filelock==3.15.4
     # via virtualenv
 frictionless==5.17.0
     # via hdx-python-utilities
-google-auth==2.30.0
+google-auth==2.32.0
     # via
     #   google-auth-oauthlib
     #   gspread
-google-auth-oauthlib==1.2.0
+google-auth-oauthlib==1.2.1
     # via gspread
 gspread==6.1.2
     # via hdx-python-scraper (pyproject.toml)
 hdx-python-api==6.3.1
     # via hdx-python-scraper (pyproject.toml)
-hdx-python-country==3.7.2
+hdx-python-country==3.7.6
     # via
     #   hdx-python-scraper (pyproject.toml)
     #   hdx-python-api
-hdx-python-utilities==3.7.0
+hdx-python-utilities==3.7.2
     # via
     #   hdx-python-scraper (pyproject.toml)
     #   hdx-python-api
     #   hdx-python-country
-humanize==4.9.0
+humanize==4.10.0
     # via frictionless
-identify==2.5.36
+identify==2.6.0
     # via pre-commit
 idna==3.7
     # via
@@ -77,7 +77,7 @@ idna==3.7
     #   requests
 ijson==3.3.0
     # via hdx-python-utilities
-inflect==7.2.1
+inflect==7.3.1
     # via quantulum3
 iniconfig==2.0.0
     # via pytest
@@ -89,7 +89,7 @@ jsonlines==4.0.0
     # via hdx-python-utilities
 jsonpath-ng==1.6.1
     # via libhxl
-jsonschema==4.22.0
+jsonschema==4.23.0
     # via
     #   frictionless
     #   tableschema-to-template
@@ -101,11 +101,11 @@ libhxl==5.2.1
     #   hdx-python-country
 loguru==0.7.2
     # via hdx-python-utilities
-makefun==1.15.2
+makefun==1.15.3
     # via hdx-python-api
 markdown-it-py==3.0.0
     # via rich
-marko==2.1.1
+marko==2.1.2
     # via frictionless
 markupsafe==2.1.5
     # via jinja2
@@ -123,7 +123,7 @@ numpy==2.0.0
     # via pandas
 oauthlib==3.2.2
     # via requests-oauthlib
-openpyxl==3.1.4
+openpyxl==3.1.5
     # via hdx-python-utilities
 packaging==24.1
     # via pytest
@@ -153,9 +153,9 @@ pyasn1-modules==0.4.0
     # via google-auth
 pycparser==2.22
     # via cffi
-pydantic==2.7.4
+pydantic==2.8.2
     # via frictionless
-pydantic-core==2.18.4
+pydantic-core==2.20.1
     # via pydantic
 pygments==2.18.0
     # via rich
@@ -190,7 +190,7 @@ pyyaml==6.0.1
     #   frictionless
     #   pre-commit
     #   tableschema-to-template
-quantulum3==0.9.1
+quantulum3==0.9.2
     # via hdx-python-api
 ratelimit==2.2.1
     # via hdx-python-utilities
@@ -216,7 +216,7 @@ rfc3986==2.0.0
     # via frictionless
 rich==13.7.1
     # via typer
-rpds-py==0.18.1
+rpds-py==0.19.0
     # via
     #   jsonschema
     #   referencing
@@ -226,7 +226,7 @@ ruamel-yaml==0.18.6
     # via hdx-python-utilities
 ruamel-yaml-clib==0.2.8
     # via ruamel-yaml
-setuptools==70.1.0
+setuptools==70.3.0
     # via ckanapi
 shellingham==1.5.4
     # via typer
@@ -260,7 +260,6 @@ typer==0.12.3
 typing-extensions==4.12.2
     # via
     #   frictionless
-    #   inflect
     #   pydantic
     #   pydantic-core
     #   typeguard
@@ -275,9 +274,9 @@ urllib3==2.2.2
     # via
     #   libhxl
     #   requests
-validators==0.28.3
+validators==0.31.0
     # via frictionless
-virtualenv==20.26.2
+virtualenv==20.26.3
     # via pre-commit
 wheel==0.43.0
     # via libhxl

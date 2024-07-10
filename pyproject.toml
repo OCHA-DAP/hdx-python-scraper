@@ -35,8 +35,8 @@ requires-python = ">=3.8"
 
 dependencies = [
     "hdx-python-api>=6.3.1",
-    "hdx-python-country>=3.7.2",
-    "hdx-python-utilities>=3.7.0",
+    "hdx-python-country>=3.7.6",
+    "hdx-python-utilities>=3.7.2",
     "gspread",
     "regex",
 ]

@@ -185,20 +185,14 @@ class RowParser:
         Returns:
             Iterator[Dict]: Input data with prefilter applied if specified and sorted if specified or deemed necessary
         """
-        rows = []
-        for row in iterator:
-            if self.header_to_hxltag:
-                newrow = {}
-                for header in row:
-                    newrow[self.header_to_hxltag[header]] = row[header]
-                row = newrow
-            if self.stop_row:
-                if all(
-                    row[key] == value for key, value in self.stop_row.items()
-                ):
-                    break
-            for newrow in self.flatten(row):
-                rows.append(newrow)
+        if self.header_to_hxltag:
+            iterator = self.header_to_hxltag_rows(iterator)
+        if self.stop_row:
+            iterator = self.stop_rows(iterator)
+        if self.flatteninfo:
+            iterator = self.flatten_rows(iterator)
+        if self.prefilter:
+            iterator = (row for row in iterator if eval(self.prefilter))
         if not self.sort:
             if self.datecol:
                 for subset in self.subsets:
@@ -212,15 +206,59 @@ class RowParser:
                         )
                         self.sort = {"keys": [self.datecol], "reverse": True}
                         break
-        if self.prefilter:
-            rows = [row for row in rows if eval(self.prefilter)]
         if self.sort:
             keys = self.sort["keys"]
             reverse = self.sort.get("reverse", False)
-            rows = sorted(rows, key=itemgetter(*keys), reverse=reverse)
-        return rows
+            iterator = sorted(iterator, key=itemgetter(*keys), reverse=reverse)
+        return iterator
 
-    def flatten(self, row: Dict) -> Generator[Dict, None, None]:
+    def header_to_hxltag_rows(
+        self, iterator: Iterator[Dict]
+    ) -> Generator[Dict, None, None]:
+        """Convert headers to HXL tags in keys
+
+        Args:
+            iterator (Iterator[Dict]): Input data
+
+        Returns:
+            Generator[Dict]: Rows where keys are HXL tags
+        """
+        for row in iterator:
+            newrow = {}
+            for header in row:
+                newrow[self.header_to_hxltag[header]] = row[header]
+            yield newrow
+
+    def stop_rows(
+        self, iterator: Iterator[Dict]
+    ) -> Generator[Dict, None, None]:
+        """Stop processing rows after condition met
+
+        Args:
+            iterator (Iterator[Dict]): Input data
+
+        Returns:
+            Generator[Dict]: Rows up to stop condition
+        """
+        for row in iterator:
+            if all(row[key] == value for key, value in self.stop_row.items()):
+                break
+            yield row
+
+    def flatten_rows(self, iterator: Iterator[Dict]) -> Iterator[Dict]:
+        """Flatten rows
+
+        Args:
+            iterator (Iterator[Dict]): Input data
+
+        Returns:
+            Generator[Dict]: Flattened rows
+        """
+        for row in iterator:
+            for newrow in self.flatten_row(row):
+                yield newrow
+
+    def flatten_row(self, row: Dict) -> Generator[Dict, None, None]:
         """Flatten a wide spreadsheet format into a long one
 
         Args:
@@ -229,9 +267,6 @@ class RowParser:
         Returns:
             Generator[Dict]: Flattened row(s)
         """
-        if not self.flatteninfo:
-            yield row
-            return
         counters = [-1 for _ in self.flatteninfo]
         while True:
             newrow = copy.deepcopy(row)
