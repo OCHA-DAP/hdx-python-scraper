@@ -206,15 +206,18 @@ class Read(Retrieve):
         if headers is None:
             headers = 1
             datasetinfo["headers"] = 1
-        kwargs["headers"] = headers
-        if isinstance(headers, list):
-            kwargs["fill_merged_cells"] = True
         format = datasetinfo["format"]
         kwargs["format"] = format
-        if not sheet and format in ("xls", "xlsx"):
-            sheet = 1
+        if format in ("xls", "xlsx"):
+            if not sheet:
+                sheet = 1
+            if isinstance(headers, list):
+                kwargs["fill_merged_cells"] = True
+            elif "fill_merged_cells" not in kwargs:
+                kwargs["fill_merged_cells"] = False
         if sheet:
             kwargs["sheet"] = sheet
+        kwargs["headers"] = headers
         compression = datasetinfo.get("compression")
         if compression:
             kwargs["compression"] = compression
