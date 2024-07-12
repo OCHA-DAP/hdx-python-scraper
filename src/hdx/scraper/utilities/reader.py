@@ -302,7 +302,7 @@ class Read(Retrieve):
                 f"Using saved datasets in {filename}_n.json in {self.saved_dir}"
             )
             datasets = []
-            for file_path in glob.glob(f"{saved_path}_*.json"):
+            for file_path in sorted(glob.glob(f"{saved_path}_*.json")):
                 datasets.append(Dataset.load_from_json(file_path))
         else:
             datasets = Dataset.search_in_hdx(
