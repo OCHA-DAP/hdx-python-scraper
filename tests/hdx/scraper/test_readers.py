@@ -30,7 +30,7 @@ class TestReaders:
                     assert getattr(clone_reader, property) == value
 
     def test_read_dataset(self, configuration, monkeypatch):
-        def test_read_from_hdx(dataset_name, _):
+        def read_from_hdx(dataset_name, _):
             if dataset_name == "None":
                 return None
             dataset = Dataset({"name": dataset_name})
@@ -58,7 +58,7 @@ class TestReaders:
                     today=parse_date("2021-02-01"),
                 ) as reader:
                     monkeypatch.setattr(
-                        Dataset, "read_from_hdx", test_read_from_hdx
+                        Dataset, "read_from_hdx", read_from_hdx
                     )
                     dataset_name = "None"
                     dataset = reader.read_dataset(dataset_name)
@@ -89,7 +89,7 @@ class TestReaders:
     def test_search_datasets(self, configuration, monkeypatch):
         filename = "TestDataset"
 
-        def test_search_in_hdx(*args, **kwargs):
+        def search_in_hdx(*args, **kwargs):
             datasets = []
             for i in range(2):
                 dataset = Dataset({"name": f"{filename}_{i}"})
@@ -117,7 +117,7 @@ class TestReaders:
                     today=parse_date("2021-02-01"),
                 ) as reader:
                     monkeypatch.setattr(
-                        Dataset, "search_in_hdx", test_search_in_hdx
+                        Dataset, "search_in_hdx", search_in_hdx
                     )
                     datasets = reader.search_datasets(filename)
                     assert len(datasets) == 2
