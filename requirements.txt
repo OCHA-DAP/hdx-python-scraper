@@ -101,7 +101,7 @@ libhxl==5.2.1
     #   hdx-python-country
 loguru==0.7.2
     # via hdx-python-utilities
-makefun==1.15.3
+makefun==1.15.4
     # via hdx-python-api
 markdown-it-py==3.0.0
     # via rich
