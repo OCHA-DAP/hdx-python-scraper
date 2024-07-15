@@ -91,4 +91,4 @@ class GoogleSheets(BaseOutput):
                 df.fillna("NaN", inplace=True)
                 rows.extend(df.values.tolist())
                 values = rows
-            tab.update("A1", values)
+            tab.update(values, "A1")
