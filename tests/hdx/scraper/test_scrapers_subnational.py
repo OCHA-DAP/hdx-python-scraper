@@ -353,10 +353,11 @@ class TestScrapersSubnational:
     def test_fixed_country(self, configuration):
         BaseScraper.population_lookup = {}
         today = parse_date("2020-10-01")
-        adminlevel = AdminLevel(configuration["admin1"])
-        adminlevel.setup_from_admin_info(configuration["admin1"]["admin_info"])
         level = "subnational"
         scraper_configuration = configuration[f"scraper_{level}"]
+
+        adminlevel = AdminLevel(configuration["admin1"])
+        adminlevel.setup_from_admin_info(configuration["admin1"]["admin_info"])
         runner = Runner(("SOM",), today)
         runner.add_configurables(
             scraper_configuration, level, adminlevel=adminlevel

@@ -215,6 +215,7 @@ class Read(Retrieve):
                 kwargs["fill_merged_cells"] = True
             elif "fill_merged_cells" not in kwargs:
                 kwargs["fill_merged_cells"] = False
+            kwargs["xlsx2csv"] = datasetinfo.get("xlsx2csv", False)
         if sheet:
             kwargs["sheet"] = sheet
         kwargs["headers"] = headers

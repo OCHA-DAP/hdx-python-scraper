@@ -1049,10 +1049,11 @@ scraper_subnational:
   idps_somalia:
     dataset: "somalia-internally-displaced-persons-idps"
     format: "xlsx"
+    xlsx2csv: True
     filter_cols:
       - "Reason"
       - "Year"
-    prefilter: "'drought' in Reason.lower() and Year in (self.today.year - 1, self.today.year)"
+    prefilter: "'drought' in Reason.lower() and int(Year) in (self.today.year - 1, self.today.year)"
     admin:
       - value: "SOM"
       - "Current (Arrival) District"
