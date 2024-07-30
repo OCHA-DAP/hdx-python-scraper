@@ -1089,6 +1089,30 @@ same HXL hashtags.
         use_hxl: True
         should_overwrite_sources: True
 
+The xlsx2csv option below converts the xlsx to csv before processing.
+
+      idps_somalia:
+        dataset: "somalia-internally-displaced-persons-idps"
+        format: "xlsx"
+        xlsx2csv: True
+        filter_cols:
+          - "Reason"
+          - "Year"
+        prefilter: "'drought' in Reason.lower() and int(Year) in (self.today.year - 1, self.today.year)"
+        admin:
+          - value: "SOM"
+          - "Current (Arrival) District"
+        input:
+          - "Number of Individuals"
+        sum:
+          - formula: "int(Number of Individuals)"
+            mustbepopulated: True
+        output:
+          - "IDPs"
+        output_hxl:
+          - "#affected+idps+ind"
+        source_date_format: "%Y-%m-%d"
+
 ## Population Data
 
 Population data is treated as a special class of data. By default, configurable and
