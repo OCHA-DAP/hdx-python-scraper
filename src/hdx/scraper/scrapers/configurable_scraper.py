@@ -5,9 +5,9 @@ from typing import Any, Dict, Iterator, List, Optional, Tuple
 
 import regex
 
-from ..base_scraper import BaseScraper
 from ..utilities import get_rowval
 from ..utilities.sources import Sources
+from .base_scraper import BaseScraper
 from .rowparser import RowParser
 from hdx.location.adminlevel import AdminLevel
 from hdx.utilities.dateparse import (

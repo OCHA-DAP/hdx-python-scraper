@@ -4,16 +4,16 @@ from datetime import datetime
 from traceback import format_exc
 from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
-from .base_scraper import BaseScraper
-from .configurable.aggregator import Aggregator
-from .configurable.resource_downloader import ResourceDownloader
-from .configurable.scraper import ConfigurableScraper
-from .configurable.timeseries import TimeSeries
-from .outputs.base import BaseOutput
-from .utilities import get_startend_dates_from_time_period
-from .utilities.fallbacks import Fallbacks
-from .utilities.reader import Read
-from .utilities.sources import Sources
+from ..outputs.base import BaseOutput
+from ..scrapers.aggregator import Aggregator
+from ..scrapers.base_scraper import BaseScraper
+from ..scrapers.configurable_scraper import ConfigurableScraper
+from ..scrapers.resource_downloader import ResourceDownloader
+from ..scrapers.timeseries import TimeSeries
+from ..utilities import get_startend_dates_from_time_period
+from ..utilities.fallbacks import Fallbacks
+from ..utilities.reader import Read
+from ..utilities.sources import Sources
 from hdx.location.adminlevel import AdminLevel
 from hdx.utilities.dateparse import now_utc
 from hdx.utilities.errors_onexit import ErrorsOnExit

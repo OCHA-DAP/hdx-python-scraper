@@ -21,21 +21,15 @@ renderer:
       source: main.md
     - title: API Documentation
       children:
-        - title: Source Readers
+        - title: Scrapers
           contents:
-            - hdx.scraper.utilities.readers.*
-        - title: Configurable Scrapers
+            - hdx.scraper.scrapers.*
+        - title: Runner
           contents:
-            - hdx.scraper.configurable.*
-        - title: Base Class for Scrapers
-          contents:
-            - hdx.scraper.base_scraper.BaseScraper.*
-        - title: Fallbacks
-          contents:
-            - hdx.scraper.utilities.fallbacks.Fallbacks
-        - title: Run Scrapers
-          contents:
-            - hdx.scraper.runner.Runner.*
+            - hdx.scraper.run.runner.Runner.*
         - title: Outputs
           contents:
             - hdx.scraper.outputs.*
+        - title: Utilities
+          contents:
+            - hdx.scraper.utilities.*

@@ -4,9 +4,9 @@ import pytest
 
 from .conftest import run_check_scrapers
 from hdx.location.country import Country
-from hdx.scraper.base_scraper import BaseScraper
 from hdx.scraper.outputs.json import JsonFile
-from hdx.scraper.runner import Runner
+from hdx.scraper.run.runner import Runner
+from hdx.scraper.scrapers.base_scraper import BaseScraper
 from hdx.scraper.utilities.sources import Sources
 from hdx.scraper.utilities.writer import Writer
 from hdx.utilities.dateparse import parse_date

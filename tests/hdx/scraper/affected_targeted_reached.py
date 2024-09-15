@@ -1,6 +1,6 @@
 import logging
 
-from hdx.scraper.base_scraper import BaseScraper
+from hdx.scraper.scrapers.base_scraper import BaseScraper
 from hdx.scraper.utilities.sources import Sources
 from hdx.utilities.dateparse import default_date
 from hdx.utilities.dictandlist import dict_of_lists_add

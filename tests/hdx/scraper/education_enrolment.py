@@ -1,6 +1,6 @@
 import logging
 
-from hdx.scraper.base_scraper import BaseScraper
+from hdx.scraper.scrapers.base_scraper import BaseScraper
 from hdx.utilities.text import get_fraction_str
 
 logger = logging.getLogger(__name__)

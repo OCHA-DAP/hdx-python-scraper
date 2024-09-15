@@ -1,6 +1,6 @@
-from hdx.scraper.base_scraper import BaseScraper
 from hdx.scraper.outputs.json import JsonFile
-from hdx.scraper.runner import Runner
+from hdx.scraper.run.runner import Runner
+from hdx.scraper.scrapers.base_scraper import BaseScraper
 from hdx.utilities.dateparse import parse_date
 
 

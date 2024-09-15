@@ -3,7 +3,7 @@ from copy import deepcopy
 from typing import Dict, List, Optional, Tuple, Union
 
 from ..outputs.base import BaseOutput
-from ..runner import Runner
+from ..run.runner import Runner
 from .sources import Sources
 from hdx.location.adminlevel import AdminLevel
 from hdx.location.country import Country

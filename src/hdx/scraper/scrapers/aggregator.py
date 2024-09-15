@@ -5,8 +5,8 @@ from typing import Any, Dict, List, Optional, Tuple, Union
 
 from slugify import slugify
 
-from ..base_scraper import BaseScraper
 from ..utilities.reader import Read
+from .base_scraper import BaseScraper
 from hdx.utilities.dictandlist import dict_of_lists_add
 from hdx.utilities.text import (  # noqa: F401
     get_fraction_str,

@@ -3,8 +3,8 @@ import logging
 import pytest
 
 from .conftest import run_check_scraper
-from hdx.scraper.base_scraper import BaseScraper
-from hdx.scraper.runner import Runner
+from hdx.scraper.run.runner import Runner
+from hdx.scraper.scrapers.base_scraper import BaseScraper
 from hdx.scraper.utilities.sources import Sources
 from hdx.utilities.dateparse import parse_date
 

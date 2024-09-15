@@ -26,6 +26,8 @@ install with:
     pip install hdx-python-scraper[pandas]
 
 ## Breaking Changes
+From 2.5.0, package names have changed to avoid name space clashes
+
 From 2.3.0, resource name is used when available instead of creating name from
 url so tests that use saved data from the Read class may break. file_type
 parameters in various Read methods renamed to format.
@@ -335,7 +337,7 @@ default is:
 ### Custom Scrapers
 
 It is possible to define custom scrapers written in Python which must inherit
-[BaseScraper](https://github.com/OCHA-DAP/hdx-python-scraper/blob/main/src/hdx/scraper/base_scraper.py),
+[BaseScraper](https://github.com/OCHA-DAP/hdx-python-scraper/blob/main/src/hdx/scraper/scrapers/base_scraper.py),
 calling its constructor and providing a `run` method. Other methods where a default
 implementation has been provided can be overridden such as `add_sources` and
 `add_population`. There are also two hooks for running steps at particular points.
