@@ -337,7 +337,7 @@ default is:
 ### Custom Scrapers
 
 It is possible to define custom scrapers written in Python which must inherit
-[BaseScraper](https://github.com/OCHA-DAP/hdx-python-scraper/blob/main/src/hdx/scraper/scrapers/base_scraper.py),
+[BaseScraper](https://github.com/OCHA-DAP/hdx-python-scraper/blob/main/src/hdx/scraper/framework/base_scraper.py),
 calling its constructor and providing a `run` method. Other methods where a default
 implementation has been provided can be overridden such as `add_sources` and
 `add_population`. There are also two hooks for running steps at particular points.
@@ -394,7 +394,7 @@ from regions to values. In this case, since national and regional each have only
 header and HXL hashtag, there is only one dictionary to populate for each.
 
 An example of a custom scraper can be seen
-[here](https://github.com/OCHA-DAP/hdx-python-scraper/blob/main/tests/hdx/scraper/education_closures.py).
+[here](https://github.com/OCHA-DAP/hdx-python-scraper/blob/main/tests/hdx/scraper/framework/scrapers/education_closures.py).
 
 An example of overriding `add_sources` to customise the source information that is
 output is as follows:

@@ -65,7 +65,7 @@ dev = ["pre-commit"]
 packages = ["src/hdx"]
 
 [tool.hatch.build.hooks.vcs]
-version-file = "src/hdx/scraper/_version.py"
+version-file = "src/hdx/scraper/framework/_version.py"
 
 # Versioning
 

@@ -1,0 +1,493 @@
+import copy
+import logging
+from datetime import datetime
+from typing import Any, Dict, Iterator, List, Optional, Tuple
+
+import regex
+
+from ..base_scraper import BaseScraper
+from ..utilities import get_rowval
+from ..utilities.sources import Sources
+from .rowparser import RowParser
+from hdx.location.adminlevel import AdminLevel
+from hdx.utilities.dateparse import (
+    get_datetime_from_timestamp,
+    now_utc,
+    parse_date,
+)
+from hdx.utilities.dictandlist import dict_of_lists_add
+from hdx.utilities.downloader import DownloadError
+from hdx.utilities.errors_onexit import ErrorsOnExit
+from hdx.utilities.text import (  # noqa: F401
+    get_fraction_str,
+    get_numeric_if_possible,
+    number_format,
+)
+
+logger = logging.getLogger(__name__)
+
+
+class ConfigurableScraper(BaseScraper):
+    """Each configurable scraper is configured from dataset information that can come
+    from a YAML file for example. When run, it works out headers and values. It also
+    overrides add_sources where sources are compiled and returned. If dealing with
+    subnational data, adminlevel must be supplied.
+
+    Args:
+        name (str): Name of scraper
+        datasetinfo (Dict): Information about dataset
+        level (str): Can be national, subnational or single
+        countryiso3s (List[str]): List of ISO3 country codes to process
+        adminlevel (Optional[AdminLevel]): AdminLevel object from HDX Python Country. Defaults to None.
+        level_name (Optional[str]): Customised level_name name. Defaults to None (level).
+        source_configuration (Dict): Configuration for sources. Defaults to empty dict (use defaults).
+        today (datetime): Value to use for today. Defaults to now_utc().
+        errors_on_exit (Optional[ErrorsOnExit]): ErrorsOnExit object that logs errors on exit
+        **kwargs: Variables to use when evaluating template arguments in urls
+    """
+
+    brackets = r"""
+    (?<rec> #capturing group rec
+     \( #open parenthesis
+     (?: #non-capturing group
+      [^()]++ #anything but parenthesis one or more times without backtracking
+      | #or
+       (?&rec) #recursive substitute of group rec
+     )*
+     \) #close parenthesis
+    )"""
+
+    def __init__(
+        self,
+        name: str,
+        datasetinfo: Dict,
+        level: str,
+        countryiso3s: List[str],
+        adminlevel: Optional[AdminLevel] = None,
+        level_name: Optional[str] = None,
+        source_configuration: Dict = {},
+        today: datetime = now_utc(),
+        errors_on_exit: Optional[ErrorsOnExit] = None,
+        **kwargs: Any,
+    ):
+        self.name = name
+        self.reader = datasetinfo.get("reader", name)
+        self.level = level
+        datelevel = datasetinfo.get("date_level")
+        if datelevel is None:
+            self.datelevel = self.level
+        else:
+            self.datelevel = datelevel
+        if level_name is None:
+            self.level_name: str = level
+        else:
+            self.level_name: str = level_name
+        self.countryiso3s = countryiso3s
+        self.adminlevel = adminlevel
+        self.today = today
+        self.subsets = self.get_subsets_from_datasetinfo(datasetinfo)
+        self.errors_on_exit: Optional[ErrorsOnExit] = errors_on_exit
+        self.variables = kwargs
+        self.rowparser = None
+        self.datasetinfo = copy.deepcopy(datasetinfo)
+        self.use_hxl_called = False
+        headers = {self.level_name: ([], [])}
+        for subset in self.subsets:
+            headers[self.level_name][0].extend(subset["output"])
+            headers[self.level_name][1].extend(subset["output_hxl"])
+        self.can_fallback = True
+        if len(headers[self.level_name][0]) == 0:
+            use_hxl = self.datasetinfo.get("use_hxl", False)
+            if use_hxl:
+                try:
+                    file_headers, iterator = self.get_iterator()
+                    self.use_hxl(headers, file_headers, iterator)
+                except DownloadError:
+                    self.can_fallback = False
+        self.setup(headers, source_configuration)
+
+    @staticmethod
+    def get_subsets_from_datasetinfo(datasetinfo: Dict) -> List[Dict]:
+        """Get subsets from dataset information
+
+        Args:
+            datasetinfo (Dict): Information about dataset
+
+        Returns:
+            List[Dict]: List of subsets
+        """
+        subsets = datasetinfo.get("subsets")
+        if not subsets:
+            subsets = [
+                {
+                    "filter": datasetinfo.get("filter"),
+                    "input": datasetinfo.get("input", []),
+                    "transform": datasetinfo.get("transform", {}),
+                    "population_key": datasetinfo.get("population_key"),
+                    "list": datasetinfo.get("list", []),
+                    "process": datasetinfo.get("process", []),
+                    "input_keep": datasetinfo.get("input_keep", []),
+                    "input_append": datasetinfo.get("input_append", []),
+                    "sum": datasetinfo.get("sum"),
+                    "input_ignore_vals": datasetinfo.get(
+                        "input_ignore_vals", []
+                    ),
+                    "output": datasetinfo.get("output", []),
+                    "output_hxl": datasetinfo.get("output_hxl", []),
+                }
+            ]
+        return subsets
+
+    def get_iterator(self) -> Tuple[List[str], Iterator[Dict]]:
+        """Get the iterator from the preconfigured reader for this scraper
+
+        Returns:
+            Tuple[List[str],Iterator[Dict]]: Tuple (headers, iterator where each row is a dictionary)
+        """
+        if (
+            "filename" not in self.datasetinfo
+            and "file_prefix" not in self.datasetinfo
+        ):
+            self.datasetinfo["file_prefix"] = self.name
+        return self.get_reader().read(self.datasetinfo, **self.variables)
+
+    def add_sources(self) -> None:
+        """Add source for each HXL hashtag
+
+        Returns:
+            None
+        """
+        date = self.datasetinfo.get("source_date")
+        use_date_from_date_col = self.datasetinfo.get("use_date", False)
+        if not date or use_date_from_date_col:
+            date = self.rowparser.get_maxdate()
+            if date == 0:
+                raise ValueError(
+                    "No date given in datasetinfo or as a column!"
+                )
+            if self.rowparser.datetype == "date":
+                if not isinstance(date, datetime):
+                    date = parse_date(date)
+            elif self.rowparser.datetype == "int":
+                date = get_datetime_from_timestamp(date)
+            else:
+                raise ValueError("No date type specified!")
+        self.datasetinfo["source_date"] = date
+        super().add_sources()
+
+    def read_hxl(self, iterator: Iterator[Dict]) -> Optional[Dict[str, str]]:
+        """Read HXL tags if use_hxl is True and return the mapping as a dictionary. If
+        use_hxl if False, return None.
+
+        Args:
+            iterator (Iterator[Dict]): Iterator where each row is a dictionary
+
+        Returns:
+            Optional[Dict[str, str]]: Dictionary mapping from headers to HXL hash tags or None
+        """
+        use_hxl = self.datasetinfo.get("use_hxl", False)
+        if not use_hxl:
+            return None
+        header_to_hxltag = next(iterator)
+        while not header_to_hxltag:
+            header_to_hxltag = next(iterator)
+        return header_to_hxltag
+
+    def use_hxl(
+        self, headers, file_headers: List[str], iterator: Iterator[Dict]
+    ) -> Optional[Dict]:
+        """If the configurable scraper configuration defines that HXL is used (use_hxl
+        is True), then read the mapping from headers to HXL hash tags. Since each row is
+        a dictionary from header to value, the HXL row will be a dictionary from header
+        to HXL hashtag. Label #country and #adm1 columns as admin columns. If the
+        input columns to use are not specified, use all that have HXL hashtags. If the
+        output column headers or hashtags are not specified, use the ones from the
+        original file.
+
+        Args:
+            file_headers (List[str]): List of all headers of input file
+            iterator (Iterator[Dict]): Iterator over the rows
+
+        Returns:
+            Optional[Dict]: Dictionary that maps from header to HXL hashtag or None
+        """
+        header_to_hxltag = self.read_hxl(iterator)
+        if not header_to_hxltag:
+            return None
+        if self.use_hxl_called:
+            return header_to_hxltag
+        self.use_hxl_called = True
+        exclude_tags = self.datasetinfo.get("exclude_tags", [])
+        find_tags = self.datasetinfo.get("find_tags")
+        adm_cols = []
+        input_cols = []
+        columns = []
+        for header in file_headers:
+            hxltag = header_to_hxltag[header]
+            if not hxltag or hxltag in exclude_tags:
+                continue
+            if find_tags or (find_tags is None and self.datelevel != "single"):
+                if "#country" in hxltag:
+                    if "code" in hxltag:
+                        if len(adm_cols) == 0:
+                            adm_cols.append(hxltag)
+                        else:
+                            adm_cols[0] = hxltag
+                    continue
+                if find_tags or self.datelevel != "national":
+                    if "#adm" in hxltag:
+                        if "code" in hxltag:
+                            if len(adm_cols) == 0:
+                                adm_cols.append(None)
+                            if len(adm_cols) == 1:
+                                adm_cols.append(hxltag)
+                        continue
+            if (
+                hxltag == self.datasetinfo.get("date")
+                and self.datasetinfo.get("include_date", False) is False
+            ):
+                continue
+            input_cols.append(hxltag)
+            columns.append(header)
+        if "admin" not in self.datasetinfo:
+            self.datasetinfo["admin"] = adm_cols
+        for subset in self.subsets:
+            orig_input_cols = subset.get("input", [])
+            if not orig_input_cols:
+                orig_input_cols.extend(input_cols)
+            subset["input"] = orig_input_cols
+            orig_columns = subset.get("output", [])
+            if not orig_columns:
+                orig_columns.extend(columns)
+            subset["output"] = orig_columns
+            orig_hxltags = subset.get("output_hxl", [])
+            if not orig_hxltags:
+                orig_hxltags.extend(input_cols)
+            subset["output_hxl"] = orig_hxltags
+            if headers:
+                headers[self.level_name][0].extend(orig_columns)
+                headers[self.level_name][1].extend(orig_hxltags)
+        return header_to_hxltag
+
+    def run_scraper(self, iterator: Iterator[Dict]) -> None:
+        """Run one configurable scraper given an iterator over the rows
+
+        Args:
+            iterator (Iterator[Dict]): Iterator over the rows
+
+        Returns:
+            None
+        """
+
+        valuedicts = {}
+        for subset in self.subsets:
+            for _ in subset["input"]:
+                dict_of_lists_add(valuedicts, subset["filter"], {})
+
+        def add_row(row):
+            adm, should_process_subset = self.rowparser.parse(row)
+            if not adm:
+                return
+            for i, subset in enumerate(self.subsets):
+                if not should_process_subset[i]:
+                    continue
+                filter = subset["filter"]
+                input_ignore_vals = subset.get("input_ignore_vals", [])
+                input_transforms = subset.get("transform", {})
+                list_cols = subset.get("list")
+                sum_cols = subset.get("sum")
+                process_cols = subset.get("process")
+                input_append = subset.get("input_append", [])
+                input_keep = subset.get("input_keep", [])
+                for i, valcol in enumerate(subset["input"]):
+                    valuedict = valuedicts[filter][i]
+                    val = get_rowval(row, valcol)
+                    input_transform = input_transforms.get(valcol)
+                    if input_transform and val not in input_ignore_vals:
+                        val = eval(input_transform.replace(valcol, "val"))
+                    if sum_cols or process_cols:
+                        dict_of_lists_add(valuedict, adm, val)
+                    elif list_cols and valcol in list_cols:
+                        dict_of_lists_add(valuedict, adm, val)
+                    else:
+                        curval = valuedict.get(adm)
+                        if valcol in input_append:
+                            if curval:
+                                val = curval + val
+                        elif valcol in input_keep:
+                            if curval:
+                                val = curval
+                        valuedict[adm] = val
+
+        for row in self.rowparser.filter_sort_rows(iterator):
+            add_row(row)
+
+        values = self.values[self.level_name]
+        values_pos = 0
+        for subset in self.subsets:
+            valdicts = valuedicts[subset["filter"]]
+            population_key = subset.get("population_key")
+            if population_key is None:
+                population_str = "self.population_lookup[adm]"
+            else:
+                population_str = "self.population_lookup[population_key]"
+            subset.get("list")
+            process_cols = subset.get("process")
+            input_keep = subset.get("input_keep", [])
+            sum_cols = subset.get("sum")
+            input_ignore_vals = subset.get("input_ignore_vals", [])
+            valcols = subset["input"]
+            # Indices of list sorted by length
+            sorted_len_indices = sorted(
+                range(len(valcols)),
+                key=lambda k: len(valcols[k]),
+                reverse=True,
+            )
+
+            if process_cols:
+
+                def text_replacement(string, adm):
+                    # pzbgvjh is arbitrary! It is simply to prevent accidental replacement
+                    # of all or parts of #population (if it is in the string).
+                    arbitrary_string = "#pzbgvjh"
+                    string = string.replace("#population", arbitrary_string)
+                    hasvalues = False
+                    for j in sorted_len_indices:
+                        valcol = valcols[j]
+                        if valcol not in string:
+                            continue
+                        if valcol in input_keep:
+                            input_keep_index = 0
+                        else:
+                            input_keep_index = -1
+                        val = valdicts[j][adm][input_keep_index]
+                        if (
+                            val is None
+                            or val == ""
+                            or val in input_ignore_vals
+                        ):
+                            val = 0
+                        else:
+                            hasvalues = True
+                        string = string.replace(valcol, str(val))
+                    string = string.replace(arbitrary_string, "#population")
+                    return string, hasvalues
+
+                for i, process_col in enumerate(process_cols):
+                    valdict0 = valdicts[0]
+                    for adm in valdict0:
+                        hasvalues = True
+                        matches = regex.search(
+                            self.brackets, process_col, flags=regex.VERBOSE
+                        )
+                        if matches:
+                            for bracketed_str in matches.captures("rec"):
+                                if any(bracketed_str in x for x in valcols):
+                                    continue
+                                _, hasvalues_t = text_replacement(
+                                    bracketed_str, adm
+                                )
+                                if not hasvalues_t:
+                                    hasvalues = False
+                                    break
+                        if hasvalues:
+                            formula, hasvalues_t = text_replacement(
+                                process_col, adm
+                            )
+                            if hasvalues_t:
+                                formula = formula.replace(
+                                    "#population",
+                                    population_str,
+                                )
+                                value = eval(formula)
+                            else:
+                                value = ""
+                        else:
+                            value = ""
+                        values[values_pos][adm] = value
+                    values_pos += 1
+            elif sum_cols:
+                for ind, sum_col in enumerate(sum_cols):
+                    formula = sum_col["formula"]
+                    mustbepopulated = sum_col.get("mustbepopulated", False)
+                    newvaldicts = [{} for _ in valdicts]
+                    valdict0 = valdicts[0]
+                    for adm in valdict0:
+                        for i, val in enumerate(valdict0[adm]):
+                            if not val or val in input_ignore_vals:
+                                exists = False
+                            else:
+                                exists = True
+                                for valdict in valdicts[1:]:
+                                    val = valdict[adm][i]
+                                    if (
+                                        val is None
+                                        or val == ""
+                                        or val in input_ignore_vals
+                                    ):
+                                        exists = False
+                                        break
+                            if mustbepopulated and not exists:
+                                continue
+                            for j, valdict in enumerate(valdicts):
+                                val = valdict[adm][i]
+                                if (
+                                    val is None
+                                    or val == ""
+                                    or val in input_ignore_vals
+                                ):
+                                    continue
+                                newvaldicts[j][adm] = eval(
+                                    f"newvaldicts[j].get(adm, 0.0) + {str(valdict[adm][i])}"
+                                )
+                    formula = formula.replace("#population", "#pzbgvjh")
+                    for i in sorted_len_indices:
+                        formula = formula.replace(
+                            valcols[i], f"newvaldicts[{i}][adm]"
+                        )
+                    formula = formula.replace("#pzbgvjh", population_str)
+                    for adm in valdicts[0]:
+                        try:
+                            val = eval(formula)
+                        except (ValueError, TypeError, KeyError):
+                            val = ""
+                        values[values_pos][adm] = val
+                    values_pos += 1
+            else:
+                for i, valdict in enumerate(valdicts):
+                    for adm in valdict:
+                        value = valdict[adm]
+                        values[values_pos][adm] = value
+                    values_pos += 1
+
+    def run(self) -> None:
+        """Runs one configurable scraper given dataset information
+
+        Returns:
+            None
+        """
+        file_headers, iterator = self.get_iterator()
+        header_to_hxltag = self.use_hxl(None, file_headers, iterator)
+        if "source_url" not in self.datasetinfo:
+            self.datasetinfo["source_url"] = self.datasetinfo["url"]
+        source_date = Sources.standardise_datasetinfo_source_date(
+            self.datasetinfo
+        )
+        if not source_date or self.datasetinfo.get("force_date_today", False):
+            source_date = self.today
+            self.datasetinfo["source_date"] = {
+                "default_date": {"end": source_date}
+            }
+        self.rowparser = RowParser(
+            self.name,
+            self.countryiso3s,
+            self.adminlevel,
+            self.level,
+            self.datelevel,
+            self.today,
+            self.datasetinfo,
+            file_headers,
+            header_to_hxltag,
+            self.subsets,
+        )
+        self.run_scraper(iterator)
