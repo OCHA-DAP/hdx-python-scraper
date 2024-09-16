@@ -1,13 +1,13 @@
-from .conftest import run_check_scraper, run_check_scrapers
-from hdx.scraper.base_scraper import BaseScraper
-from hdx.scraper.outputs.json import JsonFile
-from hdx.scraper.runner import Runner
-from hdx.scraper.utilities.sources import Sources
-from hdx.scraper.utilities.writer import Writer
+from ..conftest import run_check_scraper, run_check_scrapers
+from hdx.scraper.framework.base_scraper import BaseScraper
+from hdx.scraper.framework.outputs.json import JsonFile
+from hdx.scraper.framework.runner import Runner
+from hdx.scraper.framework.utilities.sources import Sources
+from hdx.scraper.framework.utilities.writer import Writer
 from hdx.utilities.dateparse import parse_date
 
 
-class TestScrapersRegionalToplevel:
+class TestRegionalToplevel:
     access_national_headers = (
         [
             "% of visas pending or denied",

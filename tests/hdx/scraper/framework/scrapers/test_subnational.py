@@ -1,13 +1,13 @@
-from .conftest import run_check_scraper
+from ..conftest import run_check_scraper
 from hdx.location.adminlevel import AdminLevel
-from hdx.scraper.base_scraper import BaseScraper
-from hdx.scraper.outputs.json import JsonFile
-from hdx.scraper.runner import Runner
-from hdx.scraper.utilities.writer import Writer
+from hdx.scraper.framework.base_scraper import BaseScraper
+from hdx.scraper.framework.outputs.json import JsonFile
+from hdx.scraper.framework.runner import Runner
+from hdx.scraper.framework.utilities.writer import Writer
 from hdx.utilities.dateparse import parse_date
 
 
-class TestScrapersSubnational:
+class TestSubnational:
     def test_get_subnational(self, configuration):
         BaseScraper.population_lookup = {}
         today = parse_date("2020-10-01")

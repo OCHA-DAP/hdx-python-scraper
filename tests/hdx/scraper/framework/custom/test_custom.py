@@ -3,18 +3,18 @@ from datetime import datetime, timezone
 
 import pytest
 
+from ..conftest import check_scraper, check_scrapers
 from .affected_targeted_reached import AffectedTargetedReached
-from .conftest import check_scraper, check_scrapers
 from .education_closures import EducationClosures
 from .education_enrolment import EducationEnrolment
 from hdx.location.adminlevel import AdminLevel
-from hdx.scraper.base_scraper import BaseScraper
-from hdx.scraper.runner import Runner
-from hdx.scraper.utilities.reader import Read
+from hdx.scraper.framework.base_scraper import BaseScraper
+from hdx.scraper.framework.runner import Runner
+from hdx.scraper.framework.utilities.reader import Read
 from hdx.utilities.dateparse import parse_date
 
 
-class TestScrapersCustom:
+class TestCustom:
     hapi_values_closure = {
         "hdx_id": "6a41be98-75b9-4365-9ea3-e33d0dd2668b",
         "hdx_stub": "global-school-closures-covid19",

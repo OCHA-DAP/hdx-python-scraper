@@ -3,7 +3,7 @@ loaders:
     search_path:
       - ../src
     packages:
-      - hdx.scraper
+      - hdx.scraper.framework
 renderer:
   type: mkdocs
   output_directory: docs
@@ -21,21 +21,18 @@ renderer:
       source: main.md
     - title: API Documentation
       children:
-        - title: Source Readers
+        - title: Runner
           contents:
-            - hdx.scraper.utilities.readers.*
-        - title: Configurable Scrapers
+            - hdx.scraper.framework.runner.Runner.*
+        - title: Scraper Base Class
           contents:
-            - hdx.scraper.configurable.*
-        - title: Base Class for Scrapers
+            - hdx.scraper.framework.base_scraper.BaseScraper.*
+        - title: Scrapers
           contents:
-            - hdx.scraper.base_scraper.BaseScraper.*
-        - title: Fallbacks
-          contents:
-            - hdx.scraper.utilities.fallbacks.Fallbacks
-        - title: Run Scrapers
-          contents:
-            - hdx.scraper.runner.Runner.*
+            - hdx.scraper.framework.scrapers.*
         - title: Outputs
           contents:
-            - hdx.scraper.outputs.*
+            - hdx.scraper.framework.outputs.*
+        - title: Utilities
+          contents:
+            - hdx.scraper.framework.utilities.*

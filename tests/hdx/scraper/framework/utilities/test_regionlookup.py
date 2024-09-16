@@ -1,4 +1,4 @@
-from hdx.scraper.utilities.region_lookup import RegionLookup
+from hdx.scraper.framework.utilities.region_lookup import RegionLookup
 
 
 class TestRegionLookup:

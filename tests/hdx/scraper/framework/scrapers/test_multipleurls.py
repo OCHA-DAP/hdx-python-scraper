@@ -1,10 +1,10 @@
-from .conftest import run_check_scraper
-from hdx.scraper.base_scraper import BaseScraper
-from hdx.scraper.runner import Runner
+from ..conftest import run_check_scraper
+from hdx.scraper.framework.base_scraper import BaseScraper
+from hdx.scraper.framework.runner import Runner
 from hdx.utilities.dateparse import parse_date
 
 
-class TestScrapersMultipleURLs:
+class TestMultipleURLs:
     def test_get_key_figures(self, configuration):
         BaseScraper.population_lookup = {}
         today = parse_date("2020-10-01")

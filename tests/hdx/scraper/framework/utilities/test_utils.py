@@ -1,4 +1,4 @@
-from hdx.scraper.utilities import get_rowval, string_params_to_dict
+from hdx.scraper.framework.utilities import get_rowval, string_params_to_dict
 
 
 class TestUtils:

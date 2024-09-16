@@ -1,9 +1,11 @@
 import pytest
 
 from hdx.location.adminlevel import AdminLevel
-from hdx.scraper.base_scraper import BaseScraper
-from hdx.scraper.configurable.scraper import ConfigurableScraper
-from hdx.scraper.utilities.sources import Sources
+from hdx.scraper.framework.base_scraper import BaseScraper
+from hdx.scraper.framework.scrapers.configurable_scraper import (
+    ConfigurableScraper,
+)
+from hdx.scraper.framework.utilities.sources import Sources
 from hdx.utilities.dateparse import parse_date
 
 

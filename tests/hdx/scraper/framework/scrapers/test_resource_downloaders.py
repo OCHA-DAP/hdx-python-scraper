@@ -2,13 +2,13 @@ from os.path import exists, join
 
 import pytest
 
-from hdx.scraper.base_scraper import BaseScraper
-from hdx.scraper.runner import Runner
+from hdx.scraper.framework.base_scraper import BaseScraper
+from hdx.scraper.framework.runner import Runner
 from hdx.utilities.dateparse import parse_date
 from hdx.utilities.path import temp_dir
 
 
-class TestScrapersResourceDownloader:
+class TestResourceDownloader:
     @pytest.fixture(scope="function")
     def output_file(self, fixtures):
         return join(fixtures, "test_output.xlsx")

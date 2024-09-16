@@ -4,7 +4,7 @@ import pytest
 
 from hdx.data.dataset import Dataset
 from hdx.data.resource import Resource
-from hdx.scraper.utilities.reader import Read
+from hdx.scraper.framework.utilities.reader import Read
 from hdx.utilities.dateparse import parse_date
 from hdx.utilities.downloader import Download
 from hdx.utilities.path import temp_dir
