@@ -67,6 +67,9 @@ packages = ["src/hdx"]
 [tool.hatch.build.hooks.vcs]
 version-file = "src/hdx/scraper/framework/_version.py"
 
+[tool.hatch.metadata]
+allow-direct-references = true
+
 # Versioning
 
 [tool.hatch.version]
