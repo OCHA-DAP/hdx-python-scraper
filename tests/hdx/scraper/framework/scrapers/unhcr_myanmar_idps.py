@@ -24,5 +24,5 @@ def idps_post_run(self) -> None:
     except Exception as ex:
         msg = "Not using UNHCR Myanmar IDPs override!"
         logger.exception(msg)
-        if self.errors_on_exit:
-            self.errors_on_exit.add(f"{msg} Error: {ex}")
+        if self.error_handler:
+            self.error_handler.add(f"{msg} Error: {ex}")

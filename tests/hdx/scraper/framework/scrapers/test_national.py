@@ -6,7 +6,7 @@ from hdx.scraper.framework.runner import Runner
 from hdx.scraper.framework.utilities.reader import Read
 from hdx.scraper.framework.utilities.writer import Writer
 from hdx.utilities.dateparse import parse_date
-from hdx.utilities.errors_onexit import ErrorsOnExit
+from hdx.utilities.error_handler import ErrorHandler
 
 
 class TestNational:
@@ -508,11 +508,11 @@ class TestNational:
         run_check_scraper(name, runner, level, headers, values, sources)
 
         today = parse_date("2021-05-03")
-        errors_on_exit = ErrorsOnExit()
+        error_handler = ErrorHandler()
         runner = Runner(
             ("AFG", "PHL"),
             today,
-            errors_on_exit=errors_on_exit,
+            errors_handler=error_handler,
         )
         runner.add_configurables(scraper_configuration, level)
         name = "ourworldindata"
@@ -567,7 +567,7 @@ class TestNational:
             sources,
             fallbacks_used=True,
         )
-        error = errors_on_exit.errors[0]
+        error = error_handler.shared_errors["error"][""].pop()
         assert "Using fallbacks for broken_owd_url!" in error
         assert (
             "No such file or directory: 'tests/fixtures/input/broken_owd_url_notexist.csv'"
@@ -577,7 +577,7 @@ class TestNational:
     def test_get_national_afg_mmr_phl(self, configuration):
         BaseScraper.population_lookup = {}
         today = parse_date("2021-05-03")
-        errors_on_exit = ErrorsOnExit()
+        error_handler = ErrorHandler()
         level = "national"
         countries = ("AFG", "MMR", "PHL")
         scraper_configuration = configuration[f"scraper_{level}"]
@@ -585,7 +585,7 @@ class TestNational:
         runner = Runner(
             countries,
             today,
-            errors_on_exit=errors_on_exit,
+            errors_handler=error_handler,
         )
         scrapers = runner.add_configurables(scraper_configuration, level)
         name = "idps"
@@ -631,11 +631,11 @@ class TestNational:
                 "https://data.unhcr.org/population/?widget_id=264111&geo_id=693&population_group=5407,4999",
             ],
         )
-        assert errors_on_exit.errors == []
+        assert error_handler.shared_errors["error"] == {}
         runner = Runner(
             ("AFG", "MMR", "PHL"),
             today,
-            errors_on_exit=errors_on_exit,
+            errors_handler=error_handler,
         )
         runner.add_configurables(scraper_configuration, level)
         runner.add_instance_variables(
@@ -654,9 +654,9 @@ class TestNational:
                 "https://data.humdata.org/dataset/idmc-internally-displaced-persons-idps"
             ],
         )
-        assert errors_on_exit.errors == [
+        assert error_handler.shared_errors["error"][""] == {
             "Not using UNHCR Myanmar IDPs override! Error: [Errno 2] No such file or directory: 'tests/fixtures/input/idps_override_not-exist.json'",
-        ]
+        }
         runner.run()
         jsonout = JsonFile(configuration["json"], [level])
         outputs = {"json": jsonout}

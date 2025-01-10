@@ -16,7 +16,7 @@ from .utilities.reader import Read
 from .utilities.sources import Sources
 from hdx.location.adminlevel import AdminLevel
 from hdx.utilities.dateparse import now_utc
-from hdx.utilities.errors_onexit import ErrorsOnExit
+from hdx.utilities.error_handler import ErrorHandler
 from hdx.utilities.typehint import ListTuple
 
 logger = logging.getLogger(__name__)
@@ -28,7 +28,7 @@ class Runner:
     Args:
         countryiso3s (ListTuple[str]): List of ISO3 country codes to process
         today (datetime): Value to use for today. Defaults to now_utc().
-        errors_on_exit (ErrorsOnExit): ErrorsOnExit object that logs errors on exit
+        errors_handler (ErrorHandler): ErrorHandler object that logs errors on exit
         scrapers_to_run (Optional[ListTuple[str]]): Scrapers to run. Defaults to None (all scrapers).
     """
 
@@ -36,12 +36,12 @@ class Runner:
         self,
         countryiso3s: ListTuple[str],
         today: datetime = now_utc(),
-        errors_on_exit: Optional[ErrorsOnExit] = None,
+        errors_handler: Optional[ErrorHandler] = None,
         scrapers_to_run: Optional[ListTuple[str]] = None,
     ):
         self.countryiso3s = countryiso3s
         self.today = today
-        self.errors_on_exit = errors_on_exit
+        self.error_handler = errors_handler
         if isinstance(scrapers_to_run, tuple):
             scrapers_to_run = list(scrapers_to_run)
         self.scrapers_to_run: Optional[List[str]] = scrapers_to_run
@@ -73,7 +73,7 @@ class Runner:
             and scraper_name not in self.scrapers_to_run
         ):
             self.scrapers_to_run.append(scraper_name)
-        scraper.errors_on_exit = self.errors_on_exit
+        scraper.error_handler = self.error_handler
         return scraper_name
 
     def add_customs(
@@ -142,7 +142,7 @@ class Runner:
             level_name,
             source_configuration,
             self.today,
-            self.errors_on_exit,
+            self.error_handler,
         )
         if scraper_name not in self.scraper_names:
             self.scraper_names.append(scraper_name)
@@ -612,8 +612,8 @@ class Runner:
                 if not Fallbacks.exist() or scraper.can_fallback is False:
                     raise
                 logger.exception(f"Using fallbacks for {scraper.name}!")
-                if self.errors_on_exit:
-                    self.errors_on_exit.add(
+                if self.error_handler:
+                    self.error_handler.add(
                         f"Using fallbacks for {scraper.name}! Error: {format_exc()}"
                     )
                 for level in scraper.headers.keys():
