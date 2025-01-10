@@ -28,7 +28,7 @@ class Runner:
     Args:
         countryiso3s (ListTuple[str]): List of ISO3 country codes to process
         today (datetime): Value to use for today. Defaults to now_utc().
-        errors_handler (ErrorHandler): ErrorHandler object that logs errors on exit
+        error_handler (ErrorHandler): ErrorHandler object that logs errors on exit
         scrapers_to_run (Optional[ListTuple[str]]): Scrapers to run. Defaults to None (all scrapers).
     """
 
@@ -36,12 +36,12 @@ class Runner:
         self,
         countryiso3s: ListTuple[str],
         today: datetime = now_utc(),
-        errors_handler: Optional[ErrorHandler] = None,
+        error_handler: Optional[ErrorHandler] = None,
         scrapers_to_run: Optional[ListTuple[str]] = None,
     ):
         self.countryiso3s = countryiso3s
         self.today = today
-        self.error_handler = errors_handler
+        self.error_handler = error_handler
         if isinstance(scrapers_to_run, tuple):
             scrapers_to_run = list(scrapers_to_run)
         self.scrapers_to_run: Optional[List[str]] = scrapers_to_run

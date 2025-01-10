@@ -512,7 +512,7 @@ class TestNational:
         runner = Runner(
             ("AFG", "PHL"),
             today,
-            errors_handler=error_handler,
+            error_handler=error_handler,
         )
         runner.add_configurables(scraper_configuration, level)
         name = "ourworldindata"
@@ -585,7 +585,7 @@ class TestNational:
         runner = Runner(
             countries,
             today,
-            errors_handler=error_handler,
+            error_handler=error_handler,
         )
         scrapers = runner.add_configurables(scraper_configuration, level)
         name = "idps"
@@ -635,7 +635,7 @@ class TestNational:
         runner = Runner(
             ("AFG", "MMR", "PHL"),
             today,
-            errors_handler=error_handler,
+            error_handler=error_handler,
         )
         runner.add_configurables(scraper_configuration, level)
         runner.add_instance_variables(
