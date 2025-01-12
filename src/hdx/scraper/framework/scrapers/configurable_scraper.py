@@ -17,7 +17,7 @@ from hdx.utilities.dateparse import (
 )
 from hdx.utilities.dictandlist import dict_of_lists_add
 from hdx.utilities.downloader import DownloadError
-from hdx.utilities.errors_onexit import ErrorsOnExit
+from hdx.utilities.error_handler import ErrorHandler
 from hdx.utilities.text import (  # noqa: F401
     get_fraction_str,
     get_numeric_if_possible,
@@ -42,7 +42,7 @@ class ConfigurableScraper(BaseScraper):
         level_name (Optional[str]): Customised level_name name. Defaults to None (level).
         source_configuration (Dict): Configuration for sources. Defaults to empty dict (use defaults).
         today (datetime): Value to use for today. Defaults to now_utc().
-        errors_on_exit (Optional[ErrorsOnExit]): ErrorsOnExit object that logs errors on exit
+        error_handler (Optional[ErrorHandler]): ErrorHandler object that logs errors on exit
         **kwargs: Variables to use when evaluating template arguments in urls
     """
 
@@ -67,7 +67,7 @@ class ConfigurableScraper(BaseScraper):
         level_name: Optional[str] = None,
         source_configuration: Dict = {},
         today: datetime = now_utc(),
-        errors_on_exit: Optional[ErrorsOnExit] = None,
+        error_handler: Optional[ErrorHandler] = None,
         **kwargs: Any,
     ):
         self.name = name
@@ -83,10 +83,10 @@ class ConfigurableScraper(BaseScraper):
         else:
             self.level_name: str = level_name
         self.countryiso3s = countryiso3s
-        self.adminlevel = adminlevel
+        self.adminlevel: Optional[AdminLevel] = adminlevel
         self.today = today
         self.subsets = self.get_subsets_from_datasetinfo(datasetinfo)
-        self.errors_on_exit: Optional[ErrorsOnExit] = errors_on_exit
+        self.error_handler: Optional[ErrorHandler] = error_handler
         self.variables = kwargs
         self.rowparser = None
         self.datasetinfo = copy.deepcopy(datasetinfo)

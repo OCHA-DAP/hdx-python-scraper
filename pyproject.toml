@@ -34,9 +34,9 @@ classifiers = [
 requires-python = ">=3.8"
 
 dependencies = [
-    "hdx-python-api>=6.3.4",
-    "hdx-python-country>=3.7.8",
-    "hdx-python-utilities>=3.7.3",
+    "hdx-python-api>=6.3.6",
+    "hdx-python-country>=3.8.6",
+    "hdx-python-utilities>=3.8.0",
     "gspread",
     "regex",
 ]
@@ -67,6 +67,9 @@ packages = ["src/hdx"]
 [tool.hatch.build.hooks.vcs]
 version-file = "src/hdx/scraper/framework/_version.py"
 
+[tool.hatch.metadata]
+allow-direct-references = true
+
 # Versioning
 
 [tool.hatch.version]
@@ -90,6 +93,9 @@ run = """
        --cov --cov-config=.config/coveragerc --no-cov-on-fail \
        --cov-report=lcov --cov-report=term-missing
        """
+
+[tool.hatch.envs.hatch-static-analysis]
+dependencies = ["ruff==0.8.6"]
 
 [tool.hatch.envs.hatch-static-analysis.scripts]
 format-check = ["ruff format --config .config/ruff.toml --check --diff {args:.}",]

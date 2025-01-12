@@ -36,7 +36,7 @@ class BaseScraper(ABC):
             self.reader = datasetinfo.get("reader", name)
         self.setup(headers, source_configuration)
         self.datasetinfo = deepcopy(datasetinfo)
-        self.errors_on_exit = None
+        self.error_handler = None
         self.can_fallback = True
 
     def setup(
