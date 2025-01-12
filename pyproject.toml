@@ -34,9 +34,9 @@ classifiers = [
 requires-python = ">=3.8"
 
 dependencies = [
-    "hdx-python-api@git+https://git@github.com/OCHA-DAP/hdx-python-api@hdx_error_handler#egg=hdx-python-api",
-    "hdx-python-country@git+https://git@github.com/OCHA-DAP/hdx-python-country@no_phonetics#egg=hdx-python-country",
-    "hdx-python-utilities@git+https://git@github.com/OCHA-DAP/hdx-python-utilities@error_handler#egg=hdx-python-utilities",
+    "hdx-python-api>=6.3.6",
+    "hdx-python-country>=3.8.6",
+    "hdx-python-utilities>=3.8.0",
     "gspread",
     "regex",
 ]

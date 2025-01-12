@@ -52,13 +52,13 @@ google-auth-oauthlib==1.2.1
     # via gspread
 gspread==6.1.4
     # via hdx-python-scraper (pyproject.toml)
-hdx-python-api @ git+https://git@github.com/OCHA-DAP/hdx-python-api@2904b9266f9592ff365d177847840543626f0524#egg=hdx-python-api
+hdx-python-api==6.3.6
     # via hdx-python-scraper (pyproject.toml)
-hdx-python-country @ git+https://git@github.com/OCHA-DAP/hdx-python-country@88ed69c92e9f93b54fe5d638f27a3b8c3e9190bc#egg=hdx-python-country
+hdx-python-country==3.8.6
     # via
     #   hdx-python-scraper (pyproject.toml)
     #   hdx-python-api
-hdx-python-utilities @ git+https://git@github.com/OCHA-DAP/hdx-python-utilities@24f4bf85506979dc213a3c52ffd2a6c0f0be257d#egg=hdx-python-utilities
+hdx-python-utilities==3.8.0
     # via
     #   hdx-python-scraper (pyproject.toml)
     #   hdx-python-api
