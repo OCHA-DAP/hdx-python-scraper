@@ -1,0 +1,17 @@
+HRinfo ID,Preferred Term,Preferred Term (fr),ACRONYM,Group Type,Homepage,Date Created (Post Date),Updated date,Notes
+#sector +code +v_hrinfo_sector,#sector +name +preferred +i_en,#sector +name +preferred +i_fr,#sector +code +acronym,#sector +type,#meta +url,#date +created,#date +updated,#meta +comment
+4,Emergency Shelter and NFI,Abris d'urgence et NFI,SHL,Cluster,https://www.sheltercluster.org/,03/16/2017,4/4/2018,"Added French name; shelter cluster uses ""NFI"" in French as well"
+1,Camp Coordination / Management,Coordination et gestion des camps,CCM,Cluster,http://www.globalcccmcluster.org,03/16/2017,4/4/2018,Added French name
+5406,Mine Action,Action contre les mines,PRO-MIN,Area of Responsibility (Sub-cluster),http://www.globalprotectioncluster.org/en/areas-of-responsibility/mine-action.html,03/16/2017,4/4/2018,Added French name
+6,Food Security,Sécurité alimentaire,FSC,Cluster,http://foodsecuritycluster.net/,03/16/2017,4/4/2018,Added French name
+11,Water Sanitation Hygiene,"Eau, assainissement et hygiène",WSH,Cluster,http://washcluster.net/,03/16/2017,4/4/2018,Added French name
+8,Logistics,Logistique,LOG,Cluster,http://www.logcluster.org/,03/16/2017,4/4/2018,Added French name
+5403,Child Protection,Protection de l'enfance,PRO-CPN,Area of Responsibility (Sub-cluster),http://cpwg.net/,03/16/2017,4/5/2018,Updated French name based feedback from OCHA-FIS
+10,Protection,Protection,PRO,Cluster,http://www.globalprotectioncluster.org/,03/16/2017,4/4/2018,Added French name
+3,Education,Education,EDU,Cluster,http://educationcluster.net/,03/16/2017,4/4/2018,Added French name
+9,Nutrition,Nutrition,NUT,Cluster,http://nutritioncluster.net/,03/16/2017,4/4/2018,Added French name
+7,Health,Santé,HEA,Cluster,http://www.who.int/health-cluster/en/,03/16/2017,4/4/2018,Added French name
+2,Early Recovery,Relèvement rapide,ERY,Cluster,http://earlyrecovery.global/,03/16/2017,4/4/2018,Added French name
+5,Emergency Telecommunications,Télécommunications d'urgence,TEL,Cluster,https://www.etcluster.org/,03/16/2017,4/4/2018,Added French name
+5404,Gender Based Violence,Violences basées sur le genre,PRO-GBV,Area of Responsibility (Sub-cluster),http://gbvaor.net/,03/16/2017,4/5/2018,Updated French name based feedback from OCHA-FIS
+5405,"Housing, Land and Property","Logement, terre, et biens",PRO-HLP,Area of Responsibility (Sub-cluster),http://www.globalprotectioncluster.org/en/areas-of-responsibility/housing-land-and-property.html,03/16/2017,4/4/2018,Added French name from 2012 Côte d'Ivoire workshop report
