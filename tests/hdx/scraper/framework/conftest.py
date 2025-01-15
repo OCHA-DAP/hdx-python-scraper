@@ -46,6 +46,7 @@ def configuration(fixtures, input_folder):
 
     header_auths = "population:pop_12345,who_national:who_abc"
     basic_auths = "access:YWNjXzEyMzQ1OmFjY19hYmM=,who_national2:d2hvX2RlZjp3aG9fMTIzNDU="
+    bearer_tokens = "fts:12345"
     param_auths = (
         "sadd:user=sadd_123&pass=sadd_abc,ourworldindata:auth=owid_abc"
     )
@@ -65,6 +66,7 @@ def configuration(fixtures, input_folder):
             user_agent="test",
             header_auths=header_auths,
             basic_auths=basic_auths,
+            bearer_tokens=bearer_tokens,
             param_auths=param_auths,
             today=today,
         )

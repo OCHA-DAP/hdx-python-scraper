@@ -83,6 +83,7 @@ The library is set up broadly as follows:
             hdx_auth=configuration.get_api_key(),
             header_auths=header_auths,
             basic_auths=basic_auths,
+            bearer_tokens=bearer_tokens,
             param_auths=param_auths,
             today=today,
         )
