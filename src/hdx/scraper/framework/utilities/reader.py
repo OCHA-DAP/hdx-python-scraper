@@ -117,6 +117,11 @@ class Read(Retrieve):
             for name in basic_auths:
                 custom_configs[name] = {"basic_auth": basic_auths[name]}
             del kwargs["basic_auths"]
+        bearer_tokens = kwargs.get("bearer_tokens")
+        if bearer_tokens is not None:
+            for name in bearer_tokens:
+                custom_configs[name] = {"bearer_token": bearer_tokens[name]}
+            del kwargs["bearer_tokens"]
         param_auths = kwargs.get("param_auths")
         if param_auths is not None:
             for name in param_auths:
