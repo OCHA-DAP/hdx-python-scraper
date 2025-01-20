@@ -23,7 +23,7 @@ class Lookup:
         self._code_lookup = copy(initial_lookup)
         self._code_to_name = {}
         self._unmatched = []
-        self.populate()
+        self.setup()
 
     def add_to_lookup(self, code: str, name: str) -> None:
         self._code_lookup[name] = code
@@ -32,7 +32,7 @@ class Lookup:
         self._code_lookup[normalise(code)] = code
         self._code_to_name[code] = name
 
-    def populate(self) -> None:
+    def setup(self) -> None:
         log_message = self._configuration["log_message"]
         logger.info(f"Populating {log_message}")
 
