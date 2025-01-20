@@ -1,10 +1,22 @@
-sector:
+log_message: "Sector mapping"
+file_prefix: "sector"
+code_key: "#sector +code +acronym"
+name_key: "#sector +name +preferred +i_en"
+
+datasetinfo:
   dataset: "global-coordination-groups-beta"
   resource: "Global Coordination Groups (Beta) CSV"
   format: "csv"
   headers: 2
 
-sector_map:
+extra_entries:
+  "Cash": "Cash programming"
+  "Hum": "Humanitarian assistance (unspecified)"
+  "Multi": "Multi-sector (unspecified)"
+  "Intersectoral": "Intersectoral"
+
+
+initial_lookup:
   abna: "SHL"
   abri: "SHL"
   abri bna: "SHL"
