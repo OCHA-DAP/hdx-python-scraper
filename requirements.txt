@@ -113,7 +113,7 @@ nodeenv==1.9.1
     # via pre-commit
 num2words==0.5.14
     # via quantulum3
-numpy==2.2.1
+numpy==2.2.2
     # via pandas
 oauthlib==3.2.2
     # via requests-oauthlib
@@ -180,7 +180,7 @@ quantulum3==0.9.2
     # via hdx-python-api
 ratelimit==2.2.1
     # via hdx-python-utilities
-referencing==0.35.1
+referencing==0.36.1
     # via
     #   jsonschema
     #   jsonschema-specifications
@@ -230,7 +230,7 @@ sphinxcontrib-napoleon==0.7
     # via defopt
 stringcase==1.2.0
     # via frictionless
-structlog==24.4.0
+structlog==25.1.0
     # via libhxl
 tableschema-to-template==0.0.13
     # via hdx-python-utilities
@@ -249,6 +249,7 @@ typing-extensions==4.12.2
     #   frictionless
     #   pydantic
     #   pydantic-core
+    #   referencing
     #   typeguard
     #   typer
 tzdata==2024.2
@@ -263,7 +264,7 @@ urllib3==2.3.0
     #   requests
 validators==0.34.0
     # via frictionless
-virtualenv==20.28.1
+virtualenv==20.29.1
     # via pre-commit
 wheel==0.45.1
     # via libhxl
