@@ -9,6 +9,7 @@ class TestLookup:
         assert (
             sector.get_code("gestion des sites daccueil temporaires") == "SHL"
         )
+        assert "Intersectoral" in sector.get_code_to_name()
 
     def test_org_type(self, configuration):
         org_type = OrgType()

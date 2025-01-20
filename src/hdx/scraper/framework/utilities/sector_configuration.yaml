@@ -10,10 +10,10 @@ datasetinfo:
   headers: 2
 
 extra_entries:
-    "Cash": "Cash programming"
-    "Hum": "Humanitarian assistance (unspecified)"
-    "Multi": "Multi-sector (unspecified)"
-    "Intersectoral": "Intersectoral"
+  "Cash": "Cash programming"
+  "Hum": "Humanitarian assistance (unspecified)"
+  "Multi": "Multi-sector (unspecified)"
+  "Intersectoral": "Intersectoral"
 
 
 initial_lookup:
