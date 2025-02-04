@@ -398,12 +398,23 @@ class Read(Retrieve):
         Returns:
             Dict: HAPI dataset metadata
         """
+        license_id = dataset["license_id"]
+        if license_id == "hdx-other":
+            license = dataset["license_other"]
+        else:
+            license_title = dataset["license_title"]
+            license_url = dataset.get("license_url")
+            if license_url:
+                license = f"[{license_title}]({license_url})"
+            else:
+                license = license_title
         return {
             "hdx_id": dataset["id"],
             "hdx_stub": dataset["name"],
             "title": dataset["title"],
             "hdx_provider_stub": dataset["organization"]["name"],
             "hdx_provider_name": dataset["organization"]["title"],
+            "license": license,
             "time_period": datasetinfo["time_period"],
         }
 

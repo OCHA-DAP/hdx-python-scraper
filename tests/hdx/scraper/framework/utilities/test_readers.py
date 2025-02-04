@@ -231,6 +231,7 @@ class TestReaders:
                 "hdx_stub": "sahel-humanitarian-needs-overview",
                 "hdx_provider_stub": "ocha-rowca",
                 "hdx_provider_name": "OCHA West and Central Africa (ROWCA)",
+                "license": "[Creative Commons Attribution International](http://www.opendefinition.org/licenses/cc-by)",
                 "time_period": {
                     "end": datetime(
                         2016, 9, 1, 23, 59, 59, tzinfo=timezone.utc
@@ -309,6 +310,7 @@ class TestReaders:
                 "hdx_stub": "sahel-humanitarian-needs-overview",
                 "hdx_provider_stub": "ocha-rowca",
                 "hdx_provider_name": "OCHA West and Central Africa (ROWCA)",
+                "license": "[Creative Commons Attribution International](http://www.opendefinition.org/licenses/cc-by)",
                 "time_period": {
                     "end": datetime(
                         2016, 9, 1, 23, 59, 59, tzinfo=timezone.utc
