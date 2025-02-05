@@ -20,6 +20,7 @@ class TestCustom:
         "hdx_stub": "global-school-closures-covid19",
         "hdx_provider_stub": "unesco",
         "hdx_provider_name": "UNESCO",
+        "license": "[Creative Commons Attribution International](http://www.opendefinition.org/licenses/cc-by)",
         "time_period": {
             "end": datetime(2022, 4, 30, 23, 59, 59, tzinfo=timezone.utc),
             "start": datetime(2020, 2, 16, 0, 0, tzinfo=timezone.utc),
@@ -65,6 +66,7 @@ class TestCustom:
         "title": "Global School Closures COVID-19",
         "hdx_provider_stub": "unesco",
         "hdx_provider_name": "UNESCO",
+        "license": "[Creative Commons Attribution International](http://www.opendefinition.org/licenses/cc-by)",
         "time_period": {
             "end": datetime(
                 2023, 5, 11, 23, 59, 59, 999999, tzinfo=timezone.utc
@@ -197,6 +199,7 @@ class TestCustom:
                 "hdx_stub": "global-school-closures-covid19",
                 "hdx_provider_stub": "unesco",
                 "hdx_provider_name": "UNESCO",
+                "license": "[Creative Commons Attribution International](http://www.opendefinition.org/licenses/cc-by)",
                 "time_period": {
                     "end": datetime(
                         2022, 4, 30, 23, 59, 59, tzinfo=timezone.utc
@@ -447,6 +450,7 @@ class TestCustom:
                 "title": "Global School Closures COVID-19",
                 "hdx_provider_stub": "unesco",
                 "hdx_provider_name": "UNESCO",
+                "license": "[Creative Commons Attribution International](http://www.opendefinition.org/licenses/cc-by)",
                 "time_period": {
                     "end": datetime(
                         2023, 5, 11, 23, 59, 59, 999999, tzinfo=timezone.utc
