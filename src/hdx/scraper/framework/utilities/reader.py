@@ -2,7 +2,7 @@ import glob
 import logging
 from datetime import datetime
 from os.path import join
-from typing import Any, Dict, Iterator, List, Optional, Tuple
+from typing import Any, Dict, Iterator, List, Optional, Tuple, Union
 from urllib.parse import parse_qsl
 
 import hxl
@@ -194,17 +194,18 @@ class Read(Retrieve):
             today=self.today,
         )
 
-    def read_tabular(
-        self, datasetinfo: Dict, **kwargs: Any
-    ) -> Tuple[List[str], Iterator[Dict]]:
-        """Read data from tabular source eg. csv, xls, xlsx
+    def setup_tabular(
+        self, datasetinfo: Dict, kwargs: Dict
+    ) -> Union[str, List]:
+        """Setup kwargs for tabular source eg. csv, xls, xlsx from
+        datasetinfo and return url.
 
         Args:
             datasetinfo (Dict): Dictionary of information about dataset
-            **kwargs: Parameters to pass to download_file call
+            kwargs (Dict): Parameters to pass to download_file call
 
         Returns:
-            Tuple[List[str],Iterator[Dict]]: Tuple (headers, iterator where each row is a dictionary)
+            Union[str, List]: url or list of urls
         """
         sheet = datasetinfo.get("sheet")
         headers = datasetinfo.get("headers")
@@ -242,6 +243,21 @@ class Read(Retrieve):
             file_prefix = datasetinfo.get("file_prefix")
             if file_prefix:
                 kwargs["file_prefix"] = file_prefix
+        return url
+
+    def read_tabular(
+        self, datasetinfo: Dict, **kwargs: Any
+    ) -> Tuple[List[str], Iterator[Dict]]:
+        """Read data from tabular source eg. csv, xls, xlsx
+
+        Args:
+            datasetinfo (Dict): Dictionary of information about dataset
+            **kwargs: Parameters to pass to download_file call
+
+        Returns:
+            Tuple[List[str],Iterator[Dict]]: Tuple (headers, iterator where each row is a dictionary)
+        """
+        url = self.setup_tabular(datasetinfo, kwargs)
         return self.get_tabular_rows(
             url,
             dict_form=True,
