@@ -574,7 +574,7 @@ class TestNational:
             in error
         )
 
-    def test_get_national_afg_mmr_phl(self, configuration):
+    def test_get_national_afg_mmr_phl(self, configuration, fallbacks_json):
         BaseScraper.population_lookup = {}
         today = parse_date("2021-05-03")
         error_handler = ErrorHandler()
