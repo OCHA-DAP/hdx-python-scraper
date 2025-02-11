@@ -22,7 +22,7 @@ ckanapi==4.8
     # via hdx-python-api
 click==8.1.8
     # via typer
-coverage==7.6.10
+coverage==7.6.11
     # via pytest-cov
 defopt==6.4.0
     # via hdx-python-api
@@ -65,7 +65,7 @@ hdx-python-utilities==3.8.3
     #   hdx-python-country
 humanize==4.11.0
     # via frictionless
-identify==2.6.6
+identify==2.6.7
     # via pre-commit
 idna==3.10
     # via
@@ -264,7 +264,7 @@ urllib3==2.3.0
     #   requests
 validators==0.34.0
     # via frictionless
-virtualenv==20.29.1
+virtualenv==20.29.2
     # via pre-commit
 wheel==0.45.1
     # via libhxl
