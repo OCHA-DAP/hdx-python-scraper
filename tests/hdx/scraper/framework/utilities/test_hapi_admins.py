@@ -1,5 +1,5 @@
 from hdx.location.adminlevel import AdminLevel
-from hdx.scraper.framework.utilities.admins import complete_admins
+from hdx.scraper.framework.utilities.hapi_admins import complete_admins
 from hdx.scraper.framework.utilities.reader import Read
 
 
