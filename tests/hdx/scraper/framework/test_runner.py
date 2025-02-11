@@ -11,7 +11,7 @@ class TestRunner:
     expected_results = {
         "47f6ef46-500f-421a-9fa2-fefd93facf95": {
             "hdx_id": "47f6ef46-500f-421a-9fa2-fefd93facf95",
-            "hdx_provider_name": "OCHA West and " "Central Africa " "(ROWCA)",
+            "hdx_provider_name": "OCHA West and Central Africa (ROWCA)",
             "hdx_provider_stub": "ocha-rowca",
             "hdx_stub": "sahel-humanitarian-needs-overview",
             "license": "[Creative Commons Attribution International](http://www.opendefinition.org/licenses/cc-by)",
@@ -31,7 +31,7 @@ class TestRunner:
                     ),
                 }
             },
-            "title": "Sahel : Humanitarian Needs " "Overview",
+            "title": "Sahel : Humanitarian Needs Overview",
         }
     }
 

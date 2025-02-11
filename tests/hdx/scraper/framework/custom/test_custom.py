@@ -29,7 +29,7 @@ class TestCustom:
             "national": {
                 "hapi_resource_metadata": {
                     "download_url": "https://data.humdata.org/dataset/6a41be98-75b9-4365-9ea3-e33d0dd2668b/resource/3b5baa74-c928-4cbc-adba-bf543c5d3050/download/covid_impact_education.csv",
-                    "name": "School " "Closures",
+                    "name": "School Closures",
                     "format": "csv",
                     "hdx_id": "3b5baa74-c928-4cbc-adba-bf543c5d3050",
                     "is_hxl": False,
@@ -43,7 +43,7 @@ class TestCustom:
             "regional": {
                 "hapi_resource_metadata": {
                     "download_url": "https://data.humdata.org/dataset/6a41be98-75b9-4365-9ea3-e33d0dd2668b/resource/3b5baa74-c928-4cbc-adba-bf543c5d3050/download/covid_impact_education.csv",
-                    "name": "School " "Closures",
+                    "name": "School Closures",
                     "format": "csv",
                     "hdx_id": "3b5baa74-c928-4cbc-adba-bf543c5d3050",
                     "is_hxl": False,
@@ -218,7 +218,7 @@ class TestCustom:
                         ),
                     }
                 },
-                "title": "Global School Closures " "COVID-19",
+                "title": "Global School Closures COVID-19",
             }
         }
         hapi_results = runner.get_hapi_results()
