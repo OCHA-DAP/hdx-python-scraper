@@ -16,8 +16,73 @@ class TestAdmins:
         provider_adm_names = ["Kabal", "Paghman"]
         adm_codes = ["AF01", ""]
         adm_names = ["", ""]
-        complete_admins(
+        warnings = complete_admins(
             admins, countryiso3, provider_adm_names, adm_codes, adm_names
         )
         assert adm_codes == ["AF01", "AF0102"]
         assert adm_names == ["Kabul", "Paghman"]
+        assert warnings == []
+
+        provider_adm_names = ["Kabul", "Paghman"]
+        adm_codes = ["AF01", "AF01XX"]
+        adm_names = ["", ""]
+        warnings = complete_admins(
+            admins, countryiso3, provider_adm_names, adm_codes, adm_names
+        )
+        assert adm_codes == ["AF01", "AF0102"]
+        assert adm_names == ["Kabul", "Paghman"]
+        assert warnings == [
+            "PCode unknown AF01XX->AF0102 (provider_adm2_name)"
+        ]
+
+        provider_adm_names = ["Kabul", "Paghman"]
+        adm_codes = ["", "AF0102"]
+        adm_names = ["", ""]
+        warnings = complete_admins(
+            admins, countryiso3, provider_adm_names, adm_codes, adm_names
+        )
+        assert adm_codes == ["AF01", "AF0102"]
+        assert adm_names == ["Kabul", "Paghman"]
+        assert warnings == []
+
+        provider_adm_names = ["Kabul", "Paghman"]
+        adm_codes = ["AF0X", "AF0102"]
+        adm_names = ["", ""]
+        warnings = complete_admins(
+            admins, countryiso3, provider_adm_names, adm_codes, adm_names
+        )
+        assert adm_codes == ["AF01", "AF0102"]
+        assert adm_names == ["Kabul", "Paghman"]
+        assert warnings == ["PCode unknown AF0X->AF01 (parent)"]
+
+        provider_adm_names = ["Kabul", ""]
+        adm_codes = ["AF01", "AF010X"]
+        adm_names = ["", ""]
+        warnings = complete_admins(
+            admins, countryiso3, provider_adm_names, adm_codes, adm_names
+        )
+        assert adm_codes == ["AF01", ""]
+        assert adm_names == ["Kabul", ""]
+        assert warnings == ["PCode unknown AF010X->''"]
+
+        provider_adm_names = ["Kabul", "Paghman"]
+        adm_codes = ["AF02", "AF0102"]
+        adm_names = ["", ""]
+        warnings = complete_admins(
+            admins, countryiso3, provider_adm_names, adm_codes, adm_names
+        )
+        assert adm_codes == ["AF01", "AF0102"]
+        assert adm_names == ["Kabul", "Paghman"]
+        assert warnings == ["PCode mismatch AF02->AF01 (parent)"]
+
+        provider_adm_names = ["Kabul", "Paghman"]
+        adm_codes = ["AF01", "AF0103"]
+        adm_names = ["", ""]
+        warnings = complete_admins(
+            admins, countryiso3, provider_adm_names, adm_codes, adm_names
+        )
+        assert adm_codes == ["AF01", "AF0102"]
+        assert adm_names == ["Kabul", "Paghman"]
+        assert warnings == [
+            "PCode mismatch AF0103->AF0102 (provider_adm2_name)"
+        ]
