@@ -13,6 +13,9 @@ def complete_admins(
     warnings = []
     parent = None
     for i, provider_adm_name in reversed(list(enumerate(provider_adm_names))):
+        if not provider_adm_name:
+            provider_adm_name = ""
+            provider_adm_names[i] = ""
         adm_code = adm_codes[i]
         if parent:
             pcode = admins[i + 1].pcode_to_parent.get(parent)
@@ -41,10 +44,14 @@ def complete_admins(
                 adm_code = pcode
         elif pcode:
             adm_code = pcode
+        else:
+            adm_code = ""
         adm_codes[i] = adm_code
         if adm_code:
             adm_names[i] = admins[i].pcode_to_name.get(adm_code, "")
             parent = adm_code
+        else:
+            adm_names[i] = ""
     return warnings
 
 

@@ -68,6 +68,16 @@ class TestAdmins:
         assert adm_names == ["Kabul", ""]
         assert warnings == ["PCode unknown AF010X->''"]
 
+        provider_adm_names = ["Kabul", None]
+        adm_codes = ["AF01", None]
+        adm_names = [None, None]
+        warnings = complete_admins(
+            admins, countryiso3, provider_adm_names, adm_codes, adm_names
+        )
+        assert adm_codes == ["AF01", ""]
+        assert adm_names == ["Kabul", ""]
+        assert warnings == []
+
         provider_adm_names = ["Kabul", "Paghman"]
         adm_codes = ["AF02", "AF0102"]
         adm_names = ["", ""]
