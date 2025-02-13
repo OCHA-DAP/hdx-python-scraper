@@ -1,5 +1,8 @@
 from hdx.location.adminlevel import AdminLevel
-from hdx.scraper.framework.utilities.hapi_admins import complete_admins
+from hdx.scraper.framework.utilities.hapi_admins import (
+    complete_admins,
+    pad_admins,
+)
 from hdx.scraper.framework.utilities.reader import Read
 
 
@@ -86,3 +89,28 @@ class TestAdmins:
         assert warnings == [
             "PCode mismatch AF0103->AF0102 (provider_adm2_name)"
         ]
+
+    def test_pad_admins(self):
+        provider_adm_names = ["Kabul", "Paghman"]
+        adm_codes = ["AF01", "AF0102"]
+        adm_names = ["", ""]
+        pad_admins(provider_adm_names, adm_codes, adm_names, 3)
+        assert provider_adm_names == ["Kabul", "Paghman", ""]
+        assert adm_codes == ["AF01", "AF0102", ""]
+        assert adm_names == ["", "", ""]
+
+        provider_adm_names = ["Kabul"]
+        adm_codes = ["AF01"]
+        adm_names = [""]
+        pad_admins(provider_adm_names, adm_codes, adm_names)
+        assert provider_adm_names == ["Kabul", ""]
+        assert adm_codes == ["AF01", ""]
+        assert adm_names == ["", ""]
+
+        provider_adm_names = []
+        adm_codes = []
+        adm_names = []
+        pad_admins(provider_adm_names, adm_codes, adm_names)
+        assert provider_adm_names == ["", ""]
+        assert adm_codes == ["", ""]
+        assert adm_names == ["", ""]

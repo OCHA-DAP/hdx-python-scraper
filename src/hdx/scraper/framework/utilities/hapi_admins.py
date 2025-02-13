@@ -46,3 +46,15 @@ def complete_admins(
             adm_names[i] = admins[i].pcode_to_name.get(adm_code, "")
             parent = adm_code
     return warnings
+
+
+def pad_admins(
+    provider_adm_names: List[str],
+    adm_codes: List[str],
+    adm_names: List[str],
+    adm_level: int = 2,
+) -> None:
+    for i in range(len(provider_adm_names), adm_level):
+        provider_adm_names.append("")
+        adm_codes.append("")
+        adm_names.append("")
