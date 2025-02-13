@@ -114,3 +114,11 @@ class TestAdmins:
         assert provider_adm_names == ["", ""]
         assert adm_codes == ["", ""]
         assert adm_names == ["", ""]
+
+        provider_adm_names = ["Kabul", "Paghman"]
+        adm_codes = ["AF01", "AF0102"]
+        adm_names = ["", ""]
+        pad_admins(provider_adm_names, adm_codes, adm_names, 1)
+        assert provider_adm_names == ["Kabul", "Paghman"]
+        assert adm_codes == ["AF01", "AF0102"]
+        assert adm_names == ["", ""]
