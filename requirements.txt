@@ -22,7 +22,7 @@ ckanapi==4.8
     # via hdx-python-api
 click==8.1.8
     # via typer
-coverage==7.6.11
+coverage==7.6.12
     # via pytest-cov
 defopt==6.4.0
     # via hdx-python-api

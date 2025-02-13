@@ -60,5 +60,10 @@ class Lookup:
             unmatched=self._unmatched,
         )
 
+    def get_name(
+        self, code: str, default: Optional[str] = None
+    ) -> Optional[str]:
+        return self._code_to_name.get(code, default)
+
     def get_code_to_name(self) -> Dict[str, str]:
         return self._code_to_name
