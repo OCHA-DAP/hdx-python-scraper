@@ -215,7 +215,7 @@ class JsonFile(BaseOutput):
                     if tab not in remove:
                         tabs.append({"tab": tab})
             for tabdetails in tabs:
-                key = f'{tabdetails["tab"]}{self.suffix}'
+                key = f"{tabdetails['tab']}{self.suffix}"
                 newjson = self.json.get(key)
                 filters = tabdetails.get("filters", {})
                 hxltags = tabdetails.get("output")
