@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Tuple
 
 from hdx.location.adminlevel import AdminLevel
 
@@ -6,17 +6,18 @@ from hdx.location.adminlevel import AdminLevel
 def complete_admins(
     admins: List[AdminLevel],
     countryiso3: str,
-    provider_adm_names: List[str],
-    adm_codes: List[str],
-    adm_names: List[str],
-) -> List[str]:
+    provider_adm_names: List,
+    adm_codes: List,
+    adm_names: List,
+) -> Tuple[int, List[str]]:
     warnings = []
     parent = None
+    adm_level = len(provider_adm_names)
     for i, provider_adm_name in reversed(list(enumerate(provider_adm_names))):
+        adm_code = adm_codes[i]
         if not provider_adm_name:
             provider_adm_name = ""
             provider_adm_names[i] = ""
-        adm_code = adm_codes[i]
         if parent:
             pcode = admins[i + 1].pcode_to_parent.get(parent)
             warntxt = "parent"
@@ -52,7 +53,9 @@ def complete_admins(
             parent = adm_code
         else:
             adm_names[i] = ""
-    return warnings
+            if provider_adm_name == "":
+                adm_level -= 1
+    return adm_level, warnings
 
 
 def pad_admins(
