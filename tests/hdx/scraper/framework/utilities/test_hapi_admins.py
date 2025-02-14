@@ -136,12 +136,11 @@ class TestAdmins:
         adm_level, warnings = complete_admins(
             admins, countryiso3, provider_adm_names, adm_codes, adm_names
         )
-        assert adm_codes == ["AF01", "AF0102"]
-        assert adm_names == ["Kabul", "Paghman"]
+        assert provider_adm_names == ["Kabul", "Paghman"]
+        assert adm_codes == ["AF01", "AF0103"]
+        assert adm_names == ["Kabul", "Chahar Asyab"]
         assert adm_level == 2
-        assert warnings == [
-            "PCode mismatch AF0103->AF0102 (provider_adm2_name)"
-        ]
+        assert warnings == ["PCode mismatch AF0103 != Paghman"]
 
     def test_pad_admins(self):
         provider_adm_names = ["Kabul", "Paghman"]
@@ -172,6 +171,14 @@ class TestAdmins:
         adm_codes = ["AF01", "AF0102"]
         adm_names = ["", ""]
         pad_admins(provider_adm_names, adm_codes, adm_names, 1)
+        assert provider_adm_names == ["Kabul", "Paghman"]
+        assert adm_codes == ["AF01", "AF0102"]
+        assert adm_names == ["", ""]
+
+        provider_adm_names = ["Kabul", "Paghman"]
+        adm_codes = ["AF01", "AF0102"]
+        adm_names = ["", ""]
+        pad_admins(provider_adm_names, adm_codes, adm_names, 2)
         assert provider_adm_names == ["Kabul", "Paghman"]
         assert adm_codes == ["AF01", "AF0102"]
         assert adm_names == ["", ""]

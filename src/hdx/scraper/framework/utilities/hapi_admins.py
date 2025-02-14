@@ -39,10 +39,15 @@ def complete_admins(
                     warnings.append(f"PCode unknown {adm_code}->''")
                     adm_code = ""
             elif pcode and adm_code != pcode:
-                warnings.append(
-                    f"PCode mismatch {adm_code}->{pcode} ({warntxt})"
-                )
-                adm_code = pcode
+                if parent:
+                    warnings.append(
+                        f"PCode mismatch {adm_code}->{pcode} ({warntxt})"
+                    )
+                    adm_code = pcode
+                else:
+                    warnings.append(
+                        f"PCode mismatch {adm_code} != {provider_adm_name}"
+                    )
         elif pcode:
             adm_code = pcode
         else:
