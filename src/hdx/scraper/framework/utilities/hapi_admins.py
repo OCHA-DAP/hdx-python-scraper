@@ -10,6 +10,22 @@ def complete_admins(
     adm_codes: List,
     adm_names: List,
 ) -> Tuple[int, List[str]]:
+    """Use information from adm_codes to populate adm_names and from
+    provider_adm_names to populate adm_codes with outptu of the admin level
+    and arnings for unknown and mismatched p-codes. All provided lists
+    should be of the same length.
+
+    Args:
+        admins (List[AdminLevel]): List of AdminLevel objects
+        countryiso3 (str): Country ISO3 code
+        provider_adm_names (List): List of provider adm names
+        adm_codes (List): List of adm codes
+        adm_names (List): List of adm names
+
+    Returns:
+        Tuple[int, List[str]]: Admin level and warnings
+    """
+
     warnings = []
     parent = None
     adm_level = len(provider_adm_names)
@@ -69,6 +85,18 @@ def pad_admins(
     adm_names: List[str],
     adm_level: int = 2,
 ) -> None:
+    """Pad lists to size given in adm_level adding as many "" as needed.
+
+    Args:
+        provider_adm_names (List): List of provider adm names
+        adm_codes (List): List of adm codes
+        adm_names (List): List of adm names
+        adm_level (int): Admin level to which to pad. Defaults to 2.
+
+    Returns:
+        Tuple[int, List[str]]: Admin level and warnings
+    """
+
     for i in range(len(provider_adm_names), adm_level):
         provider_adm_names.append("")
         adm_codes.append("")
