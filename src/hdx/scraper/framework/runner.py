@@ -27,9 +27,9 @@ class Runner:
 
     Args:
         countryiso3s (ListTuple[str]): List of ISO3 country codes to process
-        today (datetime): Value to use for today. Defaults to now_utc().
+        today (datetime): Value to use for today. Default is now_utc().
         error_handler (ErrorHandler): ErrorHandler object that logs errors on exit
-        scrapers_to_run (Optional[ListTuple[str]]): Scrapers to run. Defaults to None (all scrapers).
+        scrapers_to_run (Optional[ListTuple[str]]): Scrapers to run. Default is None (all scrapers).
     """
 
     def __init__(
@@ -117,12 +117,12 @@ class Runner:
             name (str): Name of scraper
             datasetinfo (Dict): Information about dataset
             level (str): Can be national, subnational or single
-            adminlevel (Optional[AdminLevel]): AdminLevel object from HDX Python Country. Defaults to None.
-            level_name (Optional[str]): Customised level_name name. Defaults to None (level_name).
-            source_configuration (Dict): Configuration for sources. Defaults to empty dict (use defaults).
+            adminlevel (Optional[AdminLevel]): AdminLevel object from HDX Python Country. Default is None.
+            level_name (Optional[str]): Customised level_name name. Default is None (level_name).
+            source_configuration (Dict): Configuration for sources. Default is empty dict (use defaults).
             suffix (Optional[str]): Suffix to add to the scraper name
             force_add_to_run (bool): Whether to force include the scraper in the next run
-            countryiso3s (Optional[List[str]]): Override list of country iso3s. Defaults to None.
+            countryiso3s (Optional[List[str]]): Override list of country iso3s. Default is None.
 
         Returns:
             str: scraper name (including suffix if set)
@@ -173,12 +173,12 @@ class Runner:
         Args:
             configuration (Dict): Mapping from scraper name to information about datasets
             level (str): Can be national, subnational or single
-            adminlevel (Optional[AdminLevel]): AdminLevel object from HDX Python Country. Defaults to None.
-            level_name (Optional[str]): Customised level_name name. Defaults to None (level_name).
-            source_configuration (Dict): Configuration for sources. Defaults to empty dict (use defaults).
+            adminlevel (Optional[AdminLevel]): AdminLevel object from HDX Python Country. Default is None.
+            level_name (Optional[str]): Customised level_name name. Default is None (level_name).
+            source_configuration (Dict): Configuration for sources. Default is empty dict (use defaults).
             suffix (Optional[str]): Suffix to add to the scraper name
             force_add_to_run (bool): Whether to force include the scraper in the next run
-            countryiso3s (Optional[List[str]]): Override list of country iso3s. Defaults to None.
+            countryiso3s (Optional[List[str]]): Override list of country iso3s. Default is None.
 
         Returns:
             List[str]: scraper names (including suffix if set)
@@ -277,10 +277,10 @@ class Runner:
             input_level (str): Input level to aggregate like national or subnational
             output_level (str): Output level of aggregated data like regional
             adm_aggregation (Union[Dict, List]): Mapping from input admins to aggregated output admins
-            source_configuration (Dict): Configuration for sources. Defaults to empty dict (use defaults).
-            names (Optional[ListTuple[str]]): Names of scrapers. Defaults to None.
-            overrides (Dict[str, Dict]): Dictionary mapping scrapers to level mappings. Defaults to {}.
-            aggregation_scrapers (List["Aggregator"]): Other aggregations needed. Defaults to [].
+            source_configuration (Dict): Configuration for sources. Default is empty dict (use defaults).
+            names (Optional[ListTuple[str]]): Names of scrapers. Default is None.
+            overrides (Dict[str, Dict]): Dictionary mapping scrapers to level mappings. Default is {}.
+            aggregation_scrapers (List["Aggregator"]): Other aggregations needed. Default is [].
 
         Returns:
             Optional["Aggregator"]: scraper or None
@@ -347,10 +347,10 @@ class Runner:
             input_level (str): Input level to aggregate like national or subnational
             output_level (str): Output level of aggregated data like regional
             adm_aggregation (Union[Dict, List]): Mapping from input admins to aggregated output admins
-            source_configuration (Dict): Configuration for sources. Defaults to empty dict (use defaults).
-            names (Optional[ListTuple[str]]): Names of scrapers. Defaults to None.
-            overrides (Dict[str, Dict]): Dictionary mapping scrapers to level mappings. Defaults to {}.
-            aggregation_scrapers (List["Aggregator"]): Other aggregations needed. Defaults to [].
+            source_configuration (Dict): Configuration for sources. Default is empty dict (use defaults).
+            names (Optional[ListTuple[str]]): Names of scrapers. Default is None.
+            overrides (Dict[str, Dict]): Dictionary mapping scrapers to level mappings. Default is {}.
+            aggregation_scrapers (List["Aggregator"]): Other aggregations needed. Default is [].
             force_add_to_run (bool): Whether to force include the scraper in the next run
 
         Returns:
@@ -398,9 +398,9 @@ class Runner:
             input_level (str): Input level to aggregate like national or subnational
             output_level (str): Output level of aggregated data like regional
             adm_aggregation (Union[Dict, ListTuple]): Mapping from input admins to aggregated output admins
-            source_configuration (Dict): Configuration for sources. Defaults to empty dict (use defaults).
+            source_configuration (Dict): Configuration for sources. Default is empty dict (use defaults).
             names (Optional[ListTuple[str]]): Names of scrapers
-            overrides (Dict[str, Dict]): Dictionary mapping scrapers to level mappings. Defaults to {}.
+            overrides (Dict[str, Dict]): Dictionary mapping scrapers to level mappings. Default is {}.
             force_add_to_run (bool): Whether to force include the scraper in the next run
 
         Returns:
@@ -437,7 +437,7 @@ class Runner:
 
         Args:
             datasetinfo (Dict): Information about dataset
-            folder (str): Folder to which to download. Defaults to "".
+            folder (str): Folder to which to download. Default is "".
             force_add_to_run (bool): Whether to force include the scraper in the next run
 
         Returns:
@@ -460,7 +460,7 @@ class Runner:
 
         Args:
             configuration (Dict): Mapping from scraper name to information about datasets
-            folder (str): Folder to which to download. Defaults to "".
+            folder (str): Folder to which to download. Default is "".
             force_add_to_run (bool): Whether to force include the scraper in the next run
 
         Returns:
@@ -662,9 +662,9 @@ class Runner:
         are run first. If scraper run fails and fallbacks have been set up, use them.
 
         Args:
-            what_to_run (Optional[ListTuple[str]]): Run only these scrapers. Defaults to None (run all).
+            what_to_run (Optional[ListTuple[str]]): Run only these scrapers. Default is None (run all).
             force_run (bool): Force run even if any scraper marked as already run
-            prioritise_scrapers (Optional[ListTuple[str]]): Scrapers to run first. Defaults to None.
+            prioritise_scrapers (Optional[ListTuple[str]]): Scrapers to run first. Default is None.
 
         Returns:
             None
@@ -718,7 +718,7 @@ class Runner:
             levels (Optional[ListTuple[str]]): Levels to get like national, subnational or single
             headers (Optional[ListTuple[str]]): Headers to get
             hxltags (Optional[ListTuple[str]]): HXL hashtags to get
-            overrides (Dict[str, Dict]): Dictionary mapping scrapers to level mappings. Defaults to {}.
+            overrides (Dict[str, Dict]): Dictionary mapping scrapers to level mappings. Default is {}.
 
 
         Returns:
@@ -789,11 +789,11 @@ class Runner:
         lists.
 
         Args:
-            names (Optional[ListTuple[str]]): Names of scrapers. Defaults to None (all scrapers).
+            names (Optional[ListTuple[str]]): Names of scrapers. Default is None (all scrapers).
             levels (Optional[ListTuple[str]]): Levels to get like national, subnational or single
-            overrides (Dict[str, Dict]): Dictionary mapping scrapers to level mappings. Defaults to {}.
-            has_run (bool): Only get results for scrapers marked as having run. Defaults to True.
-            should_overwrite_sources (Optional[bool]): Whether to overwrite sources. Defaults to None (class default).
+            overrides (Dict[str, Dict]): Dictionary mapping scrapers to level mappings. Default is {}.
+            has_run (bool): Only get results for scrapers marked as having run. Default is True.
+            should_overwrite_sources (Optional[bool]): Whether to overwrite sources. Default is None (class default).
 
         Returns:
             Dict[str, Dict]: Results dictionary that maps each level to headers, values, sources, fallbacks.
@@ -897,8 +897,8 @@ class Runner:
             adms (ListTuple[str]): Admin units
             headers (ListTuple[ListTuple]): Additional headers in the form (list of headers, list of HXL hashtags)
             row_fns (ListTuple[Callable[[str], str]]): Functions to populate additional columns
-            names (Optional[ListTuple[str]]): Names of scrapers. Defaults to None (all scrapers).
-            overrides (Dict[str, Dict]): Dictionary mapping scrapers to level mappings. Defaults to {}.
+            names (Optional[ListTuple[str]]): Names of scrapers. Default is None (all scrapers).
+            overrides (Dict[str, Dict]): Dictionary mapping scrapers to level mappings. Default is {}.
 
         Returns:
             List[List]: Rows for a given level
@@ -938,10 +938,10 @@ class Runner:
 
         Args:
             level (str): Level to get like national, subnational or single
-            names (Optional[ListTuple[str]]): Names of scrapers. Defaults to None (all scrapers).
-            overrides (Dict[str, Dict]): Dictionary mapping scrapers to level mappings. Defaults to {}.
-            has_run (bool): Only get results for scrapers marked as having run. Defaults to True.
-            use_hxl (bool): Whether keys should be HXL hashtags or column headers. Defaults to True.
+            names (Optional[ListTuple[str]]): Names of scrapers. Default is None (all scrapers).
+            overrides (Dict[str, Dict]): Dictionary mapping scrapers to level mappings. Default is {}.
+            has_run (bool): Only get results for scrapers marked as having run. Default is True.
+            use_hxl (bool): Whether keys should be HXL hashtags or column headers. Default is True.
 
         Returns:
             Tuple[Dict, Dict]: Tuple of (headers to values, headers to sources)
@@ -1059,7 +1059,7 @@ class Runner:
             names (Optional[ListTuple[str]]): Names of scrapers
             levels (Optional[ListTuple[str]]): Levels to get like national, subnational or single
             additional_sources (ListTuple[Dict]): Additional sources to add
-            should_overwrite_sources (Optional[bool]): Whether to overwrite sources. Defaults to None (class default).
+            should_overwrite_sources (Optional[bool]): Whether to overwrite sources. Default is None (class default).
 
         Returns:
             List[Tuple]: Sources in form (indicator, date, source, source_url)
@@ -1178,7 +1178,7 @@ class Runner:
 
         Args:
             names (Optional[ListTuple[str]]): Names of scrapers
-            has_run (bool): Only get results for scrapers marked as having run. Defaults to True.
+            has_run (bool): Only get results for scrapers marked as having run. Default is True.
 
         Returns:
             Dict: HAPI metadata for all datasets
@@ -1232,8 +1232,8 @@ class Runner:
         metadata is a dictionary.
 
         Args:
-            names (Optional[ListTuple[str]]): Names of scrapers. Defaults to None (all scrapers).
-            has_run (bool): Only get results for scrapers marked as having run. Defaults to True.
+            names (Optional[ListTuple[str]]): Names of scrapers. Default is None (all scrapers).
+            has_run (bool): Only get results for scrapers marked as having run. Default is True.
 
         Returns:
             Dict: Headers and values per admin level and HAPI metadata for all datasets

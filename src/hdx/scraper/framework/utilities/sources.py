@@ -117,7 +117,7 @@ class Sources:
         Args:
             datasetinfo (Dict): Information about dataset
             hxltag (str): HXL hashtag to check
-            fallback (bool): Whether to fall back to default_date. Defaults to False.
+            fallback (bool): Whether to fall back to default_date. Default is False.
 
         Returns:
             datetime: Standardised source date for HXL hashtag
@@ -174,7 +174,7 @@ class Sources:
         Args:
             datasetinfo (Dict): Information about dataset
             hxltag (str): HXL hashtag to check
-            fallback (bool): Whether to fall back to default_date. Defaults to False.
+            fallback (bool): Whether to fall back to default_date. Default is False.
 
         Returns:
             str: Standardised and formatted source date for HXL hashtag
@@ -200,7 +200,7 @@ class Sources:
             sources (List[ListTuple]): List of sources
             source (ListTuple[str]): Source information
             logger (Logger): Logger to log warnings to
-            should_overwrite_sources (Optional[bool]): Whether to overwrite sources. Defaults to None (class default).
+            should_overwrite_sources (Optional[bool]): Whether to overwrite sources. Default is None (class default).
 
         Returns:
             None
@@ -237,7 +237,7 @@ class Sources:
             sources (List[ListTuple]): List of sources
             sources_to_add (List[ListTuple]): List of sources to add
             logger (Logger): Logegr to log warnings to
-            should_overwrite_sources (Optional[bool]): Whether to overwrite sources. Defaults to None (class default).
+            should_overwrite_sources (Optional[bool]): Whether to overwrite sources. Default is None (class default).
 
         Returns:
             None
@@ -268,12 +268,12 @@ class Sources:
         be set to True.
 
         Args:
-            suffix_attribute (Optional[str]): Suffix to add. Defaults to None.
-            admin_sources (bool): Whether source information is per admin unit. Defaults to False.
-            adminlevel (Union[AdminLevel, ListTuple[AdminLevel], None]): Admin level(s) mapping. Defaults to None.
-            admin_mapping_dict (Optional[Dict]): Admin unit mapping to use. Defaults to None.
-            no_sources (bool): Don't create sources. Defaults to False.
-            should_overwrite_sources (Optional[bool]): Whether to overwrite sources. Defaults to None (use default).
+            suffix_attribute (Optional[str]): Suffix to add. Default is None.
+            admin_sources (bool): Whether source information is per admin unit. Default is False.
+            adminlevel (Union[AdminLevel, ListTuple[AdminLevel], None]): Admin level(s) mapping. Default is None.
+            admin_mapping_dict (Optional[Dict]): Admin unit mapping to use. Default is None.
+            no_sources (bool): Don't create sources. Default is False.
+            should_overwrite_sources (Optional[bool]): Whether to overwrite sources. Default is None (use default).
 
         Returns:
              Optional[Dict]: Source configuration dictionary

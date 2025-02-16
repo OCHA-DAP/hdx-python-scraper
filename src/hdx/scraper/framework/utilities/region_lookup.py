@@ -36,7 +36,7 @@ class RegionLookup:
         Args:
             region_config (Dict): Region configuration
             countryiso3s (ListTuple[str]): List of country ISO3 codes
-            additional_regions (Dict[str, ListTuple]): Region to ISO3s. Defaults to {}.
+            additional_regions (Dict[str, ListTuple]): Region to ISO3s. Default is {}.
         """
         _, iterator = Read.get_reader().read_hdx(
             region_config,

@@ -31,11 +31,11 @@ class Read(Retrieve):
         fallback_dir (str): Directory containing static fallback data
         saved_dir (str): Directory to save or load downloaded data
         temp_dir (str): Temporary directory for when data is not needed after downloading
-        save (bool): Whether to save downloaded data. Defaults to False.
-        use_saved (bool): Whether to use saved data. Defaults to False.
-        prefix (str): Prefix to add to filenames. Defaults to "".
-        delete (bool): Whether to delete saved_dir if save is True. Defaults to True.
-        today (Optional[datetime]): Value to use for today. Defaults to None (datetime.utcnow).
+        save (bool): Whether to save downloaded data. Default is False.
+        use_saved (bool): Whether to use saved data. Default is False.
+        prefix (str): Prefix to add to filenames. Default is "".
+        delete (bool): Whether to delete saved_dir if save is True. Default is True.
+        today (Optional[datetime]): Value to use for today. Default is None (datetime.utcnow).
     """
 
     def __init__(
@@ -84,11 +84,11 @@ class Read(Retrieve):
             fallback_dir (str): Directory containing static fallback data
             saved_dir (str): Directory to save or load downloaded data
             temp_dir (str): Temporary directory for when data is not needed after downloading
-            save (bool): Whether to save downloaded data. Defaults to False.
-            use_saved (bool): Whether to use saved data. Defaults to False.
+            save (bool): Whether to save downloaded data. Default is False.
+            use_saved (bool): Whether to use saved data. Default is False.
             ignore (ListTuple[str]): Don't generate retrievers for these downloaders
-            rate_limit (Optional[Dict]): Rate limiting per host. Defaults to {"calls": 1, "period": 0.1}
-            today (Optional[datetime]): Value to use for today. Defaults to None (datetime.utcnow).
+            rate_limit (Optional[Dict]): Rate limiting per host. Default is {"calls": 1, "period": 0.1}
+            today (Optional[datetime]): Value to use for today. Default is None (datetime.utcnow).
             **kwargs: See below and parameters of Download class in HDX Python Utilities
             hdx_auth (str): HDX API key
             header_auths (Mapping[str, str]): Header authorisations
@@ -146,7 +146,7 @@ class Read(Retrieve):
         one will be returned.
 
         Args:
-            name (Optional[str]): Name of reader. Defaults to None (get default).
+            name (Optional[str]): Name of reader. Default is None (get default).
 
         Returns:
             Retriever: Reader object
@@ -272,7 +272,7 @@ class Read(Retrieve):
 
         Args:
             dataset_name (str): Dataset name
-            configuration (Optional[Configuration]): HDX configuration. Defaults to global configuration.
+            configuration (Optional[Configuration]): HDX configuration. Default is global configuration.
 
         Returns:
             Optional[Dataset]: The dataset that was read or None
@@ -303,19 +303,19 @@ class Read(Retrieve):
 
         Args:
             filename (str): Filename for saved files. Will be prefixed by underscore and a number.
-            query (Optional[str]): Query (in Solr format). Defaults to '*:*'.
-            configuration (Optional[Configuration]): HDX configuration. Defaults to global configuration.
-            page_size (int): Size of page to return. Defaults to 1000.
+            query (Optional[str]): Query (in Solr format). Default is '*:*'.
+            configuration (Optional[Configuration]): HDX configuration. Default is global configuration.
+            page_size (int): Size of page to return. Default is 1000.
             **kwargs: See below
             fq (string): Any filter queries to apply
-            rows (int): Number of matching rows to return. Defaults to all datasets (sys.maxsize).
+            rows (int): Number of matching rows to return. Default is all datasets (sys.maxsize).
             start (int): Offset in the complete result for where the set of returned datasets should begin
-            sort (string): Sorting of results. Defaults to 'relevance asc, metadata_modified desc' if rows<=page_size or 'metadata_modified asc' if rows>page_size.
+            sort (string): Sorting of results. Default is 'relevance asc, metadata_modified desc' if rows<=page_size or 'metadata_modified asc' if rows>page_size.
             facet (string): Whether to enable faceted results. Default to True.
             facet.mincount (int): Minimum counts for facet fields should be included in the results
-            facet.limit (int): Maximum number of values the facet fields return (- = unlimited). Defaults to 50.
+            facet.limit (int): Maximum number of values the facet fields return (- = unlimited). Default is 50.
             facet.field (List[str]): Fields to facet upon. Default is empty.
-            use_default_schema (bool): Use default package schema instead of custom schema. Defaults to False.
+            use_default_schema (bool): Use default package schema instead of custom schema. Default is False.
 
         Returns:
             List[Dataset]: list of datasets resulting from query
@@ -547,8 +547,8 @@ class Read(Retrieve):
 
         Args:
             datasetinfo (Dict): Dictionary of information about dataset
-            do_resource_check (bool): Whether to check resources. Defaults to False.
-            configuration (Optional[Configuration]): HDX configuration. Defaults to global configuration.
+            do_resource_check (bool): Whether to check resources. Default is False.
+            configuration (Optional[Configuration]): HDX configuration. Default is global configuration.
 
         Returns:
             Optional[Resource]: The resource if a url was not given
@@ -663,7 +663,7 @@ class Read(Retrieve):
 
         Args:
             datasetinfo (Dict): Dictionary of information about dataset
-            configuration (Optional[Configuration]): HDX configuration. Defaults to global configuration.
+            configuration (Optional[Configuration]): HDX configuration. Default is global configuration.
             **kwargs: Parameters to pass to download_file call
 
         Returns:
@@ -699,7 +699,7 @@ class Read(Retrieve):
 
         Args:
             datasetinfo (Dict): Dictionary of information about dataset
-            configuration (Optional[Configuration]): HDX configuration. Defaults to global configuration.
+            configuration (Optional[Configuration]): HDX configuration. Default is global configuration.
             **kwargs: Parameters to pass to download_file call
 
         Returns:

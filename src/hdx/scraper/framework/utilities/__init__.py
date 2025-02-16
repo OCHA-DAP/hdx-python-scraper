@@ -64,7 +64,7 @@ def get_startend_dates_from_time_period(
 
     Args:
         dataset (Dataset): Dataset object
-        today (Optional[datetime]): Date to use for today. Defaults to None (datetime.utcnow)
+        today (Optional[datetime]): Date to use for today. Default is None (datetime.utcnow)
 
     Returns:
         Optional[Dict]: Time period in form required for source_date

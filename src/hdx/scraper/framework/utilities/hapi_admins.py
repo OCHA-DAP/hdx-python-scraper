@@ -9,6 +9,7 @@ def complete_admins(
     provider_adm_names: List,
     adm_codes: List,
     adm_names: List,
+    fuzzy_match: bool = True,
 ) -> Tuple[int, List[str]]:
     """Use information from adm_codes to populate adm_names and from
     provider_adm_names to populate adm_codes with outptu of the admin level
@@ -21,25 +22,30 @@ def complete_admins(
         provider_adm_names (List): List of provider adm names
         adm_codes (List): List of adm codes
         adm_names (List): List of adm names
+        fuzzy_match (bool): Whether to use fuzzy matching. Default is True.
 
     Returns:
         Tuple[int, List[str]]: Admin level and warnings
     """
 
     warnings = []
-    parent = None
+    child = None
     adm_level = len(provider_adm_names)
     for i, provider_adm_name in reversed(list(enumerate(provider_adm_names))):
         adm_code = adm_codes[i]
         if not provider_adm_name:
             provider_adm_name = ""
             provider_adm_names[i] = ""
-        if parent:
-            pcode = admins[i + 1].pcode_to_parent.get(parent)
+        if child:
+            pcode = admins[i + 1].pcode_to_parent.get(child)
             warntxt = "parent"
         elif provider_adm_name:
+            parent = admins[i].pcode_to_parent.get(adm_code)
             pcode, _ = admins[i].get_pcode(
-                countryiso3, provider_adm_name, parent=parent
+                countryiso3,
+                provider_adm_name,
+                parent=parent,
+                fuzzy_match=fuzzy_match,
             )
             warntxt = f"provider_adm{i + 1}_name"
         else:
@@ -55,7 +61,7 @@ def complete_admins(
                     warnings.append(f"PCode unknown {adm_code}->''")
                     adm_code = ""
             elif pcode and adm_code != pcode:
-                if parent:
+                if child:
                     warnings.append(
                         f"PCode mismatch {adm_code}->{pcode} ({warntxt})"
                     )
@@ -71,7 +77,7 @@ def complete_admins(
         adm_codes[i] = adm_code
         if adm_code:
             adm_names[i] = admins[i].pcode_to_name.get(adm_code, "")
-            parent = adm_code
+            child = adm_code
         else:
             adm_names[i] = ""
             if provider_adm_name == "":
@@ -91,7 +97,7 @@ def pad_admins(
         provider_adm_names (List): List of provider adm names
         adm_codes (List): List of adm codes
         adm_names (List): List of adm names
-        adm_level (int): Admin level to which to pad. Defaults to 2.
+        adm_level (int): Admin level to which to pad. Default is 2.
 
     Returns:
         Tuple[int, List[str]]: Admin level and warnings

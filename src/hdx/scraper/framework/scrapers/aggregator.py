@@ -36,8 +36,8 @@ class Aggregator(BaseScraper):
         adm_aggregation (Union[Dict, ListTuple]): Mapping from input admins to aggregated output admins
         headers (Dict[str, Tuple]): Column headers and HXL hashtags
         use_hxl (bool): Whether to map from headers or from HXL tags
-        source_configuration (Dict): Configuration for sources. Defaults to empty dict (use defaults).
-        aggregation_scrapers (List["Aggregator"]): Other aggregations needed. Defaults to [].
+        source_configuration (Dict): Configuration for sources. Default is empty dict (use defaults).
+        aggregation_scrapers (List["Aggregator"]): Other aggregations needed. Default is [].
     """
 
     def __init__(
@@ -95,8 +95,8 @@ class Aggregator(BaseScraper):
             adm_aggregation (Union[Dict, ListTuple]): Mapping from input admins to aggregated output admins
             input_headers (Tuple[ListTuple, ListTuple]): Column headers and HXL hashtags
             runner(Runner): Runner object
-            source_configuration (Dict): Configuration for sources. Defaults to empty dict (use defaults).
-            aggregation_scrapers (List["Aggregator"]): Other aggregations needed. Defaults to [].
+            source_configuration (Dict): Configuration for sources. Default is empty dict (use defaults).
+            aggregation_scrapers (List["Aggregator"]): Other aggregations needed. Default is [].
 
         Returns:
             Optional["Aggregator"]: The aggregation scraper or None if it couldn't be created

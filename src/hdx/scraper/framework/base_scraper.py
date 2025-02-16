@@ -15,8 +15,8 @@ class BaseScraper(ABC):
         name (str): Name of scraper
         datasetinfo (Dict): Information about dataset
         headers (Dict[str, Tuple]): Headers to be oytput at each level_name
-        source_configuration (Dict): Configuration for sources. Defaults to empty dict (use defaults).
-        reader (str): Reader to use. Defaults to "" (datasetinfo reader falling back on name).
+        source_configuration (Dict): Configuration for sources. Default is empty dict (use defaults).
+        reader (str): Reader to use. Default is "" (datasetinfo reader falling back on name).
     """
 
     population_lookup = {}
@@ -49,7 +49,7 @@ class BaseScraper(ABC):
 
         Args:
             headers (Dict[str, Tuple]): Headers to be output at each level_name
-            source_configuration (Dict): Configuration for sources. Defaults to empty dict (use defaults).
+            source_configuration (Dict): Configuration for sources. Default is empty dict (use defaults).
 
         Returns:
              None
@@ -73,7 +73,7 @@ class BaseScraper(ABC):
         {"national": [("#food-prices", "2022-07-15", "WFP", "https://data.humdata.org/dataset/global-wfp-food-prices"), ...]
 
         Args:
-            source_configuration (Dict): Configuration for sources. Defaults to empty dict (use defaults).
+            source_configuration (Dict): Configuration for sources. Default is empty dict (use defaults).
 
         Returns:
              None
@@ -252,8 +252,8 @@ class BaseScraper(ABC):
 
         Args:
             hxltag (str): HXL hashtag to use for source
-            datasetinfo (Optional[Dict]): Information about dataset. Defaults to None (use self.datasetinfo).
-            key (Optional[str]): Key under which to add source. Defaults to None (use scraper name).
+            datasetinfo (Optional[Dict]): Information about dataset. Default is None (use self.datasetinfo).
+            key (Optional[str]): Key under which to add source. Default is None (use scraper name).
 
         Returns:
             None
@@ -288,8 +288,8 @@ class BaseScraper(ABC):
 
         Args:
             hxltags (ListTuple[str]): HXL hashtags to use for sources
-            datasetinfo (Optional[Dict]): Information about dataset. Defaults to None (use self.datasetinfo).
-            key (Optional[str]): Key under which to add source. Defaults to None (use scraper name).
+            datasetinfo (Optional[Dict]): Information about dataset. Default is None (use self.datasetinfo).
+            key (Optional[str]): Key under which to add source. Default is None (use scraper name).
             suffix_attributes (Optional[ListTuple]): List of suffix attributes to append to HXL hashtags eg. iso3 codes
 
         Returns:

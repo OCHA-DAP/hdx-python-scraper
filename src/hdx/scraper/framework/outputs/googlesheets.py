@@ -60,7 +60,7 @@ class GoogleSheets(BaseOutput):
         Args:
             tabname (str): Tab to update
             values (Union[List, DataFrame]): Values in a list of lists or a DataFrame
-            hxltags (Optional[Dict]): HXL tag mapping. Defaults to None.
+            hxltags (Optional[Dict]): HXL tag mapping. Default is None.
             limit (Optional[int]): Maximum number of rows to output
 
         Returns:
