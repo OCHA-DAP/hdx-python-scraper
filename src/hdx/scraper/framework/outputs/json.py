@@ -53,7 +53,7 @@ class JsonFile(BaseOutput):
         Args:
             key (str): Key in JSON to update
             df (DataFrame): Dataframe containing rows
-            hxltags (Optional[Dict]): HXL tag mapping. Defaults to None.
+            hxltags (Optional[Dict]): HXL tag mapping. Default is None.
 
         Returns:
             None
@@ -75,7 +75,7 @@ class JsonFile(BaseOutput):
             key (str): Key in JSON to update
             countryiso (str): Country to use as subkey
             rows (List[Dict]): List of dictionaries
-            hxltags (Optional[Dict]): HXL tag mapping. Defaults to None.
+            hxltags (Optional[Dict]): HXL tag mapping. Default is None.
 
         Returns:
             None
@@ -121,7 +121,7 @@ class JsonFile(BaseOutput):
         Args:
             key (str): Key in JSON to update
             df (DataFrame): Dataframe containing rows
-            hxltags (Optional[Dict]): HXL tag mapping. Defaults to None.
+            hxltags (Optional[Dict]): HXL tag mapping. Default is None.
 
         Returns:
             None
@@ -147,7 +147,7 @@ class JsonFile(BaseOutput):
         Args:
             tabname (str): Tab to update
             values (Union[List, DataFrame]): Values in a list of lists or a DataFrame
-            hxltags (Optional[Dict]): HXL tag mapping. Defaults to None.
+            hxltags (Optional[Dict]): HXL tag mapping. Default is None.
 
         Returns:
             None
@@ -187,7 +187,7 @@ class JsonFile(BaseOutput):
         """Save JSON file and any addition subsets of that JSON defined in the additional configuration
 
         Args:
-            folder (Optional[str]): Folder to save to. Defaults to None.
+            folder (Optional[str]): Folder to save to. Default is None.
             **kwargs: Variables to use when evaluating template arguments
 
         Returns:

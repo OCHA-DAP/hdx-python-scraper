@@ -51,6 +51,51 @@ class TestAdmins:
         assert warnings == ["PCode unknown AF010X->''"]
 
         provider_adm_names = ["Kabal", "Paghman"]
+        adm_codes = ["AF01", "AF0102"]
+        adm_names = ["", ""]
+        adm_level, warnings = complete_admins(
+            admins, countryiso3, provider_adm_names, adm_codes, adm_names
+        )
+        assert adm_codes == ["AF01", "AF0102"]
+        assert adm_names == ["Kabul", "Paghman"]
+        assert adm_level == 2
+        assert warnings == []
+
+        provider_adm_names = ["Ghazni", "Qara Bagh"]
+        adm_codes = ["AF11", "AF1111"]
+        adm_names = ["", ""]
+        adm_level, warnings = complete_admins(
+            admins, countryiso3, provider_adm_names, adm_codes, adm_names
+        )
+        assert adm_codes == ["AF11", "AF1111"]
+        assert adm_names == ["Ghazni", "Qara Bagh"]
+        assert adm_level == 2
+        assert warnings == []
+
+        # There are two Qara Baghs!
+        provider_adm_names = ["Kabul", "Qara Bagh"]
+        adm_codes = ["AF01", "AF0114"]
+        adm_names = ["", ""]
+        adm_level, warnings = complete_admins(
+            admins, countryiso3, provider_adm_names, adm_codes, adm_names
+        )
+        assert adm_codes == ["AF01", "AF0114"]
+        assert adm_names == ["Kabul", "Qara Bagh"]
+        assert adm_level == 2
+        assert warnings == []
+
+        provider_adm_names = ["Kabul", "Qara Bagh"]
+        adm_codes = ["AF01", ""]
+        adm_names = ["", ""]
+        adm_level, warnings = complete_admins(
+            admins, countryiso3, provider_adm_names, adm_codes, adm_names
+        )
+        assert adm_codes == ["AF01", "AF0114"]
+        assert adm_names == ["Kabul", "Qara Bagh"]
+        assert adm_level == 2
+        assert warnings == []
+
+        provider_adm_names = ["Kabal", "Paghman"]
         adm_codes = ["AF01", ""]
         adm_names = ["", ""]
         adm_level, warnings = complete_admins(

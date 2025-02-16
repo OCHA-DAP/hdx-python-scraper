@@ -19,7 +19,7 @@ class TimeSeries(BaseScraper):
         name (str): Name of scraper
         datasetinfo (Dict): Information about dataset
         outputs (Dict[str, BaseOutput]): Mapping from names to output objects
-        today (datetime): Value to use for today. Defaults to now_utc().
+        today (datetime): Value to use for today. Default is now_utc().
     """
 
     def __init__(

@@ -52,7 +52,7 @@ class Fallbacks:
         Args:
             fallbacks_path (str): Path to JSON fallbacks file
             levels_mapping (Dict[str,str]): Map keys from file to levels. Defaults in description.
-            sources_key (str): Key to use for sources. Defaults to "sources".
+            sources_key (str): Key to use for sources. Default is "sources".
             admin_name_mapping: HXL hashtags for different admin levels. Defaults in description.
 
         Returns:
@@ -86,7 +86,7 @@ class Fallbacks:
         Args:
             fallbacks_path (str): Path to JSON fallbacks file
             levels_mapping (Dict[str,str]): Map keys from file to levels. Defaults in description.
-            sources_key (str): Key to use for sources. Defaults to "sources".
+            sources_key (str): Key to use for sources. Default is "sources".
             admin_name_mapping: HXL hashtags for different admin levels. Defaults in description.
 
         Returns:

@@ -88,9 +88,9 @@ class Writer:
         level names to output levels.
 
         Args:
-            names (Optional[ListTuple[str]]): Names of scrapers. Defaults to None.
-            overrides (Dict[str, Dict]): Dictionary mapping scrapers to level mappings. Defaults to {}.
-            toplevel (str): Name of top level such as "global". Defaults to "allregions".
+            names (Optional[ListTuple[str]]): Names of scrapers. Default is None.
+            overrides (Dict[str, Dict]): Dictionary mapping scrapers to level mappings. Default is {}.
+            toplevel (str): Name of top level such as "global". Default is "allregions".
 
         Returns:
             List[List]: Rows for a given level
@@ -116,9 +116,9 @@ class Writer:
 
         Args:
             regional (ListTuple[str]): Regional admin names
-            names (Optional[ListTuple[str]]): Names of scrapers. Defaults to None.
-            overrides (Dict[str, Dict]): Dictionary mapping scrapers to level mappings. Defaults to {}.
-            level (str): Name of regional level. Defaults to "regional".
+            names (Optional[ListTuple[str]]): Names of scrapers. Default is None.
+            overrides (Dict[str, Dict]): Dictionary mapping scrapers to level mappings. Default is {}.
+            level (str): Name of regional level. Default is "regional".
 
         Returns:
             List[List]: Rows for a given level
@@ -146,11 +146,11 @@ class Writer:
 
         Args:
             toplevel_rows (List[List]): Header row, HXL tags row and top level value row
-            tab (str): Name of tab (key in JSON) to update. Defaults to "allregions".
-            regional_rows (Optional[List[List]]): Header, HXL tags and regional values. Defaults to None.
-            regional_adm (str): The admin name of the top level in the regional data. Defaults to "ALL".
-            regional_hxltags (Optional[ListTuple[str]]): What regional HXL tags to include. Defaults to None (all tags).
-            regional_first (bool): Whether regional rows are output before top level rows. Defaults to False.
+            tab (str): Name of tab (key in JSON) to update. Default is "allregions".
+            regional_rows (Optional[List[List]]): Header, HXL tags and regional values. Default is None.
+            regional_adm (str): The admin name of the top level in the regional data. Default is "ALL".
+            regional_hxltags (Optional[ListTuple[str]]): What regional HXL tags to include. Default is None (all tags).
+            regional_first (bool): Whether regional rows are output before top level rows. Default is False.
 
         Returns:
             None
@@ -195,10 +195,10 @@ class Writer:
 
         Args:
             regional_rows (List[List]): Header row, HXL tags row and regional value rows
-            toplevel_rows (Optional[List[List]]): Header, HXL tags and top level values. Defaults to None.
-            toplevel_hxltags (Optional[ListTuple[str]]): What top level HXL tags to include. Defaults to None (all tags).
-            tab (str): Name of tab (key in JSON) to update. Defaults to "regional".
-            toplevel (str): Name of top level such as "global". Defaults to "allregions".
+            toplevel_rows (Optional[List[List]]): Header, HXL tags and top level values. Default is None.
+            toplevel_hxltags (Optional[ListTuple[str]]): What top level HXL tags to include. Default is None (all tags).
+            tab (str): Name of tab (key in JSON) to update. Default is "regional".
+            toplevel (str): Name of top level such as "global". Default is "allregions".
 
         Returns:
             None
@@ -271,12 +271,12 @@ class Writer:
 
         Args:
             countries (ListTuple[str]): Country names
-            names (Optional[ListTuple[str]]): Names of scrapers. Defaults to None.
-            flag_countries (Optional[Dict]): Countries to flag. Defaults to None.
-            iso3_to_region (Optional[Dict]): Mapping from iso3 to region. Defaults to None.
-            ignore_regions (ListTuple[str]): Regions to ignore. Defaults to tuple().
-            level (str): Name of national level. Defaults to "national".
-            tab (str): Name of tab (key in JSON) to update. Defaults to "national".
+            names (Optional[ListTuple[str]]): Names of scrapers. Default is None.
+            flag_countries (Optional[Dict]): Countries to flag. Default is None.
+            iso3_to_region (Optional[Dict]): Mapping from iso3 to region. Default is None.
+            ignore_regions (ListTuple[str]): Regions to ignore. Default is tuple().
+            level (str): Name of national level. Default is "national".
+            tab (str): Name of tab (key in JSON) to update. Default is "national".
 
         Returns:
             None
@@ -327,9 +327,9 @@ class Writer:
 
         Args:
             adminlevel (AdminLevel): AdminLevel object from HDX Python Country library
-            names (Optional[ListTuple[str]]): Names of scrapers. Defaults to None.
-            level (str): Name of subnational level. Defaults to "subnational".
-            tab (str): Name of tab (key in JSON) to update. Defaults to "subnational".
+            names (Optional[ListTuple[str]]): Names of scrapers. Default is None.
+            level (str): Name of subnational level. Default is "subnational".
+            tab (str): Name of tab (key in JSON) to update. Default is "subnational".
 
         Returns:
             None
@@ -379,13 +379,13 @@ class Writer:
         hashtag).
 
         Args:
-            additional_sources (ListTuple[Dict]): Additional sources to add. Defaults to empty tuple.
-            names (Optional[ListTuple[str]]): Names of scrapers. Defaults to None.
-            secondary_runner (Optional[Runner]): Secondary Runner object. Defaults to None.
-            custom_sources (ListTuple[Tuple]): Custom sources to add. Defaults to empty tuple.
-            tab (str): Name of tab (key in JSON) to update. Defaults to "sources".
-            should_overwrite_sources (Optional[bool]): Whether to overwrite sources. Defaults to None (class default).
-            sources_to_delete (ListTuple[Dict]): Sources tags to delete. Defaults to empty tuple.
+            additional_sources (ListTuple[Dict]): Additional sources to add. Default is empty tuple.
+            names (Optional[ListTuple[str]]): Names of scrapers. Default is None.
+            secondary_runner (Optional[Runner]): Secondary Runner object. Default is None.
+            custom_sources (ListTuple[Tuple]): Custom sources to add. Default is empty tuple.
+            tab (str): Name of tab (key in JSON) to update. Default is "sources".
+            should_overwrite_sources (Optional[bool]): Whether to overwrite sources. Default is None (class default).
+            sources_to_delete (ListTuple[Dict]): Sources tags to delete. Default is empty tuple.
 
         Returns:
             None

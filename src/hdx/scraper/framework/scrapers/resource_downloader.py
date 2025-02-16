@@ -16,7 +16,7 @@ class ResourceDownloader(BaseScraper):
 
     Args:
         datasetinfo (Dict): Information about dataset
-        folder (str): Folder to which to download. Defaults to "".
+        folder (str): Folder to which to download. Default is "".
     """
 
     def __init__(self, datasetinfo, folder):

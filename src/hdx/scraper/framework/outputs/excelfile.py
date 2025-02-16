@@ -43,7 +43,7 @@ class ExcelFile(BaseOutput):
         Args:
             tabname (str): Tab to update
             values (Union[List, DataFrame]): Values in a list of lists or a DataFrame
-            hxltags (Optional[Dict]): HXL tag mapping. Defaults to None.
+            hxltags (Optional[Dict]): HXL tag mapping. Default is None.
 
         Returns:
             None

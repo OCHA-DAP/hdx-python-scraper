@@ -30,7 +30,7 @@ class RowParser:
         headers (List[str]): Row headers
         header_to_hxltag (Optional[Dict[str, str]]): Mapping from headers to HXL hashtags or None
         subsets (List[Dict]): List of subset definitions
-        maxdateonly (bool): Whether to only take the most recent date. Defaults to True.
+        maxdateonly (bool): Whether to only take the most recent date. Default is True.
     """
 
     def __init__(

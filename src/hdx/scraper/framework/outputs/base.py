@@ -29,7 +29,7 @@ class BaseOutput:
         Args:
             tabname (str): Tab to update
             values (Union[List, DataFrame]): Values in a list of lists or a DataFrame
-            hxltags (Optional[Dict]): HXL tag mapping. Defaults to None.
+            hxltags (Optional[Dict]): HXL tag mapping. Default is None.
             **kwargs (Any): Keyword arguments
 
         Returns:
@@ -57,7 +57,7 @@ class BaseOutput:
         Args:
             key (str): Key in JSON to update
             df (DataFrame): Dataframe containing rows
-            hxltags (Optional[Dict]): HXL tag mapping. Defaults to None.
+            hxltags (Optional[Dict]): HXL tag mapping. Default is None.
 
         Returns:
             None
@@ -77,7 +77,7 @@ class BaseOutput:
             key (str): Key to update
             countryiso (str): Country to use as subkey
             rows (List[Dict]): List of dictionaries
-            hxltags (Optional[Dict]): HXL tag mapping. Defaults to None.
+            hxltags (Optional[Dict]): HXL tag mapping. Default is None.
 
         Returns:
             None
