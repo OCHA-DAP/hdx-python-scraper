@@ -41,6 +41,8 @@ def complete_admins(
             warntxt = "parent"
         elif provider_adm_name:
             parent = admins[i].pcode_to_parent.get(adm_code)
+            if not parent and i > 0:
+                parent = adm_codes[i - 1]
             pcode, _ = admins[i].get_pcode(
                 countryiso3,
                 provider_adm_name,

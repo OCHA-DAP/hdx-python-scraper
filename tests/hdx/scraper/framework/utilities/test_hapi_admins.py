@@ -84,6 +84,17 @@ class TestAdmins:
         assert adm_level == 2
         assert warnings == []
 
+        provider_adm_names = ["Kabul", "Qara Bagh"]
+        adm_codes = ["AF01", ""]
+        adm_names = ["", ""]
+        adm_level, warnings = complete_admins(
+            admins, countryiso3, provider_adm_names, adm_codes, adm_names
+        )
+        assert adm_codes == ["AF01", "AF0114"]
+        assert adm_names == ["Kabul", "Qara Bagh"]
+        assert adm_level == 2
+        assert warnings == []
+
         provider_adm_names = ["Kabal", "Paghman"]
         adm_codes = ["AF01", ""]
         adm_names = ["", ""]
