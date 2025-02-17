@@ -99,6 +99,7 @@ initial_lookup:
   mpc: "Cash"
   mpca: "Cash"
   ms: "Multi"
+  multi purpose cash: "Cash"
   multi secteur: "Multi"
   multisectoriel: "Multi"
   nutricion: "NUT"
