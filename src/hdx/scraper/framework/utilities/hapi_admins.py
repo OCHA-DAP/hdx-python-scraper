@@ -31,8 +31,20 @@ def complete_admins(
     warnings = []
     child = None
     adm_level = len(provider_adm_names)
+
+    def check_unknown_pcode(adm_code: str, pcode: str) -> str:
+        if pcode:
+            warnings.append(f"PCode unknown {adm_code}->{pcode} ({warntxt})")
+            return pcode
+        else:
+            warnings.append(f"PCode unknown {adm_code}->''")
+            return ""
+
     for i, provider_adm_name in reversed(list(enumerate(provider_adm_names))):
         adm_code = adm_codes[i]
+        parent = admins[i].pcode_to_parent.get(adm_code)
+        if not parent and i > 0:
+            parent = adm_codes[i - 1]
         if not provider_adm_name:
             provider_adm_name = ""
             provider_adm_names[i] = ""
@@ -40,9 +52,6 @@ def complete_admins(
             pcode = admins[i + 1].pcode_to_parent.get(child)
             warntxt = "parent"
         elif provider_adm_name:
-            parent = admins[i].pcode_to_parent.get(adm_code)
-            if not parent and i > 0:
-                parent = adm_codes[i - 1]
             pcode, _ = admins[i].get_pcode(
                 countryiso3,
                 provider_adm_name,
@@ -54,14 +63,19 @@ def complete_admins(
             pcode = None
         if adm_code:
             if adm_code not in admins[i].pcodes:
-                if pcode:
-                    warnings.append(
-                        f"PCode unknown {adm_code}->{pcode} ({warntxt})"
+                if admins[i].looks_like_pcode(adm_code):
+                    adj_adm_code = admins[i].convert_admin_pcode_length(
+                        countryiso3, adm_code, parent=parent
                     )
-                    adm_code = pcode
+                    if adj_adm_code:
+                        warnings.append(
+                            f"PCode length {adm_code}->{adj_adm_code}"
+                        )
+                        adm_code = adj_adm_code
+                    else:
+                        adm_code = check_unknown_pcode(adm_code, pcode)
                 else:
-                    warnings.append(f"PCode unknown {adm_code}->''")
-                    adm_code = ""
+                    adm_code = check_unknown_pcode(adm_code, pcode)
             elif pcode and adm_code != pcode:
                 if child:
                     warnings.append(

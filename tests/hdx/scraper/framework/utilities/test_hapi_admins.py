@@ -187,6 +187,30 @@ class TestAdmins:
         assert adm_level == 2
         assert warnings == ["PCode mismatch AF0103 != Paghman"]
 
+        provider_adm_names = ["Kabal", "Paghman"]
+        adm_codes = ["AF01", "AFG0102"]
+        adm_names = ["", ""]
+        adm_level, warnings = complete_admins(
+            admins, countryiso3, provider_adm_names, adm_codes, adm_names
+        )
+        assert adm_codes == ["AF01", "AF0102"]
+        assert adm_names == ["Kabul", "Paghman"]
+        assert adm_level == 2
+        assert warnings == ["PCode length AFG0102->AF0102"]
+
+        provider_adm_names = ["Kabal", "Paghman"]
+        adm_codes = ["AF01", "AFG9999"]
+        adm_names = ["", ""]
+        adm_level, warnings = complete_admins(
+            admins, countryiso3, provider_adm_names, adm_codes, adm_names
+        )
+        assert adm_codes == ["AF01", "AF0102"]
+        assert adm_names == ["Kabul", "Paghman"]
+        assert adm_level == 2
+        assert warnings == [
+            "PCode unknown AFG9999->AF0102 (provider_adm2_name)"
+        ]
+
     def test_pad_admins(self):
         provider_adm_names = ["Kabul", "Paghman"]
         adm_codes = ["AF01", "AF0102"]
