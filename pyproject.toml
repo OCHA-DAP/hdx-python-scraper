@@ -51,6 +51,6 @@ Homepage = "https://github.com/OCHA-DAP/hdx-python-scraper"
 
 [project.optional-dependencies]
 pandas = ["pandas>=2.2.3"]
-test = ["pytest", "pytest-cov"]
+test = ["pandas>=2.2.3", "pytest", "pytest-cov"]
 dev = ["pre-commit"]
 docs = ["mkapi"]
