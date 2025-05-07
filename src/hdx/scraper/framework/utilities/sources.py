@@ -91,9 +91,7 @@ class Sources:
                 else:
                     if isinstance(value, dict):
                         for startend, date in value.items():
-                            set_source_date(
-                                date, hxltag=key, startend=startend
-                            )
+                            set_source_date(date, hxltag=key, startend=startend)
                     else:
                         set_source_date(value, hxltag=key)
         else:
@@ -214,9 +212,7 @@ class Sources:
                 index = hxltags.index(hxltag)
                 sources[index] = source
             else:
-                logger.warning(
-                    f"Keeping existing source information for {hxltag}!"
-                )
+                logger.warning(f"Keeping existing source information for {hxltag}!")
         else:
             hxltags.append(hxltag)
             sources.append(source)
@@ -282,9 +278,7 @@ class Sources:
         if no_sources:
             source_configuration["no_sources"] = True
             return source_configuration
-        source_configuration["should_overwrite_sources"] = (
-            should_overwrite_sources
-        )
+        source_configuration["should_overwrite_sources"] = should_overwrite_sources
         if suffix_attribute:
             source_configuration["suffix_attribute"] = suffix_attribute
             return source_configuration

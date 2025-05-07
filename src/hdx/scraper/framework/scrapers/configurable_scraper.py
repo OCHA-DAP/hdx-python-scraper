@@ -129,9 +129,7 @@ class ConfigurableScraper(BaseScraper):
                     "input_keep": datasetinfo.get("input_keep", []),
                     "input_append": datasetinfo.get("input_append", []),
                     "sum": datasetinfo.get("sum"),
-                    "input_ignore_vals": datasetinfo.get(
-                        "input_ignore_vals", []
-                    ),
+                    "input_ignore_vals": datasetinfo.get("input_ignore_vals", []),
                     "output": datasetinfo.get("output", []),
                     "output_hxl": datasetinfo.get("output_hxl", []),
                 }
@@ -144,10 +142,7 @@ class ConfigurableScraper(BaseScraper):
         Returns:
             Tuple[List[str],Iterator[Dict]]: Tuple (headers, iterator where each row is a dictionary)
         """
-        if (
-            "filename" not in self.datasetinfo
-            and "file_prefix" not in self.datasetinfo
-        ):
+        if "filename" not in self.datasetinfo and "file_prefix" not in self.datasetinfo:
             self.datasetinfo["file_prefix"] = self.name
         return self.get_reader().read(self.datasetinfo, **self.variables)
 
@@ -162,9 +157,7 @@ class ConfigurableScraper(BaseScraper):
         if not date or use_date_from_date_col:
             date = self.rowparser.get_maxdate()
             if date == 0:
-                raise ValueError(
-                    "No date given in datasetinfo or as a column!"
-                )
+                raise ValueError("No date given in datasetinfo or as a column!")
             if self.rowparser.datetype == "date":
                 if not isinstance(date, datetime):
                     date = parse_date(date)
@@ -361,11 +354,7 @@ class ConfigurableScraper(BaseScraper):
                         else:
                             input_keep_index = -1
                         val = valdicts[j][adm][input_keep_index]
-                        if (
-                            val is None
-                            or val == ""
-                            or val in input_ignore_vals
-                        ):
+                        if val is None or val == "" or val in input_ignore_vals:
                             val = 0
                         else:
                             hasvalues = True
@@ -384,16 +373,12 @@ class ConfigurableScraper(BaseScraper):
                             for bracketed_str in matches.captures("rec"):
                                 if any(bracketed_str in x for x in valcols):
                                     continue
-                                _, hasvalues_t = text_replacement(
-                                    bracketed_str, adm
-                                )
+                                _, hasvalues_t = text_replacement(bracketed_str, adm)
                                 if not hasvalues_t:
                                     hasvalues = False
                                     break
                         if hasvalues:
-                            formula, hasvalues_t = text_replacement(
-                                process_col, adm
-                            )
+                            formula, hasvalues_t = text_replacement(process_col, adm)
                             if hasvalues_t:
                                 formula = formula.replace(
                                     "#population",
@@ -431,20 +416,14 @@ class ConfigurableScraper(BaseScraper):
                                 continue
                             for j, valdict in enumerate(valdicts):
                                 val = valdict[adm][i]
-                                if (
-                                    val is None
-                                    or val == ""
-                                    or val in input_ignore_vals
-                                ):
+                                if val is None or val == "" or val in input_ignore_vals:
                                     continue
                                 newvaldicts[j][adm] = eval(
                                     f"newvaldicts[j].get(adm, 0.0) + {str(valdict[adm][i])}"
                                 )
                     formula = formula.replace("#population", "#pzbgvjh")
                     for i in sorted_len_indices:
-                        formula = formula.replace(
-                            valcols[i], f"newvaldicts[{i}][adm]"
-                        )
+                        formula = formula.replace(valcols[i], f"newvaldicts[{i}][adm]")
                     formula = formula.replace("#pzbgvjh", population_str)
                     for adm in valdicts[0]:
                         try:
@@ -470,14 +449,10 @@ class ConfigurableScraper(BaseScraper):
         header_to_hxltag = self.use_hxl(None, file_headers, iterator)
         if "source_url" not in self.datasetinfo:
             self.datasetinfo["source_url"] = self.datasetinfo["url"]
-        source_date = Sources.standardise_datasetinfo_source_date(
-            self.datasetinfo
-        )
+        source_date = Sources.standardise_datasetinfo_source_date(self.datasetinfo)
         if not source_date or self.datasetinfo.get("force_date_today", False):
             source_date = self.today
-            self.datasetinfo["source_date"] = {
-                "default_date": {"end": source_date}
-            }
+            self.datasetinfo["source_date"] = {"default_date": {"end": source_date}}
         self.rowparser = RowParser(
             self.name,
             self.countryiso3s,

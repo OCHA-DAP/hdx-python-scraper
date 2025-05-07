@@ -27,9 +27,7 @@ class TestAggregation:
                 "https://data.humdata.org/organization/world-bank-group",
             )
         ]
-        source_urls = [
-            "https://data.humdata.org/organization/world-bank-group"
-        ]
+        source_urls = ["https://data.humdata.org/organization/world-bank-group"]
         run_check_scraper(
             name,
             runner,
@@ -269,9 +267,7 @@ class TestAggregation:
                 "https://data.humdata.org/organization/world-bank-group",
             )
         ]
-        source_urls = [
-            "https://data.humdata.org/organization/world-bank-group"
-        ]
+        source_urls = ["https://data.humdata.org/organization/world-bank-group"]
         run_check_scraper(
             name,
             runner,

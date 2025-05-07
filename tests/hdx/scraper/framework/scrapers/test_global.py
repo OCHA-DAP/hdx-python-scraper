@@ -179,9 +179,7 @@ class TestScraperGlobal:
             ],
         ]
         assert rows == expected_rows
-        rows = runner.get_rows(
-            "gho", ("value",), overrides={name: {"global": "gho"}}
-        )
+        rows = runner.get_rows("gho", ("value",), overrides={name: {"global": "gho"}})
         assert rows == expected_rows
         runner.set_not_run(name)
 
@@ -307,18 +305,14 @@ class TestScraperGlobal:
         ]
         run_check_scraper(name, runner, level_name, headers, values, sources)
 
-    def test_get_global_2021(
-        self, cerf_headers, caplog, configuration, fallbacks_json
-    ):
+    def test_get_global_2021(self, cerf_headers, caplog, configuration, fallbacks_json):
         BaseScraper.population_lookup = {}
         today = parse_date("2021-05-03")
         level = "single"
         level_name = "global"
         scraper_configuration = configuration[f"scraper_{level_name}"]
         runner = Runner(configuration["HRPs"], today)
-        runner.add_configurables(
-            scraper_configuration, level, level_name=level_name
-        )
+        runner.add_configurables(scraper_configuration, level, level_name=level_name)
         name = "cerf2_global"
         headers = (
             [cerf_headers[0][0], cerf_headers[0][7]],
@@ -482,9 +476,7 @@ class TestScraperGlobal:
         run_check_scraper(name, runner, level_name, headers, values, sources)
 
         scraper_configuration = configuration["other"]
-        runner.add_configurables(
-            scraper_configuration, level, level_name=level_name
-        )
+        runner.add_configurables(scraper_configuration, level, level_name=level_name)
         name = "population_other"
         headers = (
             ["Population"],

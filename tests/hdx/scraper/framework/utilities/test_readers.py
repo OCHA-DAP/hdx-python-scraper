@@ -57,9 +57,7 @@ class TestReaders:
                     prefix="test",
                     today=parse_date("2021-02-01"),
                 ) as reader:
-                    monkeypatch.setattr(
-                        Dataset, "read_from_hdx", read_from_hdx
-                    )
+                    monkeypatch.setattr(Dataset, "read_from_hdx", read_from_hdx)
                     dataset_name = "None"
                     dataset = reader.read_dataset(dataset_name)
                     assert dataset is None
@@ -116,21 +114,15 @@ class TestReaders:
                     prefix="test",
                     today=parse_date("2021-02-01"),
                 ) as reader:
-                    monkeypatch.setattr(
-                        Dataset, "search_in_hdx", search_in_hdx
-                    )
+                    monkeypatch.setattr(Dataset, "search_in_hdx", search_in_hdx)
                     datasets = reader.search_datasets(filename)
                     assert len(datasets) == 2
                     dataset = datasets[0]
                     assert dataset["name"] == f"{filename}_0"
-                    assert (
-                        dataset.get_resource()["url"] == f"{filename}_0.json"
-                    )
+                    assert dataset.get_resource()["url"] == f"{filename}_0.json"
                     dataset = datasets[1]
                     assert dataset["name"] == f"{filename}_1"
-                    assert (
-                        dataset.get_resource()["url"] == f"{filename}_1.json"
-                    )
+                    assert dataset.get_resource()["url"] == f"{filename}_1.json"
                     monkeypatch.delattr(Dataset, "search_in_hdx")
                 with Read(
                     downloader,
@@ -146,14 +138,10 @@ class TestReaders:
                     assert len(datasets) == 2
                     dataset = datasets[0]
                     assert dataset["name"] == f"{filename}_0"
-                    assert (
-                        dataset.get_resource()["url"] == f"{filename}_0.json"
-                    )
+                    assert dataset.get_resource()["url"] == f"{filename}_0.json"
                     dataset = datasets[1]
                     assert dataset["name"] == f"{filename}_1"
-                    assert (
-                        dataset.get_resource()["url"] == f"{filename}_1.json"
-                    )
+                    assert dataset.get_resource()["url"] == f"{filename}_1.json"
 
     def test_read_hxl_resource(self, input_folder):
         with temp_dir("TestReader") as temp_folder:
@@ -233,9 +221,7 @@ class TestReaders:
                 "hdx_provider_name": "OCHA West and Central Africa (ROWCA)",
                 "license": "[Creative Commons Attribution International](http://www.opendefinition.org/licenses/cc-by)",
                 "time_period": {
-                    "end": datetime(
-                        2016, 9, 1, 23, 59, 59, tzinfo=timezone.utc
-                    ),
+                    "end": datetime(2016, 9, 1, 23, 59, 59, tzinfo=timezone.utc),
                     "start": datetime(2016, 9, 1, 0, 0, tzinfo=timezone.utc),
                 },
                 "title": "Sahel : Humanitarian Needs Overview",
@@ -245,18 +231,14 @@ class TestReaders:
                 "name": "HNO -2017 -Sahel-nutrition.csv",
                 "format": "csv",
                 "hdx_id": "2527ac5b-66fe-46f0-8b9b-7086d2c4ddd3",
-                "update_date": datetime(
-                    2017, 3, 10, 10, 8, 37, tzinfo=timezone.utc
-                ),
+                "update_date": datetime(2017, 3, 10, 10, 8, 37, tzinfo=timezone.utc),
             },
             "headers": 1,
             "name": "test",
             "source": "Multiple organisations",
             "source_date": {
                 "default_date": {
-                    "end": datetime(
-                        2016, 9, 1, 23, 59, 59, tzinfo=timezone.utc
-                    ),
+                    "end": datetime(2016, 9, 1, 23, 59, 59, tzinfo=timezone.utc),
                     "start": datetime(2016, 9, 1, 0, 0, tzinfo=timezone.utc),
                 }
             },
@@ -312,9 +294,7 @@ class TestReaders:
                 "hdx_provider_name": "OCHA West and Central Africa (ROWCA)",
                 "license": "[Creative Commons Attribution International](http://www.opendefinition.org/licenses/cc-by)",
                 "time_period": {
-                    "end": datetime(
-                        2016, 9, 1, 23, 59, 59, tzinfo=timezone.utc
-                    ),
+                    "end": datetime(2016, 9, 1, 23, 59, 59, tzinfo=timezone.utc),
                     "start": datetime(2016, 9, 1, 0, 0, tzinfo=timezone.utc),
                 },
                 "title": "Sahel : Humanitarian Needs Overview",
@@ -324,9 +304,7 @@ class TestReaders:
                 "name": "HNO-2017-Sahel- People in need.xlsx",
                 "format": "xlsx",
                 "hdx_id": "d9248be4-7bfb-4a81-a7aa-c035dcb737a2",
-                "update_date": datetime(
-                    2017, 3, 10, 10, 8, 37, tzinfo=timezone.utc
-                ),
+                "update_date": datetime(2017, 3, 10, 10, 8, 37, tzinfo=timezone.utc),
             },
             "headers": 1,
             "name": "test",
@@ -335,9 +313,7 @@ class TestReaders:
             "source": "Multiple organisations",
             "source_date": {
                 "default_date": {
-                    "end": datetime(
-                        2016, 9, 1, 23, 59, 59, tzinfo=timezone.utc
-                    ),
+                    "end": datetime(2016, 9, 1, 23, 59, 59, tzinfo=timezone.utc),
                     "start": datetime(2016, 9, 1, 0, 0, tzinfo=timezone.utc),
                 }
             },

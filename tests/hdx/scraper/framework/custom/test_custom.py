@@ -33,9 +33,7 @@ class TestCustom:
                     "format": "csv",
                     "hdx_id": "3b5baa74-c928-4cbc-adba-bf543c5d3050",
                     "is_hxl": False,
-                    "update_date": datetime(
-                        2022, 4, 4, 9, 56, 5, tzinfo=timezone.utc
-                    ),
+                    "update_date": datetime(2022, 4, 4, 9, 56, 5, tzinfo=timezone.utc),
                 },
                 "headers": (["School Closure"], ["#impact+type"]),
                 "values": [{"AFG": "Closed due to COVID-19"}],
@@ -47,9 +45,7 @@ class TestCustom:
                     "format": "csv",
                     "hdx_id": "3b5baa74-c928-4cbc-adba-bf543c5d3050",
                     "is_hxl": False,
-                    "update_date": datetime(
-                        2022, 4, 4, 9, 56, 5, tzinfo=timezone.utc
-                    ),
+                    "update_date": datetime(2022, 4, 4, 9, 56, 5, tzinfo=timezone.utc),
                 },
                 "headers": (
                     ["No. closed countries"],
@@ -68,9 +64,7 @@ class TestCustom:
         "hdx_provider_name": "UNESCO",
         "license": "[Creative Commons Attribution International](http://www.opendefinition.org/licenses/cc-by)",
         "time_period": {
-            "end": datetime(
-                2023, 5, 11, 23, 59, 59, 999999, tzinfo=timezone.utc
-            ),
+            "end": datetime(2023, 5, 11, 23, 59, 59, 999999, tzinfo=timezone.utc),
             "start": datetime(2019, 3, 4, 0, 0, tzinfo=timezone.utc),
         },
         "results": {
@@ -99,9 +93,7 @@ class TestCustom:
                     "hdx_id": "3b5baa74-c928-4cbc-adba-bf543c5d3050",
                     "name": "School Closures",
                     "format": "csv",
-                    "update_date": datetime(
-                        2022, 4, 4, 9, 56, 5, tzinfo=timezone.utc
-                    ),
+                    "update_date": datetime(2022, 4, 4, 9, 56, 5, tzinfo=timezone.utc),
                     "download_url": "https://data.humdata.org/dataset/6a41be98-75b9-4365-9ea3-e33d0dd2668b/resource/3b5baa74-c928-4cbc-adba-bf543c5d3050/download/covid_impact_education.csv",
                     "is_hxl": False,
                 },
@@ -128,9 +120,7 @@ class TestCustom:
                     "hdx_id": "3b5baa74-c928-4cbc-adba-bf543c5d3050",
                     "name": "School Closures",
                     "format": "csv",
-                    "update_date": datetime(
-                        2022, 4, 4, 9, 56, 5, tzinfo=timezone.utc
-                    ),
+                    "update_date": datetime(2022, 4, 4, 9, 56, 5, tzinfo=timezone.utc),
                     "download_url": "https://data.humdata.org/dataset/6a41be98-75b9-4365-9ea3-e33d0dd2668b/resource/3b5baa74-c928-4cbc-adba-bf543c5d3050/download/covid_impact_education.csv",
                     "is_hxl": False,
                 },
@@ -165,9 +155,7 @@ class TestCustom:
         datasetinfo = configuration["education_closures"]
 
         runner = Runner(("AFG",), today, scrapers_to_run=("lala",))
-        education_closures = EducationClosures(
-            datasetinfo, today, countries, region
-        )
+        education_closures = EducationClosures(datasetinfo, today, countries, region)
         runner.add_custom(education_closures)
         runner.run()
         hapi_metadata = runner.get_hapi_metadata()
@@ -201,9 +189,7 @@ class TestCustom:
                 "hdx_provider_name": "UNESCO",
                 "license": "[Creative Commons Attribution International](http://www.opendefinition.org/licenses/cc-by)",
                 "time_period": {
-                    "end": datetime(
-                        2022, 4, 30, 23, 59, 59, tzinfo=timezone.utc
-                    ),
+                    "end": datetime(2022, 4, 30, 23, 59, 59, tzinfo=timezone.utc),
                     "start": datetime(2020, 2, 16, 0, 0, tzinfo=timezone.utc),
                 },
                 "resources": {
@@ -293,15 +279,11 @@ class TestCustom:
         edu_dsinfo = runner.get_scraper(name).datasetinfo
         pop_dsinfo = runner.get_scraper("population").datasetinfo
         # pretend population uses same dataset as education for testing
-        pop_dsinfo["hapi_dataset_metadata"] = edu_dsinfo[
-            "hapi_dataset_metadata"
-        ]
+        pop_dsinfo["hapi_dataset_metadata"] = edu_dsinfo["hapi_dataset_metadata"]
         hapi_results = runner.get_hapi_results()
         assert next(iter(hapi_results.values())) == self.hapi_values_closure
         # pretend population uses same resource as education for testing
-        pop_dsinfo["hapi_resource_metadata"] = edu_dsinfo[
-            "hapi_resource_metadata"
-        ]
+        pop_dsinfo["hapi_resource_metadata"] = edu_dsinfo["hapi_resource_metadata"]
         hapi_results = runner.get_hapi_results()
         hapi_values = copy(self.hapi_values_closure)
         hapi_values["results"]["national"]["headers"] = (
@@ -314,18 +296,14 @@ class TestCustom:
         ]
         assert next(iter(hapi_results.values())) == hapi_values
 
-        education_closures2 = EducationClosures(
-            datasetinfo, today, countries, region
-        )
+        education_closures2 = EducationClosures(datasetinfo, today, countries, region)
         # give it a unique name
         education_closures2.name = f"{education_closures2.name}2"
         runner.add_custom(education_closures2)
         runner.run_one(education_closures2.name)
         # give it a unique result
         del education_closures2.values["national"][0]["AFG"]
-        education_closures2.values["national"][0]["SDN"] = (
-            "Closed due to COVID-19"
-        )
+        education_closures2.values["national"][0]["SDN"] = "Closed due to COVID-19"
         hapi_results = runner.get_hapi_results()
         hapi_values["results"]["national"]["values"] = [
             {"AFG": "Closed due to COVID-19", "SDN": "Closed due to COVID-19"},
@@ -345,9 +323,7 @@ class TestCustom:
         runner = Runner(("AFG",), today)
         datasetinfo = deepcopy(datasetinfo)
         datasetinfo["url"] = "NOTEXIST.csv"
-        education_closures = EducationClosures(
-            datasetinfo, today, countries, region
-        )
+        education_closures = EducationClosures(datasetinfo, today, countries, region)
         runner.add_custom(education_closures)
         runner.run()
         name = education_closures.name
@@ -396,9 +372,7 @@ class TestCustom:
     ):
         BaseScraper.population_lookup = {}
         datasetinfo = configuration["education_closures"]
-        education_closures = EducationClosures(
-            datasetinfo, today, countries, region
-        )
+        education_closures = EducationClosures(datasetinfo, today, countries, region)
         datasetinfo = configuration["education_enrolment"]
 
         runner = Runner(("AFG",), today)
@@ -516,9 +490,7 @@ class TestCustom:
         ]
 
         datasetinfo = configuration["education_closures"]
-        education_closures = EducationClosures(
-            datasetinfo, today, countries, region
-        )
+        education_closures = EducationClosures(datasetinfo, today, countries, region)
         runner.add_custom(education_closures)
         runner.run()
         assert runner.get_source_urls() == [

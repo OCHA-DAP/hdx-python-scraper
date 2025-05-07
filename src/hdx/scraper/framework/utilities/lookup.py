@@ -21,9 +21,7 @@ class Lookup:
     """
 
     def __init__(self, yaml_config_path: str, classobject: Type):
-        configuration = load_yaml(
-            script_dir_plus_file(yaml_config_path, classobject)
-        )
+        configuration = load_yaml(script_dir_plus_file(yaml_config_path, classobject))
         self._configuration = configuration
         initial_lookup = configuration.get("initial_lookup", {})
         self._code_lookup = copy(initial_lookup)
@@ -91,9 +89,7 @@ class Lookup:
             unmatched=self._unmatched,
         )
 
-    def get_name(
-        self, code: str, default: Optional[str] = None
-    ) -> Optional[str]:
+    def get_name(self, code: str, default: Optional[str] = None) -> Optional[str]:
         """Get name from code
 
         Args:

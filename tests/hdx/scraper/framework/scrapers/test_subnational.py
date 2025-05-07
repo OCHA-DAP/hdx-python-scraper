@@ -331,9 +331,7 @@ class TestSubnational:
         ]
 
         scraper_configuration = configuration["other"]
-        runner.add_configurables(
-            scraper_configuration, level, adminlevel=adminlevel
-        )
+        runner.add_configurables(scraper_configuration, level, adminlevel=adminlevel)
         name = "gam_other"
         headers = (
             ["Malnutrition Estimate"],
@@ -359,9 +357,7 @@ class TestSubnational:
         adminlevel = AdminLevel(configuration["admin1"])
         adminlevel.setup_from_admin_info(configuration["admin1"]["admin_info"])
         runner = Runner(("SOM",), today)
-        runner.add_configurables(
-            scraper_configuration, level, adminlevel=adminlevel
-        )
+        runner.add_configurables(scraper_configuration, level, adminlevel=adminlevel)
         name = "ipc_somalia"
         headers = (
             ["FoodInsecurityIPCP3+"],
@@ -410,9 +406,7 @@ class TestSubnational:
         adminlevel = AdminLevel(configuration["admin2"])
         adminlevel.setup_from_admin_info(configuration["admin2"]["admin_info"])
         runner = Runner(("SOM",), today)
-        runner.add_configurables(
-            scraper_configuration, level, adminlevel=adminlevel
-        )
+        runner.add_configurables(scraper_configuration, level, adminlevel=adminlevel)
         name = "idps_somalia"
         headers = (
             ["IDPs"],

@@ -362,13 +362,9 @@ class TestRegionalToplevel:
         )
 
         level = "global"
-        aggregator_configuration = configuration[
-            "aggregation_regionaltoplevel"
-        ]
+        aggregator_configuration = configuration["aggregation_regionaltoplevel"]
         adm_aggregation = ("AFG", "PSE")
-        source_configuration = Sources.create_source_configuration(
-            no_sources=True
-        )
+        source_configuration = Sources.create_source_configuration(no_sources=True)
         names = runner.add_aggregators(
             True,
             aggregator_configuration,
@@ -412,9 +408,7 @@ class TestRegionalToplevel:
         )
 
         level = "global"
-        aggregator_configuration = configuration[
-            "aggregation_regionaltoplevel"
-        ]
+        aggregator_configuration = configuration["aggregation_regionaltoplevel"]
         adm_aggregation = ("AFG", "PSE")
         names = runner.add_aggregators(
             True,

@@ -31,9 +31,7 @@ def configuration(fixtures, input_folder):
         hdx_read_only=True,
         hdx_site="prod",
         user_agent="test",
-        project_config_yaml=join(
-            "tests", "config", "project_configuration.yaml"
-        ),
+        project_config_yaml=join("tests", "config", "project_configuration.yaml"),
     )
     Locations.set_validlocations(
         [
@@ -45,11 +43,11 @@ def configuration(fixtures, input_folder):
     Country.countriesdata(use_live=False)
 
     header_auths = "population:pop_12345,who_national:who_abc"
-    basic_auths = "access:YWNjXzEyMzQ1OmFjY19hYmM=,who_national2:d2hvX2RlZjp3aG9fMTIzNDU="
-    bearer_tokens = "fts:12345"
-    param_auths = (
-        "sadd:user=sadd_123&pass=sadd_abc,ourworldindata:auth=owid_abc"
+    basic_auths = (
+        "access:YWNjXzEyMzQ1OmFjY19hYmM=,who_national2:d2hvX2RlZjp3aG9fMTIzNDU="
     )
+    bearer_tokens = "fts:12345"
+    param_auths = "sadd:user=sadd_123&pass=sadd_abc,ourworldindata:auth=owid_abc"
 
     header_auths = string_params_to_dict(header_auths)
     basic_auths = string_params_to_dict(basic_auths)

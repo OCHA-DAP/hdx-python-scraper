@@ -80,9 +80,7 @@ class TestAppendData:
         ]
 
     @staticmethod
-    def get_expected_sources(
-        headers, date, countryiso3, country_attribute=False
-    ):
+    def get_expected_sources(headers, date, countryiso3, country_attribute=False):
         sources = []
         countryname = Country.get_country_name_from_iso3(countryiso3).lower()
         for hxltag in headers[1]:
@@ -136,15 +134,9 @@ class TestAppendData:
         )
         assert keys == names
 
-        sources = self.get_expected_sources(
-            headers, "Nov 1, 2022", "ETH", True
-        )
-        sources += self.get_expected_sources(
-            headers, "Oct 1, 2020", "KEN", True
-        )
-        sources += self.get_expected_sources(
-            headers, "Oct 1, 2020", "SOM", True
-        )
+        sources = self.get_expected_sources(headers, "Nov 1, 2022", "ETH", True)
+        sources += self.get_expected_sources(headers, "Oct 1, 2020", "KEN", True)
+        sources += self.get_expected_sources(headers, "Oct 1, 2020", "SOM", True)
         run_check_scrapers(
             names,
             runner,
@@ -262,7 +254,9 @@ class TestAppendData:
         jsonout = JsonFile(configuration["json"], ["sources"])
         outputs = {"json": jsonout}
         additional_sources = deepcopy(configuration["additional_sources"])
-        source_url = "https://data.humdata.org/dataset/kenya-drought-related-key-figures"
+        source_url = (
+            "https://data.humdata.org/dataset/kenya-drought-related-key-figures"
+        )
         additional_sources.append(
             {
                 "indicator": "#value+funding+required+usd",
@@ -321,15 +315,11 @@ class TestAppendData:
         )
         Sources.set_should_overwrite_sources(False)
 
-    def test_source_overwrite_yaml(
-        self, configuration, iso3s, headers, values
-    ):
+    def test_source_overwrite_yaml(self, configuration, iso3s, headers, values):
         BaseScraper.population_lookup = {}
         today = parse_date("2020-10-01")
         level = "national"
-        scraper_configuration = configuration[
-            "scraper_append_data_should_overwrite"
-        ]
+        scraper_configuration = configuration["scraper_append_data_should_overwrite"]
         runner = Runner(iso3s, today)
         names = ["key_figures_eth", "key_figures_ken", "key_figures_som"]
         keys = runner.add_configurables(scraper_configuration, level)
@@ -369,15 +359,11 @@ class TestAppendData:
             headers, "Oct 1, 2020", "KEN"
         )
 
-    def test_additional_source_overwrite(
-        self, configuration, iso3s, headers, values
-    ):
+    def test_additional_source_overwrite(self, configuration, iso3s, headers, values):
         BaseScraper.population_lookup = {}
         today = parse_date("2020-10-01")
         level = "national"
-        scraper_configuration = configuration[
-            "scraper_append_data_should_overwrite"
-        ]
+        scraper_configuration = configuration["scraper_append_data_should_overwrite"]
         runner = Runner(iso3s, today)
         names = ["key_figures_eth", "key_figures_ken", "key_figures_som"]
         keys = runner.add_configurables(scraper_configuration, level)
@@ -401,7 +387,9 @@ class TestAppendData:
         outputs = {"json": jsonout}
         additional_sources = deepcopy(configuration["additional_sources"])
         source_date = "Nov 1, 2022"
-        source_url = "https://data.humdata.org/dataset/kenya-drought-related-key-figures"
+        source_url = (
+            "https://data.humdata.org/dataset/kenya-drought-related-key-figures"
+        )
         additional_sources.append(
             {
                 "indicator": "#value+funding+required+usd",
