@@ -68,9 +68,7 @@ class TestRunner:
             "use_hxl": True,
             "admin": ["#country"],
         }
-        runner.add_configurable(
-            "hno", datasetinfo, "national", suffix="_sahel"
-        )
+        runner.add_configurable("hno", datasetinfo, "national", suffix="_sahel")
         runner.run()
         results = runner.get_hapi_metadata(["hno_sahel"])
         expected_results = copy(self.expected_results)
@@ -80,9 +78,7 @@ class TestRunner:
         assert results == expected_results
 
         runner = Runner(iso3s, today)
-        runner.add_configurable(
-            "hno", datasetinfo, "national", suffix="_sahel"
-        )
+        runner.add_configurable("hno", datasetinfo, "national", suffix="_sahel")
         runner.run()
         del runner.get_scraper("hno_sahel").datasetinfo["filename"]
         results = runner.get_hapi_metadata(["hno_sahel"])
@@ -336,9 +332,7 @@ class TestRunner:
         results = runner.get_results(
             names=("population_global",),
             levels=("world", "global"),
-            overrides={
-                "population_global": {"national": "world", "global": "world"}
-            },
+            overrides={"population_global": {"national": "world", "global": "world"}},
         )
         assert results == {
             "world": {

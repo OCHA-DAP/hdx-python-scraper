@@ -115,9 +115,7 @@ class TestAdmins:
         assert adm_codes == ["AF01", "AF0102"]
         assert adm_names == ["Kabul", "Paghman"]
         assert adm_level == 2
-        assert warnings == [
-            "PCode unknown AF01XX->AF0102 (provider_adm2_name)"
-        ]
+        assert warnings == ["PCode unknown AF01XX->AF0102 (provider_adm2_name)"]
 
         provider_adm_names = ["Kabul", "Paghman"]
         adm_codes = ["", "AF0102"]
@@ -207,9 +205,7 @@ class TestAdmins:
         assert adm_codes == ["AF01", "AF0102"]
         assert adm_names == ["Kabul", "Paghman"]
         assert adm_level == 2
-        assert warnings == [
-            "PCode unknown AFG9999->AF0102 (provider_adm2_name)"
-        ]
+        assert warnings == ["PCode unknown AFG9999->AF0102 (provider_adm2_name)"]
 
     def test_pad_admins(self):
         provider_adm_names = ["Kabul", "Paghman"]

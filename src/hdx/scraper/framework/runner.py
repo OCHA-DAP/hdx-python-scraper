@@ -48,9 +48,7 @@ class Runner:
         self.scrapers = {}
         self.scraper_names = []
 
-    def add_custom(
-        self, scraper: BaseScraper, force_add_to_run: bool = False
-    ) -> str:
+    def add_custom(self, scraper: BaseScraper, force_add_to_run: bool = False) -> str:
         """Add custom scrapers that inherit BaseScraper. If running specific scrapers
         rather than all, and you want to force the inclusion of the scraper in the run
         regardless of the specific scrapers given, the parameter force_add_to_run
@@ -285,9 +283,7 @@ class Runner:
         Returns:
             Optional["Aggregator"]: scraper or None
         """
-        input_headers = self.get_headers(
-            names, [input_level], overrides=overrides
-        )
+        input_headers = self.get_headers(names, [input_level], overrides=overrides)
         input_headers = input_headers.get(input_level)
         if not input_headers:
             return None
@@ -312,9 +308,7 @@ class Runner:
             ) = self.get_values_sourcesinfo_by_header(
                 input_level, names, overrides, True, use_hxl
             )
-            scraper_self.set_input_values_sources(
-                input_values, input_sourcesinfo
-            )
+            scraper_self.set_input_values_sources(input_values, input_sourcesinfo)
 
         scraper.pre_run = lambda: get_values_sourcesinfo_by_header(scraper)
         return scraper
@@ -469,9 +463,7 @@ class Runner:
         keys = []
         for datasetinfo in configuration:
             keys.append(
-                self.add_resource_downloader(
-                    datasetinfo, folder, force_add_to_run
-                )
+                self.add_resource_downloader(datasetinfo, folder, force_add_to_run)
             )
         return keys
 
@@ -552,9 +544,7 @@ class Runner:
         for key, value in kwargs.items():
             setattr(scraper, key, value)
 
-    def add_pre_run(
-        self, name: str, fn: Callable[[BaseScraper], None]
-    ) -> None:
+    def add_pre_run(self, name: str, fn: Callable[[BaseScraper], None]) -> None:
         """Add pre run instance method to scraper instance given scraper name. The
         function should have one parameter. Since it is being added as an instance
         method to the scraper instance, that parameter will be self and hence is of
@@ -570,9 +560,7 @@ class Runner:
         scraper = self.get_scraper_exception(name)
         scraper.pre_run = lambda: fn(scraper)
 
-    def add_post_run(
-        self, name: str, fn: Callable[[BaseScraper], None]
-    ) -> None:
+    def add_post_run(self, name: str, fn: Callable[[BaseScraper], None]) -> None:
         """Add post run instance method to scraper instance given scraper name. The
         function should have one parameter. Since it is being added as an instance
         method to the scraper instance, that parameter will be self and hence is of
@@ -617,9 +605,7 @@ class Runner:
                         f"Using fallbacks for {scraper.name}! Error: {format_exc()}"
                     )
                 for level in scraper.headers.keys():
-                    values, sources = Fallbacks.get(
-                        level, scraper.headers[level]
-                    )
+                    values, sources = Fallbacks.get(level, scraper.headers[level])
                     scraper.values[level] = values
                     scraper.sources[level] = sources
                 scraper.add_population()
@@ -643,9 +629,7 @@ class Runner:
         Returns:
             bool: Return True if scraper was run, False if not
         """
-        if self.scrapers_to_run and not any(
-            x in name for x in self.scrapers_to_run
-        ):
+        if self.scrapers_to_run and not any(x in name for x in self.scrapers_to_run):
             return False
         logger.info(f"Running {name}")
         return self.run_one(name, force_run)
@@ -728,9 +712,7 @@ class Runner:
             names = self.scrapers.keys()
         results = {}
 
-        def add_level_results(
-            scraper_level, override_level, scrap, levels_used
-        ):
+        def add_level_results(scraper_level, override_level, scrap, levels_used):
             nonlocal results
 
             if scraper_level in levels_used:
@@ -802,9 +784,7 @@ class Runner:
             names = self.scrapers.keys()
         results = {}
 
-        def add_level_results(
-            scraper_level, override_level, scrap, levels_used
-        ):
+        def add_level_results(scraper_level, override_level, scrap, levels_used):
             nonlocal results
 
             if scraper_level in levels_used:
@@ -830,10 +810,8 @@ class Runner:
             lev_headings = level_results["headers"][0]
             lev_hxltags = level_results["headers"][1]
             lev_values = level_results["values"]
-            scraper_should_overwrite_sources = (
-                scraper.source_configuration.get(
-                    "should_overwrite_sources", should_overwrite_sources
-                )
+            scraper_should_overwrite_sources = scraper.source_configuration.get(
+                "should_overwrite_sources", should_overwrite_sources
             )
             for i, hxltag in enumerate(hxltags):
                 if hxltag in lev_hxltags:
@@ -903,9 +881,7 @@ class Runner:
         Returns:
             List[List]: Rows for a given level
         """
-        results = self.get_results(names, [level], overrides=overrides).get(
-            level
-        )
+        results = self.get_results(names, [level], overrides=overrides).get(level)
         rows = []
         if results:
             all_headers = results["headers"]
@@ -956,9 +932,7 @@ class Runner:
         else:
             main_index = 0
 
-        def add_level_results(
-            scraper_level, override_level, scrap, levels_used
-        ):
+        def add_level_results(scraper_level, override_level, scrap, levels_used):
             nonlocal values, sourcesinfo
 
             if scraper_level in levels_used:
@@ -1129,10 +1103,8 @@ class Runner:
                 levels_to_check = levels
             else:
                 levels_to_check = scraper.sources.keys()
-            scraper_should_overwrite_sources = (
-                scraper.source_configuration.get(
-                    "should_overwrite_sources", should_overwrite_sources
-                )
+            scraper_should_overwrite_sources = scraper.source_configuration.get(
+                "should_overwrite_sources", should_overwrite_sources
             )
             for level in levels_to_check:
                 Sources.add_sources_overwrite(
@@ -1145,9 +1117,7 @@ class Runner:
         add_additional_sources()
         return sources
 
-    def get_source_urls(
-        self, names: Optional[ListTuple[str]] = None
-    ) -> List[str]:
+    def get_source_urls(self, names: Optional[ListTuple[str]] = None) -> List[str]:
         """Get source urls for scrapers limiting to those in names if given.
 
         Args:
@@ -1260,9 +1230,7 @@ class Runner:
             if not hapi_resource_metadata:
                 return
             dataset_id = hapi_dataset_metadata["hdx_id"]
-            hapi_metadata = hapi_results.get(
-                dataset_id, copy(hapi_dataset_metadata)
-            )
+            hapi_metadata = hapi_results.get(dataset_id, copy(hapi_dataset_metadata))
             results = hapi_metadata.get("results", {})
             level_results = results.get(scraper_level)
             if level_results is None:

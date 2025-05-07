@@ -44,9 +44,7 @@ class EducationEnrolment(BaseScraper):
         learners_headers, learners_iterator = self.get_reader().read(
             self.datasetinfo, file_prefix=self.name
         )
-        learners_012, learners_3, affected_learners = self.get_values(
-            "national"
-        )
+        learners_012, learners_3, affected_learners = self.get_values("national")
         all_learners = {}
 
         for row in learners_iterator:

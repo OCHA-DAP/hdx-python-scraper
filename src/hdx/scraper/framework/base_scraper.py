@@ -79,8 +79,7 @@ class BaseScraper(ABC):
              None
         """
         self.values: Dict[str, Tuple] = {
-            level: tuple({} for _ in value[0])
-            for level, value in self.headers.items()
+            level: tuple({} for _ in value[0]) for level, value in self.headers.items()
         }
         self.sources: Dict[str, List] = {level: [] for level in self.headers}
         self.source_configuration = deepcopy(source_configuration)
@@ -137,9 +136,7 @@ class BaseScraper(ABC):
             return
         if self.datasetinfo.get("no_sources", False):
             return
-        should_overwrite_sources = self.datasetinfo.get(
-            "should_overwrite_sources"
-        )
+        should_overwrite_sources = self.datasetinfo.get("should_overwrite_sources")
         if should_overwrite_sources is not None:
             self.source_configuration["should_overwrite_sources"] = (
                 should_overwrite_sources
@@ -209,16 +206,12 @@ class BaseScraper(ABC):
                 )
 
             for i, hxltag in enumerate(self.headers[level][1]):
-                suffix_attribute = self.source_configuration.get(
-                    "suffix_attribute"
-                )
+                suffix_attribute = self.source_configuration.get("suffix_attribute")
                 if suffix_attribute:
                     add_source(hxltag, suffix_attribute)
                     continue
                 values = self.get_values(level)[i]
-                admin_sources = self.source_configuration.get(
-                    "admin_sources", False
-                )
+                admin_sources = self.source_configuration.get("admin_sources", False)
                 if not admin_sources:
                     raise ValueError("Invalid source configuration!")
                 admin_mapping = self.source_configuration.get("admin_mapping")
@@ -260,9 +253,7 @@ class BaseScraper(ABC):
         """
         if datasetinfo is None:
             datasetinfo = self.datasetinfo
-        date = Sources.get_hxltag_source_date(
-            datasetinfo, hxltag, fallback=True
-        )
+        date = Sources.get_hxltag_source_date(datasetinfo, hxltag, fallback=True)
         if key is None:
             key = self.name
         dict_of_lists_add(

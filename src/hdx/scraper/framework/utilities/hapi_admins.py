@@ -68,9 +68,7 @@ def complete_admins(
                         countryiso3, adm_code, parent=parent
                     )
                     if adj_adm_code:
-                        warnings.append(
-                            f"PCode length {adm_code}->{adj_adm_code}"
-                        )
+                        warnings.append(f"PCode length {adm_code}->{adj_adm_code}")
                         adm_code = adj_adm_code
                     else:
                         adm_code = check_unknown_pcode(adm_code, pcode)
@@ -78,14 +76,10 @@ def complete_admins(
                     adm_code = check_unknown_pcode(adm_code, pcode)
             elif pcode and adm_code != pcode:
                 if child:
-                    warnings.append(
-                        f"PCode mismatch {adm_code}->{pcode} ({warntxt})"
-                    )
+                    warnings.append(f"PCode mismatch {adm_code}->{pcode} ({warntxt})")
                     adm_code = pcode
                 else:
-                    warnings.append(
-                        f"PCode mismatch {adm_code} != {provider_adm_name}"
-                    )
+                    warnings.append(f"PCode mismatch {adm_code} != {provider_adm_name}")
         elif pcode:
             adm_code = pcode
         else:

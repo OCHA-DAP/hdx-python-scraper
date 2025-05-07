@@ -17,6 +17,10 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    permissions:
+      checks: write
+      pull-requests: write
+
     steps:
     - uses: actions/checkout@v4
     - name: Set up Python
@@ -30,7 +34,7 @@ jobs:
       uses: pypa/hatch@install
     - name: Test with hatch/pytest
       env:
-        GSHEET_AUTH: ${{ secrets.GSHEET_AUTH }}
+        GSHEET_AUTH: ${{ secrets.HDX_PIPELINE_GSHEET_AUTH }}
       run: |
         hatch test
     - name: Check styling

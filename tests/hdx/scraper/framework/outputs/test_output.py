@@ -78,9 +78,7 @@ class TestOutput:
             result = googletab.get("A1:C3")
             result[2][2] = int(result[2][2])
             assert result == output
-            assert filecmp.cmp(
-                filepaths[0], join(fixtures, "test_scraper_all.json")
-            )
+            assert filecmp.cmp(filepaths[0], join(fixtures, "test_scraper_all.json"))
             assert filecmp.cmp(
                 filepaths[1],
                 join(fixtures, "test_scraper_population.json"),
@@ -89,9 +87,7 @@ class TestOutput:
                 filepaths[2],
                 join(fixtures, "test_scraper_population.json"),
             )
-            assert filecmp.cmp(
-                filepaths[3], join(fixtures, "test_scraper_other.json")
-            )
+            assert filecmp.cmp(filepaths[3], join(fixtures, "test_scraper_other.json"))
 
             jsonout.json = {}
             df = pandas.DataFrame(output[2:], columns=output[0])
@@ -105,9 +101,7 @@ class TestOutput:
             result = googletab.get("A1:C3")
             result[2][2] = int(result[2][2])
             assert result == output
-            assert filecmp.cmp(
-                filepaths[0], join(fixtures, "test_scraper_all.json")
-            )
+            assert filecmp.cmp(filepaths[0], join(fixtures, "test_scraper_all.json"))
             assert filecmp.cmp(
                 filepaths[1],
                 join(fixtures, "test_scraper_population.json"),
@@ -116,9 +110,7 @@ class TestOutput:
                 filepaths[2],
                 join(fixtures, "test_scraper_population.json"),
             )
-            assert filecmp.cmp(
-                filepaths[3], join(fixtures, "test_scraper_other.json")
-            )
+            assert filecmp.cmp(filepaths[3], join(fixtures, "test_scraper_other.json"))
 
             df = pandas.DataFrame(output[1:], columns=output[0])
             googleout.update_tab("national", df, limit=2)

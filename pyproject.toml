@@ -34,9 +34,9 @@ classifiers = [
 requires-python = ">=3.8"
 
 dependencies = [
-    "hdx-python-api>=6.3.8",
-    "hdx-python-country>=3.8.8",
-    "hdx-python-utilities>=3.8.3",
+    "hdx-python-api>=6.3.9",
+    "hdx-python-country>=3.9.2",
+    "hdx-python-utilities>=3.8.6",
     "gspread",
     "regex",
 ]
@@ -50,55 +50,7 @@ content-type = "text/markdown"
 Homepage = "https://github.com/OCHA-DAP/hdx-python-scraper"
 
 [project.optional-dependencies]
-pandas = ["pandas>=2.2.2"]
+pandas = ["pandas>=2.2.3"]
 test = ["pytest", "pytest-cov"]
 dev = ["pre-commit"]
-
-
-#########
-# Hatch #
-#########
-
-# Build
-
-[tool.hatch.build.targets.wheel]
-packages = ["src/hdx"]
-
-[tool.hatch.build.hooks.vcs]
-version-file = "src/hdx/scraper/framework/_version.py"
-
-[tool.hatch.metadata]
-allow-direct-references = true
-
-# Versioning
-
-[tool.hatch.version]
-source = "vcs"
-
-[tool.hatch.version.raw-options]
-local_scheme = "no-local-version"
-version_scheme = "python-simplified-semver"
-
-# Tests
-
-[tool.hatch.envs.hatch-test]
-features = ["pandas", "test"]
-
-[[tool.hatch.envs.hatch-test.matrix]]
-python = ["3.12"]
-
-[tool.hatch.envs.hatch-test.scripts]
-run = """
-       pytest -c .config/pytest.ini --rootdir=. --junitxml=test-results.xml \
-       --cov --cov-config=.config/coveragerc --no-cov-on-fail \
-       --cov-report=lcov --cov-report=term-missing
-       """
-
-[tool.hatch.envs.hatch-static-analysis]
-dependencies = ["ruff==0.9.6"]
-
-[tool.hatch.envs.hatch-static-analysis.scripts]
-format-check = ["ruff format --config .config/ruff.toml --check --diff {args:.}",]
-format-fix = ["ruff format --config .config/ruff.toml {args:.}",]
-lint-check = ["ruff check --config .config/ruff.toml {args:.}",]
-lint-fix = ["ruff check --config .config/ruff.toml --fix {args:.}",]
+docs = ["mkapi"]

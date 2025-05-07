@@ -309,9 +309,7 @@ class Writer:
 
             fns.append(region_fn)
 
-        rows = self.runner.get_rows(
-            level, countries, headers, fns, names=names
-        )
+        rows = self.runner.get_rows(level, countries, headers, fns, names=names)
         if rows:
             self.update(tab, rows)
 

@@ -115,9 +115,7 @@ class RowParser:
             self.maxdates = {i: date for i, _ in enumerate(subsets)}
         else:
             if self.datelevel > len(self.admcols):
-                raise ValueError(
-                    "No admin columns specified for required level_type!"
-                )
+                raise ValueError("No admin columns specified for required level_type!")
             self.maxdates = {
                 i: {adm: date for adm in self.adms[self.datelevel]}
                 for i, _ in enumerate(subsets)
@@ -150,9 +148,7 @@ class RowParser:
                         header = hxltag.display_tag
                     else:
                         header = hxltag.header
-                    dict_of_lists_add(
-                        self.filters, header, row.get("#country+code")
-                    )
+                    dict_of_lists_add(self.filters, header, row.get("#country+code"))
 
     def get_filter_str_for_eval(self, filter: str) -> str:
         """Replace filter string variables with columns in row of data
@@ -229,9 +225,7 @@ class RowParser:
                 newrow[self.header_to_hxltag[header]] = row[header]
             yield newrow
 
-    def stop_rows(
-        self, iterator: Iterator[Dict]
-    ) -> Generator[Dict, None, None]:
+    def stop_rows(self, iterator: Iterator[Dict]) -> Generator[Dict, None, None]:
         """Stop processing rows after condition met
 
         Args:

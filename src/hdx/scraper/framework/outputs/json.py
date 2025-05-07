@@ -219,9 +219,7 @@ class JsonFile(BaseOutput):
                 newjson = self.json.get(key)
                 filters = tabdetails.get("filters", {})
                 hxltags = tabdetails.get("output")
-                if (filters or hxltags or remove) and isinstance(
-                    newjson, list
-                ):
+                if (filters or hxltags or remove) and isinstance(newjson, list):
                     rows = []
                     for row in newjson:
                         ignore_row = False

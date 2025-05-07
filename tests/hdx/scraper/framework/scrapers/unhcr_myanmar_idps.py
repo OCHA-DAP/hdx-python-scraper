@@ -14,9 +14,7 @@ def idps_post_run(self) -> None:
         for key, current_idps in values.items():
             if key != "MMR":
                 continue
-            logger.info(
-                f"Replacing {current_idps} with {number_idps} for MMR IDPs!"
-            )
+            logger.info(f"Replacing {current_idps} with {number_idps} for MMR IDPs!")
             values[key] = number_idps
             self.get_source_urls().add(url)
             logger.info("Processed UNHCR Myanmar IDPs")

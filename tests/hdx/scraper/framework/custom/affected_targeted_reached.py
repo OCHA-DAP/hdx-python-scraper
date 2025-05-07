@@ -91,9 +91,7 @@ class AffectedTargetedReached(BaseScraper):
                 def add_to_dict(inddict, hxltag, pcode):
                     value = row.get(hxltag)
                     if value is not None:
-                        dict_of_lists_add(
-                            inddict, f"{countryiso3}:{pcode}", int(value)
-                        )
+                        dict_of_lists_add(inddict, f"{countryiso3}:{pcode}", int(value))
 
                 add_to_dict(affecteddict1, "#affected+total", pcode1)
                 add_to_dict(targeteddict1, "#targeted+total", pcode1)
@@ -108,16 +106,12 @@ class AffectedTargetedReached(BaseScraper):
             for countrypcode in input:
                 countryiso3, pcode = countrypcode.split(":")
                 if pcode not in adminlevel.pcodes:
-                    logger.error(
-                        f"PCode {pcode} in {countryiso3} does not exist!"
-                    )
+                    logger.error(f"PCode {pcode} in {countryiso3} does not exist!")
                 else:
                     aggregate_value = sum(input[countrypcode])
                     if average:
                         aggregate_value /= len(input[countrypcode])
-                    output[pcode] = number_format(
-                        aggregate_value, format="%.0f"
-                    )
+                    output[pcode] = number_format(aggregate_value, format="%.0f")
 
         source_dates["default_date"] = {"end": end_date}
         affected = self.get_values("adminone")[0]

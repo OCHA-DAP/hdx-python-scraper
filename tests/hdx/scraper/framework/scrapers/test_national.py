@@ -73,9 +73,7 @@ class TestNational:
             values,
             sources,
             population_lookup=values[0],
-            source_urls=[
-                "https://data.humdata.org/organization/world-bank-group"
-            ],
+            source_urls=["https://data.humdata.org/organization/world-bank-group"],
         )
 
         names = ("who_national", "who_national2", "who_national3")
@@ -150,9 +148,7 @@ class TestNational:
             headers,
             values,
             sources,
-            source_urls=[
-                "https://covid19.who.int/WHO-COVID-19-global-data.csv"
-            ],
+            source_urls=["https://covid19.who.int/WHO-COVID-19-global-data.csv"],
             set_not_run=False,
         )
 
@@ -212,9 +208,7 @@ class TestNational:
             ]
         )
         assert (
-            runner.get_sources(
-                additional_sources=configuration["additional_sources"]
-            )
+            runner.get_sources(additional_sources=configuration["additional_sources"])
             == combined_sources
         )
         runner.set_not_run_many(names)
@@ -417,9 +411,7 @@ class TestNational:
             headers,
             values,
             sources,
-            source_urls=[
-                "https://data.humdata.org/dataset/ukraine-key-figures-2022"
-            ],
+            source_urls=["https://data.humdata.org/dataset/ukraine-key-figures-2022"],
         )
 
     def test_get_national_afg_phl(self, configuration, fallbacks_json):
@@ -638,9 +630,7 @@ class TestNational:
             error_handler=error_handler,
         )
         runner.add_configurables(scraper_configuration, level)
-        runner.add_instance_variables(
-            "idps", overrideinfo={"url": "NOT EXIST"}
-        )
+        runner.add_instance_variables("idps", overrideinfo={"url": "NOT EXIST"})
         runner.add_post_run("idps", idps_post_run)
         values = [{"AFG": 4664000, "MMR": 509600, "PHL": 298000}]
         run_check_scraper(

@@ -46,9 +46,7 @@ class TimeSeries(BaseScraper):
         datetype = self.datasetinfo["date_type"]
         ignore_future_date = self.datasetinfo.get("ignore_future_date", True)
         headers = [datecol] + self.datasetinfo["output"]
-        hxltags = [self.datasetinfo["date_hxl"]] + self.datasetinfo[
-            "output_hxl"
-        ]
+        hxltags = [self.datasetinfo["date_hxl"]] + self.datasetinfo["output_hxl"]
         rows = [headers, hxltags]
         file_headers, iterator = self.get_reader().read(
             self.datasetinfo, file_prefix=self.name

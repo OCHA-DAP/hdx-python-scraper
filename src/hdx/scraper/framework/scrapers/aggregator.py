@@ -115,9 +115,7 @@ class Aggregator(BaseScraper):
         config_headers_or_hxltags = datasetinfo.get("input")
         if config_headers_or_hxltags:
             exists = True
-            for i, config_header_or_hxltag in enumerate(
-                config_headers_or_hxltags
-            ):
+            for i, config_header_or_hxltag in enumerate(config_headers_or_hxltags):
                 try:
                     input_headers[main_index].index(config_header_or_hxltag)
                 except ValueError:
@@ -218,9 +216,7 @@ class Aggregator(BaseScraper):
                 novals = 0
                 for valuestr in valuelist:
                     value = ""
-                    if isinstance(valuestr, int) or isinstance(
-                        valuestr, float
-                    ):
+                    if isinstance(valuestr, int) or isinstance(valuestr, float):
                         value = valuestr
                     else:
                         if valuestr:
@@ -359,9 +355,7 @@ class Aggregator(BaseScraper):
             if "source" not in self.datasetinfo:
                 self.datasetinfo["source"] = ",".join(sourceinfo["source"])
             if "source_url" not in self.datasetinfo:
-                self.datasetinfo["source_url"] = ",".join(
-                    sourceinfo["source_url"]
-                )
+                self.datasetinfo["source_url"] = ",".join(sourceinfo["source_url"])
         if "source" not in self.datasetinfo:
             return
         super().add_sources()

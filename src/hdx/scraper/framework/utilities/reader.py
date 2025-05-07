@@ -194,9 +194,7 @@ class Read(Retrieve):
             today=self.today,
         )
 
-    def setup_tabular(
-        self, datasetinfo: Dict, kwargs: Dict
-    ) -> Union[str, List]:
+    def setup_tabular(self, datasetinfo: Dict, kwargs: Dict) -> Union[str, List]:
         """Setup kwargs for tabular source eg. csv, xls, xlsx from
         datasetinfo and return url.
 
@@ -330,9 +328,7 @@ class Read(Retrieve):
             for file_path in sorted(glob.glob(f"{saved_path}_*.json")):
                 datasets.append(Dataset.load_from_json(file_path))
         else:
-            datasets = Dataset.search_in_hdx(
-                query, configuration, page_size, **kwargs
-            )
+            datasets = Dataset.search_in_hdx(query, configuration, page_size, **kwargs)
             if self.save:
                 for i, dataset in enumerate(datasets):
                     file_path = f"{saved_path}_{i}.json"
@@ -382,9 +378,7 @@ class Read(Retrieve):
         path = self.download_file(url, **kwargs)
         return url, path
 
-    def download_resource(
-        self, resource: Resource, **kwargs: Any
-    ) -> Tuple[str, str]:
+    def download_resource(self, resource: Resource, **kwargs: Any) -> Tuple[str, str]:
         """Download HDX resource os a file and return the url downloaded and
         the path of the file. The filename of the file comes from the name and
         format.
@@ -471,9 +465,7 @@ class Read(Retrieve):
             data.display_tags
             return data
         except hxl.HXLException:
-            logger.warning(
-                f"Could not process {url}. Maybe there are no HXL tags?"
-            )
+            logger.warning(f"Could not process {url}. Maybe there are no HXL tags?")
             return None
         except Exception:
             logger.exception(f"Error reading {url}!")
@@ -495,14 +487,10 @@ class Read(Retrieve):
             Optional[Dict]: Information about file or None
         """
         try:
-            _, path = self.construct_filename_and_download(
-                name, format, url, **kwargs
-            )
+            _, path = self.construct_filename_and_download(name, format, url, **kwargs)
             return hxl.info(path, InputOptions(allow_local=True))
         except hxl.HXLException:
-            logger.warning(
-                f"Could not process {url}. Maybe there are no HXL tags?"
-            )
+            logger.warning(f"Could not process {url}. Maybe there are no HXL tags?")
             return None
         except Exception:
             logger.exception(f"Error reading {url}!")
@@ -586,23 +574,21 @@ class Read(Retrieve):
                 else:
                     url = resource["url"]  # otherwise set the url key in
                     # datasetinfo to the resource url (by setting url here)
-                datasetinfo["hapi_resource_metadata"] = (
-                    self.get_hapi_resource_metadata(resource)
+                datasetinfo["hapi_resource_metadata"] = self.get_hapi_resource_metadata(
+                    resource
                 )
                 datasetinfo["url"] = url
             if "source_date" not in datasetinfo:
-                datasetinfo["source_date"] = (
-                    get_startend_dates_from_time_period(
-                        dataset, today=self.today
-                    )
+                datasetinfo["source_date"] = get_startend_dates_from_time_period(
+                    dataset, today=self.today
                 )
             if "source" not in datasetinfo:
                 datasetinfo["source"] = dataset["dataset_source"]
             if "source_url" not in datasetinfo:
                 datasetinfo["source_url"] = dataset.get_hdx_url()
             Sources.standardise_datasetinfo_source_date(datasetinfo)
-            datasetinfo["hapi_dataset_metadata"] = (
-                self.get_hapi_dataset_metadata(dataset, datasetinfo)
+            datasetinfo["hapi_dataset_metadata"] = self.get_hapi_dataset_metadata(
+                dataset, datasetinfo
             )
             return resource
 
@@ -669,18 +655,14 @@ class Read(Retrieve):
         Returns:
             Tuple[List[str],Iterator[Dict]]: Tuple (headers, iterator where each row is a dictionary)
         """
-        resource = self.read_hdx_metadata(
-            datasetinfo, configuration=configuration
-        )
+        resource = self.read_hdx_metadata(datasetinfo, configuration=configuration)
         filename = kwargs.get("filename")
         if filename:
             del kwargs["filename"]
             datasetinfo["filename"] = filename
         filename = datasetinfo.get("filename")
         if resource and not filename:
-            filename = self.construct_filename(
-                resource["name"], resource.get_format()
-            )
+            filename = self.construct_filename(resource["name"], resource.get_format())
             file_prefix = kwargs.get("file_prefix")
             if not file_prefix:
                 file_prefix = datasetinfo.get("file_prefix")
@@ -708,13 +690,9 @@ class Read(Retrieve):
         format = datasetinfo["format"]
         if format in ["json", "csv", "xls", "xlsx"]:
             if "dataset" in datasetinfo:
-                headers, iterator = self.read_hdx(
-                    datasetinfo, configuration, **kwargs
-                )
+                headers, iterator = self.read_hdx(datasetinfo, configuration, **kwargs)
             else:
                 headers, iterator = self.read_tabular(datasetinfo, **kwargs)
         else:
-            raise ValueError(
-                f"Invalid format {format} for {datasetinfo['name']}!"
-            )
+            raise ValueError(f"Invalid format {format} for {datasetinfo['name']}!")
         return headers, iterator

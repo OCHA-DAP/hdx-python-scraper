@@ -45,9 +45,7 @@ class TestSources:
         result = Sources.standardise_datasetinfo_source_date(datasetinfo)
         assert result is None
         assert datasetinfo["source_date"] is None
-        datasetinfo = {
-            "source_date": {"default_date": enddate, "#mytag": startdate}
-        }
+        datasetinfo = {"source_date": {"default_date": enddate, "#mytag": startdate}}
         result = Sources.standardise_datasetinfo_source_date(datasetinfo)
         assert result == enddate
         assert datasetinfo["source_date"] == {
@@ -103,9 +101,7 @@ class TestSources:
         result = Sources.create_source_configuration()
         assert result is None
         suffix_attribute = "suf"
-        result = Sources.create_source_configuration(
-            suffix_attribute=suffix_attribute
-        )
+        result = Sources.create_source_configuration(suffix_attribute=suffix_attribute)
         assert result == {
             "suffix_attribute": "suf",
             "should_overwrite_sources": None,
@@ -134,9 +130,7 @@ class TestSources:
             "should_overwrite_sources": None,
         }
         adminlevel2 = AdminLevel(configuration["admin1"])
-        adminlevel2.setup_from_admin_info(
-            configuration["admin1"]["admin_info"]
-        )
+        adminlevel2.setup_from_admin_info(configuration["admin1"]["admin_info"])
         d = adminlevel2.pcode_to_iso3
         adminlevel2.pcode_to_iso3 = {k: d[k] for k in list(d)[:5]}
         result = Sources.create_source_configuration(

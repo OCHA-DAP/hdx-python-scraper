@@ -80,9 +80,7 @@ class GoogleSheets(BaseOutput):
                 headers = list(values.columns.values)
                 rows = [headers]
                 if hxltags:
-                    rows.append(
-                        [hxltags.get(header, "") for header in headers]
-                    )
+                    rows.append([hxltags.get(header, "") for header in headers])
                 if limit is not None:
                     values = values.head(limit)
                 df = values.copy(deep=True)
