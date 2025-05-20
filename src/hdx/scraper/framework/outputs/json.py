@@ -201,7 +201,7 @@ class JsonFile(BaseOutput):
         save_json(self.json, filepath)
         filepaths.append(filepath)
         for kwarg in kwargs:
-            exec(f"{kwarg}={kwargs[kwarg]}")
+            globals()[kwarg] = kwargs[kwarg]
         additional = self.configuration.get("additional_outputs", [])
         for filedetails in additional:
             json = {}

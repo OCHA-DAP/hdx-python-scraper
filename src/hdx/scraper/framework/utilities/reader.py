@@ -165,7 +165,7 @@ class Read(Retrieve):
             str: Url with any template arguments replaced
         """
         for kwarg in kwargs:
-            exec(f'{kwarg}="{kwargs[kwarg]}"')
+            globals()[kwarg] = kwargs[kwarg]
         template_string, match_string = match_template(url)
         if template_string:
             replace_string = eval(match_string)
