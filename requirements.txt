@@ -198,7 +198,7 @@ pygments==2.19.1
     # via
     #   mkdocs-material
     #   rich
-pymdown-extensions==10.15
+pymdown-extensions==10.16.1
     # via mkdocs-material
 pyphonetics==0.5.3
     # via hdx-python-utilities
