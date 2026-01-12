@@ -3,16 +3,17 @@
 from os.path import join
 
 import pytest
-
-from . import bool_assert
 from hdx.api.configuration import Configuration
 from hdx.api.locations import Locations
 from hdx.location.country import Country
+from hdx.utilities.dateparse import parse_date
+
 from hdx.scraper.framework.base_scraper import BaseScraper
 from hdx.scraper.framework.utilities import string_params_to_dict
 from hdx.scraper.framework.utilities.fallbacks import Fallbacks
 from hdx.scraper.framework.utilities.reader import Read
-from hdx.utilities.dateparse import parse_date
+
+from . import bool_assert
 
 
 @pytest.fixture(scope="session")

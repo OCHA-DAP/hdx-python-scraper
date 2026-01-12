@@ -1,11 +1,11 @@
 from os.path import exists, join
 
 import pytest
+from hdx.utilities.dateparse import parse_date
+from hdx.utilities.path import temp_dir
 
 from hdx.scraper.framework.base_scraper import BaseScraper
 from hdx.scraper.framework.runner import Runner
-from hdx.utilities.dateparse import parse_date
-from hdx.utilities.path import temp_dir
 
 
 class TestResourceDownloader:

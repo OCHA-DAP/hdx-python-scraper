@@ -1,5 +1,4 @@
 import logging
-from typing import Dict, List, Optional, Union
 
 from openpyxl import Workbook
 
@@ -19,13 +18,13 @@ class ExcelFile(BaseOutput):
     """ExcelFile class enabling writing to Excel spreadsheets.
 
     Args:
-        excel_path (str): Path to output spreadsheet
-        tabs (Dict[str, str]): Dictionary of mappings from internal name to spreadsheet tab name
-        updatetabs (List[str]): Tabs to update
+        excel_path: Path to output spreadsheet
+        tabs: Dictionary of mappings from internal name to spreadsheet tab name
+        updatetabs: Tabs to update
     """
 
     def __init__(
-        self, excel_path: str, tabs: Dict[str, str], updatetabs: List[str]
+        self, excel_path: str, tabs: dict[str, str], updatetabs: list[str]
     ) -> None:
         super().__init__(updatetabs)
         self.workbook = Workbook()
@@ -35,15 +34,15 @@ class ExcelFile(BaseOutput):
     def update_tab(
         self,
         tabname: str,
-        values: Union[List, DataFrame],
-        hxltags: Optional[Dict] = None,
+        values: list | DataFrame,
+        hxltags: dict | None = None,
     ) -> None:
         """Update tab with values
 
         Args:
-            tabname (str): Tab to update
-            values (Union[List, DataFrame]): Values in a list of lists or a DataFrame
-            hxltags (Optional[Dict]): HXL tag mapping. Default is None.
+            tabname: Tab to update
+            values: Values in a list of lists or a DataFrame
+            hxltags: HXL tag mapping. Default is None.
 
         Returns:
             None

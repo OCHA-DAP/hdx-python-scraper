@@ -1,13 +1,13 @@
 import logging
 from copy import deepcopy
-from typing import Dict, List, Optional, Tuple, Union
+
+from hdx.location.adminlevel import AdminLevel
+from hdx.location.country import Country
+from hdx.utilities.typehint import ListTuple
 
 from ..outputs.base import BaseOutput
 from ..runner import Runner
 from .sources import Sources
-from hdx.location.adminlevel import AdminLevel
-from hdx.location.country import Country
-from hdx.utilities.typehint import ListTuple
 
 try:
     from pandas import DataFrame
@@ -21,8 +21,8 @@ class Writer:
     """obtain output data and write it to specified outputs.
 
     Args:
-        runner (Runner): Runner object
-        outputs (Dict[str, BaseOutput]): Mapping from names to output objects
+        runner: Runner object
+        outputs: Mapping from names to output objects
     """
 
     regional_headers = (("regionnames",), ("#region+name",))
@@ -53,16 +53,16 @@ class Writer:
         ("#indicator+name", "#date", "#meta+source", "#meta+url"),
     )
 
-    def __init__(self, runner: Runner, outputs: Dict[str, BaseOutput]):
+    def __init__(self, runner: Runner, outputs: dict[str, BaseOutput]):
         self.runner = runner
         self.outputs = outputs
 
-    def update(self, name: str, data: Union[List, DataFrame]) -> None:
+    def update(self, name: str, data: list | DataFrame) -> None:
         """Update JSON key or tab in Excel or Google Sheets.
 
         Args:
-            name (str): Name of tab (key in JSON) to update
-            data (values: Union[List, DataFrame]): Data to output
+            name: Name of tab (key in JSON) to update
+            data: Data to output
 
         Returns:
             None
@@ -76,10 +76,10 @@ class Writer:
 
     def get_toplevel_rows(
         self,
-        names: Optional[ListTuple[str]] = None,
-        overrides: Dict[str, Dict] = {},
+        names: ListTuple[str] | None = None,
+        overrides: dict[str, dict] = {},
         toplevel: str = "allregions",
-    ) -> List[List]:
+    ) -> list[list]:
         """Get rows for the given toplevel for scrapers limiting to those in
         names if given. Rows include header row, HXL hashtag row and a value
         row.  Sometimes it may be necessary to map alternative level names to
@@ -88,12 +88,12 @@ class Writer:
         level names to output levels.
 
         Args:
-            names (Optional[ListTuple[str]]): Names of scrapers. Default is None.
-            overrides (Dict[str, Dict]): Dictionary mapping scrapers to level mappings. Default is {}.
-            toplevel (str): Name of top level such as "global". Default is "allregions".
+            names: Names of scrapers. Default is None.
+            overrides: Dictionary mapping scrapers to level mappings. Default is {}.
+            toplevel: Name of top level such as "global". Default is "allregions".
 
         Returns:
-            List[List]: Rows for a given level
+            Rows for a given level
         """
         return self.runner.get_rows(
             toplevel, ("value",), names=names, overrides=overrides
@@ -102,8 +102,8 @@ class Writer:
     def get_regional_rows(
         self,
         regional: ListTuple[str],
-        names: Optional[ListTuple[str]] = None,
-        overrides: Dict[str, Dict] = {},
+        names: ListTuple[str] | None = None,
+        overrides: dict[str, dict] = {},
         level: str = "regional",
     ):
         """Get regional rows for scrapers limiting to those in names if given using the
@@ -115,13 +115,13 @@ class Writer:
         levels.
 
         Args:
-            regional (ListTuple[str]): Regional admin names
-            names (Optional[ListTuple[str]]): Names of scrapers. Default is None.
-            overrides (Dict[str, Dict]): Dictionary mapping scrapers to level mappings. Default is {}.
-            level (str): Name of regional level. Default is "regional".
+            regional: Regional admin names
+            names: Names of scrapers. Default is None.
+            overrides: Dictionary mapping scrapers to level mappings. Default is {}.
+            level: Name of regional level. Default is "regional".
 
         Returns:
-            List[List]: Rows for a given level
+            Rows for a given level
         """
         return self.runner.get_rows(
             level,
@@ -134,23 +134,23 @@ class Writer:
 
     def update_toplevel(
         self,
-        toplevel_rows: List[List],
+        toplevel_rows: list[list],
         tab: str = "allregions",
-        regional_rows: Optional[List[List]] = None,
+        regional_rows: list[list] | None = None,
         regional_adm: str = "ALL",
-        regional_hxltags: Optional[ListTuple[str]] = None,
+        regional_hxltags: ListTuple[str] | None = None,
         regional_first: bool = False,
     ) -> None:
         """Update the top level tab (or key in JSON) in the outputs. Optionally, further
         rows to output as top level can be obtained from the regional rows.
 
         Args:
-            toplevel_rows (List[List]): Header row, HXL tags row and top level value row
-            tab (str): Name of tab (key in JSON) to update. Default is "allregions".
-            regional_rows (Optional[List[List]]): Header, HXL tags and regional values. Default is None.
-            regional_adm (str): The admin name of the top level in the regional data. Default is "ALL".
-            regional_hxltags (Optional[ListTuple[str]]): What regional HXL tags to include. Default is None (all tags).
-            regional_first (bool): Whether regional rows are output before top level rows. Default is False.
+            toplevel_rows: Header row, HXL tags row and top level value row
+            tab: Name of tab (key in JSON) to update. Default is "allregions".
+            regional_rows: Header, HXL tags and regional values. Default is None.
+            regional_adm: The admin name of the top level in the regional data. Default is "ALL".
+            regional_hxltags: What regional HXL tags to include. Default is None (all tags).
+            regional_first: Whether regional rows are output before top level rows. Default is False.
 
         Returns:
             None
@@ -184,9 +184,9 @@ class Writer:
 
     def update_regional(
         self,
-        regional_rows: List[List],
-        toplevel_rows: Optional[List[List]] = None,
-        toplevel_hxltags: Optional[ListTuple[str]] = None,
+        regional_rows: list[list],
+        toplevel_rows: list[list] | None = None,
+        toplevel_hxltags: ListTuple[str] | None = None,
         tab: str = "regional",
         toplevel: str = "allregions",
     ) -> None:
@@ -194,11 +194,11 @@ class Writer:
         rows to output as regional can be obtained from the top level rows.
 
         Args:
-            regional_rows (List[List]): Header row, HXL tags row and regional value rows
-            toplevel_rows (Optional[List[List]]): Header, HXL tags and top level values. Default is None.
-            toplevel_hxltags (Optional[ListTuple[str]]): What top level HXL tags to include. Default is None (all tags).
-            tab (str): Name of tab (key in JSON) to update. Default is "regional".
-            toplevel (str): Name of top level such as "global". Default is "allregions".
+            regional_rows: Header row, HXL tags row and regional value rows
+            toplevel_rows: Header, HXL tags and top level values. Default is None.
+            toplevel_hxltags: What top level HXL tags to include. Default is None (all tags).
+            tab: Name of tab (key in JSON) to update. Default is "regional".
+            toplevel: Name of top level such as "global". Default is "allregions".
 
         Returns:
             None
@@ -255,9 +255,9 @@ class Writer:
     def update_national(
         self,
         countries: ListTuple[str],
-        names: Optional[ListTuple[str]] = None,
-        flag_countries: Optional[Dict] = None,
-        iso3_to_region: Optional[Dict] = None,
+        names: ListTuple[str] | None = None,
+        flag_countries: dict | None = None,
+        iso3_to_region: dict | None = None,
         ignore_regions: ListTuple[str] = tuple(),
         level="national",
         tab="national",
@@ -270,13 +270,13 @@ class Writer:
         iso3_to_region. Some regions can be ignored using ignore_regions.
 
         Args:
-            countries (ListTuple[str]): Country names
-            names (Optional[ListTuple[str]]): Names of scrapers. Default is None.
-            flag_countries (Optional[Dict]): Countries to flag. Default is None.
-            iso3_to_region (Optional[Dict]): Mapping from iso3 to region. Default is None.
-            ignore_regions (ListTuple[str]): Regions to ignore. Default is tuple().
-            level (str): Name of national level. Default is "national".
-            tab (str): Name of tab (key in JSON) to update. Default is "national".
+            countries: Country names
+            names: Names of scrapers. Default is None.
+            flag_countries: Countries to flag. Default is None.
+            iso3_to_region: Mapping from iso3 to region. Default is None.
+            ignore_regions: Regions to ignore. Default is tuple().
+            level: Name of national level. Default is "national".
+            tab: Name of tab (key in JSON) to update. Default is "national".
 
         Returns:
             None
@@ -316,7 +316,7 @@ class Writer:
     def update_subnational(
         self,
         adminlevel: AdminLevel,
-        names: Optional[ListTuple[str]] = None,
+        names: ListTuple[str] | None = None,
         level: str = "subnational",
         tab: str = "subnational",
     ) -> None:
@@ -324,10 +324,10 @@ class Writer:
         to those in names.
 
         Args:
-            adminlevel (AdminLevel): AdminLevel object from HDX Python Country library
-            names (Optional[ListTuple[str]]): Names of scrapers. Default is None.
-            level (str): Name of subnational level. Default is "subnational".
-            tab (str): Name of tab (key in JSON) to update. Default is "subnational".
+            adminlevel: AdminLevel object from HDX Python Country library
+            names: Names of scrapers. Default is None.
+            level: Name of subnational level. Default is "subnational".
+            tab: Name of tab (key in JSON) to update. Default is "subnational".
 
         Returns:
             None
@@ -356,12 +356,12 @@ class Writer:
 
     def update_sources(
         self,
-        additional_sources: ListTuple[Dict] = tuple(),
-        names: Optional[ListTuple[str]] = None,
-        secondary_runner: Optional[Runner] = None,
-        custom_sources: ListTuple[Tuple] = tuple(),
+        additional_sources: ListTuple[dict] = tuple(),
+        names: ListTuple[str] | None = None,
+        secondary_runner: Runner | None = None,
+        custom_sources: ListTuple[tuple] = tuple(),
         tab: str = "sources",
-        should_overwrite_sources: Optional[bool] = None,
+        should_overwrite_sources: bool | None = None,
         sources_to_delete: ListTuple[str] = tuple(),
     ) -> None:
         """Update the sources tab (or key in JSON) in the outputs for scrapers
@@ -377,13 +377,13 @@ class Writer:
         hashtag).
 
         Args:
-            additional_sources (ListTuple[Dict]): Additional sources to add. Default is empty tuple.
-            names (Optional[ListTuple[str]]): Names of scrapers. Default is None.
-            secondary_runner (Optional[Runner]): Secondary Runner object. Default is None.
-            custom_sources (ListTuple[Tuple]): Custom sources to add. Default is empty tuple.
-            tab (str): Name of tab (key in JSON) to update. Default is "sources".
-            should_overwrite_sources (Optional[bool]): Whether to overwrite sources. Default is None (class default).
-            sources_to_delete (ListTuple[Dict]): Sources tags to delete. Default is empty tuple.
+            additional_sources: Additional sources to add. Default is empty tuple.
+            names: Names of scrapers. Default is None.
+            secondary_runner: Secondary Runner object. Default is None.
+            custom_sources: Custom sources to add. Default is empty tuple.
+            tab: Name of tab (key in JSON) to update. Default is "sources".
+            should_overwrite_sources: Whether to overwrite sources. Default is None (class default).
+            sources_to_delete: Sources tags to delete. Default is empty tuple.
 
         Returns:
             None

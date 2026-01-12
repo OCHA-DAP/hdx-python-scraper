@@ -2,16 +2,17 @@ from copy import copy, deepcopy
 from datetime import datetime, timezone
 
 import pytest
+from hdx.location.adminlevel import AdminLevel
+from hdx.utilities.dateparse import parse_date
+
+from hdx.scraper.framework.base_scraper import BaseScraper
+from hdx.scraper.framework.runner import Runner
+from hdx.scraper.framework.utilities.reader import Read
 
 from ..conftest import check_scraper, check_scrapers
 from .affected_targeted_reached import AffectedTargetedReached
 from .education_closures import EducationClosures
 from .education_enrolment import EducationEnrolment
-from hdx.location.adminlevel import AdminLevel
-from hdx.scraper.framework.base_scraper import BaseScraper
-from hdx.scraper.framework.runner import Runner
-from hdx.scraper.framework.utilities.reader import Read
-from hdx.utilities.dateparse import parse_date
 
 
 class TestCustom:

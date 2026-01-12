@@ -1,22 +1,22 @@
 from abc import ABC, abstractmethod
 from copy import deepcopy
-from typing import Dict, List, Optional, Set, Tuple
+
+from hdx.utilities.dictandlist import dict_of_lists_add
+from hdx.utilities.typehint import ListTuple
 
 from .utilities.reader import Read
 from .utilities.sources import Sources
-from hdx.utilities.dictandlist import dict_of_lists_add
-from hdx.utilities.typehint import ListTuple
 
 
 class BaseScraper(ABC):
     """Base scraper class for scrapers to inherit
 
     Args:
-        name (str): Name of scraper
-        datasetinfo (Dict): Information about dataset
-        headers (Dict[str, Tuple]): Headers to be oytput at each level_name
-        source_configuration (Dict): Configuration for sources. Default is empty dict (use defaults).
-        reader (str): Reader to use. Default is "" (datasetinfo reader falling back on name).
+        name: Name of scraper
+        datasetinfo: Information about dataset
+        headers: Headers to be oytput at each level_name
+        source_configuration: Configuration for sources. Default is empty dict (use defaults).
+        reader: Reader to use. Default is "" (datasetinfo reader falling back on name).
     """
 
     population_lookup = {}
@@ -24,9 +24,9 @@ class BaseScraper(ABC):
     def __init__(
         self,
         name: str,
-        datasetinfo: Dict,
-        headers: Dict[str, Tuple],
-        source_configuration: Dict = {},
+        datasetinfo: dict,
+        headers: dict[str, tuple],
+        source_configuration: dict = {},
         reader: str = "",
     ) -> None:
         self.name = name
@@ -41,15 +41,15 @@ class BaseScraper(ABC):
 
     def setup(
         self,
-        headers: Dict[str, Tuple],
-        source_configuration: Dict = {},
+        headers: dict[str, tuple],
+        source_configuration: dict = {},
     ) -> None:
         """Initialise member variables including name and headers which is of form:
         {"national": (("School Closure",), ("#impact+type",)), ...},
 
         Args:
-            headers (Dict[str, Tuple]): Headers to be output at each level_name
-            source_configuration (Dict): Configuration for sources. Default is empty dict (use defaults).
+            headers: Headers to be output at each level_name
+            source_configuration: Configuration for sources. Default is empty dict (use defaults).
 
         Returns:
              None
@@ -63,7 +63,7 @@ class BaseScraper(ABC):
 
     def initialise_values_sources(
         self,
-        source_configuration: Dict = {},
+        source_configuration: dict = {},
     ) -> None:
         """
         Create values and sources member variables for inheriting scrapers to populate.
@@ -73,23 +73,23 @@ class BaseScraper(ABC):
         {"national": [("#food-prices", "2022-07-15", "WFP", "https://data.humdata.org/dataset/global-wfp-food-prices"), ...]
 
         Args:
-            source_configuration (Dict): Configuration for sources. Default is empty dict (use defaults).
+            source_configuration: Configuration for sources. Default is empty dict (use defaults).
 
         Returns:
              None
         """
-        self.values: Dict[str, Tuple] = {
+        self.values: dict[str, tuple] = {
             level: tuple({} for _ in value[0]) for level, value in self.headers.items()
         }
-        self.sources: Dict[str, List] = {level: [] for level in self.headers}
+        self.sources: dict[str, list] = {level: [] for level in self.headers}
         self.source_configuration = deepcopy(source_configuration)
 
-    def get_reader(self, name: Optional[str] = None):
+    def get_reader(self, name: str | None = None):
         """Get reader given name if provided or using name member variable if
         not.
 
         Args:
-            name (str): Name of scraper
+            name: Name of scraper
 
         Returns:
              None
@@ -99,29 +99,29 @@ class BaseScraper(ABC):
         reader = Read.get_reader(name)
         return reader
 
-    def get_headers(self, level: str) -> Optional[Tuple[Tuple]]:
+    def get_headers(self, level: str) -> tuple[tuple] | None:
         """
         Get headers for a particular level_name like national or subnational. Will be
         of form: (("School Closure",), ("#impact+type",))
 
         Args:
-            level (str): Level to get like national, subnational or single
+            level: Level to get like national, subnational or single
 
         Returns:
-            Optional[Tuple[Tuple]]: Scraper headers or None
+            Scraper headers or None
         """
         return self.headers.get(level)
 
-    def get_values(self, level: str) -> Optional[Tuple]:
+    def get_values(self, level: str) -> tuple | None:
         """
         Get values for a particular level_name like national or subnational. Will be of
         form: ({"AFG": 1.2, "PSE": 1.4}, {"AFG": 123, "PSE": 241}, ...})}
 
         Args:
-            level (str): Level for which to get headers
+            level: Level for which to get headers
 
         Returns:
-            Optional[Tuple]: Scraper values or None
+            Scraper values or None
         """
         return self.values.get(level)
 
@@ -237,16 +237,16 @@ class BaseScraper(ABC):
     def add_hxltag_source(
         self,
         hxltag: str,
-        datasetinfo: Optional[Dict] = None,
-        key: Optional[str] = None,
+        datasetinfo: dict | None = None,
+        key: str | None = None,
     ) -> None:
         """
         Adds source identified by HXL hashtag under a particular key.
 
         Args:
-            hxltag (str): HXL hashtag to use for source
-            datasetinfo (Optional[Dict]): Information about dataset. Default is None (use self.datasetinfo).
-            key (Optional[str]): Key under which to add source. Default is None (use scraper name).
+            hxltag: HXL hashtag to use for source
+            datasetinfo: Information about dataset. Default is None (use self.datasetinfo).
+            key: Key under which to add source. Default is None (use scraper name).
 
         Returns:
             None
@@ -270,18 +270,18 @@ class BaseScraper(ABC):
     def add_hxltag_sources(
         self,
         hxltags: ListTuple[str],
-        datasetinfo: Optional[Dict] = None,
-        key: Optional[str] = None,
-        suffix_attributes: Optional[ListTuple] = None,
+        datasetinfo: dict | None = None,
+        key: str | None = None,
+        suffix_attributes: ListTuple | None = None,
     ) -> None:
         """
         Adds sources identified by HXL hashtags under a particular key.
 
         Args:
-            hxltags (ListTuple[str]): HXL hashtags to use for sources
-            datasetinfo (Optional[Dict]): Information about dataset. Default is None (use self.datasetinfo).
-            key (Optional[str]): Key under which to add source. Default is None (use scraper name).
-            suffix_attributes (Optional[ListTuple]): List of suffix attributes to append to HXL hashtags eg. iso3 codes
+            hxltags: HXL hashtags to use for sources
+            datasetinfo: Information about dataset. Default is None (use self.datasetinfo).
+            key: Key under which to add source. Default is None (use scraper name).
+            suffix_attributes: List of suffix attributes to append to HXL hashtags eg. iso3 codes
 
         Returns:
             None
@@ -297,17 +297,17 @@ class BaseScraper(ABC):
                         key,
                     )
 
-    def get_sources(self, level: str) -> Optional[List[Tuple]]:
+    def get_sources(self, level: str) -> list[tuple] | None:
         """
         Get values for a particular level_name like national or subnational. Will be of
         form:
         [("#food-prices", "2022-07-15", "WFP", "https://data.humdata.org/dataset/global-wfp-food-prices"), ...]
 
         Args:
-            level (str): Level to get like national, subnational or single
+            level: Level to get like national, subnational or single
 
         Returns:
-            Optional[List[Tuple]]: Scraper sources or None
+            Scraper sources or None
         """
         return self.sources.get(level)
 
@@ -326,30 +326,30 @@ class BaseScraper(ABC):
                 for url in source_url.values():
                     self.source_urls.add(url)
 
-    def get_source_urls(self) -> Set[str]:
+    def get_source_urls(self) -> set[str]:
         """
         Get source urls
 
         Returns:
-            Set[str]: Source urls
+            Source urls
         """
         return self.source_urls
 
-    def get_hapi_dataset_metadata(self) -> Optional[Dict]:
+    def get_hapi_dataset_metadata(self) -> dict | None:
         """
         Get HAPI dataset metadata
 
         Returns:
-            Optional[Dict]: HAPI dataset metadata
+            HAPI dataset metadata
         """
         return self.datasetinfo.get("hapi_dataset_metadata")
 
-    def get_hapi_resource_metadata(self) -> Optional[Dict]:
+    def get_hapi_resource_metadata(self) -> dict | None:
         """
         Get HAPI resource metadata
 
         Returns:
-            Optional[Dict]: HAPI resource metadata
+            HAPI resource metadata
         """
         hapi_resource_metadata = self.datasetinfo.get("hapi_resource_metadata")
         if not hapi_resource_metadata:

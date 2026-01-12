@@ -1,13 +1,13 @@
 import re
 from datetime import datetime
-from typing import Any, Dict, Optional, Tuple
+from typing import Any
 
 from hdx.data.dataset import Dataset
 
 template = re.compile("{{.*?}}")
 
 
-def string_params_to_dict(string: str) -> Dict[str, str]:
+def string_params_to_dict(string: str) -> dict[str, str]:
     params = {}
     if not string:
         return params
@@ -17,14 +17,14 @@ def string_params_to_dict(string: str) -> Dict[str, str]:
     return params
 
 
-def match_template(input: str) -> Tuple[Optional[str], Optional[str]]:
+def match_template(input: str) -> tuple[str | None, str | None]:
     """Try to match {{XXX}} in input string
 
     Args:
-        input (str): String in which to look for template
+        input: String in which to look for template
 
     Returns:
-        Tuple[Optional[str], Optional[str]]: (Matched string with brackets, matched string without brackets)
+        (Matched string with brackets, matched string without brackets)
     """
     match = template.search(input)
     if match:
@@ -33,15 +33,15 @@ def match_template(input: str) -> Tuple[Optional[str], Optional[str]]:
     return None, None
 
 
-def get_rowval(row: Dict, valcol: str) -> Any:
+def get_rowval(row: dict, valcol: str) -> Any:
     """Get the value of a particular column in a row expanding any template it contains
 
     Args:
-        row (Dict): Dictionary
-        valcol (str): Column which may be a string in which to look for template
+        row: Dictionary
+        valcol: Column which may be a string in which to look for template
 
     Returns:
-        Any: Value of column or template
+        Value of column or template
     """
     if "{{" in valcol:
         repvalcol = valcol
@@ -58,16 +58,16 @@ def get_rowval(row: Dict, valcol: str) -> Any:
 
 
 def get_startend_dates_from_time_period(
-    dataset: Dataset, today: Optional[datetime] = None
-) -> Optional[Dict]:
+    dataset: Dataset, today: datetime | None = None
+) -> dict | None:
     """Return the time period in form required for source_date
 
     Args:
-        dataset (Dataset): Dataset object
-        today (Optional[datetime]): Date to use for today. Default is None (datetime.utcnow)
+        dataset: Dataset object
+        today: Date to use for today. Default is None (datetime.utcnow)
 
     Returns:
-        Optional[Dict]: Time period in form required for source_date
+        Time period in form required for source_date
     """
     if today is None:
         date_info = dataset.get_time_period()

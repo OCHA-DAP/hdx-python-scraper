@@ -1,14 +1,10 @@
 import copy
 import logging
+from collections.abc import Iterator
 from datetime import datetime
-from typing import Any, Dict, Iterator, List, Optional, Tuple
+from typing import Any
 
 import regex
-
-from ..base_scraper import BaseScraper
-from ..utilities import get_rowval
-from ..utilities.sources import Sources
-from .rowparser import RowParser
 from hdx.location.adminlevel import AdminLevel
 from hdx.utilities.dateparse import (
     get_datetime_from_timestamp,
@@ -24,6 +20,11 @@ from hdx.utilities.text import (  # noqa: F401
     number_format,
 )
 
+from ..base_scraper import BaseScraper
+from ..utilities import get_rowval
+from ..utilities.sources import Sources
+from .rowparser import RowParser
+
 logger = logging.getLogger(__name__)
 
 
@@ -34,15 +35,15 @@ class ConfigurableScraper(BaseScraper):
     subnational data, adminlevel must be supplied.
 
     Args:
-        name (str): Name of scraper
-        datasetinfo (Dict): Information about dataset
-        level (str): Can be national, subnational or single
-        countryiso3s (List[str]): List of ISO3 country codes to process
-        adminlevel (Optional[AdminLevel]): AdminLevel object from HDX Python Country. Default is None.
-        level_name (Optional[str]): Customised level_name name. Default is None (level).
-        source_configuration (Dict): Configuration for sources. Default is empty dict (use defaults).
-        today (datetime): Value to use for today. Default is now_utc().
-        error_handler (Optional[ErrorHandler]): ErrorHandler object that logs errors on exit
+        name: Name of scraper
+        datasetinfo: Information about dataset
+        level: Can be national, subnational or single
+        countryiso3s: List of ISO3 country codes to process
+        adminlevel: AdminLevel object from HDX Python Country. Default is None.
+        level_name: Customised level_name name. Default is None (level).
+        source_configuration: Configuration for sources. Default is empty dict (use defaults).
+        today: Value to use for today. Default is now_utc().
+        error_handler: ErrorHandler object that logs errors on exit
         **kwargs: Variables to use when evaluating template arguments in urls
     """
 
@@ -60,14 +61,14 @@ class ConfigurableScraper(BaseScraper):
     def __init__(
         self,
         name: str,
-        datasetinfo: Dict,
+        datasetinfo: dict,
         level: str,
-        countryiso3s: List[str],
-        adminlevel: Optional[AdminLevel] = None,
-        level_name: Optional[str] = None,
-        source_configuration: Dict = {},
+        countryiso3s: list[str],
+        adminlevel: AdminLevel | None = None,
+        level_name: str | None = None,
+        source_configuration: dict = {},
         today: datetime = now_utc(),
-        error_handler: Optional[ErrorHandler] = None,
+        error_handler: ErrorHandler | None = None,
         **kwargs: Any,
     ):
         self.name = name
@@ -83,10 +84,10 @@ class ConfigurableScraper(BaseScraper):
         else:
             self.level_name: str = level_name
         self.countryiso3s = countryiso3s
-        self.adminlevel: Optional[AdminLevel] = adminlevel
+        self.adminlevel: AdminLevel | None = adminlevel
         self.today = today
         self.subsets = self.get_subsets_from_datasetinfo(datasetinfo)
-        self.error_handler: Optional[ErrorHandler] = error_handler
+        self.error_handler: ErrorHandler | None = error_handler
         self.variables = kwargs
         self.rowparser = None
         self.datasetinfo = copy.deepcopy(datasetinfo)
@@ -107,14 +108,14 @@ class ConfigurableScraper(BaseScraper):
         self.setup(headers, source_configuration)
 
     @staticmethod
-    def get_subsets_from_datasetinfo(datasetinfo: Dict) -> List[Dict]:
+    def get_subsets_from_datasetinfo(datasetinfo: dict) -> list[dict]:
         """Get subsets from dataset information
 
         Args:
-            datasetinfo (Dict): Information about dataset
+            datasetinfo: Information about dataset
 
         Returns:
-            List[Dict]: List of subsets
+            List of subsets
         """
         subsets = datasetinfo.get("subsets")
         if not subsets:
@@ -136,11 +137,11 @@ class ConfigurableScraper(BaseScraper):
             ]
         return subsets
 
-    def get_iterator(self) -> Tuple[List[str], Iterator[Dict]]:
+    def get_iterator(self) -> tuple[list[str], Iterator[dict]]:
         """Get the iterator from the preconfigured reader for this scraper
 
         Returns:
-            Tuple[List[str],Iterator[Dict]]: Tuple (headers, iterator where each row is a dictionary)
+            Tuple (headers, iterator where each row is a dictionary)
         """
         if "filename" not in self.datasetinfo and "file_prefix" not in self.datasetinfo:
             self.datasetinfo["file_prefix"] = self.name
@@ -168,15 +169,15 @@ class ConfigurableScraper(BaseScraper):
         self.datasetinfo["source_date"] = date
         super().add_sources()
 
-    def read_hxl(self, iterator: Iterator[Dict]) -> Optional[Dict[str, str]]:
+    def read_hxl(self, iterator: Iterator[dict]) -> dict[str, str] | None:
         """Read HXL tags if use_hxl is True and return the mapping as a dictionary. If
         use_hxl if False, return None.
 
         Args:
-            iterator (Iterator[Dict]): Iterator where each row is a dictionary
+            iterator: Iterator where each row is a dictionary
 
         Returns:
-            Optional[Dict[str, str]]: Dictionary mapping from headers to HXL hash tags or None
+            Dictionary mapping from headers to HXL hash tags or None
         """
         use_hxl = self.datasetinfo.get("use_hxl", False)
         if not use_hxl:
@@ -187,8 +188,8 @@ class ConfigurableScraper(BaseScraper):
         return header_to_hxltag
 
     def use_hxl(
-        self, headers, file_headers: List[str], iterator: Iterator[Dict]
-    ) -> Optional[Dict]:
+        self, headers, file_headers: list[str], iterator: Iterator[dict]
+    ) -> dict | None:
         """If the configurable scraper configuration defines that HXL is used (use_hxl
         is True), then read the mapping from headers to HXL hash tags. Since each row is
         a dictionary from header to value, the HXL row will be a dictionary from header
@@ -198,11 +199,11 @@ class ConfigurableScraper(BaseScraper):
         original file.
 
         Args:
-            file_headers (List[str]): List of all headers of input file
-            iterator (Iterator[Dict]): Iterator over the rows
+            file_headers: List of all headers of input file
+            iterator: Iterator over the rows
 
         Returns:
-            Optional[Dict]: Dictionary that maps from header to HXL hashtag or None
+            Dictionary that maps from header to HXL hashtag or None
         """
         header_to_hxltag = self.read_hxl(iterator)
         if not header_to_hxltag:
@@ -262,11 +263,11 @@ class ConfigurableScraper(BaseScraper):
                 headers[self.level_name][1].extend(orig_hxltags)
         return header_to_hxltag
 
-    def run_scraper(self, iterator: Iterator[Dict]) -> None:
+    def run_scraper(self, iterator: Iterator[dict]) -> None:
         """Run one configurable scraper given an iterator over the rows
 
         Args:
-            iterator (Iterator[Dict]): Iterator over the rows
+            iterator: Iterator over the rows
 
         Returns:
             None

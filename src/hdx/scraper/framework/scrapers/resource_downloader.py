@@ -15,8 +15,8 @@ class ResourceDownloader(BaseScraper):
     dataset information from HDX and puts it in the given folder.
 
     Args:
-        datasetinfo (Dict): Information about dataset
-        folder (str): Folder to which to download. Default is "".
+        datasetinfo: Information about dataset
+        folder: Folder to which to download. Default is "".
     """
 
     def __init__(self, datasetinfo, folder):

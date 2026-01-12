@@ -1,31 +1,29 @@
-from typing import List, Tuple
-
 from hdx.location.adminlevel import AdminLevel
 
 
 def complete_admins(
-    admins: List[AdminLevel],
+    admins: list[AdminLevel],
     countryiso3: str,
-    provider_adm_names: List,
-    adm_codes: List,
-    adm_names: List,
+    provider_adm_names: list,
+    adm_codes: list,
+    adm_names: list,
     fuzzy_match: bool = True,
-) -> Tuple[int, List[str]]:
+) -> tuple[int, list[str]]:
     """Use information from adm_codes to populate adm_names and from
     provider_adm_names to populate adm_codes with outptu of the admin level
     and arnings for unknown and mismatched p-codes. All provided lists
     should be of the same length.
 
     Args:
-        admins (List[AdminLevel]): List of AdminLevel objects
-        countryiso3 (str): Country ISO3 code
-        provider_adm_names (List): List of provider adm names
-        adm_codes (List): List of adm codes
-        adm_names (List): List of adm names
-        fuzzy_match (bool): Whether to use fuzzy matching. Default is True.
+        admins: List of AdminLevel objects
+        countryiso3: Country ISO3 code
+        provider_adm_names: List of provider adm names
+        adm_codes: List of adm codes
+        adm_names: List of adm names
+        fuzzy_match: Whether to use fuzzy matching. Default is True.
 
     Returns:
-        Tuple[int, List[str]]: Admin level and warnings
+        Admin level and warnings
     """
 
     warnings = []
@@ -96,21 +94,21 @@ def complete_admins(
 
 
 def pad_admins(
-    provider_adm_names: List[str],
-    adm_codes: List[str],
-    adm_names: List[str],
+    provider_adm_names: list[str],
+    adm_codes: list[str],
+    adm_names: list[str],
     adm_level: int = 2,
 ) -> None:
     """Pad lists to size given in adm_level adding as many "" as needed.
 
     Args:
-        provider_adm_names (List): List of provider adm names
-        adm_codes (List): List of adm codes
-        adm_names (List): List of adm names
-        adm_level (int): Admin level to which to pad. Default is 2.
+        provider_adm_names: List of provider adm names
+        adm_codes: List of adm codes
+        adm_names: List of adm names
+        adm_level: Admin level to which to pad. Default is 2.
 
     Returns:
-        Tuple[int, List[str]]: Admin level and warnings
+        Admin level and warnings
     """
 
     for i in range(len(provider_adm_names), adm_level):

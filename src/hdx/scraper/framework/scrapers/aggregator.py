@@ -1,12 +1,8 @@
 import logging
 import sys
 from copy import deepcopy
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Optional
 
-from slugify import slugify
-
-from ..base_scraper import BaseScraper
-from ..utilities.reader import Read
 from hdx.utilities.dictandlist import dict_of_lists_add
 from hdx.utilities.text import (  # noqa: F401
     get_fraction_str,
@@ -14,6 +10,10 @@ from hdx.utilities.text import (  # noqa: F401
     number_format,
 )
 from hdx.utilities.typehint import ListTuple
+from slugify import slugify
+
+from ..base_scraper import BaseScraper
+from ..utilities.reader import Read
 
 logger = logging.getLogger(__name__)
 
@@ -31,24 +31,24 @@ class Aggregator(BaseScraper):
 
 
     Args:
-        name (str): Name of aggregator
-        datasetinfo (Dict): Information about dataset
-        adm_aggregation (Union[Dict, ListTuple]): Mapping from input admins to aggregated output admins
-        headers (Dict[str, Tuple]): Column headers and HXL hashtags
-        use_hxl (bool): Whether to map from headers or from HXL tags
-        source_configuration (Dict): Configuration for sources. Default is empty dict (use defaults).
-        aggregation_scrapers (List["Aggregator"]): Other aggregations needed. Default is [].
+        name: Name of aggregator
+        datasetinfo: Information about dataset
+        adm_aggregation: Mapping from input admins to aggregated output admins
+        headers: Column headers and HXL hashtags
+        use_hxl: Whether to map from headers or from HXL tags
+        source_configuration: Configuration for sources. Default is empty dict (use defaults).
+        aggregation_scrapers: Other aggregations needed. Default is [].
     """
 
     def __init__(
         self,
         name: str,
-        datasetinfo: Dict,
-        headers: Dict[str, Tuple],
-        adm_aggregation: Union[Dict, ListTuple],
+        datasetinfo: dict,
+        headers: dict[str, tuple],
+        adm_aggregation: dict | ListTuple,
         use_hxl: bool,
-        source_configuration: Dict = {},
-        aggregation_scrapers: List["Aggregator"] = [],
+        source_configuration: dict = {},
+        aggregation_scrapers: list["Aggregator"] = [],
     ):
         super().__init__(
             name,
@@ -57,9 +57,9 @@ class Aggregator(BaseScraper):
             source_configuration=source_configuration,
         )
         if isinstance(adm_aggregation, dict):
-            self.adm_aggregation: Dict[str, Tuple] = adm_aggregation
+            self.adm_aggregation: dict[str, tuple] = adm_aggregation
         else:
-            self.adm_aggregation: Dict[str, Tuple] = {
+            self.adm_aggregation: dict[str, tuple] = {
                 x: ("value",) for x in adm_aggregation
             }
 
@@ -71,13 +71,13 @@ class Aggregator(BaseScraper):
         cls,
         use_hxl: bool,
         header_or_hxltag: str,
-        datasetinfo: Dict,
+        datasetinfo: dict,
         input_level: str,
         output_level: str,
-        adm_aggregation: Union[Dict, ListTuple],
-        input_headers: Tuple[ListTuple, ListTuple],
-        source_configuration: Dict = {},
-        aggregation_scrapers: List["Aggregator"] = [],
+        adm_aggregation: dict | ListTuple,
+        input_headers: tuple[ListTuple, ListTuple],
+        source_configuration: dict = {},
+        aggregation_scrapers: list["Aggregator"] = [],
     ) -> Optional["Aggregator"]:
         """Gets one aggregator given dataset information and returns headers, values and
         sources. The mapping from input admins to aggregated output admins
@@ -87,19 +87,19 @@ class Aggregator(BaseScraper):
         expressed as a dictionary mapping from input admin to value.
 
         Args:
-            use_hxl (bool): Whether to map from headers or from HXL tags
-            header_or_hxltag (str): Column header or HXL hashtag depending on use_hxl
-            datasetinfo (Dict): Information about dataset
-            input_level (str): Input level to aggregate like national or subnational
-            output_level (str): Output level of aggregated data like regional
-            adm_aggregation (Union[Dict, ListTuple]): Mapping from input admins to aggregated output admins
-            input_headers (Tuple[ListTuple, ListTuple]): Column headers and HXL hashtags
-            runner(Runner): Runner object
-            source_configuration (Dict): Configuration for sources. Default is empty dict (use defaults).
-            aggregation_scrapers (List["Aggregator"]): Other aggregations needed. Default is [].
+            use_hxl: Whether to map from headers or from HXL tags
+            header_or_hxltag: Column header or HXL hashtag depending on use_hxl
+            datasetinfo: Information about dataset
+            input_level: Input level to aggregate like national or subnational
+            output_level: Output level of aggregated data like regional
+            adm_aggregation: Mapping from input admins to aggregated output admins
+            input_headers: Column headers and HXL hashtags
+            runner: Runner object
+            source_configuration: Configuration for sources. Default is empty dict (use defaults).
+            aggregation_scrapers: Other aggregations needed. Default is [].
 
         Returns:
-            Optional["Aggregator"]: The aggregation scraper or None if it couldn't be created
+            The aggregation scraper or None if it couldn't be created
         """
         if use_hxl:
             main_index = 1
@@ -158,14 +158,14 @@ class Aggregator(BaseScraper):
         )
 
     @staticmethod
-    def get_float_or_int(valuestr: str) -> Union[float, int, None]:
+    def get_float_or_int(valuestr: str) -> float | int | None:
         """Convert value string to float, int or None
 
         Args:
-            valuestr (str): Value string
+            valuestr: Value string
 
         Returns:
-            Union[float, int, None]: Converted value
+            Converted value
         """
         if not valuestr or valuestr == "N/A":
             return None
@@ -175,16 +175,16 @@ class Aggregator(BaseScraper):
             return int(valuestr)
 
     @classmethod
-    def get_numeric(cls, valueinput: Any) -> Union[str, float, int]:
+    def get_numeric(cls, valueinput: Any) -> str | float | int:
         """Convert value input to float or int. Values in pipe separated strings are
         summed. If any values in a pipe separated string are empty, an empty string is
         returned.
 
         Args:
-            valueinput (Any): Value string
+            valueinput: Value string
 
         Returns:
-            Union[str, float, int]: Converted value
+            Converted value
         """
         if isinstance(valueinput, str):
             total = 0
@@ -199,12 +199,12 @@ class Aggregator(BaseScraper):
             return total
         return valueinput
 
-    def process(self, output_level: str, output_values: Dict) -> None:
+    def process(self, output_level: str, output_values: dict) -> None:
         """Perform aggregation putting results in output_values
 
         Args:
-            output_level (str): Output level of aggregated data like regional
-            output_values (Dict): Mapping from admin name to value
+            output_level: Output level of aggregated data like regional
+            output_values: Mapping from admin name to value
 
         Returns:
             None

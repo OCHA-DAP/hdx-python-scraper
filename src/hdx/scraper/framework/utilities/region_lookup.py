@@ -1,9 +1,9 @@
 import logging
-from typing import Dict
 
-from .reader import Read
 from hdx.utilities.dictandlist import dict_of_sets_add
 from hdx.utilities.typehint import ListTuple
+
+from .reader import Read
 
 logger = logging.getLogger(__name__)
 
@@ -18,9 +18,9 @@ class RegionLookup:
     @classmethod
     def load(
         cls,
-        region_config: Dict,
+        region_config: dict,
         countryiso3s: ListTuple[str],
-        additional_regions: Dict[str, ListTuple] = {},
+        additional_regions: dict[str, ListTuple] = {},
     ) -> None:
         """Read in region information and provide regions (list of regions) and
         iso3_to_region (one-to-one mapping from country ISO3 code to region
@@ -34,9 +34,9 @@ class RegionLookup:
         countryiso3s and to one or more additional_regions.
 
         Args:
-            region_config (Dict): Region configuration
-            countryiso3s (ListTuple[str]): List of country ISO3 codes
-            additional_regions (Dict[str, ListTuple]): Region to ISO3s. Default is {}.
+            region_config: Region configuration
+            countryiso3s: List of country ISO3 codes
+            additional_regions: Region to ISO3s. Default is {}.
         """
         _, iterator = Read.get_reader().read_hdx(
             region_config,

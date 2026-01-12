@@ -1,6 +1,5 @@
 from datetime import datetime
 from logging import Logger
-from typing import Dict, List, Optional, Union
 
 from hdx.location.adminlevel import AdminLevel
 from hdx.utilities.dateparse import parse_date
@@ -17,7 +16,7 @@ class Sources:
         """Set new default source date format. (Default is "%b %-d, %Y".)
 
         Args:
-            format (str): Date format
+            format: Date format
 
         Returns:
             None
@@ -29,7 +28,7 @@ class Sources:
         """Set new default source date range separator. (Default is "-".)
 
         Args:
-            separator (str): Separator
+            separator: Separator
 
         Returns:
             None
@@ -42,7 +41,7 @@ class Sources:
         HXL hashtag. (Default is to keep the previous source.)
 
         Args:
-            overwrite (bool): Whether to overwrite previous source
+            overwrite: Whether to overwrite previous source
 
         Returns:
             None
@@ -51,16 +50,16 @@ class Sources:
 
     @staticmethod
     def standardise_datasetinfo_source_date(
-        datasetinfo: Dict,
-    ) -> Optional[datetime]:
+        datasetinfo: dict,
+    ) -> datetime | None:
         """Standardise source date format in datasetinfo dictionary. Returns
         default end date or None.
 
         Args:
-            datasetinfo (Dict): Information about dataset
+            datasetinfo: Information about dataset
 
         Returns:
-            Optional[datetime]: Default end date or None
+            Default end date or None
         """
         source_date = datasetinfo.get("source_date")
         if not source_date:
@@ -108,17 +107,17 @@ class Sources:
 
     @classmethod
     def get_hxltag_source_datetime(
-        cls, datasetinfo: Dict, hxltag: str, fallback: bool = False
+        cls, datasetinfo: dict, hxltag: str, fallback: bool = False
     ) -> datetime:
         """Get standardised source date for HXL hashtag as datetime
 
         Args:
-            datasetinfo (Dict): Information about dataset
-            hxltag (str): HXL hashtag to check
-            fallback (bool): Whether to fall back to default_date. Default is False.
+            datasetinfo: Information about dataset
+            hxltag: HXL hashtag to check
+            fallback: Whether to fall back to default_date. Default is False.
 
         Returns:
-            datetime: Standardised source date for HXL hashtag
+            Standardised source date for HXL hashtag
         """
         cls.standardise_datasetinfo_source_date(datasetinfo)
         source_date = datasetinfo["source_date"]
@@ -130,15 +129,15 @@ class Sources:
         return date
 
     @classmethod
-    def format_hxltag_source_date(cls, datasetinfo: Dict, date: Dict) -> str:
+    def format_hxltag_source_date(cls, datasetinfo: dict, date: dict) -> str:
         """Get formatted date from source date
 
         Args:
-            datasetinfo (Dict): Information about dataset
-            date (Dict): Source date dictionary
+            datasetinfo: Information about dataset
+            date: Source date dictionary
 
         Returns:
-            str: Formatted source date string
+            Formatted source date string
         """
         source_date_format = datasetinfo.get(
             "source_date_format", cls.default_source_date_format
@@ -164,18 +163,18 @@ class Sources:
 
     @classmethod
     def get_hxltag_source_date(
-        cls, datasetinfo: Dict, hxltag: str, fallback: bool = False
+        cls, datasetinfo: dict, hxltag: str, fallback: bool = False
     ) -> str:
         """Get standardised and formatted source date for HXL hashtag as
         string
 
         Args:
-            datasetinfo (Dict): Information about dataset
-            hxltag (str): HXL hashtag to check
-            fallback (bool): Whether to fall back to default_date. Default is False.
+            datasetinfo: Information about dataset
+            hxltag: HXL hashtag to check
+            fallback: Whether to fall back to default_date. Default is False.
 
         Returns:
-            str: Standardised and formatted source date for HXL hashtag
+            Standardised and formatted source date for HXL hashtag
         """
         date = cls.get_hxltag_source_datetime(datasetinfo, hxltag, fallback)
         if not date:
@@ -185,20 +184,20 @@ class Sources:
     @classmethod
     def add_source_overwrite(
         cls,
-        hxltags: List[str],
-        sources: List[ListTuple],
+        hxltags: list[str],
+        sources: list[ListTuple],
         source: ListTuple[str],
         logger: Logger,
-        should_overwrite_sources: Optional[bool] = None,
+        should_overwrite_sources: bool | None = None,
     ) -> None:
         """Add source to sources preventing duplication.
 
         Args:
-            hxltags (List[str]): List of HXL hashtags, one for each source name
-            sources (List[ListTuple]): List of sources
-            source (ListTuple[str]): Source information
-            logger (Logger): Logger to log warnings to
-            should_overwrite_sources (Optional[bool]): Whether to overwrite sources. Default is None (class default).
+            hxltags: List of HXL hashtags, one for each source name
+            sources: List of sources
+            source: Source information
+            logger: Logger to log warnings to
+            should_overwrite_sources: Whether to overwrite sources. Default is None (class default).
 
         Returns:
             None
@@ -220,20 +219,20 @@ class Sources:
     @classmethod
     def add_sources_overwrite(
         cls,
-        hxltags: List[str],
-        sources: List[ListTuple],
-        sources_to_add: List[ListTuple],
+        hxltags: list[str],
+        sources: list[ListTuple],
+        sources_to_add: list[ListTuple],
         logger: Logger,
-        should_overwrite_sources: Optional[bool] = None,
+        should_overwrite_sources: bool | None = None,
     ) -> None:
         """Add source to sources preventing duplication
 
         Args:
-            hxltags (List[str]): List of HXL hashtags, one for each source name
-            sources (List[ListTuple]): List of sources
-            sources_to_add (List[ListTuple]): List of sources to add
-            logger (Logger): Logegr to log warnings to
-            should_overwrite_sources (Optional[bool]): Whether to overwrite sources. Default is None (class default).
+            hxltags: List of HXL hashtags, one for each source name
+            sources: List of sources
+            sources_to_add: List of sources to add
+            logger: Logegr to log warnings to
+            should_overwrite_sources: Whether to overwrite sources. Default is None (class default).
 
         Returns:
             None
@@ -245,13 +244,13 @@ class Sources:
 
     @staticmethod
     def create_source_configuration(
-        suffix_attribute: Optional[str] = None,
+        suffix_attribute: str | None = None,
         admin_sources: bool = False,
-        adminlevel: Union[AdminLevel, ListTuple[AdminLevel], None] = None,
-        admin_mapping_dict: Optional[Dict] = None,
+        adminlevel: AdminLevel | ListTuple[AdminLevel] | None = None,
+        admin_mapping_dict: dict | None = None,
         no_sources: bool = False,
-        should_overwrite_sources: Optional[bool] = None,
-    ) -> Optional[Dict]:
+        should_overwrite_sources: bool | None = None,
+    ) -> dict | None:
         """Create source configuration. If none of the arguments are supplied,
         source configuration is None. suffix_attribute is an attribute to add
         to the end of source HXL hashtags. admin_sources defines whether the
@@ -264,15 +263,15 @@ class Sources:
         be set to True.
 
         Args:
-            suffix_attribute (Optional[str]): Suffix to add. Default is None.
-            admin_sources (bool): Whether source information is per admin unit. Default is False.
-            adminlevel (Union[AdminLevel, ListTuple[AdminLevel], None]): Admin level(s) mapping. Default is None.
-            admin_mapping_dict (Optional[Dict]): Admin unit mapping to use. Default is None.
-            no_sources (bool): Don't create sources. Default is False.
-            should_overwrite_sources (Optional[bool]): Whether to overwrite sources. Default is None (use default).
+            suffix_attribute: Suffix to add. Default is None.
+            admin_sources: Whether source information is per admin unit. Default is False.
+            adminlevel: Admin level(s) mapping. Default is None.
+            admin_mapping_dict: Admin unit mapping to use. Default is None.
+            no_sources: Don't create sources. Default is False.
+            should_overwrite_sources: Whether to overwrite sources. Default is None (use default).
 
         Returns:
-             Optional[Dict]: Source configuration dictionary
+             Source configuration dictionary
         """
         source_configuration = {}
         if no_sources:

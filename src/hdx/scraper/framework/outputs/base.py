@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional, Union
+from typing import Any
 
 try:
     from pandas import DataFrame
@@ -10,26 +10,26 @@ class BaseOutput:
     """Base class for output that can also be used for testing as it does nothing.
 
     Args:
-        updatetabs (List[str]): Tabs to update
+        updatetabs: Tabs to update
     """
 
-    def __init__(self, updatetabs: List[str]) -> None:
+    def __init__(self, updatetabs: list[str]) -> None:
         self.updatetabs = updatetabs
 
     def update_tab(
         self,
         tabname: str,
-        values: Union[List, DataFrame],
-        hxltags: Optional[Dict] = None,
+        values: list | DataFrame,
+        hxltags: dict | None = None,
         **kwargs: Any,
     ) -> None:
         """Update tab with values. Classes that inherit from this one should
         implement this method.
 
         Args:
-            tabname (str): Tab to update
-            values (Union[List, DataFrame]): Values in a list of lists or a DataFrame
-            hxltags (Optional[Dict]): HXL tag mapping. Default is None.
+            tabname: Tab to update
+            values: Values in a list of lists or a DataFrame
+            hxltags: HXL tag mapping. Default is None.
             **kwargs (Any): Keyword arguments
 
         Returns:
@@ -37,12 +37,12 @@ class BaseOutput:
         """
         return
 
-    def add_data_row(self, key: str, row: Dict) -> None:
+    def add_data_row(self, key: str, row: dict) -> None:
         """Add row
 
         Args:
-            key (str): Key to update
-            row (Dict): Row to add
+            key: Key to update
+            row: Row to add
 
         Returns:
             None
@@ -50,14 +50,14 @@ class BaseOutput:
         return
 
     def add_dataframe_rows(
-        self, key: str, df: DataFrame, hxltags: Optional[Dict] = None
+        self, key: str, df: DataFrame, hxltags: dict | None = None
     ) -> None:
         """Add rows from dataframe under a key
 
         Args:
-            key (str): Key in JSON to update
-            df (DataFrame): Dataframe containing rows
-            hxltags (Optional[Dict]): HXL tag mapping. Default is None.
+            key: Key in JSON to update
+            df: Dataframe containing rows
+            hxltags: HXL tag mapping. Default is None.
 
         Returns:
             None
@@ -68,16 +68,16 @@ class BaseOutput:
         self,
         name: str,
         countryiso: str,
-        rows: List[Dict],
-        hxltags: Optional[Dict] = None,
+        rows: list[dict],
+        hxltags: dict | None = None,
     ) -> None:
         """Add rows under both a key and an ISO 3 country code subkey
 
         Args:
-            key (str): Key to update
-            countryiso (str): Country to use as subkey
-            rows (List[Dict]): List of dictionaries
-            hxltags (Optional[Dict]): HXL tag mapping. Default is None.
+            key: Key to update
+            countryiso: Country to use as subkey
+            rows: List of dictionaries
+            hxltags: HXL tag mapping. Default is None.
 
         Returns:
             None

@@ -5,12 +5,12 @@ from os.path import join
 import numpy as np
 import pandas
 import pytest
+from hdx.utilities.path import temp_dir
 
 from hdx.scraper.framework.outputs.base import BaseOutput
 from hdx.scraper.framework.outputs.excelfile import ExcelFile
 from hdx.scraper.framework.outputs.googlesheets import GoogleSheets
 from hdx.scraper.framework.outputs.json import JsonFile
-from hdx.utilities.path import temp_dir
 
 
 class TestOutput:

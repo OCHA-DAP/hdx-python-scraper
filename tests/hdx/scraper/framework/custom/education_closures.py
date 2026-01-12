@@ -1,14 +1,14 @@
 import logging
-from typing import Dict
+
+from hdx.utilities.dateparse import default_date, parse_date
 
 from hdx.scraper.framework.base_scraper import BaseScraper
-from hdx.utilities.dateparse import default_date, parse_date
 
 logger = logging.getLogger(__name__)
 
 
 class EducationClosures(BaseScraper):
-    def __init__(self, datasetinfo: Dict, today, countryiso3s, regionlookup):
+    def __init__(self, datasetinfo: dict, today, countryiso3s, regionlookup):
         super().__init__(
             "education_closures",
             datasetinfo,

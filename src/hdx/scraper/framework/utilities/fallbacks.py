@@ -1,5 +1,4 @@
 import logging
-from typing import Dict, List, Tuple
 
 from hdx.utilities.loader import LoadError, load_json
 
@@ -27,9 +26,9 @@ class Fallbacks:
     def add(
         cls,
         fallbacks_path: str,
-        levels_mapping: Dict[str, str] = default_levels_mapping,
+        levels_mapping: dict[str, str] = default_levels_mapping,
         sources_key: str = "sources",
-        admin_name_mapping: Dict[str, str] = default_admin_name_mapping,
+        admin_name_mapping: dict[str, str] = default_admin_name_mapping,
     ) -> None:
         """
         Add fallbacks from a given JSON fallbacks_path (which will usually be
@@ -50,9 +49,9 @@ class Fallbacks:
             }
 
         Args:
-            fallbacks_path (str): Path to JSON fallbacks file
-            levels_mapping (Dict[str,str]): Map keys from file to levels. Defaults in description.
-            sources_key (str): Key to use for sources. Default is "sources".
+            fallbacks_path: Path to JSON fallbacks file
+            levels_mapping: Map keys from file to levels. Defaults in description.
+            sources_key: Key to use for sources. Default is "sources".
             admin_name_mapping: HXL hashtags for different admin levels. Defaults in description.
 
         Returns:
@@ -83,14 +82,8 @@ class Fallbacks:
         """
         Returns fallbacks if they exist
 
-        Args:
-            fallbacks_path (str): Path to JSON fallbacks file
-            levels_mapping (Dict[str,str]): Map keys from file to levels. Defaults in description.
-            sources_key (str): Key to use for sources. Default is "sources".
-            admin_name_mapping: HXL hashtags for different admin levels. Defaults in description.
-
         Returns:
-            None
+            Fallbacks or None
         """
         return cls.fallbacks is not None
 
@@ -98,8 +91,8 @@ class Fallbacks:
     def get(
         cls,
         level: str,
-        headers: Tuple[List, List],
-    ) -> Tuple[List, List]:
+        headers: tuple[list, list],
+    ) -> tuple[list, list]:
         """Use provided fallbacks when there is a problem obtaining the latest
         data. The fallbacks dictionary should have the following keys: "data"
         containing a list of dictionaries from HXL hashtag to value,
@@ -117,11 +110,11 @@ class Fallbacks:
         "sources hxltags": ["#indicator+name", "#date", "#meta+source", "#meta+url"]}
 
         Args:
-            level (str): Level to obtain fallbacks
-            headers (Tuple[List, List]): Headers
+            level: Level to obtain fallbacks
+            headers: Headers
 
         Returns:
-            Tuple[List, List]: Tuple of (Output values, output sources)
+            Tuple of (Output values, output sources)
         """
         values = []
         sources = []

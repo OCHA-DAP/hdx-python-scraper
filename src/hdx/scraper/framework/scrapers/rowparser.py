@@ -1,17 +1,17 @@
 import copy
 import logging
+from collections.abc import Generator, Iterator
 from datetime import datetime
 from operator import itemgetter
-from typing import Dict, Generator, Iterator, List, Optional, Tuple
 
 import hxl
 from dateutil.relativedelta import relativedelta  # noqa: F401
-
-from ..utilities import match_template
 from hdx.location.adminlevel import AdminLevel
 from hdx.location.country import Country
 from hdx.utilities.dateparse import parse_date
 from hdx.utilities.dictandlist import dict_of_lists_add
+
+from ..utilities import match_template
 
 logger = logging.getLogger(__name__)
 
@@ -20,42 +20,42 @@ class RowParser:
     """RowParser class for parsing each row.
 
     Args:
-        name (str): Name of scraper
-        countryiso3s (List[str]): List of ISO3 country codes to process
-        adminlevel (Optional[AdminLevel]): AdminLevel object from HDX Python Country library
-        level (str): Can be national, subnational or single
-        datelevel (str): Can be global, regional, national, subnational
-        today (datetime): Date today
-        datasetinfo (Dict): Dictionary of information about dataset
-        headers (List[str]): Row headers
-        header_to_hxltag (Optional[Dict[str, str]]): Mapping from headers to HXL hashtags or None
-        subsets (List[Dict]): List of subset definitions
-        maxdateonly (bool): Whether to only take the most recent date. Default is True.
+        name: Name of scraper
+        countryiso3s: List of ISO3 country codes to process
+        adminlevel: AdminLevel object from HDX Python Country library
+        level: Can be national, subnational or single
+        datelevel: Can be global, regional, national, subnational
+        today: Date today
+        datasetinfo: Dictionary of information about dataset
+        headers: Row headers
+        header_to_hxltag: Mapping from headers to HXL hashtags or None
+        subsets: List of subset definitions
+        maxdateonly: Whether to only take the most recent date. Default is True.
     """
 
     def __init__(
         self,
         name: str,
-        countryiso3s: List[str],
-        adminlevel: Optional[AdminLevel],
+        countryiso3s: list[str],
+        adminlevel: AdminLevel | None,
         level: str,
         datelevel: str,
         today: datetime,
-        datasetinfo: Dict,
-        headers: List[str],
-        header_to_hxltag: Optional[Dict[str, str]],
-        subsets: List[Dict],
+        datasetinfo: dict,
+        headers: list[str],
+        header_to_hxltag: dict[str, str] | None,
+        subsets: list[dict],
         maxdateonly: bool = True,
     ) -> None:
-        def get_level(level: str) -> Optional[int]:
+        def get_level(level: str) -> int | None:
             """Get the level_name as a number. "Single" valued outputs are typically
             regional or global
 
             Args:
-                level (str): Can be national, subnational or single (for a single value)
+                level: Can be national, subnational or single (for a single value)
 
             Returns:
-                Optional[int]: Level as a number
+                Level as a number
             """
             if level == "single":
                 return None
@@ -124,15 +124,15 @@ class RowParser:
         self.maxdateonly = maxdateonly
         self.flatteninfo = datasetinfo.get("flatten")
         self.headers = headers
-        self.header_to_hxltag: Optional[Dict[str, str]] = header_to_hxltag
+        self.header_to_hxltag: dict[str, str] | None = header_to_hxltag
         self.filters = {}
         self.read_external_filter(datasetinfo.get("external_filter"))
 
-    def read_external_filter(self, external_filter: Optional[Dict]) -> None:
+    def read_external_filter(self, external_filter: dict | None) -> None:
         """Read filter list from external url pointing to a HXLated file
 
         Args:
-            external_filter (Optional[Dict]): External filter information in dictionary
+            external_filter: External filter information in dictionary
 
         Returns:
             None
@@ -154,10 +154,10 @@ class RowParser:
         """Replace filter string variables with columns in row of data
 
         Args:
-            filter (str): Filter string
+            filter: Filter string
 
         Returns:
-            str: Filter string with variables replaced
+            Filter string with variables replaced
         """
         if self.filter_cols:
             for col in self.filter_cols:
@@ -170,16 +170,16 @@ class RowParser:
                     filter = filter.replace(col, f"row['{col}']")
         return filter
 
-    def filter_sort_rows(self, iterator: Iterator[Dict]) -> Iterator[Dict]:
+    def filter_sort_rows(self, iterator: Iterator[dict]) -> Iterator[dict]:
         """Apply prefilter and sort the input data before processing. If date_col is
         specified along with any of sum or process, and sorting is not specified, then
         apply a sort by date to ensure correct results.
 
         Args:
-            iterator (Iterator[Dict]): Input data
+            iterator: Input data
 
         Returns:
-            Iterator[Dict]: Input data with prefilter applied if specified and sorted if specified or deemed necessary
+            Input data with prefilter applied if specified and sorted if specified or deemed necessary
         """
         if self.header_to_hxltag:
             iterator = self.header_to_hxltag_rows(iterator)
@@ -209,15 +209,15 @@ class RowParser:
         return iterator
 
     def header_to_hxltag_rows(
-        self, iterator: Iterator[Dict]
-    ) -> Generator[Dict, None, None]:
+        self, iterator: Iterator[dict]
+    ) -> Generator[dict, None, None]:
         """Convert headers to HXL tags in keys
 
         Args:
-            iterator (Iterator[Dict]): Input data
+            iterator: Input data
 
         Returns:
-            Generator[Dict]: Rows where keys are HXL tags
+            Rows where keys are HXL tags
         """
         for row in iterator:
             newrow = {}
@@ -225,41 +225,40 @@ class RowParser:
                 newrow[self.header_to_hxltag[header]] = row[header]
             yield newrow
 
-    def stop_rows(self, iterator: Iterator[Dict]) -> Generator[Dict, None, None]:
+    def stop_rows(self, iterator: Iterator[dict]) -> Generator[dict, None, None]:
         """Stop processing rows after condition met
 
         Args:
-            iterator (Iterator[Dict]): Input data
+            iterator: Input data
 
         Returns:
-            Generator[Dict]: Rows up to stop condition
+            Rows up to stop condition
         """
         for row in iterator:
             if all(row[key] == value for key, value in self.stop_row.items()):
                 break
             yield row
 
-    def flatten_rows(self, iterator: Iterator[Dict]) -> Iterator[Dict]:
+    def flatten_rows(self, iterator: Iterator[dict]) -> Iterator[dict]:
         """Flatten rows
 
         Args:
-            iterator (Iterator[Dict]): Input data
+            iterator: Input data
 
         Returns:
-            Generator[Dict]: Flattened rows
+            Flattened rows
         """
         for row in iterator:
-            for newrow in self.flatten_row(row):
-                yield newrow
+            yield from self.flatten_row(row)
 
-    def flatten_row(self, row: Dict) -> Generator[Dict, None, None]:
+    def flatten_row(self, row: dict) -> Generator[dict, None, None]:
         """Flatten a wide spreadsheet format into a long one
 
         Args:
-            row (Dict): Row to flatten
+            row: Row to flatten
 
         Returns:
-            Generator[Dict]: Flattened row(s)
+            Flattened row(s)
         """
         counters = [-1 for _ in self.flatteninfo]
         while True:
@@ -289,18 +288,18 @@ class RowParser:
         """Get the most recent date of the rows so far
 
         Returns:
-            datetime: Most recent date in processed rows
+            Most recent date in processed rows
         """
         return self.maxdate
 
-    def filtered(self, row: Dict) -> bool:
+    def filtered(self, row: dict) -> bool:
         """Check if the row should be filtered out
 
         Args:
-            row (Dict): Row to check for filters
+            row: Row to check for filters
 
         Returns:
-            bool: Whether row is filtered out or not
+            Whether row is filtered out or not
         """
         for header in self.filters:
             if header not in row:
@@ -309,15 +308,15 @@ class RowParser:
                 return True
         return False
 
-    def parse(self, row: Dict) -> Tuple[Optional[str], Optional[List[bool]]]:
+    def parse(self, row: dict) -> tuple[str | None, list[bool] | None]:
         """Parse row checking for valid admin information and if the row should be filtered out in each subset given
         its definition.
 
         Args:
-            row (Dict): Row to parse
+            row: Row to parse
 
         Returns:
-            Tuple[Optional[str], Optional[List[bool]]]: (admin name, should process subset list) or (None, None)
+            (admin name, should process subset list) or (None, None)
         """
         if self.filtered(row):
             return None, None

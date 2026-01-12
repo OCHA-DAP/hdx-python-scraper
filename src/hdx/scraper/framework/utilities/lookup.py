@@ -1,12 +1,12 @@
 import logging
 from copy import copy
-from typing import Dict, Optional, Type
 
-from hdx.scraper.framework.utilities.reader import Read
 from hdx.utilities.loader import load_yaml
 from hdx.utilities.matching import get_code_from_name
 from hdx.utilities.path import script_dir_plus_file
 from hdx.utilities.text import normalise
+
+from hdx.scraper.framework.utilities.reader import Read
 
 logger = logging.getLogger(__name__)
 
@@ -16,11 +16,11 @@ class Lookup:
     https://github.com/OCHA-DAP/hdx-python-scraper/blob/main/src/hdx/scraper/framework/utilities/sector_configuration.yaml
 
     Args:
-        yaml_config_path (str): YAML configuration file
-        classobject (Type): Child class
+        yaml_config_path: YAML configuration file
+        classobject: Child class
     """
 
-    def __init__(self, yaml_config_path: str, classobject: Type):
+    def __init__(self, yaml_config_path: str, classobject: type):
         configuration = load_yaml(script_dir_plus_file(yaml_config_path, classobject))
         self._configuration = configuration
         initial_lookup = configuration.get("initial_lookup", {})
@@ -33,8 +33,8 @@ class Lookup:
         """Add code and name to lookup
 
         Args:
-            code (str): Code to add to lookup
-            name (str): Name to add to lookup
+            code: Code to add to lookup
+            name: Name to add to lookup
 
         Returns:
             None
@@ -73,14 +73,14 @@ class Lookup:
         for code, name in extra_entries.items():
             self.add_to_lookup(code=code, name=name)
 
-    def get_code(self, code: str) -> Optional[str]:
+    def get_code(self, code: str) -> str | None:
         """Get code from lookup using fuzzy matching if needed
 
         Args:
-            code (str): Code to get from lookup
+            code: Code to get from lookup
 
         Returns:
-            Optional[str]: Code obtained from lookup or None if no code is found
+            Code obtained from lookup or None if no code is found
         """
 
         return get_code_from_name(
@@ -89,24 +89,24 @@ class Lookup:
             unmatched=self._unmatched,
         )
 
-    def get_name(self, code: str, default: Optional[str] = None) -> Optional[str]:
+    def get_name(self, code: str, default: str | None = None) -> str | None:
         """Get name from code
 
         Args:
-            code (str): Code to lookup
-            default (Optional[str]): Default name to return if code is not found
+            code: Code to lookup
+            default: Default name to return if code is not found
 
         Returns:
-            Optional[str]: Name obtained from lookup or default if no name is found
+            Name obtained from lookup or default if no name is found
         """
 
         return self._code_to_name.get(code, default)
 
-    def get_code_to_name(self) -> Dict[str, str]:
+    def get_code_to_name(self) -> dict[str, str]:
         """Get the code to name lookup dictionary
 
         Returns:
-            Dict[str, str]: Code to name lookup dictionary
+            Code to name lookup dictionary
         """
 
         return self._code_to_name

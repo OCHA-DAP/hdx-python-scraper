@@ -1,8 +1,14 @@
 import logging
+from collections.abc import Callable
 from copy import copy
 from datetime import datetime
 from traceback import format_exc
-from typing import Any, Callable, Dict, List, Optional, Tuple, Union
+from typing import Any, Optional
+
+from hdx.location.adminlevel import AdminLevel
+from hdx.utilities.dateparse import now_utc
+from hdx.utilities.error_handler import ErrorHandler
+from hdx.utilities.typehint import ListTuple
 
 from .base_scraper import BaseScraper
 from .outputs.base import BaseOutput
@@ -14,10 +20,6 @@ from .utilities import get_startend_dates_from_time_period
 from .utilities.fallbacks import Fallbacks
 from .utilities.reader import Read
 from .utilities.sources import Sources
-from hdx.location.adminlevel import AdminLevel
-from hdx.utilities.dateparse import now_utc
-from hdx.utilities.error_handler import ErrorHandler
-from hdx.utilities.typehint import ListTuple
 
 logger = logging.getLogger(__name__)
 
@@ -26,25 +28,25 @@ class Runner:
     """The Runner class is the means by which scrapers are set up and run.
 
     Args:
-        countryiso3s (ListTuple[str]): List of ISO3 country codes to process
-        today (datetime): Value to use for today. Default is now_utc().
-        error_handler (ErrorHandler): ErrorHandler object that logs errors on exit
-        scrapers_to_run (Optional[ListTuple[str]]): Scrapers to run. Default is None (all scrapers).
+        countryiso3s: List of ISO3 country codes to process
+        today: Value to use for today. Default is now_utc().
+        error_handler: ErrorHandler object that logs errors on exit
+        scrapers_to_run: Scrapers to run. Default is None (all scrapers).
     """
 
     def __init__(
         self,
         countryiso3s: ListTuple[str],
         today: datetime = now_utc(),
-        error_handler: Optional[ErrorHandler] = None,
-        scrapers_to_run: Optional[ListTuple[str]] = None,
+        error_handler: ErrorHandler | None = None,
+        scrapers_to_run: ListTuple[str] | None = None,
     ):
         self.countryiso3s = countryiso3s
         self.today = today
         self.error_handler = error_handler
         if isinstance(scrapers_to_run, tuple):
             scrapers_to_run = list(scrapers_to_run)
-        self.scrapers_to_run: Optional[List[str]] = scrapers_to_run
+        self.scrapers_to_run: list[str] | None = scrapers_to_run
         self.scrapers = {}
         self.scraper_names = []
 
@@ -55,11 +57,11 @@ class Runner:
         should be set to True.
 
         Args:
-            scraper (BaseScraper): The scraper to add
-            force_add_to_run (bool): Whether to force include the scraper in the next run
+            scraper: The scraper to add
+            force_add_to_run: Whether to force include the scraper in the next run
 
         Returns:
-            str: scraper name
+            scraper name
         """
         scraper_name = scraper.name
         self.scrapers[scraper_name] = scraper
@@ -76,18 +78,18 @@ class Runner:
 
     def add_customs(
         self, scrapers: ListTuple[BaseScraper], force_add_to_run: bool = False
-    ) -> List[str]:
+    ) -> list[str]:
         """Add multiple custom scrapers that inherit BaseScraper. If running specific
         scrapers rather than all, and you want to force the inclusion of the scraper in
         the run regardless of the specific scrapers given, the parameter
         force_add_to_run should be set to True.
 
         Args:
-            scrapers (ListTuple[BaseScraper]): The scrapers to add
-            force_add_to_run (bool): Whether to force include the scraper in the next run
+            scrapers: The scrapers to add
+            force_add_to_run: Whether to force include the scraper in the next run
 
         Returns:
-            str: scraper name
+            scraper name
         """
         scraper_names = []
         for scraper in scrapers:
@@ -97,14 +99,14 @@ class Runner:
     def add_configurable(
         self,
         name: str,
-        datasetinfo: Dict,
+        datasetinfo: dict,
         level: str,
-        adminlevel: Optional[AdminLevel] = None,
-        level_name: Optional[str] = None,
-        source_configuration: Dict = {},
-        suffix: Optional[str] = None,
+        adminlevel: AdminLevel | None = None,
+        level_name: str | None = None,
+        source_configuration: dict = {},
+        suffix: str | None = None,
         force_add_to_run: bool = False,
-        countryiso3s: Optional[List[str]] = None,
+        countryiso3s: list[str] | None = None,
     ) -> str:
         """Add configurable scraper to the run. If running specific scrapers rather than
         all, and you want to force the inclusion of the scraper in the run regardless of
@@ -112,18 +114,18 @@ class Runner:
         True.
 
         Args:
-            name (str): Name of scraper
-            datasetinfo (Dict): Information about dataset
-            level (str): Can be national, subnational or single
-            adminlevel (Optional[AdminLevel]): AdminLevel object from HDX Python Country. Default is None.
-            level_name (Optional[str]): Customised level_name name. Default is None (level_name).
-            source_configuration (Dict): Configuration for sources. Default is empty dict (use defaults).
-            suffix (Optional[str]): Suffix to add to the scraper name
-            force_add_to_run (bool): Whether to force include the scraper in the next run
-            countryiso3s (Optional[List[str]]): Override list of country iso3s. Default is None.
+            name: Name of scraper
+            datasetinfo: Information about dataset
+            level: Can be national, subnational or single
+            adminlevel: AdminLevel object from HDX Python Country. Default is None.
+            level_name: Customised level_name name. Default is None (level_name).
+            source_configuration: Configuration for sources. Default is empty dict (use defaults).
+            suffix: Suffix to add to the scraper name
+            force_add_to_run: Whether to force include the scraper in the next run
+            countryiso3s: Override list of country iso3s. Default is None.
 
         Returns:
-            str: scraper name (including suffix if set)
+            scraper name (including suffix if set)
         """
         if suffix:
             scraper_name = f"{name}{suffix}"
@@ -154,32 +156,32 @@ class Runner:
 
     def add_configurables(
         self,
-        configuration: Dict,
+        configuration: dict,
         level: str,
-        adminlevel: Optional[AdminLevel] = None,
-        level_name: Optional[str] = None,
-        source_configuration: Dict = {},
-        suffix: Optional[str] = None,
+        adminlevel: AdminLevel | None = None,
+        level_name: str | None = None,
+        source_configuration: dict = {},
+        suffix: str | None = None,
         force_add_to_run: bool = False,
-        countryiso3s: Optional[List[str]] = None,
-    ) -> List[str]:
+        countryiso3s: list[str] | None = None,
+    ) -> list[str]:
         """Add multiple configurable scrapers to the run. If running specific scrapers
         rather than all, and you want to force the inclusion of the scraper in the run
         regardless of the specific scrapers given, the parameter force_add_to_run
         should be set to True.
 
         Args:
-            configuration (Dict): Mapping from scraper name to information about datasets
-            level (str): Can be national, subnational or single
-            adminlevel (Optional[AdminLevel]): AdminLevel object from HDX Python Country. Default is None.
-            level_name (Optional[str]): Customised level_name name. Default is None (level_name).
-            source_configuration (Dict): Configuration for sources. Default is empty dict (use defaults).
-            suffix (Optional[str]): Suffix to add to the scraper name
-            force_add_to_run (bool): Whether to force include the scraper in the next run
-            countryiso3s (Optional[List[str]]): Override list of country iso3s. Default is None.
+            configuration: Mapping from scraper name to information about datasets
+            level: Can be national, subnational or single
+            adminlevel: AdminLevel object from HDX Python Country. Default is None.
+            level_name: Customised level_name name. Default is None (level_name).
+            source_configuration: Configuration for sources. Default is empty dict (use defaults).
+            suffix: Suffix to add to the scraper name
+            force_add_to_run: Whether to force include the scraper in the next run
+            countryiso3s: Override list of country iso3s. Default is None.
 
         Returns:
-            List[str]: scraper names (including suffix if set)
+            scraper names (including suffix if set)
         """
         keys = []
         for name in configuration:
@@ -202,8 +204,8 @@ class Runner:
     def add_timeseries_scraper(
         self,
         name: str,
-        datasetinfo: Dict,
-        outputs: Dict[str, BaseOutput],
+        datasetinfo: dict,
+        outputs: dict[str, BaseOutput],
         force_add_to_run: bool = False,
     ) -> str:
         """Add time series scraper to the run. If running specific scrapers rather than
@@ -212,13 +214,13 @@ class Runner:
         True.
 
         Args:
-            name (str): Name of scraper
-            datasetinfo (Dict): Information about dataset
-            outputs (Dict[str, BaseOutput]): Mapping from names to output objects
-            force_add_to_run (bool): Whether to force include the scraper in the next run
+            name: Name of scraper
+            datasetinfo: Information about dataset
+            outputs: Mapping from names to output objects
+            force_add_to_run: Whether to force include the scraper in the next run
 
         Returns:
-            str: scraper name (including suffix if set)
+            scraper name (including suffix if set)
         """
         return self.add_custom(
             TimeSeries(name, datasetinfo, outputs, self.today),
@@ -227,22 +229,22 @@ class Runner:
 
     def add_timeseries_scrapers(
         self,
-        configuration: Dict,
-        outputs: Dict[str, BaseOutput],
+        configuration: dict,
+        outputs: dict[str, BaseOutput],
         force_add_to_run: bool = False,
-    ) -> List[str]:
+    ) -> list[str]:
         """Add multiple time series scrapers to the run. If running specific scrapers
         rather than all, and you want to force the inclusion of the scraper in the run
         regardless of the specific scrapers given, the parameter force_add_to_run should
         be set to True.
 
         Args:
-            configuration (Dict): Mapping from scraper name to information about datasets
-            outputs (Dict[str, BaseOutput]): Mapping from names to output objects
-            force_add_to_run (bool): Whether to force include the scraper in the next run
+            configuration: Mapping from scraper name to information about datasets
+            outputs: Mapping from names to output objects
+            force_add_to_run: Whether to force include the scraper in the next run
 
         Returns:
-            List[str]: scraper names (including suffix if set)
+            scraper names (including suffix if set)
         """
         keys = []
         for name, datasetinfo in configuration.items():
@@ -257,31 +259,31 @@ class Runner:
         self,
         use_hxl: bool,
         header_or_hxltag: str,
-        datasetinfo: Dict,
+        datasetinfo: dict,
         input_level: str,
         output_level: str,
-        adm_aggregation: Union[Dict, List],
-        source_configuration: Dict = {},
-        names: Optional[ListTuple[str]] = None,
-        overrides: Dict[str, Dict] = {},
-        aggregation_scrapers: List["Aggregator"] = [],
+        adm_aggregation: dict | list,
+        source_configuration: dict = {},
+        names: ListTuple[str] | None = None,
+        overrides: dict[str, dict] = {},
+        aggregation_scrapers: list["Aggregator"] = [],
     ) -> Optional["Aggregator"]:
         """Create aggregator
 
         Args:
-            use_hxl (bool): Whether keys should be HXL hashtags or column headers
-            header_or_hxltag (str): Column header or HXL hashtag depending on use_hxl
-            datasetinfo (Dict): Information about dataset
-            input_level (str): Input level to aggregate like national or subnational
-            output_level (str): Output level of aggregated data like regional
-            adm_aggregation (Union[Dict, List]): Mapping from input admins to aggregated output admins
-            source_configuration (Dict): Configuration for sources. Default is empty dict (use defaults).
-            names (Optional[ListTuple[str]]): Names of scrapers. Default is None.
-            overrides (Dict[str, Dict]): Dictionary mapping scrapers to level mappings. Default is {}.
-            aggregation_scrapers (List["Aggregator"]): Other aggregations needed. Default is [].
+            use_hxl: Whether keys should be HXL hashtags or column headers
+            header_or_hxltag: Column header or HXL hashtag depending on use_hxl
+            datasetinfo: Information about dataset
+            input_level: Input level to aggregate like national or subnational
+            output_level: Output level of aggregated data like regional
+            adm_aggregation: Mapping from input admins to aggregated output admins
+            source_configuration: Configuration for sources. Default is empty dict (use defaults).
+            names: Names of scrapers. Default is None.
+            overrides: Dictionary mapping scrapers to level mappings. Default is {}.
+            aggregation_scrapers: Other aggregations needed. Default is [].
 
         Returns:
-            Optional["Aggregator"]: scraper or None
+            scraper or None
         """
         input_headers = self.get_headers(names, [input_level], overrides=overrides)
         input_headers = input_headers.get(input_level)
@@ -317,16 +319,16 @@ class Runner:
         self,
         use_hxl: bool,
         header_or_hxltag: str,
-        datasetinfo: Dict,
+        datasetinfo: dict,
         input_level: str,
         output_level: str,
-        adm_aggregation: Union[Dict, List],
-        source_configuration: Dict = {},
-        names: Optional[ListTuple[str]] = None,
-        overrides: Dict[str, Dict] = {},
-        aggregation_scrapers: List["Aggregator"] = [],
+        adm_aggregation: dict | list,
+        source_configuration: dict = {},
+        names: ListTuple[str] | None = None,
+        overrides: dict[str, dict] = {},
+        aggregation_scrapers: list["Aggregator"] = [],
         force_add_to_run: bool = False,
-    ) -> Optional[str]:
+    ) -> str | None:
         """Add aggregator to the run. The mapping from input admins to aggregated output
         admins adm_aggregation is of form: {"AFG": ("ROAP",), "MMR": ("ROAP",)}. If the
         mapping is to the top level, then it is a list of input admins like:
@@ -335,20 +337,20 @@ class Runner:
         scrapers given, the parameter force_add_to_run should be set to True.
 
         Args:
-            use_hxl (bool): Whether keys should be HXL hashtags or column headers
-            header_or_hxltag (str): Column header or HXL hashtag depending on use_hxl
-            datasetinfo (Dict): Information about dataset
-            input_level (str): Input level to aggregate like national or subnational
-            output_level (str): Output level of aggregated data like regional
-            adm_aggregation (Union[Dict, List]): Mapping from input admins to aggregated output admins
-            source_configuration (Dict): Configuration for sources. Default is empty dict (use defaults).
-            names (Optional[ListTuple[str]]): Names of scrapers. Default is None.
-            overrides (Dict[str, Dict]): Dictionary mapping scrapers to level mappings. Default is {}.
-            aggregation_scrapers (List["Aggregator"]): Other aggregations needed. Default is [].
-            force_add_to_run (bool): Whether to force include the scraper in the next run
+            use_hxl: Whether keys should be HXL hashtags or column headers
+            header_or_hxltag: Column header or HXL hashtag depending on use_hxl
+            datasetinfo: Information about dataset
+            input_level: Input level to aggregate like national or subnational
+            output_level: Output level of aggregated data like regional
+            adm_aggregation: Mapping from input admins to aggregated output admins
+            source_configuration: Configuration for sources. Default is empty dict (use defaults).
+            names: Names of scrapers. Default is None.
+            overrides: Dictionary mapping scrapers to level mappings. Default is {}.
+            aggregation_scrapers: Other aggregations needed. Default is [].
+            force_add_to_run: Whether to force include the scraper in the next run
 
         Returns:
-            Optional[str]: scraper name (including suffix if set) or None
+            scraper name (including suffix if set) or None
         """
         scraper = self.create_aggregator(
             use_hxl,
@@ -369,15 +371,15 @@ class Runner:
     def add_aggregators(
         self,
         use_hxl: bool,
-        configuration: Dict,
+        configuration: dict,
         input_level: str,
         output_level: str,
-        adm_aggregation: Union[Dict, ListTuple],
-        source_configuration: Dict = {},
-        names: Optional[ListTuple[str]] = None,
-        overrides: Dict[str, Dict] = {},
+        adm_aggregation: dict | ListTuple,
+        source_configuration: dict = {},
+        names: ListTuple[str] | None = None,
+        overrides: dict[str, dict] = {},
         force_add_to_run: bool = False,
-    ) -> List[str]:
+    ) -> list[str]:
         """Add multiple aggregators to the run. The mapping from input admins to
         aggregated output admins adm_aggregation is of form:
         {"AFG": ("ROAP",), "MMR": ("ROAP",)}. If the mapping is to the top level, then
@@ -387,18 +389,18 @@ class Runner:
         be set to True.
 
         Args:
-            use_hxl (bool): Whether keys should be HXL hashtags or column headers
-            configuration (Dict): Mapping from scraper name to information about datasets
-            input_level (str): Input level to aggregate like national or subnational
-            output_level (str): Output level of aggregated data like regional
-            adm_aggregation (Union[Dict, ListTuple]): Mapping from input admins to aggregated output admins
-            source_configuration (Dict): Configuration for sources. Default is empty dict (use defaults).
-            names (Optional[ListTuple[str]]): Names of scrapers
-            overrides (Dict[str, Dict]): Dictionary mapping scrapers to level mappings. Default is {}.
-            force_add_to_run (bool): Whether to force include the scraper in the next run
+            use_hxl: Whether keys should be HXL hashtags or column headers
+            configuration: Mapping from scraper name to information about datasets
+            input_level: Input level to aggregate like national or subnational
+            output_level: Output level of aggregated data like regional
+            adm_aggregation: Mapping from input admins to aggregated output admins
+            source_configuration: Configuration for sources. Default is empty dict (use defaults).
+            names: Names of scrapers
+            overrides: Dictionary mapping scrapers to level mappings. Default is {}.
+            force_add_to_run: Whether to force include the scraper in the next run
 
         Returns:
-            List[str]: scraper names (including suffix if set)
+            scraper names (including suffix if set)
         """
         scrapers = []
         for header_or_hxltag, datasetinfo in configuration.items():
@@ -420,7 +422,7 @@ class Runner:
 
     def add_resource_downloader(
         self,
-        datasetinfo: Dict,
+        datasetinfo: dict,
         folder: str = "",
         force_add_to_run: bool = False,
     ) -> str:
@@ -430,12 +432,12 @@ class Runner:
         True.
 
         Args:
-            datasetinfo (Dict): Information about dataset
-            folder (str): Folder to which to download. Default is "".
-            force_add_to_run (bool): Whether to force include the scraper in the next run
+            datasetinfo: Information about dataset
+            folder: Folder to which to download. Default is "".
+            force_add_to_run: Whether to force include the scraper in the next run
 
         Returns:
-            str: scraper name (including suffix if set)
+            scraper name (including suffix if set)
         """
         return self.add_custom(
             ResourceDownloader(datasetinfo, folder), force_add_to_run
@@ -443,22 +445,22 @@ class Runner:
 
     def add_resource_downloaders(
         self,
-        configuration: Dict,
+        configuration: dict,
         folder: str = "",
         force_add_to_run: bool = False,
-    ) -> List[str]:
+    ) -> list[str]:
         """Add multiple resource downloaders to the run. If running specific scrapers
         rather than all, and you want to force the inclusion of the scraper in the run
         regardless of the specific scrapers given, the parameter force_add_to_run should
         be set to True.
 
         Args:
-            configuration (Dict): Mapping from scraper name to information about datasets
-            folder (str): Folder to which to download. Default is "".
-            force_add_to_run (bool): Whether to force include the scraper in the next run
+            configuration: Mapping from scraper name to information about datasets
+            folder: Folder to which to download. Default is "".
+            force_add_to_run: Whether to force include the scraper in the next run
 
         Returns:
-            List[str]: scraper names (including suffix if set)
+            scraper names (including suffix if set)
         """
         keys = []
         for datasetinfo in configuration:
@@ -471,7 +473,7 @@ class Runner:
         """Set certain scrapers to run first
 
         Args:
-            scraper_names (ListTuple[str]): Names of scrapers to run first
+            scraper_names: Names of scrapers to run first
 
         Returns:
             None
@@ -481,11 +483,11 @@ class Runner:
                 self.scraper_names.remove(scraper_name)
                 self.scraper_names.insert(0, scraper_name)
 
-    def get_scraper_names(self) -> List[str]:
+    def get_scraper_names(self) -> list[str]:
         """Get names of scrapers
 
         Returns:
-            List[str]: Names of scrapers
+            Names of scrapers
         """
         return self.scraper_names
 
@@ -493,10 +495,10 @@ class Runner:
         """Get scraper given name
 
         Args:
-            name (str): Name of scraper
+            name: Name of scraper
 
         Returns:
-            Optional[BaseScraper]: Scraper or None if there is no scraper with given name
+            Scraper or None if there is no scraper with given name
         """
         return self.scrapers.get(name)
 
@@ -505,10 +507,10 @@ class Runner:
         given name.
 
         Args:
-            name (str): Name of scraper
+            name: Name of scraper
 
         Returns:
-            BaseScraper: Scraper
+            Scraper
         """
         scraper = self.get_scraper(name)
         if not scraper:
@@ -519,10 +521,10 @@ class Runner:
         """Delete scraper with given name
 
         Args:
-            name (str): Name of scraper
+            name: Name of scraper
 
         Returns:
-            bool: True if the scraper was present, False if not
+            True if the scraper was present, False if not
         """
         if name not in self.scraper_names:
             return False
@@ -534,7 +536,7 @@ class Runner:
         """Add instance variables to scraper instance given scraper name
 
         Args:
-            name (str): Name of scraper
+            name: Name of scraper
             **kwargs: Instance name value pairs to add to scraper instance
 
         Returns:
@@ -551,8 +553,8 @@ class Runner:
         type BaseScraper. The function does not need to return anything.
 
         Args:
-            name (str): Name of scraper
-            fn (Callable[[BaseScraper], None]): Function to call pre run
+            name: Name of scraper
+            fn: Function to call pre run
 
         Returns:
             None
@@ -567,8 +569,8 @@ class Runner:
         type BaseScraper. The function does not need to return anything.
 
         Args:
-            name (str): Name of scraper
-            fn (Callable[[BaseScraper], None]): Function to call post run
+            name: Name of scraper
+            fn: Function to call post run
 
         Returns:
             None
@@ -581,11 +583,11 @@ class Runner:
         dictionary. If scraper run fails and fallbacks have been set up, use them.
 
         Args:
-            name (str): Name of scraper
-            force_run (bool): Force run even if scraper marked as already run
+            name: Name of scraper
+            force_run: Force run even if scraper marked as already run
 
         Returns:
-            bool: Return True if scraper was run, False if not
+            Return True if scraper was run, False if not
         """
         scraper = self.get_scraper_exception(name)
         if scraper.has_run is False or force_run:
@@ -623,11 +625,11 @@ class Runner:
          dictionary. If scraper run fails and fallbacks have been set up, use them.
 
         Args:
-            name (str): Name of scraper
-            force_run (bool): Force run even if scraper marked as already run
+            name: Name of scraper
+            force_run: Force run even if scraper marked as already run
 
         Returns:
-            bool: Return True if scraper was run, False if not
+            Return True if scraper was run, False if not
         """
         if self.scrapers_to_run and not any(x in name for x in self.scrapers_to_run):
             return False
@@ -636,9 +638,9 @@ class Runner:
 
     def run(
         self,
-        what_to_run: Optional[ListTuple[str]] = None,
+        what_to_run: ListTuple[str] | None = None,
         force_run: bool = False,
-        prioritise_scrapers: Optional[ListTuple[str]] = None,
+        prioritise_scrapers: ListTuple[str] | None = None,
     ) -> None:
         """Run scrapers limiting to those in what_to_run if given (including force
         running scrapers that have already run if force_run is True), adding sources
@@ -646,9 +648,9 @@ class Runner:
         are run first. If scraper run fails and fallbacks have been set up, use them.
 
         Args:
-            what_to_run (Optional[ListTuple[str]]): Run only these scrapers. Default is None (run all).
-            force_run (bool): Force run even if any scraper marked as already run
-            prioritise_scrapers (Optional[ListTuple[str]]): Scrapers to run first. Default is None.
+            what_to_run: Run only these scrapers. Default is None (run all).
+            force_run: Force run even if any scraper marked as already run
+            prioritise_scrapers: Scrapers to run first. Default is None.
 
         Returns:
             None
@@ -664,7 +666,7 @@ class Runner:
         """Set scraper given by name as not run
 
         Args:
-            name (str): Name of scraper
+            name: Name of scraper
 
         Returns:
             None
@@ -675,7 +677,7 @@ class Runner:
         """Set scrapers given by names as not run
 
         Args:
-            names (ListTuple[str]): Names of scraper
+            names: Names of scraper
 
         Returns:
             None
@@ -685,12 +687,12 @@ class Runner:
 
     def get_headers(
         self,
-        names: Optional[ListTuple[str]] = None,
-        levels: Optional[ListTuple[str]] = None,
-        headers: Optional[ListTuple[str]] = None,
-        hxltags: Optional[ListTuple[str]] = None,
-        overrides: Dict[str, Dict] = {},
-    ) -> Dict[str, Tuple]:
+        names: ListTuple[str] | None = None,
+        levels: ListTuple[str] | None = None,
+        headers: ListTuple[str] | None = None,
+        hxltags: ListTuple[str] | None = None,
+        overrides: dict[str, dict] = {},
+    ) -> dict[str, tuple]:
         """Get the headers for scrapers limiting to those in names if given and
         limiting further to those that have been set in the constructor if previously
         given. All levels will be obtained unless the levels parameter (which can
@@ -698,15 +700,15 @@ class Runner:
         returned can be limited to given headers or hxltags.
 
         Args:
-            names (Optional[ListTuple[str]]): Names of scraper
-            levels (Optional[ListTuple[str]]): Levels to get like national, subnational or single
-            headers (Optional[ListTuple[str]]): Headers to get
-            hxltags (Optional[ListTuple[str]]): HXL hashtags to get
-            overrides (Dict[str, Dict]): Dictionary mapping scrapers to level mappings. Default is {}.
+            names: Names of scraper
+            levels: Levels to get like national, subnational or single
+            headers: Headers to get
+            hxltags: HXL hashtags to get
+            overrides: Dictionary mapping scrapers to level mappings. Default is {}.
 
 
         Returns:
-            Dict[str, Tuple]: Dictionary that maps each level to (list of headers, list of hxltags)
+            Dictionary that maps each level to (list of headers, list of hxltags)
         """
         if not names:
             names = self.scrapers.keys()
@@ -751,12 +753,12 @@ class Runner:
 
     def get_results(
         self,
-        names: Optional[ListTuple[str]] = None,
-        levels: Optional[ListTuple[str]] = None,
-        overrides: Dict[str, Dict] = {},
+        names: ListTuple[str] | None = None,
+        levels: ListTuple[str] | None = None,
+        overrides: dict[str, dict] = {},
         has_run: bool = True,
-        should_overwrite_sources: Optional[bool] = None,
-    ) -> Dict[str, Dict]:
+        should_overwrite_sources: bool | None = None,
+    ) -> dict[str, dict]:
         """Get the results (headers, values and sources) for scrapers limiting to those
         in names if given and limiting further to those that have been set in the
         constructor if previously given. All levels will be obtained unless the levels
@@ -771,14 +773,14 @@ class Runner:
         lists.
 
         Args:
-            names (Optional[ListTuple[str]]): Names of scrapers. Default is None (all scrapers).
-            levels (Optional[ListTuple[str]]): Levels to get like national, subnational or single
-            overrides (Dict[str, Dict]): Dictionary mapping scrapers to level mappings. Default is {}.
-            has_run (bool): Only get results for scrapers marked as having run. Default is True.
-            should_overwrite_sources (Optional[bool]): Whether to overwrite sources. Default is None (class default).
+            names: Names of scrapers. Default is None (all scrapers).
+            levels: Levels to get like national, subnational or single
+            overrides: Dictionary mapping scrapers to level mappings. Default is {}.
+            has_run: Only get results for scrapers marked as having run. Default is True.
+            should_overwrite_sources: Whether to overwrite sources. Default is None (class default).
 
         Returns:
-            Dict[str, Dict]: Results dictionary that maps each level to headers, values, sources, fallbacks.
+            Results dictionary that maps each level to headers, values, sources, fallbacks.
         """
         if not names:
             names = self.scrapers.keys()
@@ -858,9 +860,9 @@ class Runner:
         adms: ListTuple[str],
         headers: ListTuple[ListTuple] = (tuple(), tuple()),
         row_fns: ListTuple[Callable[[str], str]] = tuple(),
-        names: Optional[ListTuple[str]] = None,
-        overrides: Dict[str, Dict] = {},
-    ) -> List[List]:
+        names: ListTuple[str] | None = None,
+        overrides: dict[str, dict] = {},
+    ) -> list[list]:
         """Get rows for a given level for scrapers limiting to those in names if given.
         Rows include header row, HXL hashtag row and value rows, one for each admin unit
         specified in the adms parameter. Additional columns can be included by specifying
@@ -871,15 +873,15 @@ class Runner:
         and values being dictionaries which map level names to output levels.
 
         Args:
-            level (str): Level to get like national, subnational or single
-            adms (ListTuple[str]): Admin units
-            headers (ListTuple[ListTuple]): Additional headers in the form (list of headers, list of HXL hashtags)
-            row_fns (ListTuple[Callable[[str], str]]): Functions to populate additional columns
-            names (Optional[ListTuple[str]]): Names of scrapers. Default is None (all scrapers).
-            overrides (Dict[str, Dict]): Dictionary mapping scrapers to level mappings. Default is {}.
+            level: Level to get like national, subnational or single
+            adms: Admin units
+            headers: Additional headers in the form (list of headers, list of HXL hashtags)
+            row_fns: Functions to populate additional columns
+            names: Names of scrapers. Default is None (all scrapers).
+            overrides: Dictionary mapping scrapers to level mappings. Default is {}.
 
         Returns:
-            List[List]: Rows for a given level
+            Rows for a given level
         """
         results = self.get_results(names, [level], overrides=overrides).get(level)
         rows = []
@@ -900,11 +902,11 @@ class Runner:
     def get_values_sourcesinfo_by_header(
         self,
         level: str,
-        names: Optional[ListTuple[str]] = None,
-        overrides: Dict[str, Dict] = {},
+        names: ListTuple[str] | None = None,
+        overrides: dict[str, dict] = {},
         has_run: bool = True,
         use_hxl: bool = True,
-    ) -> Tuple[Dict, Dict]:
+    ) -> tuple[dict, dict]:
         """Get mapping from headers to values and headers to sources information for a
         given level for scrapers limiting to those in names if given. Keys will be
         headers if use_hxl is False or HXL hashtags if use_hxl is True. Sometimes it may
@@ -913,14 +915,14 @@ class Runner:
         dictionaries which map level names to output levels.
 
         Args:
-            level (str): Level to get like national, subnational or single
-            names (Optional[ListTuple[str]]): Names of scrapers. Default is None (all scrapers).
-            overrides (Dict[str, Dict]): Dictionary mapping scrapers to level mappings. Default is {}.
-            has_run (bool): Only get results for scrapers marked as having run. Default is True.
-            use_hxl (bool): Whether keys should be HXL hashtags or column headers. Default is True.
+            level: Level to get like national, subnational or single
+            names: Names of scrapers. Default is None (all scrapers).
+            overrides: Dictionary mapping scrapers to level mappings. Default is {}.
+            has_run: Only get results for scrapers marked as having run. Default is True.
+            use_hxl: Whether keys should be HXL hashtags or column headers. Default is True.
 
         Returns:
-            Tuple[Dict, Dict]: Tuple of (headers to values, headers to sources)
+            Tuple of (headers to values, headers to sources)
         """
         if not names:
             names = self.scrapers.keys()
@@ -1018,11 +1020,11 @@ class Runner:
 
     def get_sources(
         self,
-        names: Optional[ListTuple[str]] = None,
-        levels: Optional[ListTuple[str]] = None,
-        additional_sources: ListTuple[Dict] = tuple(),
-        should_overwrite_sources: Optional[bool] = None,
-    ) -> List[Tuple]:
+        names: ListTuple[str] | None = None,
+        levels: ListTuple[str] | None = None,
+        additional_sources: ListTuple[dict] = tuple(),
+        should_overwrite_sources: bool | None = None,
+    ) -> list[tuple]:
         """Get sources for scrapers limiting to those in names if given. All levels will
         be obtained unless the levels parameter (which can contain levels like national,
         subnational or single) is passed. Additional sources can be added. Each is a
@@ -1030,13 +1032,13 @@ class Runner:
         source_url as well as the source_date or whether to force_date_today.
 
         Args:
-            names (Optional[ListTuple[str]]): Names of scrapers
-            levels (Optional[ListTuple[str]]): Levels to get like national, subnational or single
-            additional_sources (ListTuple[Dict]): Additional sources to add
-            should_overwrite_sources (Optional[bool]): Whether to overwrite sources. Default is None (class default).
+            names: Names of scrapers
+            levels: Levels to get like national, subnational or single
+            additional_sources: Additional sources to add
+            should_overwrite_sources: Whether to overwrite sources. Default is None (class default).
 
         Returns:
-            List[Tuple]: Sources in form (indicator, date, source, source_url)
+            Sources in form (indicator, date, source, source_url)
         """
         if not names:
             names = self.scrapers.keys()
@@ -1117,14 +1119,14 @@ class Runner:
         add_additional_sources()
         return sources
 
-    def get_source_urls(self, names: Optional[ListTuple[str]] = None) -> List[str]:
+    def get_source_urls(self, names: ListTuple[str] | None = None) -> list[str]:
         """Get source urls for scrapers limiting to those in names if given.
 
         Args:
-            names (Optional[ListTuple[str]]): Names of scrapers
+            names: Names of scrapers
 
         Returns:
-            List[str]: List of source urls
+            List of source urls
         """
         source_urls = set()
         if not names:
@@ -1138,20 +1140,20 @@ class Runner:
 
     def get_hapi_metadata(
         self,
-        names: Optional[ListTuple[str]] = None,
+        names: ListTuple[str] | None = None,
         has_run: bool = True,
-    ) -> Dict:
+    ) -> dict:
         """Get HAPI metadata for all datasets. A dictionary is returned that
         maps from dataset ids to a dictionary. The dictionary has keys for
         dataset metadata and a key resources under which is a dictionary that
         maps from resource ids to resource metadata.
 
         Args:
-            names (Optional[ListTuple[str]]): Names of scrapers
-            has_run (bool): Only get results for scrapers marked as having run. Default is True.
+            names: Names of scrapers
+            has_run: Only get results for scrapers marked as having run. Default is True.
 
         Returns:
-            Dict: HAPI metadata for all datasets
+            HAPI metadata for all datasets
         """
         if not names:
             names = self.scrapers.keys()
@@ -1184,9 +1186,9 @@ class Runner:
 
     def get_hapi_results(
         self,
-        names: Optional[ListTuple[str]] = None,
+        names: ListTuple[str] | None = None,
         has_run: bool = True,
-    ) -> Dict:
+    ) -> dict:
         """Get the results (headers and values per admin level and HAPI
         metadata) for scrapers limiting to those in names if given and limiting
         further to those that have been set in the constructor if previously
@@ -1202,11 +1204,11 @@ class Runner:
         metadata is a dictionary.
 
         Args:
-            names (Optional[ListTuple[str]]): Names of scrapers. Default is None (all scrapers).
-            has_run (bool): Only get results for scrapers marked as having run. Default is True.
+            names: Names of scrapers. Default is None (all scrapers).
+            has_run: Only get results for scrapers marked as having run. Default is True.
 
         Returns:
-            Dict: Headers and values per admin level and HAPI metadata for all datasets
+            Headers and values per admin level and HAPI metadata for all datasets
         """
         if not names:
             names = self.scrapers.keys()

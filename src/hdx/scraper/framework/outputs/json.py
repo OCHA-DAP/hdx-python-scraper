@@ -1,10 +1,11 @@
 import logging
 from os.path import join
-from typing import Any, Dict, List, Optional, Union
+from typing import Any
 
-from .base import BaseOutput
 from hdx.utilities.dictandlist import dict_of_lists_add
 from hdx.utilities.saver import save_json
+
+from .base import BaseOutput
 
 try:
     from pandas import DataFrame
@@ -22,9 +23,9 @@ class JsonFile(BaseOutput):
     """JsonFile class enabling writing to JSON files.
 
     Args:
-        configuration (Dict): Configuration for Google Sheets
-        updatetabs (List[str]): Tabs to update
-        suffix (str): A suffix to add to keys. Default is _data.
+        configuration: Configuration for Google Sheets
+        updatetabs: Tabs to update
+        suffix: A suffix to add to keys. Default is _data.
     """
 
     def __init__(self, configuration, updatetabs, suffix="_data"):
@@ -33,12 +34,12 @@ class JsonFile(BaseOutput):
         self.json = {}
         self.suffix = suffix
 
-    def add_data_row(self, key: str, row: Dict) -> None:
+    def add_data_row(self, key: str, row: dict) -> None:
         """Add row to JSON under a key
 
         Args:
-            key (str): Key in JSON to update
-            rows (List[Dict]): List of dictionaries
+            key: Key in JSON to update
+            rows: List of dictionaries
 
         Returns:
             None
@@ -46,14 +47,14 @@ class JsonFile(BaseOutput):
         dict_of_lists_add(self.json, f"{key}{self.suffix}", row)
 
     def add_dataframe_rows(
-        self, key: str, df: DataFrame, hxltags: Optional[Dict] = None
+        self, key: str, df: DataFrame, hxltags: dict | None = None
     ) -> None:
         """Add rows from dataframe under a key
 
         Args:
-            key (str): Key in JSON to update
-            df (DataFrame): Dataframe containing rows
-            hxltags (Optional[Dict]): HXL tag mapping. Default is None.
+            key: Key in JSON to update
+            df: Dataframe containing rows
+            hxltags: HXL tag mapping. Default is None.
 
         Returns:
             None
@@ -66,16 +67,16 @@ class JsonFile(BaseOutput):
         self,
         key: str,
         countryiso: str,
-        rows: List[Dict],
-        hxltags: Optional[Dict] = None,
+        rows: list[dict],
+        hxltags: dict | None = None,
     ) -> None:
         """Add rows under both a key and an ISO 3 country code subkey
 
         Args:
-            key (str): Key in JSON to update
-            countryiso (str): Country to use as subkey
-            rows (List[Dict]): List of dictionaries
-            hxltags (Optional[Dict]): HXL tag mapping. Default is None.
+            key: Key in JSON to update
+            countryiso: Country to use as subkey
+            rows: List of dictionaries
+            hxltags: HXL tag mapping. Default is None.
 
         Returns:
             None
@@ -93,12 +94,12 @@ class JsonFile(BaseOutput):
             jsondict[countryiso].append(newrow)
         self.json[fullname] = jsondict
 
-    def generate_json_from_list(self, key: str, rows: List[Dict]) -> None:
+    def generate_json_from_list(self, key: str, rows: list[dict]) -> None:
         """Generate JSON from key and rows list
 
         Args:
-            key (str): Key in JSON to update
-            rows (List[Dict]): List of dictionaries
+            key: Key in JSON to update
+            rows: List of dictionaries
 
         Returns:
             None
@@ -114,14 +115,14 @@ class JsonFile(BaseOutput):
             self.add_data_row(key, newrow)
 
     def generate_json_from_df(
-        self, key: str, df: DataFrame, hxltags: Optional[Dict]
+        self, key: str, df: DataFrame, hxltags: dict | None
     ) -> None:
         """Generate JSON from key and dataframe
 
         Args:
-            key (str): Key in JSON to update
-            df (DataFrame): Dataframe containing rows
-            hxltags (Optional[Dict]): HXL tag mapping. Default is None.
+            key: Key in JSON to update
+            df: Dataframe containing rows
+            hxltags: HXL tag mapping. Default is None.
 
         Returns:
             None
@@ -139,15 +140,15 @@ class JsonFile(BaseOutput):
     def update_tab(
         self,
         tabname: str,
-        values: Union[List, DataFrame],
-        hxltags: Optional[Dict] = None,
+        values: list | DataFrame,
+        hxltags: dict | None = None,
     ) -> None:
         """Update tab with values
 
         Args:
-            tabname (str): Tab to update
-            values (Union[List, DataFrame]): Values in a list of lists or a DataFrame
-            hxltags (Optional[Dict]): HXL tag mapping. Default is None.
+            tabname: Tab to update
+            values: Values in a list of lists or a DataFrame
+            hxltags: HXL tag mapping. Default is None.
 
         Returns:
             None
@@ -183,15 +184,15 @@ class JsonFile(BaseOutput):
                         newrow[hxl_row[key]] = row[key]
                 self.add_data_row(name, newrow)
 
-    def save(self, folder: Optional[str] = None, **kwargs: Any) -> List[str]:
+    def save(self, folder: str | None = None, **kwargs: Any) -> list[str]:
         """Save JSON file and any addition subsets of that JSON defined in the additional configuration
 
         Args:
-            folder (Optional[str]): Folder to save to. Default is None.
+            folder: Folder to save to. Default is None.
             **kwargs: Variables to use when evaluating template arguments
 
         Returns:
-            List[str]: List of file paths
+            List of file paths
         """
         filepaths = []
         filepath = self.configuration["output"]

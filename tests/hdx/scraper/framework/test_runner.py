@@ -1,10 +1,12 @@
 from copy import copy
 from datetime import datetime, timezone
 
-from .conftest import run_check_scrapers
+from hdx.utilities.dateparse import parse_date
+
 from hdx.scraper.framework.base_scraper import BaseScraper
 from hdx.scraper.framework.runner import Runner
-from hdx.utilities.dateparse import parse_date
+
+from .conftest import run_check_scrapers
 
 
 class TestRunner:

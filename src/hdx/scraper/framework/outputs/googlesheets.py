@@ -1,6 +1,5 @@
 import json
 import logging
-from typing import Dict, List, Optional, Union
 
 import gspread
 
@@ -20,20 +19,20 @@ class GoogleSheets(BaseOutput):
     """GoogleSheets class enabling writing to Google spreadsheets.
 
     Args:
-        configuration (Dict): Configuration for Google Sheets
-        gsheet_auth (str): Authorisation for Google Sheets/Drive
-        updatesheets (List[str]): List of spreadsheets to update (eg. prod, test)
-        tabs (Dict[str, str]): Dictionary of mappings from internal name to spreadsheet tab name
-        updatetabs (List[str]): Tabs to update
+        configuration: Configuration for Google Sheets
+        gsheet_auth: Authorisation for Google Sheets/Drive
+        updatesheets: List of spreadsheets to update (eg. prod, test)
+        tabs: Dictionary of mappings from internal name to spreadsheet tab name
+        updatetabs: Tabs to update
     """
 
     def __init__(
         self,
-        configuration: Dict,
+        configuration: dict,
         gsheet_auth: str,
-        updatesheets: List[str],
-        tabs: Dict[str, str],
-        updatetabs: List[str],
+        updatesheets: list[str],
+        tabs: dict[str, str],
+        updatetabs: list[str],
     ) -> None:
         super().__init__(updatetabs)
         info = json.loads(gsheet_auth)
@@ -51,17 +50,17 @@ class GoogleSheets(BaseOutput):
     def update_tab(
         self,
         tabname: str,
-        values: Union[List, DataFrame],
-        hxltags: Optional[Dict] = None,
-        limit: Optional[int] = None,
+        values: list | DataFrame,
+        hxltags: dict | None = None,
+        limit: int | None = None,
     ) -> None:
         """Update tab with values
 
         Args:
-            tabname (str): Tab to update
-            values (Union[List, DataFrame]): Values in a list of lists or a DataFrame
-            hxltags (Optional[Dict]): HXL tag mapping. Default is None.
-            limit (Optional[int]): Maximum number of rows to output
+            tabname: Tab to update
+            values: Values in a list of lists or a DataFrame
+            hxltags: HXL tag mapping. Default is None.
+            limit: Maximum number of rows to output
 
         Returns:
             None

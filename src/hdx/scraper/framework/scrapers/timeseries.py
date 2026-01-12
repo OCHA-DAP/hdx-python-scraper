@@ -1,10 +1,10 @@
 import logging
 from datetime import datetime
-from typing import Dict
+
+from hdx.utilities.dateparse import now_utc, parse_date
 
 from ..base_scraper import BaseScraper
 from ..outputs.base import BaseOutput
-from hdx.utilities.dateparse import now_utc, parse_date
 
 logger = logging.getLogger(__name__)
 
@@ -16,17 +16,17 @@ class TimeSeries(BaseScraper):
     returned.
 
     Args:
-        name (str): Name of scraper
-        datasetinfo (Dict): Information about dataset
-        outputs (Dict[str, BaseOutput]): Mapping from names to output objects
-        today (datetime): Value to use for today. Default is now_utc().
+        name: Name of scraper
+        datasetinfo: Information about dataset
+        outputs: Mapping from names to output objects
+        today: Value to use for today. Default is now_utc().
     """
 
     def __init__(
         self,
         name: str,
-        datasetinfo: Dict,
-        outputs: Dict[str, BaseOutput],
+        datasetinfo: dict,
+        outputs: dict[str, BaseOutput],
         today: datetime = now_utc(),
     ):
         # Time series only outputs to separate tabs

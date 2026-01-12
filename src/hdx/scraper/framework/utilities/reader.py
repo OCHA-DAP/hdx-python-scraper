@@ -1,16 +1,12 @@
 import glob
 import logging
+from collections.abc import Iterator
 from datetime import datetime
 from os.path import join
-from typing import Any, Dict, Iterator, List, Optional, Tuple, Union
+from typing import Any
 from urllib.parse import parse_qsl
 
 import hxl
-from hxl.input import InputOptions, munge_url
-from slugify import slugify
-
-from . import get_startend_dates_from_time_period, match_template
-from .sources import Sources
 from hdx.api.configuration import Configuration
 from hdx.data.dataset import Dataset
 from hdx.data.resource import Resource
@@ -19,6 +15,11 @@ from hdx.utilities.downloader import Download
 from hdx.utilities.retriever import Retrieve
 from hdx.utilities.saver import save_json
 from hdx.utilities.typehint import ListTuple
+from hxl.input import InputOptions, munge_url
+from slugify import slugify
+
+from . import get_startend_dates_from_time_period, match_template
+from .sources import Sources
 
 logger = logging.getLogger(__name__)
 
@@ -27,15 +28,15 @@ class Read(Retrieve):
     """Read data from tabular source eg. csv, xls, xlsx
 
     Args:
-        downloader (Download): Download object
-        fallback_dir (str): Directory containing static fallback data
-        saved_dir (str): Directory to save or load downloaded data
-        temp_dir (str): Temporary directory for when data is not needed after downloading
-        save (bool): Whether to save downloaded data. Default is False.
-        use_saved (bool): Whether to use saved data. Default is False.
-        prefix (str): Prefix to add to filenames. Default is "".
-        delete (bool): Whether to delete saved_dir if save is True. Default is True.
-        today (Optional[datetime]): Value to use for today. Default is None (datetime.utcnow).
+        downloader: Download object
+        fallback_dir: Directory containing static fallback data
+        saved_dir: Directory to save or load downloaded data
+        temp_dir: Temporary directory for when data is not needed after downloading
+        save: Whether to save downloaded data. Default is False.
+        use_saved: Whether to use saved data. Default is False.
+        prefix: Prefix to add to filenames. Default is "".
+        delete: Whether to delete saved_dir if save is True. Default is True.
+        today: Value to use for today. Default is None (datetime.utcnow).
     """
 
     def __init__(
@@ -48,7 +49,7 @@ class Read(Retrieve):
         use_saved: bool = False,
         prefix: str = "",
         delete: bool = True,
-        today: Optional[datetime] = None,
+        today: datetime | None = None,
     ):
         super().__init__(
             downloader,
@@ -60,7 +61,7 @@ class Read(Retrieve):
             prefix,
             delete,
         )
-        self.today: Optional[datetime] = today
+        self.today: datetime | None = today
 
     @classmethod
     def create_readers(
@@ -71,8 +72,8 @@ class Read(Retrieve):
         save: bool = False,
         use_saved: bool = False,
         ignore: ListTuple[str] = tuple(),
-        rate_limit: Optional[Dict] = {"calls": 1, "period": 0.1},
-        today: Optional[datetime] = None,
+        rate_limit: dict | None = {"calls": 1, "period": 0.1},
+        today: datetime | None = None,
         **kwargs: Any,
     ):
         """Generate a default reader and an HDX reader. Additional readers are generated
@@ -81,14 +82,14 @@ class Read(Retrieve):
         extra_params is of form {"scraper name": {"key": "auth", ...}, ...}.
 
         Args:
-            fallback_dir (str): Directory containing static fallback data
-            saved_dir (str): Directory to save or load downloaded data
-            temp_dir (str): Temporary directory for when data is not needed after downloading
-            save (bool): Whether to save downloaded data. Default is False.
-            use_saved (bool): Whether to use saved data. Default is False.
-            ignore (ListTuple[str]): Don't generate retrievers for these downloaders
-            rate_limit (Optional[Dict]): Rate limiting per host. Default is {"calls": 1, "period": 0.1}
-            today (Optional[datetime]): Value to use for today. Default is None (datetime.utcnow).
+            fallback_dir: Directory containing static fallback data
+            saved_dir: Directory to save or load downloaded data
+            temp_dir: Temporary directory for when data is not needed after downloading
+            save: Whether to save downloaded data. Default is False.
+            use_saved: Whether to use saved data. Default is False.
+            ignore: Don't generate retrievers for these downloaders
+            rate_limit: Rate limiting per host. Default is {"calls": 1, "period": 0.1}
+            today: Value to use for today. Default is None (datetime.utcnow).
             **kwargs: See below and parameters of Download class in HDX Python Utilities
             hdx_auth (str): HDX API key
             header_auths (Mapping[str, str]): Header authorisations
@@ -141,15 +142,15 @@ class Read(Retrieve):
         )
 
     @classmethod
-    def get_reader(cls, name: Optional[str] = None) -> "Read":
+    def get_reader(cls, name: str | None = None) -> "Read":
         """Get a generated reader given a name. If name is not supplied, the default
         one will be returned.
 
         Args:
-            name (Optional[str]): Name of reader. Default is None (get default).
+            name: Name of reader. Default is None (get default).
 
         Returns:
-            Retriever: Reader object
+            Reader object
         """
         return cls.get_retriever(name)
 
@@ -158,11 +159,11 @@ class Read(Retrieve):
         """Get url from a string replacing any template arguments
 
         Args:
-            url (str): Url to read
+            url: Url to read
             **kwargs: Variables to use when evaluating template arguments
 
         Returns:
-            str: Url with any template arguments replaced
+            Url with any template arguments replaced
         """
         for kwarg in kwargs:
             globals()[kwarg] = kwargs[kwarg]
@@ -176,10 +177,10 @@ class Read(Retrieve):
         """Clone a given reader but use the given downloader
 
         Args:
-            downloader (Download): Downloader to use
+            downloader: Downloader to use
 
         Returns:
-            Read: Cloned reader
+            Cloned reader
 
         """
         return Read(
@@ -194,16 +195,16 @@ class Read(Retrieve):
             today=self.today,
         )
 
-    def setup_tabular(self, datasetinfo: Dict, kwargs: Dict) -> Union[str, List]:
+    def setup_tabular(self, datasetinfo: dict, kwargs: dict) -> str | list:
         """Setup kwargs for tabular source eg. csv, xls, xlsx from
         datasetinfo and return url.
 
         Args:
-            datasetinfo (Dict): Dictionary of information about dataset
-            kwargs (Dict): Parameters to pass to download_file call
+            datasetinfo: Dictionary of information about dataset
+            kwargs: Parameters to pass to download_file call
 
         Returns:
-            Union[str, List]: url or list of urls
+            url or list of urls
         """
         sheet = datasetinfo.get("sheet")
         headers = datasetinfo.get("headers")
@@ -244,16 +245,16 @@ class Read(Retrieve):
         return url
 
     def read_tabular(
-        self, datasetinfo: Dict, **kwargs: Any
-    ) -> Tuple[List[str], Iterator[Dict]]:
+        self, datasetinfo: dict, **kwargs: Any
+    ) -> tuple[list[str], Iterator[dict]]:
         """Read data from tabular source eg. csv, xls, xlsx
 
         Args:
-            datasetinfo (Dict): Dictionary of information about dataset
+            datasetinfo: Dictionary of information about dataset
             **kwargs: Parameters to pass to download_file call
 
         Returns:
-            Tuple[List[str],Iterator[Dict]]: Tuple (headers, iterator where each row is a dictionary)
+            Tuple (headers, iterator where each row is a dictionary)
         """
         url = self.setup_tabular(datasetinfo, kwargs)
         return self.get_tabular_rows(
@@ -264,16 +265,16 @@ class Read(Retrieve):
         )
 
     def read_dataset(
-        self, dataset_name: str, configuration: Optional[Configuration] = None
-    ) -> Optional[Dataset]:
+        self, dataset_name: str, configuration: Configuration | None = None
+    ) -> Dataset | None:
         """Read HDX dataset
 
         Args:
-            dataset_name (str): Dataset name
-            configuration (Optional[Configuration]): HDX configuration. Default is global configuration.
+            dataset_name: Dataset name
+            configuration: HDX configuration. Default is global configuration.
 
         Returns:
-            Optional[Dataset]: The dataset that was read or None
+            The dataset that was read or None
         """
         saved_path = join(self.saved_dir, f"{dataset_name}.json")
         if self.use_saved:
@@ -292,18 +293,18 @@ class Read(Retrieve):
     def search_datasets(
         self,
         filename: str,
-        query: Optional[str] = "*:*",
-        configuration: Optional[Configuration] = None,
+        query: str | None = "*:*",
+        configuration: Configuration | None = None,
         page_size: int = 1000,
         **kwargs: Any,
-    ) -> List[Dataset]:
+    ) -> list[Dataset]:
         """Read HDX dataset
 
         Args:
-            filename (str): Filename for saved files. Will be prefixed by underscore and a number.
-            query (Optional[str]): Query (in Solr format). Default is '*:*'.
-            configuration (Optional[Configuration]): HDX configuration. Default is global configuration.
-            page_size (int): Size of page to return. Default is 1000.
+            filename: Filename for saved files. Will be prefixed by underscore and a number.
+            query: Query (in Solr format). Default is '*:*'.
+            configuration: HDX configuration. Default is global configuration.
+            page_size: Size of page to return. Default is 1000.
             **kwargs: See below
             fq (string): Any filter queries to apply
             rows (int): Number of matching rows to return. Default is all datasets (sys.maxsize).
@@ -312,11 +313,11 @@ class Read(Retrieve):
             facet (string): Whether to enable faceted results. Default to True.
             facet.mincount (int): Minimum counts for facet fields should be included in the results
             facet.limit (int): Maximum number of values the facet fields return (- = unlimited). Default is 50.
-            facet.field (List[str]): Fields to facet upon. Default is empty.
+            facet.field (list[str]): Fields to facet upon. Default is empty.
             use_default_schema (bool): Use default package schema instead of custom schema. Default is False.
 
         Returns:
-            List[Dataset]: list of datasets resulting from query
+            list of datasets resulting from query
         """
 
         saved_path = join(self.saved_dir, filename)
@@ -343,11 +344,11 @@ class Read(Retrieve):
         comes from the name and format.
 
         Args:
-            name (str): Name for the download
-            format (str): Format of download
+            name: Name for the download
+            format: Format of download
 
         Returns:
-            str: Filename of file
+            Filename of file
         """
         filename = name.lower()
         file_type = f".{format}"
@@ -357,19 +358,19 @@ class Read(Retrieve):
 
     def construct_filename_and_download(
         self, name: str, format: str, url: str, **kwargs: Any
-    ) -> Tuple[str, str]:
+    ) -> tuple[str, str]:
         """Construct filename, download file and return the url downloaded and
         the path of the file. The filename of the file comes from the name and
         format.
 
         Args:
-            name (str): Name for the download
-            format (str): Format of download
-            url (str): URL of download
+            name: Name for the download
+            format: Format of download
+            url: URL of download
             **kwargs: Parameters to pass to download_file call
 
         Returns:
-            Tuple[str, str]: (URL that was downloaded, path to downloaded file)
+            (URL that was downloaded, path to downloaded file)
         """
         filename = kwargs.get("filename")
         if not filename:
@@ -378,17 +379,17 @@ class Read(Retrieve):
         path = self.download_file(url, **kwargs)
         return url, path
 
-    def download_resource(self, resource: Resource, **kwargs: Any) -> Tuple[str, str]:
+    def download_resource(self, resource: Resource, **kwargs: Any) -> tuple[str, str]:
         """Download HDX resource os a file and return the url downloaded and
         the path of the file. The filename of the file comes from the name and
         format.
 
         Args:
-            resource (Resource): HDX resource
+            resource: HDX resource
             **kwargs: Parameters to pass to download_file call
 
         Returns:
-            Tuple[str, str]: (URL that was downloaded, path to downloaded file)
+            (URL that was downloaded, path to downloaded file)
         """
         return self.construct_filename_and_download(
             resource["name"],
@@ -398,15 +399,15 @@ class Read(Retrieve):
         )
 
     @staticmethod
-    def get_hapi_dataset_metadata(dataset: Dataset, datasetinfo: Dict) -> Dict:
+    def get_hapi_dataset_metadata(dataset: Dataset, datasetinfo: dict) -> dict:
         """Get HAPI dataset metadata from HDX dataset
 
         Args:
-            dataset (Dataset): HDX dataset
-            datasetinfo (Dict): Dictionary of information about dataset
+            dataset: HDX dataset
+            datasetinfo: Dictionary of information about dataset
 
         Returns:
-            Dict: HAPI dataset metadata
+            HAPI dataset metadata
         """
         license_id = dataset["license_id"]
         if license_id == "hdx-other":
@@ -429,14 +430,14 @@ class Read(Retrieve):
         }
 
     @staticmethod
-    def get_hapi_resource_metadata(resource: Resource) -> Dict:
+    def get_hapi_resource_metadata(resource: Resource) -> dict:
         """Get HAPI resource metadata from HDX resource
 
         Args:
-            resource (Resource): HDX dataset
+            resource: HDX dataset
 
         Returns:
-            Dict: HAPI resource metadata
+            HAPI resource metadata
         """
         return {
             "hdx_id": resource["id"],
@@ -448,15 +449,15 @@ class Read(Retrieve):
 
     def read_hxl_resource(
         self, resource: Resource, **kwargs: Any
-    ) -> Optional[hxl.Dataset]:
+    ) -> hxl.Dataset | None:
         """Read HDX resource as a HXL dataset.
 
         Args:
-            resource (Resource): HDX resource
+            resource: HDX resource
             **kwargs: Parameters to pass to download_file call
 
         Returns:
-            Optional[hxl.Dataset]: HXL dataset or None
+            HXL dataset or None
         """
         url = resource["url"]
         try:
@@ -473,18 +474,18 @@ class Read(Retrieve):
 
     def hxl_info_file(
         self, name: str, format: str, url: str, **kwargs: Any
-    ) -> Optional[Dict]:
+    ) -> dict | None:
         """Get HXL info on file. The filename comes from the name and
         format.
 
         Args:
-            name (str): Name for the download
-            format (str): Format of download
-            url (str): URL of download
+            name: Name for the download
+            format: Format of download
+            url: URL of download
             **kwargs (Any): Parameters to pass to download_file call
 
         Returns:
-            Optional[Dict]: Information about file or None
+            Information about file or None
         """
         try:
             _, path = self.construct_filename_and_download(name, format, url, **kwargs)
@@ -498,18 +499,18 @@ class Read(Retrieve):
 
     def hxl_info_hapi_resource_metadata(
         self,
-        hapi_resource_metadata: Dict,
+        hapi_resource_metadata: dict,
         **kwargs: Any,
-    ) -> Optional[Dict]:
+    ) -> dict | None:
         """Get HXL info on HAPI resource. The filename comes from the name and
         format.
 
         Args:
-            hapi_resource_metadata (Dict): HAPI resource metadata
+            hapi_resource_metadata: HAPI resource metadata
             **kwargs (Any): Parameters to pass to download_file call
 
         Returns:
-            Optional[Dict]: Information about file or None
+            Information about file or None
         """
         name = hapi_resource_metadata["name"]
         format = hapi_resource_metadata["format"]
@@ -518,10 +519,10 @@ class Read(Retrieve):
 
     def read_hdx_metadata(
         self,
-        datasetinfo: Dict,
+        datasetinfo: dict,
         do_resource_check: bool = True,
-        configuration: Optional[Configuration] = None,
-    ) -> Optional[Resource]:
+        configuration: Configuration | None = None,
+    ) -> Resource | None:
         """Read metadata from HDX dataset and add to input dictionary. If url
         is not supplied, will look through resources for one that matches
         specified format and use its url unless do_resource_check is False.
@@ -534,12 +535,12 @@ class Read(Retrieve):
         by HAPI.
 
         Args:
-            datasetinfo (Dict): Dictionary of information about dataset
-            do_resource_check (bool): Whether to check resources. Default is False.
-            configuration (Optional[Configuration]): HDX configuration. Default is global configuration.
+            datasetinfo: Dictionary of information about dataset
+            do_resource_check: Whether to check resources. Default is False.
+            configuration: HDX configuration. Default is global configuration.
 
         Returns:
-            Optional[Resource]: The resource if a url was not given
+            The resource if a url was not given
         """
         dataset_nameinfo = datasetinfo["dataset"]
         if isinstance(dataset_nameinfo, str):
@@ -641,19 +642,19 @@ class Read(Retrieve):
 
     def read_hdx(
         self,
-        datasetinfo: Dict,
-        configuration: Optional[Configuration] = None,
+        datasetinfo: dict,
+        configuration: Configuration | None = None,
         **kwargs: Any,
-    ) -> Tuple[List[str], Iterator[Dict]]:
+    ) -> tuple[list[str], Iterator[dict]]:
         """Read data and metadata from HDX dataset
 
         Args:
-            datasetinfo (Dict): Dictionary of information about dataset
-            configuration (Optional[Configuration]): HDX configuration. Default is global configuration.
+            datasetinfo: Dictionary of information about dataset
+            configuration: HDX configuration. Default is global configuration.
             **kwargs: Parameters to pass to download_file call
 
         Returns:
-            Tuple[List[str],Iterator[Dict]]: Tuple (headers, iterator where each row is a dictionary)
+            Tuple (headers, iterator where each row is a dictionary)
         """
         resource = self.read_hdx_metadata(datasetinfo, configuration=configuration)
         filename = kwargs.get("filename")
@@ -673,19 +674,19 @@ class Read(Retrieve):
 
     def read(
         self,
-        datasetinfo: Dict,
-        configuration: Optional[Configuration] = None,
+        datasetinfo: dict,
+        configuration: Configuration | None = None,
         **kwargs: Any,
-    ) -> Tuple[List[str], Iterator[Dict]]:
+    ) -> tuple[list[str], Iterator[dict]]:
         """Read data and metadata from HDX dataset
 
         Args:
-            datasetinfo (Dict): Dictionary of information about dataset
-            configuration (Optional[Configuration]): HDX configuration. Default is global configuration.
+            datasetinfo: Dictionary of information about dataset
+            configuration: HDX configuration. Default is global configuration.
             **kwargs: Parameters to pass to download_file call
 
         Returns:
-            Tuple[List[str],Iterator[Dict]]: Tuple (headers, iterator where each row is a dictionary)
+            Tuple (headers, iterator where each row is a dictionary)
         """
         format = datasetinfo["format"]
         if format in ["json", "csv", "xls", "xlsx"]:

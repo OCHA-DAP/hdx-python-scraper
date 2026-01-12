@@ -1,15 +1,16 @@
 from copy import deepcopy
 
 import pytest
-
-from ..conftest import run_check_scrapers
 from hdx.location.country import Country
+from hdx.utilities.dateparse import parse_date
+
 from hdx.scraper.framework.base_scraper import BaseScraper
 from hdx.scraper.framework.outputs.json import JsonFile
 from hdx.scraper.framework.runner import Runner
 from hdx.scraper.framework.utilities.sources import Sources
 from hdx.scraper.framework.utilities.writer import Writer
-from hdx.utilities.dateparse import parse_date
+
+from ..conftest import run_check_scrapers
 
 
 # Test that scrapers can add to output from previous scrapers
