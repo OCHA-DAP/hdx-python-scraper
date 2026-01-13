@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
+from collections.abc import Sequence
 from copy import deepcopy
 
 from hdx.utilities.dictandlist import dict_of_lists_add
-from hdx.utilities.typehint import ListTuple
 
 from .utilities.reader import Read
 from .utilities.sources import Sources
@@ -269,10 +269,10 @@ class BaseScraper(ABC):
 
     def add_hxltag_sources(
         self,
-        hxltags: ListTuple[str],
+        hxltags: Sequence[str],
         datasetinfo: dict | None = None,
         key: str | None = None,
-        suffix_attributes: ListTuple | None = None,
+        suffix_attributes: Sequence | None = None,
     ) -> None:
         """
         Adds sources identified by HXL hashtags under a particular key.

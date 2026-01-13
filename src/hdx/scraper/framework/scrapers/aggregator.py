@@ -1,5 +1,6 @@
 import logging
 import sys
+from collections.abc import Sequence
 from copy import deepcopy
 from typing import Any, Optional
 
@@ -9,7 +10,6 @@ from hdx.utilities.text import (  # noqa: F401
     get_numeric_if_possible,
     number_format,
 )
-from hdx.utilities.typehint import ListTuple
 from slugify import slugify
 
 from ..base_scraper import BaseScraper
@@ -45,7 +45,7 @@ class Aggregator(BaseScraper):
         name: str,
         datasetinfo: dict,
         headers: dict[str, tuple],
-        adm_aggregation: dict | ListTuple,
+        adm_aggregation: dict | Sequence,
         use_hxl: bool,
         source_configuration: dict = {},
         aggregation_scrapers: list["Aggregator"] = [],
@@ -74,8 +74,8 @@ class Aggregator(BaseScraper):
         datasetinfo: dict,
         input_level: str,
         output_level: str,
-        adm_aggregation: dict | ListTuple,
-        input_headers: tuple[ListTuple, ListTuple],
+        adm_aggregation: dict | Sequence,
+        input_headers: tuple[Sequence, Sequence],
         source_configuration: dict = {},
         aggregation_scrapers: list["Aggregator"] = [],
     ) -> Optional["Aggregator"]:

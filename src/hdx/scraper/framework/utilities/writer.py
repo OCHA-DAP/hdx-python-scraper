@@ -1,9 +1,9 @@
 import logging
+from collections.abc import Sequence
 from copy import deepcopy
 
 from hdx.location.adminlevel import AdminLevel
 from hdx.location.country import Country
-from hdx.utilities.typehint import ListTuple
 
 from ..outputs.base import BaseOutput
 from ..runner import Runner
@@ -76,7 +76,7 @@ class Writer:
 
     def get_toplevel_rows(
         self,
-        names: ListTuple[str] | None = None,
+        names: Sequence[str] | None = None,
         overrides: dict[str, dict] = {},
         toplevel: str = "allregions",
     ) -> list[list]:
@@ -101,8 +101,8 @@ class Writer:
 
     def get_regional_rows(
         self,
-        regional: ListTuple[str],
-        names: ListTuple[str] | None = None,
+        regional: Sequence[str],
+        names: Sequence[str] | None = None,
         overrides: dict[str, dict] = {},
         level: str = "regional",
     ):
@@ -138,7 +138,7 @@ class Writer:
         tab: str = "allregions",
         regional_rows: list[list] | None = None,
         regional_adm: str = "ALL",
-        regional_hxltags: ListTuple[str] | None = None,
+        regional_hxltags: Sequence[str] | None = None,
         regional_first: bool = False,
     ) -> None:
         """Update the top level tab (or key in JSON) in the outputs. Optionally, further
@@ -186,7 +186,7 @@ class Writer:
         self,
         regional_rows: list[list],
         toplevel_rows: list[list] | None = None,
-        toplevel_hxltags: ListTuple[str] | None = None,
+        toplevel_hxltags: Sequence[str] | None = None,
         tab: str = "regional",
         toplevel: str = "allregions",
     ) -> None:
@@ -254,11 +254,11 @@ class Writer:
 
     def update_national(
         self,
-        countries: ListTuple[str],
-        names: ListTuple[str] | None = None,
+        countries: Sequence[str],
+        names: Sequence[str] | None = None,
         flag_countries: dict | None = None,
         iso3_to_region: dict | None = None,
-        ignore_regions: ListTuple[str] = tuple(),
+        ignore_regions: Sequence[str] = tuple(),
         level="national",
         tab="national",
     ) -> None:
@@ -316,7 +316,7 @@ class Writer:
     def update_subnational(
         self,
         adminlevel: AdminLevel,
-        names: ListTuple[str] | None = None,
+        names: Sequence[str] | None = None,
         level: str = "subnational",
         tab: str = "subnational",
     ) -> None:
@@ -356,13 +356,13 @@ class Writer:
 
     def update_sources(
         self,
-        additional_sources: ListTuple[dict] = tuple(),
-        names: ListTuple[str] | None = None,
+        additional_sources: Sequence[dict] = tuple(),
+        names: Sequence[str] | None = None,
         secondary_runner: Runner | None = None,
-        custom_sources: ListTuple[tuple] = tuple(),
+        custom_sources: Sequence[tuple] = tuple(),
         tab: str = "sources",
         should_overwrite_sources: bool | None = None,
-        sources_to_delete: ListTuple[str] = tuple(),
+        sources_to_delete: Sequence[str] = tuple(),
     ) -> None:
         """Update the sources tab (or key in JSON) in the outputs for scrapers
         limiting to those in names. Additional sources can be added. Each is a

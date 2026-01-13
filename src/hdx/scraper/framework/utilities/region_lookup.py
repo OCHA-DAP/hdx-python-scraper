@@ -1,7 +1,7 @@
 import logging
+from collections.abc import Sequence
 
 from hdx.utilities.dictandlist import dict_of_sets_add
-from hdx.utilities.typehint import ListTuple
 
 from .reader import Read
 
@@ -19,8 +19,8 @@ class RegionLookup:
     def load(
         cls,
         region_config: dict,
-        countryiso3s: ListTuple[str],
-        additional_regions: dict[str, ListTuple] = {},
+        countryiso3s: Sequence[str],
+        additional_regions: dict[str, Sequence] = {},
     ) -> None:
         """Read in region information and provide regions (list of regions) and
         iso3_to_region (one-to-one mapping from country ISO3 code to region

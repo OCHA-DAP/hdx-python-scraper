@@ -1,6 +1,6 @@
 import glob
 import logging
-from collections.abc import Iterator
+from collections.abc import Iterator, Sequence
 from datetime import datetime
 from os.path import join
 from typing import Any
@@ -14,7 +14,6 @@ from hdx.utilities.dateparse import parse_date
 from hdx.utilities.downloader import Download
 from hdx.utilities.retriever import Retrieve
 from hdx.utilities.saver import save_json
-from hdx.utilities.typehint import ListTuple
 from hxl.input import InputOptions, munge_url
 from slugify import slugify
 
@@ -71,7 +70,7 @@ class Read(Retrieve):
         temp_dir: str,
         save: bool = False,
         use_saved: bool = False,
-        ignore: ListTuple[str] = tuple(),
+        ignore: Sequence[str] = tuple(),
         rate_limit: dict | None = {"calls": 1, "period": 0.1},
         today: datetime | None = None,
         **kwargs: Any,

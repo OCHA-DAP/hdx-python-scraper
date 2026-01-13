@@ -1,9 +1,9 @@
+from collections.abc import Sequence
 from datetime import datetime
 from logging import Logger
 
 from hdx.location.adminlevel import AdminLevel
 from hdx.utilities.dateparse import parse_date
-from hdx.utilities.typehint import ListTuple
 
 
 class Sources:
@@ -185,8 +185,8 @@ class Sources:
     def add_source_overwrite(
         cls,
         hxltags: list[str],
-        sources: list[ListTuple],
-        source: ListTuple[str],
+        sources: list[Sequence],
+        source: Sequence[str],
         logger: Logger,
         should_overwrite_sources: bool | None = None,
     ) -> None:
@@ -220,8 +220,8 @@ class Sources:
     def add_sources_overwrite(
         cls,
         hxltags: list[str],
-        sources: list[ListTuple],
-        sources_to_add: list[ListTuple],
+        sources: list[Sequence],
+        sources_to_add: list[Sequence],
         logger: Logger,
         should_overwrite_sources: bool | None = None,
     ) -> None:
@@ -246,7 +246,7 @@ class Sources:
     def create_source_configuration(
         suffix_attribute: str | None = None,
         admin_sources: bool = False,
-        adminlevel: AdminLevel | ListTuple[AdminLevel] | None = None,
+        adminlevel: AdminLevel | Sequence[AdminLevel] | None = None,
         admin_mapping_dict: dict | None = None,
         no_sources: bool = False,
         should_overwrite_sources: bool | None = None,

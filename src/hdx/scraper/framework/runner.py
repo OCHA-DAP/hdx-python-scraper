@@ -1,5 +1,5 @@
 import logging
-from collections.abc import Callable
+from collections.abc import Callable, Sequence
 from copy import copy
 from datetime import datetime
 from traceback import format_exc
@@ -8,7 +8,6 @@ from typing import Any, Optional
 from hdx.location.adminlevel import AdminLevel
 from hdx.utilities.dateparse import now_utc
 from hdx.utilities.error_handler import ErrorHandler
-from hdx.utilities.typehint import ListTuple
 
 from .base_scraper import BaseScraper
 from .outputs.base import BaseOutput
@@ -36,10 +35,10 @@ class Runner:
 
     def __init__(
         self,
-        countryiso3s: ListTuple[str],
+        countryiso3s: Sequence[str],
         today: datetime = now_utc(),
         error_handler: ErrorHandler | None = None,
-        scrapers_to_run: ListTuple[str] | None = None,
+        scrapers_to_run: Sequence[str] | None = None,
     ):
         self.countryiso3s = countryiso3s
         self.today = today
@@ -77,7 +76,7 @@ class Runner:
         return scraper_name
 
     def add_customs(
-        self, scrapers: ListTuple[BaseScraper], force_add_to_run: bool = False
+        self, scrapers: Sequence[BaseScraper], force_add_to_run: bool = False
     ) -> list[str]:
         """Add multiple custom scrapers that inherit BaseScraper. If running specific
         scrapers rather than all, and you want to force the inclusion of the scraper in
@@ -264,7 +263,7 @@ class Runner:
         output_level: str,
         adm_aggregation: dict | list,
         source_configuration: dict = {},
-        names: ListTuple[str] | None = None,
+        names: Sequence[str] | None = None,
         overrides: dict[str, dict] = {},
         aggregation_scrapers: list["Aggregator"] = [],
     ) -> Optional["Aggregator"]:
@@ -324,7 +323,7 @@ class Runner:
         output_level: str,
         adm_aggregation: dict | list,
         source_configuration: dict = {},
-        names: ListTuple[str] | None = None,
+        names: Sequence[str] | None = None,
         overrides: dict[str, dict] = {},
         aggregation_scrapers: list["Aggregator"] = [],
         force_add_to_run: bool = False,
@@ -374,9 +373,9 @@ class Runner:
         configuration: dict,
         input_level: str,
         output_level: str,
-        adm_aggregation: dict | ListTuple,
+        adm_aggregation: dict | Sequence,
         source_configuration: dict = {},
-        names: ListTuple[str] | None = None,
+        names: Sequence[str] | None = None,
         overrides: dict[str, dict] = {},
         force_add_to_run: bool = False,
     ) -> list[str]:
@@ -469,7 +468,7 @@ class Runner:
             )
         return keys
 
-    def prioritise_scrapers(self, scraper_names: ListTuple[str]) -> None:
+    def prioritise_scrapers(self, scraper_names: Sequence[str]) -> None:
         """Set certain scrapers to run first
 
         Args:
@@ -638,9 +637,9 @@ class Runner:
 
     def run(
         self,
-        what_to_run: ListTuple[str] | None = None,
+        what_to_run: Sequence[str] | None = None,
         force_run: bool = False,
-        prioritise_scrapers: ListTuple[str] | None = None,
+        prioritise_scrapers: Sequence[str] | None = None,
     ) -> None:
         """Run scrapers limiting to those in what_to_run if given (including force
         running scrapers that have already run if force_run is True), adding sources
@@ -673,7 +672,7 @@ class Runner:
         """
         self.get_scraper(name).has_run = False
 
-    def set_not_run_many(self, names: ListTuple[str]) -> None:
+    def set_not_run_many(self, names: Sequence[str]) -> None:
         """Set scrapers given by names as not run
 
         Args:
@@ -687,10 +686,10 @@ class Runner:
 
     def get_headers(
         self,
-        names: ListTuple[str] | None = None,
-        levels: ListTuple[str] | None = None,
-        headers: ListTuple[str] | None = None,
-        hxltags: ListTuple[str] | None = None,
+        names: Sequence[str] | None = None,
+        levels: Sequence[str] | None = None,
+        headers: Sequence[str] | None = None,
+        hxltags: Sequence[str] | None = None,
         overrides: dict[str, dict] = {},
     ) -> dict[str, tuple]:
         """Get the headers for scrapers limiting to those in names if given and
@@ -753,8 +752,8 @@ class Runner:
 
     def get_results(
         self,
-        names: ListTuple[str] | None = None,
-        levels: ListTuple[str] | None = None,
+        names: Sequence[str] | None = None,
+        levels: Sequence[str] | None = None,
         overrides: dict[str, dict] = {},
         has_run: bool = True,
         should_overwrite_sources: bool | None = None,
@@ -857,10 +856,10 @@ class Runner:
     def get_rows(
         self,
         level: str,
-        adms: ListTuple[str],
-        headers: ListTuple[ListTuple] = (tuple(), tuple()),
-        row_fns: ListTuple[Callable[[str], str]] = tuple(),
-        names: ListTuple[str] | None = None,
+        adms: Sequence[str],
+        headers: Sequence[Sequence] = (tuple(), tuple()),
+        row_fns: Sequence[Callable[[str], str]] = tuple(),
+        names: Sequence[str] | None = None,
         overrides: dict[str, dict] = {},
     ) -> list[list]:
         """Get rows for a given level for scrapers limiting to those in names if given.
@@ -902,7 +901,7 @@ class Runner:
     def get_values_sourcesinfo_by_header(
         self,
         level: str,
-        names: ListTuple[str] | None = None,
+        names: Sequence[str] | None = None,
         overrides: dict[str, dict] = {},
         has_run: bool = True,
         use_hxl: bool = True,
@@ -1020,9 +1019,9 @@ class Runner:
 
     def get_sources(
         self,
-        names: ListTuple[str] | None = None,
-        levels: ListTuple[str] | None = None,
-        additional_sources: ListTuple[dict] = tuple(),
+        names: Sequence[str] | None = None,
+        levels: Sequence[str] | None = None,
+        additional_sources: Sequence[dict] = tuple(),
         should_overwrite_sources: bool | None = None,
     ) -> list[tuple]:
         """Get sources for scrapers limiting to those in names if given. All levels will
@@ -1119,7 +1118,7 @@ class Runner:
         add_additional_sources()
         return sources
 
-    def get_source_urls(self, names: ListTuple[str] | None = None) -> list[str]:
+    def get_source_urls(self, names: Sequence[str] | None = None) -> list[str]:
         """Get source urls for scrapers limiting to those in names if given.
 
         Args:
@@ -1140,7 +1139,7 @@ class Runner:
 
     def get_hapi_metadata(
         self,
-        names: ListTuple[str] | None = None,
+        names: Sequence[str] | None = None,
         has_run: bool = True,
     ) -> dict:
         """Get HAPI metadata for all datasets. A dictionary is returned that
@@ -1186,7 +1185,7 @@ class Runner:
 
     def get_hapi_results(
         self,
-        names: ListTuple[str] | None = None,
+        names: Sequence[str] | None = None,
         has_run: bool = True,
     ) -> dict:
         """Get the results (headers and values per admin level and HAPI
