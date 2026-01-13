@@ -26,6 +26,8 @@ install with:
     pip install hdx-python-scraper[pandas]
 
 ## Breaking Changes
+From 2.7.0, Python 3.10 or later is required
+
 From 2.5.0, package names have changed to avoid name space clashes
 
 From 2.3.0, resource name is used when available instead of creating name from
