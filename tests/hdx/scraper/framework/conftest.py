@@ -1,6 +1,6 @@
 """Global fixtures"""
 
-from os.path import join
+from pathlib import Path
 
 import pytest
 from hdx.api.configuration import Configuration
@@ -18,12 +18,12 @@ from . import bool_assert
 
 @pytest.fixture(scope="session")
 def fixtures():
-    return join("tests", "fixtures")
+    return Path("tests") / "fixtures"
 
 
 @pytest.fixture(scope="session")
 def input_folder(fixtures):
-    return join(fixtures, "input")
+    return fixtures / "input"
 
 
 @pytest.fixture(scope="session")
@@ -32,7 +32,7 @@ def configuration(fixtures, input_folder):
         hdx_read_only=True,
         hdx_site="prod",
         user_agent="test",
-        project_config_yaml=join("tests", "config", "project_configuration.yaml"),
+        project_config_yaml=Path("tests") / "config" / "project_configuration.yaml",
     )
     Locations.set_validlocations(
         [
@@ -58,7 +58,7 @@ def configuration(fixtures, input_folder):
     if save:
         Read.create_readers(
             "",
-            join(fixtures, "tmp"),
+            fixtures / "tmp",
             "",
             save=True,
             use_saved=False,
@@ -88,9 +88,9 @@ def configuration(fixtures, input_folder):
 
 @pytest.fixture(scope="function")
 def fallbacks_json(input_folder):
-    path = join(input_folder, "fallbacks.json")
+    path = input_folder / "fallbacks.json"
     Fallbacks.add(path, sources_key="sources")
-    return path
+    return str(path)
 
 
 def check_scrapers(

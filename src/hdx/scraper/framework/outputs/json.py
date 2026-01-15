@@ -1,5 +1,5 @@
 import logging
-from os.path import join
+from pathlib import Path
 from typing import Any
 
 from hdx.utilities.dictandlist import dict_of_lists_add
@@ -184,7 +184,7 @@ class JsonFile(BaseOutput):
                         newrow[hxl_row[key]] = row[key]
                 self.add_data_row(name, newrow)
 
-    def save(self, folder: str | None = None, **kwargs: Any) -> list[str]:
+    def save(self, folder: Path | str | None = None, **kwargs: Any) -> list[Path]:
         """Save JSON file and any addition subsets of that JSON defined in the additional configuration
 
         Args:
@@ -197,7 +197,8 @@ class JsonFile(BaseOutput):
         filepaths = []
         filepath = self.configuration["output"]
         if folder:
-            filepath = join(folder, filepath)
+            folder = Path(folder)
+            filepath = folder / filepath
         logger.info(f"Writing JSON to {filepath}")
         save_json(self.json, filepath)
         filepaths.append(filepath)
@@ -262,7 +263,7 @@ class JsonFile(BaseOutput):
                 continue
             filedetailspath = filedetails["filepath"]
             if folder:
-                filedetailspath = join(folder, filedetailspath)
+                filedetailspath = folder / filedetailspath
             logger.info(f"Writing JSON to {filedetailspath}")
             save_json(json, filedetailspath)
             filepaths.append(filedetailspath)

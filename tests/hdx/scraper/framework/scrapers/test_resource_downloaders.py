@@ -1,4 +1,4 @@
-from os.path import exists, join
+from os.path import exists
 
 import pytest
 from hdx.utilities.dateparse import parse_date
@@ -11,7 +11,7 @@ from hdx.scraper.framework.runner import Runner
 class TestResourceDownloader:
     @pytest.fixture(scope="function")
     def output_file(self, fixtures):
-        return join(fixtures, "test_output.xlsx")
+        return fixtures / "test_output.xlsx"
 
     def test_resourcedownloader(self, configuration, output_file):
         with temp_dir(

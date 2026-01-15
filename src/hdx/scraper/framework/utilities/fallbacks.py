@@ -1,4 +1,5 @@
 import logging
+from pathlib import Path
 
 from hdx.utilities.loader import LoadError, load_json
 
@@ -25,7 +26,7 @@ class Fallbacks:
     @classmethod
     def add(
         cls,
-        fallbacks_path: str,
+        fallbacks_path: Path | str,
         levels_mapping: dict[str, str] = default_levels_mapping,
         sources_key: str = "sources",
         admin_name_mapping: dict[str, str] = default_admin_name_mapping,

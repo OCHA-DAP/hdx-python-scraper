@@ -1,4 +1,5 @@
 import logging
+from pathlib import Path
 
 from openpyxl import Workbook
 
@@ -24,7 +25,7 @@ class ExcelFile(BaseOutput):
     """
 
     def __init__(
-        self, excel_path: str, tabs: dict[str, str], updatetabs: list[str]
+        self, excel_path: Path | str, tabs: dict[str, str], updatetabs: list[str]
     ) -> None:
         super().__init__(updatetabs)
         self.workbook = Workbook()

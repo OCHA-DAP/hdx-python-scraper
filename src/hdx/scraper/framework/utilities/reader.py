@@ -2,7 +2,7 @@ import glob
 import logging
 from collections.abc import Iterator, Sequence
 from datetime import datetime
-from os.path import join
+from pathlib import Path
 from typing import Any
 from urllib.parse import parse_qsl
 
@@ -41,9 +41,9 @@ class Read(Retrieve):
     def __init__(
         self,
         downloader: Download,
-        fallback_dir: str,
-        saved_dir: str,
-        temp_dir: str,
+        fallback_dir: Path | str,
+        saved_dir: Path | str,
+        temp_dir: Path | str,
         save: bool = False,
         use_saved: bool = False,
         prefix: str = "",
@@ -65,9 +65,9 @@ class Read(Retrieve):
     @classmethod
     def create_readers(
         cls,
-        fallback_dir: str,
-        saved_dir: str,
-        temp_dir: str,
+        fallback_dir: Path | str,
+        saved_dir: Path | str,
+        temp_dir: Path | str,
         save: bool = False,
         use_saved: bool = False,
         ignore: Sequence[str] = tuple(),
@@ -275,7 +275,7 @@ class Read(Retrieve):
         Returns:
             The dataset that was read or None
         """
-        saved_path = join(self.saved_dir, f"{dataset_name}.json")
+        saved_path = self.saved_dir / f"{dataset_name}.json"
         if self.use_saved:
             logger.info(f"Using saved dataset {dataset_name} in {saved_path}")
             dataset = Dataset.load_from_json(saved_path)
@@ -319,7 +319,7 @@ class Read(Retrieve):
             list of datasets resulting from query
         """
 
-        saved_path = join(self.saved_dir, filename)
+        saved_path = self.saved_dir / filename
         if self.use_saved:
             logger.info(
                 f"Using saved datasets in {filename}_n.json in {self.saved_dir}"
@@ -461,7 +461,7 @@ class Read(Retrieve):
         url = resource["url"]
         try:
             _, path = self.download_resource(resource, **kwargs)
-            data = hxl.data(path, InputOptions(allow_local=True)).cache()
+            data = hxl.data(str(path), InputOptions(allow_local=True)).cache()
             data.display_tags
             return data
         except hxl.HXLException:
@@ -488,7 +488,7 @@ class Read(Retrieve):
         """
         try:
             _, path = self.construct_filename_and_download(name, format, url, **kwargs)
-            return hxl.info(path, InputOptions(allow_local=True))
+            return hxl.info(str(path), InputOptions(allow_local=True))
         except hxl.HXLException:
             logger.warning(f"Could not process {url}. Maybe there are no HXL tags?")
             return None

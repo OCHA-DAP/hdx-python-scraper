@@ -1,5 +1,6 @@
 import logging
 from copy import copy
+from pathlib import Path
 
 from hdx.utilities.loader import load_yaml
 from hdx.utilities.matching import get_code_from_name
@@ -20,7 +21,7 @@ class Lookup:
         classobject: Child class
     """
 
-    def __init__(self, yaml_config_path: str, classobject: type):
+    def __init__(self, yaml_config_path: Path | str, classobject: type):
         configuration = load_yaml(script_dir_plus_file(yaml_config_path, classobject))
         self._configuration = configuration
         initial_lookup = configuration.get("initial_lookup", {})

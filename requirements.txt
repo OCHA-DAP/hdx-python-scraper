@@ -42,13 +42,13 @@ google-auth-oauthlib==1.2.2
     # via gspread
 gspread==6.2.1
     # via hdx-python-scraper (pyproject.toml)
-hdx-python-api==6.6.0
+hdx-python-api==6.6.1
     # via hdx-python-scraper (pyproject.toml)
-hdx-python-country==4.0.0
+hdx-python-country==4.0.1
     # via
     #   hdx-python-scraper (pyproject.toml)
     #   hdx-python-api
-hdx-python-utilities==4.0.0
+hdx-python-utilities==4.0.2
     # via
     #   hdx-python-scraper (pyproject.toml)
     #   hdx-python-api
@@ -146,7 +146,7 @@ referencing==0.37.0
     # via
     #   jsonschema
     #   jsonschema-specifications
-regex==2025.11.3
+regex==2026.1.15
     # via hdx-python-scraper (pyproject.toml)
 requests==2.32.5
     # via
