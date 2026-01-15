@@ -41,9 +41,9 @@ class Read(Retrieve):
     def __init__(
         self,
         downloader: Download,
-        fallback_dir: str,
-        saved_dir: str,
-        temp_dir: str,
+        fallback_dir: Path | str,
+        saved_dir: Path | str,
+        temp_dir: Path | str,
         save: bool = False,
         use_saved: bool = False,
         prefix: str = "",
