@@ -1,6 +1,5 @@
 import filecmp
 from os import getenv
-from os.path import join
 
 import numpy as np
 import pandas
@@ -29,7 +28,7 @@ class TestOutput:
             tabs = configuration["tabs"]
             sheetname = list(tabs.values())[0]
             noout = BaseOutput(tabs)
-            excelout = ExcelFile(join(tempdir, "test_output.xlsx"), tabs, tabs)
+            excelout = ExcelFile(tempdir / "test_output.xlsx", tabs, tabs)
             gsheet_auth = getenv("GSHEET_AUTH")
             if not gsheet_auth:
                 raise ValueError("No gsheet authorisation supplied!")
@@ -78,16 +77,16 @@ class TestOutput:
             result = googletab.get("A1:C3")
             result[2][2] = int(result[2][2])
             assert result == output
-            assert filecmp.cmp(filepaths[0], join(fixtures, "test_scraper_all.json"))
+            assert filecmp.cmp(filepaths[0], fixtures / "test_scraper_all.json")
             assert filecmp.cmp(
                 filepaths[1],
-                join(fixtures, "test_scraper_population.json"),
+                fixtures / "test_scraper_population.json",
             )
             assert filecmp.cmp(
                 filepaths[2],
-                join(fixtures, "test_scraper_population.json"),
+                fixtures / "test_scraper_population.json",
             )
-            assert filecmp.cmp(filepaths[3], join(fixtures, "test_scraper_other.json"))
+            assert filecmp.cmp(filepaths[3], fixtures / "test_scraper_other.json")
 
             jsonout.json = {}
             df = pandas.DataFrame(output[2:], columns=output[0])
@@ -101,16 +100,16 @@ class TestOutput:
             result = googletab.get("A1:C3")
             result[2][2] = int(result[2][2])
             assert result == output
-            assert filecmp.cmp(filepaths[0], join(fixtures, "test_scraper_all.json"))
+            assert filecmp.cmp(filepaths[0], fixtures / "test_scraper_all.json")
             assert filecmp.cmp(
                 filepaths[1],
-                join(fixtures, "test_scraper_population.json"),
+                fixtures / "test_scraper_population.json",
             )
             assert filecmp.cmp(
                 filepaths[2],
-                join(fixtures, "test_scraper_population.json"),
+                fixtures / "test_scraper_population.json",
             )
-            assert filecmp.cmp(filepaths[3], join(fixtures, "test_scraper_other.json"))
+            assert filecmp.cmp(filepaths[3], fixtures / "test_scraper_other.json")
 
             df = pandas.DataFrame(output[1:], columns=output[0])
             googleout.update_tab("national", df, limit=2)

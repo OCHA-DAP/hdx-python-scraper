@@ -1,5 +1,5 @@
 import logging
-from os.path import join
+from pathlib import Path
 from shutil import copy2
 
 from slugify import slugify
@@ -19,11 +19,11 @@ class ResourceDownloader(BaseScraper):
         folder: Folder to which to download. Default is "".
     """
 
-    def __init__(self, datasetinfo, folder):
+    def __init__(self, datasetinfo: dict, folder: Path | str):
         # ResourceDownloader only outputs to sources
         name = f"resource_downloader_{slugify(datasetinfo['hxltag'].lower(), separator='_')}"
         super().__init__(name, datasetinfo, {})
-        self.folder = folder
+        self.folder = Path(folder)
 
     def run(self) -> None:
         """Runs one resource downloader given dataset information
@@ -35,7 +35,7 @@ class ResourceDownloader(BaseScraper):
         resource = reader.read_hdx_metadata(self.datasetinfo)
         url, path = reader.download_resource(resource, file_prefix=self.name)
         logger.info(f"Downloading {url} to {path}")
-        copy2(path, join(self.folder, self.datasetinfo["filename"]))
+        copy2(path, self.folder / self.datasetinfo["filename"])
 
     def add_sources(self) -> None:
         """Add source for resource download

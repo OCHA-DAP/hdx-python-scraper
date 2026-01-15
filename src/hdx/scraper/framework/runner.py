@@ -2,6 +2,7 @@ import logging
 from collections.abc import Callable, Sequence
 from copy import copy
 from datetime import datetime
+from pathlib import Path
 from traceback import format_exc
 from typing import Any, Optional
 
@@ -422,7 +423,7 @@ class Runner:
     def add_resource_downloader(
         self,
         datasetinfo: dict,
-        folder: str = "",
+        folder: Path | str = "",
         force_add_to_run: bool = False,
     ) -> str:
         """Add resource downloader to the run. If running specific scrapers rather than
@@ -445,7 +446,7 @@ class Runner:
     def add_resource_downloaders(
         self,
         configuration: dict,
-        folder: str = "",
+        folder: Path | str = "",
         force_add_to_run: bool = False,
     ) -> list[str]:
         """Add multiple resource downloaders to the run. If running specific scrapers
