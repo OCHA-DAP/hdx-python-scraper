@@ -109,7 +109,7 @@ ply==3.11
     #   libhxl
 pockets==0.9.1
     # via sphinxcontrib-napoleon
-pyasn1==0.6.1
+pyasn1==0.6.2
     # via
     #   pyasn1-modules
     #   rsa
