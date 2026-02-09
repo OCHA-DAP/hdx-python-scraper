@@ -667,8 +667,8 @@ wheels = [
 
 [[package]]
 name = "hdx-python-country"
-version = "4.1.1.dev1"
-source = { git = "ssh://git@github.com/OCHA-DAP/hdx-python-country?rev=adminlevel_nohxl#8f749e9281c0403e321722a6843efffeefc3ba78" }
+version = "4.1.1.dev2"
+source = { git = "ssh://git@github.com/OCHA-DAP/hdx-python-country?rev=adminlevel_nohxl#a4f0ef5d8c4e67b5626c2895703995241230ffc8" }
 dependencies = [
     { name = "hdx-python-utilities" },
     { name = "tenacity" },
