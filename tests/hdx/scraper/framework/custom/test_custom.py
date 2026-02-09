@@ -5,14 +5,13 @@ import pytest
 from hdx.location.adminlevel import AdminLevel
 from hdx.utilities.dateparse import parse_date
 
-from hdx.scraper.framework.base_scraper import BaseScraper
-from hdx.scraper.framework.runner import Runner
-from hdx.scraper.framework.utilities.reader import Read
-
 from ..conftest import check_scraper, check_scrapers
 from .affected_targeted_reached import AffectedTargetedReached
 from .education_closures import EducationClosures
 from .education_enrolment import EducationEnrolment
+from hdx.scraper.framework.base_scraper import BaseScraper
+from hdx.scraper.framework.runner import Runner
+from hdx.scraper.framework.utilities.reader import Read
 
 
 class TestCustom:
@@ -562,13 +561,13 @@ class TestCustom:
         today = parse_date("2022-09-30")
         countries = ("ETH", "KEN", "SOM")
         adminone = AdminLevel(configuration["admin1"])
-        adminone.setup_from_admin_info(configuration["admin1"]["admin_info"])
+        adminone.setup_from_iterable(configuration["admin1"]["admin_info"])
         admintwo = AdminLevel(
             configuration["admin2"],
             admin_level=2,
             admin_level_overrides={"KEN": 1},
         )
-        admintwo.setup_from_admin_info(configuration["admin2"]["admin_info"])
+        admintwo.setup_from_iterable(configuration["admin2"]["admin_info"])
 
         runner = Runner(countries, today)
         datasetinfo = configuration["affected_targeted_reached"]

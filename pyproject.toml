@@ -147,3 +147,6 @@ exclude_also = [
     "if TYPE_CHECKING:",
     "@(abc\\.)?abstractmethod",
 ]
+
+[tool.uv.sources]
+hdx-python-country = { git = "ssh://git@github.com/OCHA-DAP/hdx-python-country", rev = "adminlevel_nohxl" }
