@@ -667,11 +667,15 @@ wheels = [
 
 [[package]]
 name = "hdx-python-country"
-version = "4.1.1.dev2"
-source = { git = "ssh://git@github.com/OCHA-DAP/hdx-python-country?rev=adminlevel_nohxl#a4f0ef5d8c4e67b5626c2895703995241230ffc8" }
+version = "4.1.1"
+source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "hdx-python-utilities" },
     { name = "tenacity" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/93/7e/758b107aabb62c578c9306865eebf8e451cb663b3b598a3fdaae858ba76b/hdx_python_country-4.1.1.tar.gz", hash = "sha256:210fd077a2761dcbd28561a209d401c81f2314e4279939fd1c5ff75cae12eea0", size = 619107, upload-time = "2026-02-11T04:06:52.311Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/28/e0/baa284cd1d9f41945333554276c5e54ea14857a4619a7d521e932630be01/hdx_python_country-4.1.1-py3-none-any.whl", hash = "sha256:e22408664e25401a399fc2ac24cdae93b9ec9317b2238d70f09760ec5a41423a", size = 55317, upload-time = "2026-02-11T04:06:51.334Z" },
 ]
 
 [[package]]
@@ -708,7 +712,7 @@ dev = [
 requires-dist = [
     { name = "gspread" },
     { name = "hdx-python-api", specifier = ">=6.6.4" },
-    { name = "hdx-python-country", git = "ssh://git@github.com/OCHA-DAP/hdx-python-country?rev=adminlevel_nohxl" },
+    { name = "hdx-python-country", specifier = ">=4.1.1" },
     { name = "hdx-python-utilities", specifier = ">=4.0.4" },
     { name = "mkapi", marker = "extra == 'docs'" },
     { name = "pandas", marker = "extra == 'pandas'", specifier = ">=2.2.3" },
