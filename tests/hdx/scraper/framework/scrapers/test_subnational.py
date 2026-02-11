@@ -1,12 +1,11 @@
 from hdx.location.adminlevel import AdminLevel
 from hdx.utilities.dateparse import parse_date
 
+from ..conftest import run_check_scraper
 from hdx.scraper.framework.base_scraper import BaseScraper
 from hdx.scraper.framework.outputs.json import JsonFile
 from hdx.scraper.framework.runner import Runner
 from hdx.scraper.framework.utilities.writer import Writer
-
-from ..conftest import run_check_scraper
 
 
 class TestSubnational:
@@ -14,7 +13,7 @@ class TestSubnational:
         BaseScraper.population_lookup = {}
         today = parse_date("2020-10-01")
         adminlevel = AdminLevel(configuration)
-        adminlevel.setup_from_admin_info(configuration["admin_info"])
+        adminlevel.setup_from_iterable(configuration["admin_info"])
         level = "subnational"
         scraper_configuration = configuration[f"scraper_{level}"]
         runner = Runner(("AFG",), today)
@@ -357,7 +356,7 @@ class TestSubnational:
         scraper_configuration = configuration[f"scraper_{level}"]
 
         adminlevel = AdminLevel(configuration["admin1"])
-        adminlevel.setup_from_admin_info(configuration["admin1"]["admin_info"])
+        adminlevel.setup_from_iterable(configuration["admin1"]["admin_info"])
         runner = Runner(("SOM",), today)
         runner.add_configurables(scraper_configuration, level, adminlevel=adminlevel)
         name = "ipc_somalia"
@@ -406,7 +405,7 @@ class TestSubnational:
         )
 
         adminlevel = AdminLevel(configuration["admin2"])
-        adminlevel.setup_from_admin_info(configuration["admin2"]["admin_info"])
+        adminlevel.setup_from_iterable(configuration["admin2"]["admin_info"])
         runner = Runner(("SOM",), today)
         runner.add_configurables(scraper_configuration, level, adminlevel=adminlevel)
         name = "idps_somalia"

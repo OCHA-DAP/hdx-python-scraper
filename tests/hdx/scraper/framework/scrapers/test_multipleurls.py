@@ -1,9 +1,8 @@
 from hdx.utilities.dateparse import parse_date
 
+from ..conftest import run_check_scraper
 from hdx.scraper.framework.base_scraper import BaseScraper
 from hdx.scraper.framework.runner import Runner
-
-from ..conftest import run_check_scraper
 
 
 class TestMultipleURLs:
