@@ -1,13 +1,13 @@
 log_message: "Org type mapping"
 file_prefix: "org_type"
-code_key: "#org +type +code +v_hrinfo"
-name_key: "#org +type +preferred"
+code_key: "HR.info ID"
+name_key: "Preferred Term"
 
 datasetinfo:
   dataset: "organization-types-beta"
-  resource: "Organization Types (Beta) - CSV"
+  resource: "Organization Types (Beta) - CSV no HXL"
   format: "csv"
-  headers: 2
+  headers: 1
 
 extra_entries:
   "501": "Civil Society"

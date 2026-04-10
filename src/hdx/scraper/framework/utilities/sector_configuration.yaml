@@ -1,13 +1,13 @@
 log_message: "Sector mapping"
 file_prefix: "sector"
-code_key: "#sector +code +acronym"
-name_key: "#sector +name +preferred +i_en"
+code_key: "ACRONYM"
+name_key: "Preferred Term"
 
 datasetinfo:
   dataset: "global-coordination-groups-beta"
-  resource: "Global Coordination Groups (Beta) CSV"
+  resource: "Global Coordination Groups (Beta) CSV no HXL"
   format: "csv"
-  headers: 2
+  headers: 1
 
 extra_entries:
   "Cash": "Cash programming"

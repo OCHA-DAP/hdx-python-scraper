@@ -1,5 +1,4 @@
 HRinfo ID,Preferred Term,Preferred Term (fr),ACRONYM,Group Type,Homepage,Date Created (Post Date),Updated date,Notes
-#sector +code +v_hrinfo_sector,#sector +name +preferred +i_en,#sector +name +preferred +i_fr,#sector +code +acronym,#sector +type,#meta +url,#date +created,#date +updated,#meta +comment
 4,Emergency Shelter and NFI,Abris d'urgence et NFI,SHL,Cluster,https://www.sheltercluster.org/,03/16/2017,4/4/2018,"Added French name; shelter cluster uses ""NFI"" in French as well"
 1,Camp Coordination / Management,Coordination et gestion des camps,CCM,Cluster,http://www.globalcccmcluster.org,03/16/2017,4/4/2018,Added French name
 5406,Mine Action,Action contre les mines,PRO-MIN,Area of Responsibility (Sub-cluster),http://www.globalprotectioncluster.org/en/areas-of-responsibility/mine-action.html,03/16/2017,4/4/2018,Added French name
