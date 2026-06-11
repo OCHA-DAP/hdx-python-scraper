@@ -4,6 +4,8 @@
 [![Imports: isort](https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336)](https://pycqa.github.io/isort/)
 [![Downloads](https://img.shields.io/pypi/dm/hdx-python-scraper.svg)](https://pypistats.org/packages/hdx-python-scraper)
 
+Note: this library is no longer being developed.
+
 The HDX Python Scraper Library is designed to enable you to easily develop code that
 assembles data from one or more tabular sources that can be csv, xls, xlsx or JSON. It
 uses a YAML file that specifies for each source what needs to be read and allows some

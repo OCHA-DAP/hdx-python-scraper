@@ -18,11 +18,11 @@ classifiers = [
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
     "Natural Language :: English",
@@ -39,14 +39,13 @@ requires-python = ">=3.10"
 dependencies = [
     "hdx-python-api>=6.6.7",
     "hdx-python-country>=4.1.1",
-    "hdx-python-utilities>=4.0.8",
+    "hdx-python-utilities==4.0.8",
     "libhxl",
     "gspread",
     "regex",
 ]
 
 [project.optional-dependencies]
-pandas = ["pandas>=2.3.3"]
 docs = ["mkapi"]
 
 [dependency-groups]
